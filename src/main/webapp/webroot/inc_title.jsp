@@ -1,0 +1,1 @@
+<title>${applicationScope['systemInfo'].appName}</title>

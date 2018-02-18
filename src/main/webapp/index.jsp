@@ -1,0 +1,1 @@
+<% response.sendRedirect("webroot/login.jsp"); %>

@@ -1,0 +1,95 @@
+plugins {
+    id 'com.github.ben-manes.versions' version '0.17.0'
+    id "org.ajoberstar.grgit" version "2.1.0"
+}
+
+group 'net.ehicks'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'idea'
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven { url "https://jitpack.io" }
+}
+
+dependencies {
+    compile group: "com.github.ehicks05", name: "eoi", version: "-SNAPSHOT", changing: true
+    compile 'com.github.ehicks05:common:-SNAPSHOT'
+
+    compile 'org.apache.commons:commons-email:1.5'
+    compile 'org.apache.commons:commons-lang3:3.7'
+    compile 'commons-io:commons-io:2.6'
+    compile 'commons-fileupload:commons-fileupload:1.3.3'
+
+    compile 'org.apache.pdfbox:pdfbox:2.0.8'
+    compile 'com.github.dhorions:boxable:1.4'
+
+    compile 'org.hibernate.javax.persistence:hibernate-jpa-2.0-api:1.0.1.Final'
+    compile 'org.imgscalr:imgscalr-lib:4.2'
+    compile 'com.sksamuel.diff:diff:1.1.11'
+    compile 'org.reflections:reflections:0.9.11'
+    compile 'it.sauronsoftware.cron4j:cron4j:2.2.5'
+
+    compile 'org.slf4j:slf4j-api:1.7.22'
+    compile 'org.slf4j:slf4j-log4j12:1.7.22'
+    compile 'log4j:apache-log4j-extras:1.2.17'
+
+    compile 'org.apache.shiro:shiro-core:1.3.2'
+    compile 'org.apache.shiro:shiro-web:1.3.2'
+
+    compile group: 'org.glassfish', name: 'javax.json', version: '1.0.2'
+
+    compile 'io.dropwizard:dropwizard-core:1.2.4'
+    
+    providedCompile 'org.eclipse.jetty:jetty-server:9.4.8.v20171121'
+    compile 'org.eclipse.jetty:jetty-jmx:9.4.8.v20171121'
+    compile 'org.eclipse.jetty.aggregate:jetty-all-server:8.2.0.v20160908'
+    providedCompile 'org.eclipse.jetty.websocket:websocket-server:9.4.8.v20171121'
+
+    providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
+    providedCompile 'javax.servlet.jsp:javax.servlet.jsp-api:2.3.1'
+    providedCompile 'javax.servlet:jstl:1.2'
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+idea{
+    project {
+        languageLevel = '1.8'
+    }
+    module {
+        downloadJavadoc = true // defaults to false
+        downloadSources = true
+    }
+}
+
+configurations.all {
+    resolutionStrategy {
+        cacheChangingModulesFor 0, 'seconds'
+    }
+}
+
+// Task to create a version file based on git repo data
+import org.ajoberstar.grgit.*
+import java.time.ZonedDateTime
+
+task versionTxt()  {
+    doLast {
+        Commit head = Grgit.open(dir: '.').head()
+        new File("$projectDir/src/main/webapp/WEB-INF/version.txt").text =
+"""Application-name: Loon
+Version: 0.0.${Grgit.open(dir: '.').log().size()}
+Revision: ${head.id}
+Revision-Date: ${head.dateTime}
+Author: ${head.author.name} (${head.author.email})
+
+Build-Date: ${ZonedDateTime.now()}
+"""
+    }
+}
+
+tasks.war.dependsOn versionTxt

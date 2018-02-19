@@ -59,6 +59,11 @@ public class User implements Serializable
 
     // --------
 
+    public boolean isAdmin()
+    {
+        return true;
+    }
+
     public static List<User> getAll()
     {
         return EOI.executeQuery("select * from loon_users;");

@@ -80,9 +80,6 @@
 <nav class="navbar" role="navigation" aria-label="main navigation">
     <div class="container">
         <div class="navbar-brand">
-            <%--<div class="navbar-item">--%>
-                <%--<span>${applicationScope['systemInfo'].appName}</span>--%>
-            <%--</div>--%>
             <div class="navbar-item">
                 <img src="${pageContext.request.contextPath}/images/puffin-text.png" alt="Puffin" />
             </div>
@@ -96,32 +93,6 @@
 
         <div class="navbar-menu" id="navMenu">
             <div class="navbar-start">
-                <div class="navbar-item">
-                    <a class="button" id="createIssueButton">
-                        <span class="icon has-text-primary">
-                          <i class="fas fa-plus-square"></i>
-                        </span>
-                        <span>Create Issue</span>
-                    </a>
-                </div>
-                <div class="navbar-item">
-                    <div class="field has-addons">
-                        <div class="control">
-                            <input id="fldGoToIssue" type="text" class="input" size="3" maxlength="16" />
-                        </div>
-                        <div class="control">
-                            <button id="goToIssueButton" class="button has-text-primary" onclick="goToIssue();" disabled>
-                                <span class="icon">
-                                    <i class="fas fa-search"></i>
-                                </span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <c:set var="statusClass" value="${param.tab1 == 'dashboard' ? 'is-active' : ''}"/>
-                <a class="navbar-item ${statusClass}" href="${pageContext.request.contextPath}/view?tab1=dashboard&action=form">
-                    Dashboard
-                </a>
                 <c:set var="statusClass" value="${param.tab1 == 'search' ? 'is-active' : ''}"/>
                 <a class="navbar-item ${statusClass}" href="${pageContext.request.contextPath}/view?tab1=search&action=form">
                     Search
@@ -144,8 +115,8 @@
                         </c:forEach>
                     </div>
                 </div>
-                <c:set var="statusClass" value="${param.tab1 == 'admin' ? 'is-active' : ''}"/>
                 <c:if test="${userSession.user.admin}">
+                    <c:set var="statusClass" value="${param.tab1 == 'admin' ? 'is-active' : ''}"/>
                     <div class="navbar-item has-dropdown is-hoverable">
                         <a class="navbar-link ${statusClass}" href="${pageContext.request.contextPath}/view?tab1=admin&action=form">
                             Admin
@@ -164,13 +135,6 @@
                         </div>
                     </div>
                 </c:if>
-                <c:set var="statusClass" value="${param.tab1 == 'profile' ? 'is-active' : ''}"/>
-                <a class="navbar-item ${statusClass}" href="${pageContext.request.contextPath}/view?tab1=profile&action=form&userId=${userSession.userId}">
-                    Profile
-                </a>
-                <a class="navbar-item ${statusClass}" href="${pageContext.request.contextPath}/view?tab1=chat&action=form">
-                    Chat
-                </a>
             </div>
             <div class="navbar-end">
                 <a class="navbar-item ${statusClass}" href="${pageContext.request.contextPath}/logout">

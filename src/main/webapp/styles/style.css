@@ -1,0 +1,37 @@
+.alignright {text-align: right}
+.nowrap {white-space: nowrap;}
+
+.overflowTableContainer {overflow-x: auto; padding: 1rem;}
+
+.js-example-basic-single {padding-right: 24px; width: 96%}
+.js-example-basic-multiple {padding-right: 24px; width: 100%}
+
+@media (max-width: 479px)
+{
+    .mdl-card {margin: 0; width: 100% !important;}
+    .hideOnSmall {display:none;}
+}
+
+.editable:hover {background-color: #F5F5F5;}
+
+
+/* SCROLLBAR */
+/* width */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #aaa;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #777;
+}

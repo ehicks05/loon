@@ -68,7 +68,7 @@ public class AdminHandler
     public static String showModifySystem(HttpServletRequest request, HttpServletResponse response) throws ParseException, IOException
     {
         request.setAttribute("loonSystem", LoonSystem.getSystem());
-        request.setAttribute("themes", Arrays.asList("default","cosmo","flatly","journal","lux","pulse","simplex","superhero","united","yeti"));
+        request.setAttribute("themes", Arrays.asList("default", "cosmo", "flatly", "journal", "lux", "pulse", "simplex", "superhero", "united", "yeti"));
         return "/webroot/admin/modifySystem.jsp";
     }
 
@@ -82,9 +82,14 @@ public class AdminHandler
         {
             loonSystem.setInstanceName(Common.getSafeString(request.getParameter("instanceName")));
             loonSystem.setLogonMessage(Common.getSafeString(request.getParameter("logonMessage")));
-            loonSystem.setDefaultAvatar(Common.stringToLong(request.getParameter("defaultAvatar")));
+            loonSystem.setMusicFolder(Common.getSafeString(request.getParameter("musicFolder")));
             loonSystem.setTheme(Common.getSafeString(request.getParameter("theme")));
             EOI.update(loonSystem, userSession);
+
+            if (Common.getSafeString(request.getParameter("rescan")).equals("true"))
+            {
+                MusicScanner.scan();
+            }
 
             request.getServletContext().setAttribute("loonSystem", LoonSystem.getSystem());
         }

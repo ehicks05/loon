@@ -1,9 +1,11 @@
 package net.ehicks.loon;
 
+import net.ehicks.loon.beans.Track;
 import net.ehicks.loon.beans.User;
 import net.ehicks.eoi.AuditUser;
 
 import java.util.Date;
+import java.util.List;
 
 public class UserSession implements AuditUser
 {
@@ -17,6 +19,11 @@ public class UserSession implements AuditUser
     public String getId()
     {
         return String.valueOf(userId);
+    }
+
+    public List<Track> getTracks()
+    {
+        return Track.getAll();
     }
 
     // ----

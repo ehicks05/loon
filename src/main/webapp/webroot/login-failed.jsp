@@ -38,7 +38,7 @@
                 <div class=""><h5>Sorry, login failed!</h5></div>
 
                 <div class="is-centered">
-                    <input type="submit" id="backButton" value="Back" class="button is-primary" onclick="location.href='${pageContext.request.contextPath}/view?tab1=dashboard&action=form';"/>
+                    <input type="submit" id="backButton" value="Back" class="button is-primary" onclick="location.href='${pageContext.request.contextPath}/view?tab1=music&action=form';"/>
                 </div>
             </div>
         </div>

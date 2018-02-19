@@ -62,6 +62,8 @@ public class Controller extends HttpServlet
 
         BackupDbTask.scheduleTask();
 
+        MusicScanner.scan();
+
         getServletContext().setAttribute("loonSystem", LoonSystem.getSystem());
 
         log.info("Controller.init done in {} ms", (System.currentTimeMillis() - SystemInfo.INSTANCE.getSystemStart()));
@@ -96,7 +98,7 @@ public class Controller extends HttpServlet
             // without this check, they will log in and immediately be logged out again.
             if (request.getParameter("action") != null && request.getParameter("action").equals("logout"))
             {
-                response.sendRedirect("view?tab1=dashboard&action=form");
+                response.sendRedirect("view?tab1=music&action=form");
                 return;
             }
         }
@@ -120,7 +122,7 @@ public class Controller extends HttpServlet
 
         if (request.getParameter("tab1") == null)
         {
-            response.sendRedirect("view?tab1=dashboard&action=form");
+            response.sendRedirect("view?tab1=music&action=form");
             return;
         }
 
@@ -168,7 +170,7 @@ public class Controller extends HttpServlet
             catch (Exception e)
             {
                 log.error(e.getMessage(), e);
-                response.sendRedirect("view?tab1=dashboard&action=form");
+                response.sendRedirect("view?tab1=music&action=form");
             }
         }
         
@@ -196,7 +198,7 @@ public class Controller extends HttpServlet
     {
         invalidateSession(request);
 
-        response.sendRedirect("view?tab1=dashboard&action=form");
+        response.sendRedirect("view?tab1=music&action=form");
     }
 
     private static void invalidateSession(HttpServletRequest request)

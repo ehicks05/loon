@@ -36,6 +36,6 @@
 <%-- Font Awesome --%>
 
 <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/puffin.png">
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/styles/loon.css" media="screen" />
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/styles/style.css" media="screen" />
 <script src="${pageContext.request.contextPath}/js/util.js"></script>
 <script src="${pageContext.request.contextPath}/js/ajaxUtil.js"></script>

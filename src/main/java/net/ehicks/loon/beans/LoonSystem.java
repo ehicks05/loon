@@ -23,29 +23,11 @@ public class LoonSystem implements Serializable
     @Column(name = "logon_message")
     private String logonMessage = "";
 
-    @Column(name = "default_avatar")
-    private Long defaultAvatar;
-
     @Column(name = "theme")
     private String theme = "";
 
-    @Column(name = "email_host")
-    private String emailHost = "";
-
-    @Column(name = "email_port")
-    private Integer emailPort = 0;
-
-    @Column(name = "email_user")
-    private String emailUser = "";
-
-    @Column(name = "email_password")
-    private String emailPassword = "";
-
-    @Column(name = "email_from_address")
-    private String emailFromAddress = "";
-
-    @Column(name = "email_from_name")
-    private String emailFromName = "";
+    @Column(name = "music_folder")
+    private String musicFolder = "";
 
     @Override
     public boolean equals(Object obj)
@@ -110,16 +92,6 @@ public class LoonSystem implements Serializable
         this.logonMessage = logonMessage;
     }
 
-    public Long getDefaultAvatar()
-    {
-        return defaultAvatar;
-    }
-
-    public void setDefaultAvatar(Long defaultAvatar)
-    {
-        this.defaultAvatar = defaultAvatar;
-    }
-
     public String getTheme()
     {
         return theme;
@@ -130,63 +102,13 @@ public class LoonSystem implements Serializable
         this.theme = theme;
     }
 
-    public String getEmailHost()
+    public String getMusicFolder()
     {
-        return emailHost;
+        return musicFolder;
     }
 
-    public void setEmailHost(String emailHost)
+    public void setMusicFolder(String musicFolder)
     {
-        this.emailHost = emailHost;
-    }
-
-    public Integer getEmailPort()
-    {
-        return emailPort;
-    }
-
-    public void setEmailPort(Integer emailPort)
-    {
-        this.emailPort = emailPort;
-    }
-
-    public String getEmailUser()
-    {
-        return emailUser;
-    }
-
-    public void setEmailUser(String emailUser)
-    {
-        this.emailUser = emailUser;
-    }
-
-    public String getEmailPassword()
-    {
-        return emailPassword;
-    }
-
-    public void setEmailPassword(String emailPassword)
-    {
-        this.emailPassword = emailPassword;
-    }
-
-    public String getEmailFromAddress()
-    {
-        return emailFromAddress;
-    }
-
-    public void setEmailFromAddress(String emailFromAddress)
-    {
-        this.emailFromAddress = emailFromAddress;
-    }
-
-    public String getEmailFromName()
-    {
-        return emailFromName;
-    }
-
-    public void setEmailFromName(String emailFromName)
-    {
-        this.emailFromName = emailFromName;
+        this.musicFolder = musicFolder;
     }
 }

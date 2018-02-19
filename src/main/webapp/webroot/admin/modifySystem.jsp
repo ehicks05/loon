@@ -2,6 +2,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <jsp:useBean id="loonSystem" type="net.ehicks.loon.beans.LoonSystem" scope="application"/>
 
 <!DOCTYPE html>
@@ -11,7 +12,12 @@
     <jsp:include page="../inc_header.jsp"/>
 
     <script>
-
+        function rescan()
+        {
+            var form = document.getElementById('frmProject');
+            form.action = form.action + '&rescan=true';
+            form.submit();
+        }
     </script>
 </head>
 <body>
@@ -35,10 +41,11 @@
                 <form id="frmProject" method="post" action="${pageContext.request.contextPath}/view?tab1=admin&tab2=system&tab3=modify&action=modify">
                     <t:text id="instanceName" label="Instance Name" value="${loonSystem.instanceName}" />
                     <t:textarea id="logonMessage" label="Logon Message" value="${loonSystem.logonMessage}" rich="true"/>
-                    <t:text id="defaultAvatar" label="Default Avatar" value="${loonSystem.defaultAvatar}"/>
                     <t:basicSelect id="theme" label="Theme" items="${themes}" value="${loonSystem.theme}"/>
+                    <t:text id="musicFolder" label="Music Folder" value="${loonSystem.musicFolder}"/>
 
                     <input id="saveSystemButton" type="submit" value="Save" class="button is-primary" />
+                    <input id="saveAndRescanButton" type="button" value="Save and Re-scan" class="button is-success" onclick="rescan();"/>
                 </form>
             </div>
         </div>

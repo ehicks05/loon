@@ -1,7 +1,9 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="ct" uri="http://eric-hicks.com/loon/commontags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<jsp:useBean id="userSession" type="net.ehicks.loon.UserSession" scope="session"/>
 
 <!DOCTYPE html>
 <html>
@@ -10,6 +12,7 @@
     <jsp:include page="inc_header.jsp"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.0.9/howler.js"></script>
     <script>
+        var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
     </script>
     <style>
@@ -27,16 +30,6 @@
 <body>
 
 <jsp:include page="header.jsp"/>
-
-<section class="hero is-primary is-small">
-    <div class="hero-body">
-        <div class="container">
-            <span class="title">
-                <span>Music</span>
-            </span>
-        </div>
-    </div>
-</section>
 
 <section class="section" id="root">
     <div class="container">
@@ -59,24 +52,27 @@
 
 <section class="section">
     <nav class="level">
+        <div class="level-item">
+            <span id="track"></span>
+        </div>
+    </nav>
+
+    <nav class="level">
         <!-- Left side -->
         <div class="level-left">
-            <div class="level-item">
-                <span id="track"></span>
-            </div>
-        </div>
-
-        <!-- Right side -->
-        <div class="level-right">
             <p class="level-item">
                 <span id="timer">0:00</span>
             </p>
             <p class="level-item">
-                <progress id="progress" style="width:400px;" class="progress is-small is-success" value="0" max="100">0%</progress>
+                <progress id="progress" style="width:1600px;" class="progress is-small is-success" value="0" max="100">0%</progress>
             </p>
             <p class="level-item">
                 <span id="duration">0:00</span>
             </p>
+        </div>
+
+        <!-- Right side -->
+        <div class="level-right">
             <p class="level-item">
             </p>
             <p class="level-item">
@@ -84,7 +80,7 @@
             <p class="level-item">
                 <a class="button is-small" id="volumeBtn">
                     <span class="icon">
-                        <i class="fas fa-volume-up"></i>
+                        <i id="volumeBtnIcon" class="fas fa-volume-up"></i>
                     </span>
                 </a>
             </p>
@@ -148,15 +144,16 @@
     var Player = function(playlist) {
         this.playlist = playlist;
         this.index = 0;
+        this.muted = false;
 
         // Display the title of the first track.
         track.innerHTML = '1. ' + playlist[0].title;
 
         // Setup the playlist display.
-        playlist.forEach(function(song) {
+        playlist.forEach(function(song, index) {
             var div = document.createElement('div');
             div.className = 'list-song';
-            div.innerHTML = song.title;
+            div.innerHTML = index+1 + '. ' + song.artist + ' - ' + song.title + ' (' + song.duration + '), (' + song.size + ')';
             div.onclick = function() {
                 player.skipTo(playlist.indexOf(song));
             };
@@ -196,6 +193,7 @@
                         pauseBtn.style.display = '';
                     },
                     onload: function() {
+                        console.log('onload');
                         // Start the wave animation.
                         // wave.container.style.display = 'block';
                         // bar.style.display = 'none';
@@ -377,22 +375,20 @@
          * Toggle the volume display on/off.
          */
         toggleVolume: function() {
-            if (Howler.volume() === 0)
+            var newIcon = '';
+            if (player.muted)
             {
-                player.volume(1);
+                Howler.mute(false);
+                newIcon = 'volume-up'
             }
             else
             {
-                player.volume(0);
+                Howler.mute(true);
+                newIcon = 'volume-off'
             }
 
-            // var self = this;
-            // var display = (volume.style.display === 'block') ? 'none' : 'block';
-            //
-            // setTimeout(function() {
-            //     volume.style.display = display;
-            // }, (display === 'block') ? 0 : 500);
-            // volume.className = (display === 'block') ? 'fadein' : 'fadeout';
+            player.muted = !player.muted;
+            document.getElementById('volumeBtnIcon').setAttribute('data-icon', newIcon);
         },
 
         /**
@@ -435,9 +431,9 @@
     // playlistBtn.addEventListener('click', function() {
     //     player.togglePlaylist();
     // });
-    playlist.addEventListener('click', function() {
-        player.togglePlaylist();
-    });
+    // playlist.addEventListener('click', function() {
+    //     player.togglePlaylist();
+    // });
     volumeBtn.addEventListener('click', function() {
         player.toggleVolume();
     });
@@ -487,18 +483,19 @@
 </script>
 
 <script>
-    var player = new Player([
-        {
-            title: 'Jazz Bass',
-            file: '${pageContext.request.contextPath}/images/jazz.flac',
+    var tracks = [];
+
+    <c:forEach var="track" items="${userSession.tracks}">
+        tracks.push({
+            artist: '<c:out value="${track.artist}" />',
+            title: '<c:out value="${track.title}" />',
+            duration: '<c:out value="${track.duration}" />',
+            size: '<c:out value="${ct:fileSize(track.size)}" />',
+            file: '${pageContext.request.contextPath}/media?id=${track.id}',
             howl: null
-        },
-        {
-            title: 'Deluxe 65',
-            file: '${pageContext.request.contextPath}/images/deluxe65.flac',
-            howl: null
-        }
-    ]);
+        });
+    </c:forEach>
+    var player = new Player(tracks);
 </script>
 </body>
 </html>

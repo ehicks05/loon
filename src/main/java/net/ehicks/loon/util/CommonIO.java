@@ -50,6 +50,10 @@ public class CommonIO
         {
             IOUtils.copy(inputStream, outputStream);
         }
+        catch (Exception e)
+        {
+            log.error(e.getMessage(), e);
+        }
     }
 
     public static void sendFileInResponse(HttpServletResponse response, DBFile dbFile, boolean inline) throws IOException

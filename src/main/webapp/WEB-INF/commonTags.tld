@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<taglib xmlns="http://java.sun.com/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-jsptaglibrary_2_1.xsd"
+        version="2.1">
+    <tlib-version>1.0</tlib-version>
+    <short-name>formtags</short-name>
+    <uri>http://eric-hicks.com/loon/commontags</uri>
+
+    <function>
+        <name>parseItemsForSelect</name>
+        <function-class>net.ehicks.loon.TagUtils</function-class>
+        <function-signature>java.util.List parseItemsForSelect(java.lang.Object)</function-signature>
+    </function>
+
+    <function>
+        <description>
+            JavaScript Escape function
+        </description>
+        <name>escapeJS</name>
+        <function-class>org.apache.commons.lang3.StringEscapeUtils</function-class>
+        <function-signature>java.lang.String escapeEcmaScript(java.lang.String)</function-signature>
+    </function>
+
+    <function>
+        <name>fileSize</name>
+        <function-class>net.ehicks.common.Common</function-class>
+        <function-signature>java.lang.String toMetric(long)</function-signature>
+    </function>
+
+    <function>
+        <name>longToDate</name>
+        <function-class>net.ehicks.loon.TagUtils</function-class>
+        <function-signature>java.util.Date longToDate(long)</function-signature>
+    </function>
+
+    <function>
+        <name>formatZonedDateTime</name>
+        <function-class>net.ehicks.loon.TagUtils</function-class>
+        <function-signature>java.lang.String formatZonedDateTime(java.time.ZonedDateTime)</function-signature>
+    </function>
+</taglib>

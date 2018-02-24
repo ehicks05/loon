@@ -3,18 +3,6 @@
 
 .overflowTableContainer {overflow-x: auto; padding: 1rem;}
 
-.js-example-basic-single {padding-right: 24px; width: 96%}
-.js-example-basic-multiple {padding-right: 24px; width: 100%}
-
-@media (max-width: 479px)
-{
-    .mdl-card {margin: 0; width: 100% !important;}
-    .hideOnSmall {display:none;}
-}
-
-.editable:hover {background-color: #F5F5F5;}
-
-
 /* SCROLLBAR */
 /* width */
 ::-webkit-scrollbar {

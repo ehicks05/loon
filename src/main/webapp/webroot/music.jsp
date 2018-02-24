@@ -10,11 +10,6 @@
 <head>
     <jsp:include page="inc_title.jsp"/>
     <jsp:include page="inc_header.jsp"/>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.0.9/howler.js"></script>
-    <script>
-        var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-    </script>
     <style>
         body {
             display: flex;
@@ -25,6 +20,13 @@
         #root {
             flex: 1 0 auto;
         }
+
+        section {padding: 10px !important;}
+
+        .playingHighlight {color: #1ed176;}
+
+        .playlist {overflow-y: auto; max-height: 600px;}
+        .list-song {cursor: pointer;}
     </style>
 </head>
 <body>
@@ -32,22 +34,38 @@
 <jsp:include page="header.jsp"/>
 
 <section class="section" id="root">
-    <div class="container">
+    <%--<div class="container">--%>
         <div class="columns is-multiline is-centered">
             <div class="column is-one-fifth">
-                <h3 class="subtitle is-3">Menu</h3>
+                <h5 class="subtitle is-5">Menu</h5>
 
             </div>
             <div class="column is-four-fifths">
-                <h3 class="subtitle is-3">Playlist</h3>
+                <h5 class="subtitle is-5">Playlist</h5>
 
                 <!-- Playlist -->
-                <div id="playlist">
-                    <div id="list"></div>
+                <div id="playlist" class="playlist">
+                    <div id="list">
+                        <table class="table is-fullwidth is-hoverable">
+                            <c:forEach var="track" items="${userSession.tracks}" varStatus="loop">
+                                <tr id="track${loop.index}" class="list-song" title="${track.size}" onclick="player.skipTo(${loop.index})">
+                                    <td class="has-text-right" style="width:1px;">
+                                        ${loop.count}.
+                                    </td>
+                                    <td>
+                                        ${track.artist} &centerdot; ${track.title}
+                                    </td>
+                                    <td class="has-text-right">
+                                        ${track.formattedDuration}
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    <%--</div>--%>
 </section>
 
 <section class="section">
@@ -64,7 +82,7 @@
                 <span id="timer">0:00</span>
             </p>
             <p class="level-item">
-                <progress id="progress" style="width:1600px;" class="progress is-small is-success" value="0" max="100">0%</progress>
+                <progress id="progress" style="width:1600px;height:10px;" class="progress is-small is-success" value="0" max="100">0%</progress>
             </p>
             <p class="level-item">
                 <span id="duration">0:00</span>
@@ -74,10 +92,6 @@
         <!-- Right side -->
         <div class="level-right">
             <p class="level-item">
-            </p>
-            <p class="level-item">
-            </p>
-            <p class="level-item">
                 <a class="button is-small" id="volumeBtn">
                     <span class="icon">
                         <i id="volumeBtnIcon" class="fas fa-volume-up"></i>
@@ -85,7 +99,7 @@
                 </a>
             </p>
             <div class="level-item">
-                <progress id="sliderBtn" style="width:100px;" class="progress is-small is-success" value="100" max="100">0%</progress>
+                <progress id="sliderBtn" style="width:100px;height:8px;" class="progress is-small is-success" value="100" max="100">0%</progress>
             </div>
         </div>
     </nav>
@@ -117,24 +131,38 @@
 </section>
 <jsp:include page="footer.jsp"/>
 
-<%--<script src="js/player.js">--%>
 <script>
-    /*!
- *  Howler.js Audio Player Demo
- *  howlerjs.com
- *
- *  (c) 2013-2018, James Simpson of GoldFire Studios
- *  goldfirestudios.com
- *
- *  MIT License
- */
+    var playlistIndexToTrackInfo = [];
+    <c:forEach var="track" items="${userSession.tracks}" varStatus="loop">
+    playlistIndexToTrackInfo.push([
+            <c:out value="${loop.index}" />,
+            {
+                id: '<c:out value="${track.id}" />',
+                artist: '<c:out value="${track.artist}" />',
+                title: '<c:out value="${track.title}" />',
+                duration: '<c:out value="${track.duration}" />',
+                size: '<c:out value="${ct:fileSize(track.size)}" />',
+                file: '${pageContext.request.contextPath}/media?id=${track.id}'
+            }
+        ]);
+    </c:forEach>
 
+    var playlistIndexToTrackInfoMap = new Map(playlistIndexToTrackInfo);
+</script>
+<script src="${pageContext.request.contextPath}/js/audioSampleLoader.js" ></script>
+<script>
     // Cache references to DOM elements.
-    var elms = ['track', 'timer', 'duration', 'playBtn', 'pauseBtn', 'prevBtn', 'nextBtn', 'playlistBtn', 'volumeBtn', 'progress',
-        'bar', 'wave', 'loading', 'playlist', 'list', 'volume', 'barEmpty', 'barFull', 'sliderBtn'];
+    var elms = ['track', 'timer', 'duration', 'playBtn', 'pauseBtn', 'prevBtn', 'nextBtn', 'volumeBtn', 'progress', 'list', 'volume', 'sliderBtn'];
     elms.forEach(function(elm) {
         window[elm] = document.getElementById(elm);
     });
+
+    var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    var gainNode = audioCtx.createGain();
+    gainNode.connect(audioCtx.destination);
+
+    var audioBufferSourceNode = audioCtx.createBufferSource;
 
     /**
      * Player class containing the state of our playlist and where we are in it.
@@ -145,21 +173,15 @@
         this.playlist = playlist;
         this.index = 0;
         this.muted = false;
+        this.playing = false;
+        this.startedAt = 0;
+        this.pausedAt = 0;
+        this.storedVolume = 1;
 
         // Display the title of the first track.
-        track.innerHTML = '1. ' + playlist[0].title;
-
-        // Setup the playlist display.
-        playlist.forEach(function(song, index) {
-            var div = document.createElement('div');
-            div.className = 'list-song';
-            div.innerHTML = index+1 + '. ' + song.artist + ' - ' + song.title + ' (' + song.duration + '), (' + song.size + ')';
-            div.onclick = function() {
-                player.skipTo(playlist.indexOf(song));
-            };
-            list.appendChild(div);
-        });
+        track.innerHTML = '1. ' + playlist.get(0).title;
     };
+
     Player.prototype = {
         /**
          * Play a song in the playlist.
@@ -167,98 +189,97 @@
          */
         play: function(index) {
             var self = this;
-            var sound;
+
+            if (!index)
+                index = 0;
+
+            document.querySelectorAll('.list-song').forEach(function (div) {
+                div.classList.remove('playingHighlight');
+            });
+            document.getElementById('track' + index).classList.add('playingHighlight');
 
             index = typeof index === 'number' ? index : self.index;
-            var data = self.playlist[index];
+            var data = self.playlist.get(index);
 
-            // If we already loaded this track, use the current one.
-            // Otherwise, setup and load a new Howl.
-            if (data.howl) {
-                sound = data.howl;
-            } else {
-                sound = data.howl = new Howl({
-                    src: [data.file],
-                    html5: true, // Force to HTML5 so that the audio can stream in (best for large files).
-                    onplay: function() {
-                        // Display the duration.
-                        duration.innerHTML = self.formatTime(Math.round(sound.duration()));
+            var loader = new AudioSampleLoader();
+            loader.src = data.file;
+            loader.ctx = audioCtx;
 
-                        // Start upating the progress of the track.
-                        requestAnimationFrame(self.step.bind(self));
+            loader.onload = function () {
+                var offset = self.pausedAt;
 
-                        // Start the wave animation if we have already loaded
-                        // wave.container.style.display = 'block';
-                        // bar.style.display = 'none';
-                        pauseBtn.style.display = '';
-                    },
-                    onload: function() {
-                        console.log('onload');
-                        // Start the wave animation.
-                        // wave.container.style.display = 'block';
-                        // bar.style.display = 'none';
-                        // loading.style.display = 'none';
-                    },
-                    onend: function() {
-                        // Stop the wave animation.
-                        // wave.container.style.display = 'none';
-                        // bar.style.display = 'block';
-                        self.skip('right');
-                    },
-                    onpause: function() {
-                        // Stop the wave animation.
-                        // wave.container.style.display = 'none';
-                        // bar.style.display = 'block';
-                    },
-                    onstop: function() {
-                        // Stop the wave animation.
-                        // wave.container.style.display = 'none';
-                        // bar.style.display = 'block';
-                    }
-                });
-            }
+                audioBufferSourceNode = audioCtx.createBufferSource();
+                audioBufferSourceNode.buffer = loader.response;
+                audioBufferSourceNode.connect(gainNode);
 
-            // Begin playing the sound.
-            sound.play();
+                // if (!startTime)
+                //     startTime = 0;
+                audioBufferSourceNode.start(0, offset);
 
-            // Update the track display.
-            track.innerHTML = (index + 1) + '. ' + data.title;
+                audioBufferSourceNode.onended = function () {
+                    self.skip('next');
+                };
 
-            // Show the pause button.
-            if (sound.state() === 'loaded') {
+                // Update the track display.
+                track.innerHTML = (index + 1) + '. ' + data.title;
+                duration.innerHTML = self.formatTime(Math.round(audioBufferSourceNode.buffer.duration));
+
+                // Show the pause button.
                 playBtn.style.display = 'none';
                 pauseBtn.style.display = '';
-            } else {
-                // loading.style.display = '';
-                playBtn.style.display = 'none';
-                pauseBtn.style.display = 'none';
-            }
 
-            // Keep track of the index we are currently playing.
-            self.index = index;
+                // Keep track of the index we are currently playing.
+                self.index = index;
+
+                self.startedAt = audioCtx.currentTime - offset;
+                self.pausedAt = 0;
+                self.playing = true;
+
+                // Start upating the progress of the track.
+                requestAnimationFrame(self.step.bind(self));
+            };
+
+            loader.send();
         },
 
-        /**
-         * Pause the currently playing track.
-         */
         pause: function() {
             var self = this;
 
-            // Get the Howl we want to manipulate.
-            var sound = self.playlist[self.index].howl;
-
-            // Puase the sound.
-            sound.pause();
-
-            // Show the play button.
+            var elapsed = this.getCurrentTime();
+            player.stop();
+            self.pausedAt = elapsed;
+            
             playBtn.style.display = '';
             pauseBtn.style.display = 'none';
         },
 
-        /**
-         * Skip to the next or previous track.
-         * @param  {String} direction 'next' or 'prev'.
-         */
+        stop: function() {
+            var self = this;
+
+            if (audioBufferSourceNode) {
+                audioBufferSourceNode.disconnect();
+                audioBufferSourceNode.stop(0);
+                audioBufferSourceNode = null;
+            }
+            self.pausedAt = 0;
+            self.startedAt = 0;
+            self.playing = false;
+
+            playBtn.style.display = '';
+            pauseBtn.style.display = 'none';
+        },
+
+        getCurrentTime: function() {
+            if(this.pausedAt) {
+                return this.pausedAt;
+            }
+            if(this.startedAt) {
+                return audioCtx.currentTime - this.startedAt;
+            }
+            return 0;
+        },
+
+        /** @param  {String} direction 'next' or 'prev'. */
         skip: function(direction) {
             var self = this;
 
@@ -267,11 +288,11 @@
             if (direction === 'prev') {
                 index = self.index - 1;
                 if (index < 0) {
-                    index = self.playlist.length - 1;
+                    index = self.playlist.size - 1;
                 }
             } else {
                 index = self.index + 1;
-                if (index >= self.playlist.length) {
+                if (index >= self.playlist.size) {
                     index = 0;
                 }
             }
@@ -279,63 +300,47 @@
             self.skipTo(index);
         },
 
-        /**
-         * Skip to a specific track based on its playlist index.
-         * @param  {Number} index Index in the playlist.
-         */
         skipTo: function(index) {
             var self = this;
 
-            // Stop the current track.
-            if (self.playlist[self.index].howl) {
-                self.playlist[self.index].howl.stop();
-            }
+            if (self.playing)
+                self.stop();
+            self.pausedAt = 0;
+            self.play(index);
 
             // Reset progress.
             progress.value = 0;
-
-            // Play the new track.
-            self.play(index);
         },
-
-        /**
-         * Set the volume and update the volume slider display.
-         * @param  {Number} val Volume between 0 and 1.
-         */
+        
         volume: function(val) {
             var self = this;
 
-            // Update the global volume (affecting all Howls).
             var scaledVolume = 3.16e-3 * Math.exp(val * 5.757);
             if (val === 0)
                 scaledVolume = 0;
-            Howler.volume(scaledVolume);
+
+            gainNode.gain.setTargetAtTime(scaledVolume, audioCtx.currentTime, 0.02);
+
+            this.storedVolume = val;
 
             // Update the display on the slider.
-            // var barWidth = (val * 90) / 100;
-            // barFull.style.width = (barWidth * 100) + '%';
             sliderBtn.value = ((val * 100) || 0);
         },
 
-        /**
-         * Seek to a new position in the currently playing track.
-         * @param  {Number} per Percentage through the song to skip.
-         */
+        /** @param  {Number} per Percentage through the song to skip. */
         seek: function(per) {
             var self = this;
 
-            // Get the Howl we want to manipulate.
-            var sound = self.playlist[self.index].howl;
-
             // Convert the percent into a seek position.
-            // if (sound.playing()) {
-            sound.seek(sound.duration() * per);
+            var seekPosition = audioBufferSourceNode.buffer.duration * per;
+
+            self.stop();
+            this.pausedAt = seekPosition;
+            this.play(this.index);
 
             // Determine our current seek position.
-            var seek = sound.seek() || 0;
-            timer.innerHTML = self.formatTime(Math.round(seek));
-            progress.value = (((seek / sound.duration()) * 100) || 0);
-            // }
+            timer.innerHTML = self.formatTime(Math.round(seekPosition));
+            progress.value = ((per * 100) || 0);
         },
 
         /**
@@ -344,46 +349,28 @@
         step: function() {
             var self = this;
 
-            // Get the Howl we want to manipulate.
-            var sound = self.playlist[self.index].howl;
-
             // Determine our current seek position.
-            var seek = sound.seek() || 0;
-            timer.innerHTML = self.formatTime(Math.round(seek));
-            progress.value = (((seek / sound.duration()) * 100) || 0);
+            var elapsed = this.getCurrentTime();
+            timer.innerHTML = self.formatTime(Math.round(elapsed));
+            if (audioBufferSourceNode)
+                progress.value = (((elapsed / audioBufferSourceNode.buffer.duration) * 100) || 0);
 
             // If the sound is still playing, continue stepping.
-            if (sound.playing()) {
+            if (this.playing) {
                 requestAnimationFrame(self.step.bind(self));
             }
         },
 
-        /**
-         * Toggle the playlist display on/off.
-         */
-        togglePlaylist: function() {
-            var self = this;
-            var display = (playlist.style.display === 'block') ? 'none' : 'block';
-
-            setTimeout(function() {
-                playlist.style.display = display;
-            }, (display === 'block') ? 0 : 500);
-            playlist.className = (display === 'block') ? 'fadein' : 'fadeout';
-        },
-
-        /**
-         * Toggle the volume display on/off.
-         */
         toggleVolume: function() {
             var newIcon = '';
             if (player.muted)
             {
-                Howler.mute(false);
+                gainNode.gain.setTargetAtTime(this.storedVolume, audioCtx.currentTime, 0.02);
                 newIcon = 'volume-up'
             }
             else
             {
-                Howler.mute(true);
+                gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0.02);
                 newIcon = 'volume-off'
             }
 
@@ -422,18 +409,8 @@
         var clickedValue = x * this.max / this.offsetWidth;
         var clickedPercent = clickedValue / 100;
 
-        console.log('x ' + x);
-        console.log('clickedValue ' + x * this.max / this.offsetWidth);
-        console.log('clickedPercent ' + clickedPercent);
-
         player.seek(clickedPercent);
     });
-    // playlistBtn.addEventListener('click', function() {
-    //     player.togglePlaylist();
-    // });
-    // playlist.addEventListener('click', function() {
-    //     player.togglePlaylist();
-    // });
     volumeBtn.addEventListener('click', function() {
         player.toggleVolume();
     });
@@ -444,22 +421,12 @@
         var clickedValue = x * this.max / this.offsetWidth;
         var clickedPercent = clickedValue / 100;
 
-        console.log('x ' + x);
-        console.log('clickedValue ' + x * this.max / this.offsetWidth);
-        console.log('clickedPercent ' + clickedPercent);
-
         player.volume(clickedPercent);
     });
     sliderBtn.addEventListener('mousedown', function() {
         window.sliderDown = true;
     });
-    sliderBtn.addEventListener('touchstart', function() {
-        window.sliderDown = true;
-    });
     sliderBtn.addEventListener('mouseup', function() {
-        window.sliderDown = false;
-    });
-    sliderBtn.addEventListener('touchend', function() {
         window.sliderDown = false;
     });
 
@@ -478,24 +445,22 @@
     };
 
     sliderBtn.addEventListener('mousemove', move);
-    sliderBtn.addEventListener('touchmove', move);
 
+    /**
+     * Format the time from seconds to M:SS.
+     * @param  {Number} secs Seconds to format.
+     * @return {String}      Formatted time.
+     */
+    function formatTime(secs) {
+        var minutes = Math.floor(secs / 60) || 0;
+        var seconds = (secs - minutes * 60) || 0;
+
+        return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+    }
 </script>
-
 <script>
-    var tracks = [];
+   var player = new Player(playlistIndexToTrackInfoMap);
 
-    <c:forEach var="track" items="${userSession.tracks}">
-        tracks.push({
-            artist: '<c:out value="${track.artist}" />',
-            title: '<c:out value="${track.title}" />',
-            duration: '<c:out value="${track.duration}" />',
-            size: '<c:out value="${ct:fileSize(track.size)}" />',
-            file: '${pageContext.request.contextPath}/media?id=${track.id}',
-            howl: null
-        });
-    </c:forEach>
-    var player = new Player(tracks);
 </script>
 </body>
 </html>

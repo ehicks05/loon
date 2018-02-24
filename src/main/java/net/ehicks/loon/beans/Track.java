@@ -80,6 +80,14 @@ public class Track implements Serializable
         return EOI.executeQueryOneResult("select * from tracks where id=?", Arrays.asList(id));
     }
 
+    public String getFormattedDuration()
+    {
+        int minutes = (int) (Math.floor(duration / 60));
+        int seconds = (int) (duration - minutes * 60);
+
+        return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+    }
+
     // -------- Getters / Setters ----------
 
     public Long getId()

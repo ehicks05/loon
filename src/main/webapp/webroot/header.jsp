@@ -81,7 +81,7 @@
     <div class="container">
         <div class="navbar-brand">
             <div class="navbar-item">
-                <img src="${pageContext.request.contextPath}/images/loon-icon2.jpg" alt="Loon" />
+                <img src="${pageContext.request.contextPath}/images/puffin.png" alt="Loon" />
             </div>
 
             <button class="button navbar-burger" data-target="navMenu">
@@ -93,28 +93,18 @@
 
         <div class="navbar-menu" id="navMenu">
             <div class="navbar-start">
-                <c:set var="statusClass" value="${param.tab1 == 'search' ? 'is-active' : ''}"/>
-                <a class="navbar-item ${statusClass}" href="${pageContext.request.contextPath}/view?tab1=search&action=form">
-                    Search
+                <c:set var="statusClass" value="${param.tab1 == 'music' ? 'is-active' : ''}"/>
+                <a class="navbar-item ${statusClass}" href="${pageContext.request.contextPath}/view?tab1=music&action=form">
+                    Playlist
                 </a>
-                <c:set var="statusClass" value="${param.tab1 == 'settings' ? 'is-active' : ''}"/>
-                <div class="navbar-item has-dropdown is-hoverable">
-                    <a class="navbar-link ${statusClass}" href="${pageContext.request.contextPath}/view?tab1=settings&action=form">
-                        Settings
-                    </a>
-                    <div class="navbar-dropdown">
-                        <c:forEach var="settingsSubscreen" items="${userSession.systemInfo.settingsSubscreens}">
-                            <c:set var="statusClass" value="${param.tab2 == settingsSubscreen[3] ? 'is-active' : ''}"/>
-
-                            <a class="navbar-item ${statusClass}" href="${pageContext.request.contextPath}/${settingsSubscreen[0]}">
-                                    <span class="icon is-medium has-text-info">
-                                        <i class="fas fa-lg fa-${settingsSubscreen[1]}"></i>
-                                    </span>
-                                    ${settingsSubscreen[2]}
-                            </a>
-                        </c:forEach>
-                    </div>
-                </div>
+                <%--<c:set var="statusClass" value="${param.tab1 == 'search' ? 'is-active' : ''}"/>--%>
+                <%--<a class="navbar-item ${statusClass}" href="${pageContext.request.contextPath}/view?tab1=search&action=form">--%>
+                    <%--Search--%>
+                <%--</a>--%>
+                <%--<c:set var="statusClass" value="${param.tab1 == 'settings' ? 'is-active' : ''}"/>--%>
+                <%--<a class="navbar-item ${statusClass}" href="${pageContext.request.contextPath}/view?tab1=settings&action=form">--%>
+                    <%--Settings--%>
+                <%--</a>--%>
                 <c:if test="${userSession.user.admin}">
                     <c:set var="statusClass" value="${param.tab1 == 'admin' ? 'is-active' : ''}"/>
                     <div class="navbar-item has-dropdown is-hoverable">
@@ -138,7 +128,7 @@
             </div>
             <div class="navbar-end">
                 <a class="navbar-item ${statusClass}" href="${pageContext.request.contextPath}/logout">
-                    <span class="icon is-medium has-text-info">
+                    <span class="icon is-medium has-text-light">
                         <i class="fas fa-lg fa-sign-out-alt"></i>
                     </span>
                 </a>

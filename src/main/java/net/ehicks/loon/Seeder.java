@@ -50,7 +50,7 @@ public class Seeder
         Map<String, List<String>> users = new LinkedHashMap<>();
         users.put("eric@test.com", new ArrayList<>(Arrays.asList("eric", "2", "Eric", "Tester")));
         users.put("steve@test.com", new ArrayList<>(Arrays.asList("steve", "15", "Steve", "Tester")));
-        users.put("tupac@test.com", new ArrayList<>(Arrays.asList("test", "3", "2", "Pac")));
+        users.put("tupac@test.com", new ArrayList<>(Arrays.asList("tupac", "3", "2", "Pac")));
 
         for (String key : users.keySet())
         {

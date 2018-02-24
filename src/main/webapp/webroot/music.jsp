@@ -25,7 +25,7 @@
 
         .playingHighlight {color: #1ed176;}
 
-        .playlist {overflow-y: auto; max-height: 600px;}
+        .playlist {overflow-y: auto; max-height: 750px;}
         .list-song {cursor: pointer;}
     </style>
 </head>
@@ -36,10 +36,10 @@
 <section class="section" id="root">
     <%--<div class="container">--%>
         <div class="columns is-multiline is-centered">
-            <div class="column is-one-fifth">
-                <h5 class="subtitle is-5">Menu</h5>
+            <%--<div class="column is-one-fifth">--%>
+                <%--<h5 class="subtitle is-5">Menu</h5>--%>
 
-            </div>
+            <%--</div>--%>
             <div class="column is-four-fifths">
                 <h5 class="subtitle is-5">Playlist</h5>
 
@@ -82,7 +82,7 @@
                 <span id="timer">0:00</span>
             </p>
             <p class="level-item">
-                <progress id="progress" style="width:1600px;height:10px;" class="progress is-small is-success" value="0" max="100">0%</progress>
+                <progress id="progress" style="width:500px;" class="progress is-small is-success" value="0" max="100">0%</progress>
             </p>
             <p class="level-item">
                 <span id="duration">0:00</span>
@@ -99,7 +99,7 @@
                 </a>
             </p>
             <div class="level-item">
-                <progress id="sliderBtn" style="width:100px;height:8px;" class="progress is-small is-success" value="100" max="100">0%</progress>
+                <input id="sliderBtn" style="width:100px;" class="slider is-small is-success" type="range" value="100" max="100" />
             </div>
         </div>
     </nav>
@@ -179,7 +179,7 @@
         this.storedVolume = 1;
 
         // Display the title of the first track.
-        track.innerHTML = '1. ' + playlist.get(0).title;
+        track.innerHTML = '1. ' + playlist.get(0).artist + ' &centerdot; ' + playlist.get(0).title;
     };
 
     Player.prototype = {
@@ -221,7 +221,7 @@
                 };
 
                 // Update the track display.
-                track.innerHTML = (index + 1) + '. ' + data.title;
+                track.innerHTML = (index + 1) + '. ' + data.artist + ' &centerdot; ' + data.title;
                 duration.innerHTML = self.formatTime(Math.round(audioBufferSourceNode.buffer.duration));
 
                 // Show the pause button.
@@ -314,6 +314,9 @@
         
         volume: function(val) {
             var self = this;
+
+            if (val > 1) val = 1;
+            if (val < 0) val = 0;
 
             var scaledVolume = 3.16e-3 * Math.exp(val * 5.757);
             if (val === 0)

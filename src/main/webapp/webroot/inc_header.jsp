@@ -35,6 +35,11 @@
 <script defer src="https://use.fontawesome.com/releases/v5.0.4/js/all.js"></script>
 <%-- Font Awesome --%>
 
+<%-- Bulma Slider --%>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/styles/bulma-slider.min.css" media="screen" />
+<script src="${pageContext.request.contextPath}/js/bulma-slider.min.js"></script>
+<%-- Bulma Slider --%>
+
 <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/puffin.png">
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/styles/style.css" media="screen" />
 <script src="${pageContext.request.contextPath}/js/util.js"></script>

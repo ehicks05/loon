@@ -25,7 +25,7 @@
 
         .playingHighlight {color: #1ed176;}
 
-        .playlist {overflow-y: auto; max-height: 750px;}
+        .playlist {overflow-y: auto; max-height: 850px;}
         .list-song {cursor: pointer;}
     </style>
 </head>
@@ -70,63 +70,56 @@
 
 <section class="section">
     <nav class="level">
-        <div class="level-item">
-            <span id="track"></span>
-        </div>
-    </nav>
-
-    <nav class="level">
         <!-- Left side -->
         <div class="level-left">
             <p class="level-item">
-                <span id="timer">0:00</span>
+                <a class="button" id="prevBtn">
+                <span class="icon">
+                    <i class="fas fa-step-backward"></i>
+                </span>
+                </a>
+                <a class="button is-large" id="playBtn">
+                <span class="icon">
+                    <i class="fas fa-play"></i>
+                </span>
+                </a>
+                <a class="button is-large" id="pauseBtn" style="display:none;">
+                <span class="icon">
+                    <i class="fas fa-pause"></i>
+                </span>
+                </a>
+                <a class="button" id="nextBtn">
+                <span class="icon">
+                    <i class="fas fa-step-forward"></i>
+                </span>
+                </a>
             </p>
-            <p class="level-item">
-                <progress id="progress" style="width:500px;" class="progress is-small is-success" value="0" max="100">0%</progress>
-            </p>
-            <p class="level-item">
-                <span id="duration">0:00</span>
-            </p>
+            <div class="level-item">
+                <span id="track"></span>
+            </div>
         </div>
 
         <!-- Right side -->
         <div class="level-right">
             <p class="level-item">
-                <a class="button is-small" id="volumeBtn">
+                <span id="timer">0:00</span>
+            </p>
+            <p class="level-item">
+                <progress id="progress" style="width:500px;" class="progress is-fullwidth is-small is-success" value="0" max="100">0%</progress>
+            </p>
+            <p class="level-item">
+                <span id="duration">0:00</span>
+            </p>
+            
+            <div class="level-item">
+                <a class="button is-small" id="volumeBtn" style="margin-right:1em;margin-left:3em;">
                     <span class="icon">
                         <i id="volumeBtnIcon" class="fas fa-volume-up"></i>
                     </span>
                 </a>
-            </p>
-            <div class="level-item">
-                <input id="sliderBtn" style="width:100px;" class="slider is-small is-success" type="range" value="100" max="100" />
+                <input id="sliderBtn" class="slider is-small is-success" type="range" value="100" max="100" />
             </div>
         </div>
-    </nav>
-
-    <nav class="level">
-        <p class="level-item">
-            <a class="button" id="prevBtn">
-                <span class="icon">
-                    <i class="fas fa-step-backward"></i>
-                </span>
-            </a>
-            <a class="button is-large" id="playBtn">
-                <span class="icon">
-                    <i class="fas fa-play"></i>
-                </span>
-            </a>
-            <a class="button is-large" id="pauseBtn" style="display:none;">
-                <span class="icon">
-                    <i class="fas fa-pause"></i>
-                </span>
-            </a>
-            <a class="button" id="nextBtn">
-                <span class="icon">
-                    <i class="fas fa-step-forward"></i>
-                </span>
-            </a>
-        </p>
     </nav>
 </section>
 <jsp:include page="footer.jsp"/>

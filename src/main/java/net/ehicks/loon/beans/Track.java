@@ -1,5 +1,6 @@
 package net.ehicks.loon.beans;
 
+import net.ehicks.common.Common;
 import net.ehicks.eoi.EOI;
 
 import javax.persistence.Column;
@@ -7,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,6 +26,9 @@ public class Track implements Serializable
     @Column(name = "title", nullable = false)
     private String title = "";
 
+    @Column(name = "album", nullable = false)
+    private String album = "";
+
     @Column(name = "path", nullable = false)
     private String path;
 
@@ -32,6 +37,12 @@ public class Track implements Serializable
 
     @Column(name = "size", nullable = false)
     private Long size;
+
+    @Column(name = "track_gain", nullable = false)
+    private String trackGain;
+
+    @Column(name = "track_peak", nullable = false)
+    private String trackPeak;
 
     public Track()
     {
@@ -88,6 +99,15 @@ public class Track implements Serializable
         return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
     }
 
+    public double getTrackGainLinear()
+    {
+//        db-to-linear(x) = 10^(x / 20)
+        BigDecimal dbAdjustment = Common.stringToBigDecimal(trackGain.replace(" dB", ""));
+        BigDecimal twenty = new BigDecimal("20");
+        BigDecimal result = BigDecimal.valueOf(Math.pow(10, dbAdjustment.divide(twenty, 3, BigDecimal.ROUND_HALF_UP).doubleValue())).setScale(3, BigDecimal.ROUND_HALF_UP);
+        return result.doubleValue();
+    }
+
     // -------- Getters / Setters ----------
 
     public Long getId()
@@ -120,6 +140,16 @@ public class Track implements Serializable
         this.title = title;
     }
 
+    public String getAlbum()
+    {
+        return album;
+    }
+
+    public void setAlbum(String album)
+    {
+        this.album = album;
+    }
+
     public String getPath()
     {
         return path;
@@ -148,5 +178,25 @@ public class Track implements Serializable
     public void setSize(Long size)
     {
         this.size = size;
+    }
+
+    public String getTrackGain()
+    {
+        return trackGain;
+    }
+
+    public void setTrackGain(String trackGain)
+    {
+        this.trackGain = trackGain;
+    }
+
+    public String getTrackPeak()
+    {
+        return trackPeak;
+    }
+
+    public void setTrackPeak(String trackPeak)
+    {
+        this.trackPeak = trackPeak;
     }
 }

@@ -11,21 +11,18 @@
     <jsp:include page="inc_title.jsp"/>
     <jsp:include page="inc_header.jsp"/>
     <style>
-        body {
-            display: flex;
-            min-height: 100vh;
-            flex-direction: column;
-        }
-
-        #root {
-            flex: 1 0 auto;
+        #level {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #dbdbdb;
         }
 
         section {padding: 10px !important;}
 
         .playingHighlight {color: #1ed176;}
 
-        .playlist {overflow-y: auto; max-height: 850px;}
+        .playlist {overflow-y: auto; }
         .list-song {cursor: pointer;}
     </style>
 </head>
@@ -40,7 +37,7 @@
                 <%--<h5 class="subtitle is-5">Menu</h5>--%>
 
             <%--</div>--%>
-            <div class="column is-four-fifths">
+            <div class="column is-three-fifths">
                 <h5 class="subtitle is-5">Playlist</h5>
 
                 <!-- Playlist -->
@@ -53,10 +50,18 @@
                                         ${loop.count}.
                                     </td>
                                     <td>
-                                        ${track.artist} &centerdot; ${track.title}
+                                        <b>${track.title}</b>
+                                        <br>
+                                        ${track.artist} &centerdot; ${track.album}
                                     </td>
                                     <td class="has-text-right">
                                         ${track.formattedDuration}
+                                    </td>
+                                    <td class="has-text-right">
+                                        ${track.trackGain}
+                                    </td>
+                                    <td class="has-text-right">
+                                        ${track.trackGainLinear}
                                     </td>
                                 </tr>
                             </c:forEach>
@@ -65,10 +70,13 @@
                 </div>
             </div>
         </div>
+        <div style="height: 50px;">
+
+        </div>
     <%--</div>--%>
 </section>
 
-<section class="section">
+<section class="section" id="level">
     <nav class="level">
         <!-- Left side -->
         <div class="level-left">
@@ -102,12 +110,11 @@
         <!-- Right side -->
         <div class="level-right">
             <p class="level-item">
-                <span id="timer">0:00</span>
+                <%--<progress id="progress" style="width:500px;" class="progress is-fullwidth is-small is-success" value="0" max="100">0%</progress>--%>
+                <input id="progress" style="width:500px;" class="slider is-fullwidth is-small is-success" type="range" value="0" max="100" />
             </p>
             <p class="level-item">
-                <progress id="progress" style="width:500px;" class="progress is-fullwidth is-small is-success" value="0" max="100">0%</progress>
-            </p>
-            <p class="level-item">
+                <span id="timer">0:00</span> /
                 <span id="duration">0:00</span>
             </p>
             
@@ -133,7 +140,9 @@
                 id: '<c:out value="${track.id}" />',
                 artist: '<c:out value="${track.artist}" />',
                 title: '<c:out value="${track.title}" />',
+                album: '<c:out value="${track.album}" />',
                 duration: '<c:out value="${track.duration}" />',
+                trackGain: '<c:out value="${track.trackGainLinear}" />',
                 size: '<c:out value="${ct:fileSize(track.size)}" />',
                 file: '${pageContext.request.contextPath}/media?id=${track.id}'
             }
@@ -152,8 +161,11 @@
 
     var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
+    var trackGainNode = audioCtx.createGain();
+    trackGainNode.connect(audioCtx.destination);
+
     var gainNode = audioCtx.createGain();
-    gainNode.connect(audioCtx.destination);
+    gainNode.connect(trackGainNode);
 
     var audioBufferSourceNode = audioCtx.createBufferSource;
 
@@ -172,7 +184,7 @@
         this.storedVolume = 1;
 
         // Display the title of the first track.
-        track.innerHTML = '1. ' + playlist.get(0).artist + ' &centerdot; ' + playlist.get(0).title;
+        track.innerHTML = '1. ' + playlist.get(0).artist + ' &centerdot; <b>' + playlist.get(0).title + '</b>';
     };
 
     Player.prototype = {
@@ -184,7 +196,7 @@
             var self = this;
 
             if (!index)
-                index = 0;
+                index = this.index;
 
             document.querySelectorAll('.list-song').forEach(function (div) {
                 div.classList.remove('playingHighlight');
@@ -193,6 +205,8 @@
 
             index = typeof index === 'number' ? index : self.index;
             var data = self.playlist.get(index);
+
+            trackGainNode.gain.setTargetAtTime(data.trackGain, audioCtx.currentTime, 0.01);
 
             var loader = new AudioSampleLoader();
             loader.src = data.file;
@@ -214,7 +228,7 @@
                 };
 
                 // Update the track display.
-                track.innerHTML = (index + 1) + '. ' + data.artist + ' &centerdot; ' + data.title;
+                track.innerHTML = (index + 1) + '. ' + data.artist + ' &centerdot; <b>' + data.title + '</b>';
                 duration.innerHTML = self.formatTime(Math.round(audioBufferSourceNode.buffer.duration));
 
                 // Show the pause button.

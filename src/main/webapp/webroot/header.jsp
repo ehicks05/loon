@@ -77,11 +77,11 @@
 
 </script>
 
-<nav class="navbar" role="navigation" aria-label="main navigation">
+<nav class="navbar is-primary" role="navigation" aria-label="main navigation">
     <div class="container">
         <div class="navbar-brand">
             <div class="navbar-item">
-                <img src="${pageContext.request.contextPath}/images/puffin.png" alt="Loon" />
+                <img src="${pageContext.request.contextPath}/images/loon.png" alt="Loon" />
             </div>
 
             <button class="button navbar-burger" data-target="navMenu">

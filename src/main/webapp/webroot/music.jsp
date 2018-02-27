@@ -45,7 +45,7 @@
                     <div id="list">
                         <table class="table is-fullwidth is-hoverable">
                             <c:forEach var="track" items="${userSession.tracks}" varStatus="loop">
-                                <tr id="track${loop.index}" class="list-song" title="${track.size}" onclick="player.skipTo(${loop.index})">
+                                <tr id="track${loop.index}" class="list-song" title="${track.trackGain}" onclick="player.skipTo(${loop.index})">
                                     <td class="has-text-right" style="width:1px;">
                                         ${loop.count}.
                                     </td>
@@ -56,12 +56,6 @@
                                     </td>
                                     <td class="has-text-right">
                                         ${track.formattedDuration}
-                                    </td>
-                                    <td class="has-text-right">
-                                        ${track.trackGain}
-                                    </td>
-                                    <td class="has-text-right">
-                                        ${track.trackGainLinear}
                                     </td>
                                 </tr>
                             </c:forEach>
@@ -161,13 +155,22 @@
 
     var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
+    var biquadFilter = audioCtx.createBiquadFilter();
     var trackGainNode = audioCtx.createGain();
-    trackGainNode.connect(audioCtx.destination);
+    trackGainNode.connect(biquadFilter);
 
     var gainNode = audioCtx.createGain();
     gainNode.connect(trackGainNode);
 
     var audioBufferSourceNode = audioCtx.createBufferSource;
+
+    var audio;
+
+    biquadFilter.connect(audioCtx.destination);
+
+    biquadFilter.type = "lowshelf";
+    biquadFilter.frequency.value = 1000;
+    biquadFilter.gain.value = 0;
 
     /**
      * Player class containing the state of our playlist and where we are in it.
@@ -208,53 +211,53 @@
 
             trackGainNode.gain.setTargetAtTime(data.trackGain, audioCtx.currentTime, 0.01);
 
-            var loader = new AudioSampleLoader();
-            loader.src = data.file;
-            loader.ctx = audioCtx;
+            if (audio)
+                audio.pause();
 
-            loader.onload = function () {
-                var offset = self.pausedAt;
+            audio = new Audio();
+            audio.src = data.file;
+            audio.controls = false;
+            audio.autoplay = false;
+            document.body.appendChild(audio);
+            
+            audioBufferSourceNode = audioCtx.createMediaElementSource(audio);
+            audioBufferSourceNode.connect(gainNode);
 
-                audioBufferSourceNode = audioCtx.createBufferSource();
-                audioBufferSourceNode.buffer = loader.response;
-                audioBufferSourceNode.connect(gainNode);
+            audio.onended = function () {
+                self.skip('next');
+            };
 
-                // if (!startTime)
-                //     startTime = 0;
-                audioBufferSourceNode.start(0, offset);
+            // Keep track of the index we are currently playing.
+            self.index = index;
 
-                audioBufferSourceNode.onended = function () {
-                    self.skip('next');
-                };
+            // Start upating the progress of the track.
+            requestAnimationFrame(self.step.bind(self));
 
+            audio.currentTime = self.pausedAt;
+            audio.play();
+
+            self.pausedAt = 0;
+            self.playing = true;
+
+            audio.onloadedmetadata = function (ev) {
                 // Update the track display.
                 track.innerHTML = (index + 1) + '. ' + data.artist + ' &centerdot; <b>' + data.title + '</b>';
-                duration.innerHTML = self.formatTime(Math.round(audioBufferSourceNode.buffer.duration));
+                duration.innerHTML = self.formatTime(Math.round(audio.duration));
 
                 // Show the pause button.
                 playBtn.style.display = 'none';
                 pauseBtn.style.display = '';
-
-                // Keep track of the index we are currently playing.
-                self.index = index;
-
-                self.startedAt = audioCtx.currentTime - offset;
-                self.pausedAt = 0;
-                self.playing = true;
-
-                // Start upating the progress of the track.
-                requestAnimationFrame(self.step.bind(self));
             };
 
-            loader.send();
+            scrollToTrack(index);
+
         },
 
         pause: function() {
             var self = this;
 
-            var elapsed = this.getCurrentTime();
-            player.stop();
-            self.pausedAt = elapsed;
+            self.pausedAt = audio.currentTime;
+            audio.pause();
             
             playBtn.style.display = '';
             pauseBtn.style.display = 'none';
@@ -263,27 +266,17 @@
         stop: function() {
             var self = this;
 
-            if (audioBufferSourceNode) {
-                audioBufferSourceNode.disconnect();
-                audioBufferSourceNode.stop(0);
-                audioBufferSourceNode = null;
+            if (audio) {
+                audio.pause();
+                audio.currentTime = 0;
             }
-            self.pausedAt = 0;
-            self.startedAt = 0;
-            self.playing = false;
 
             playBtn.style.display = '';
             pauseBtn.style.display = 'none';
         },
 
         getCurrentTime: function() {
-            if(this.pausedAt) {
-                return this.pausedAt;
-            }
-            if(this.startedAt) {
-                return audioCtx.currentTime - this.startedAt;
-            }
-            return 0;
+            return audio.currentTime;
         },
 
         /** @param  {String} direction 'next' or 'prev'. */
@@ -310,9 +303,6 @@
         skipTo: function(index) {
             var self = this;
 
-            if (self.playing)
-                self.stop();
-            self.pausedAt = 0;
             self.play(index);
 
             // Reset progress.
@@ -342,28 +332,24 @@
             var self = this;
 
             // Convert the percent into a seek position.
-            var seekPosition = audioBufferSourceNode.buffer.duration * per;
+            var seekPosition = audio.duration * per;
 
-            self.stop();
-            this.pausedAt = seekPosition;
-            this.play(this.index);
+            audio.currentTime = seekPosition;
 
             // Determine our current seek position.
             timer.innerHTML = self.formatTime(Math.round(seekPosition));
             progress.value = ((per * 100) || 0);
         },
 
-        /**
-         * The step called within requestAnimationFrame to update the playback position.
-         */
+        /** The step called within requestAnimationFrame to update the playback position. */
         step: function() {
             var self = this;
 
             // Determine our current seek position.
-            var elapsed = this.getCurrentTime();
+            var elapsed = audio.currentTime;
             timer.innerHTML = self.formatTime(Math.round(elapsed));
-            if (audioBufferSourceNode)
-                progress.value = (((elapsed / audioBufferSourceNode.buffer.duration) * 100) || 0);
+            if (audio)
+                progress.value = (((elapsed / audio.duration) * 100) || 0);
 
             // If the sound is still playing, continue stepping.
             if (this.playing) {
@@ -466,6 +452,15 @@
         var seconds = (secs - minutes * 60) || 0;
 
         return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+    }
+
+    function scrollToTrack(index)
+    {
+        const element = document.getElementById('track' + index);
+        const elementRect = element.getBoundingClientRect();
+        const absoluteElementTop = elementRect.top + window.pageYOffset;
+        const middle = absoluteElementTop - (window.innerHeight / 2);
+        window.scrollTo(0, middle);
     }
 </script>
 <script>

@@ -20,6 +20,7 @@ public class LibraryHandler
 
         int from = 0;
         int amount = 100;
+        request.setAttribute("from", from);
         request.setAttribute("library", getTracks(from, amount));
         request.setAttribute("haveMore", isHaveMore(from + amount));
 
@@ -34,6 +35,7 @@ public class LibraryHandler
         int from = Common.stringToInt(request.getParameter("from"));
         int amount = Common.stringToInt(request.getParameter("amount"));
 
+        request.setAttribute("from", from);
         request.setAttribute("library", getTracks(from, amount));
         request.setAttribute("haveMore", isHaveMore(from + amount));
 

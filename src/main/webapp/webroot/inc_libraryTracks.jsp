@@ -4,40 +4,66 @@
 <%@ taglib prefix="ct" uri="http://eric-hicks.com/loon/commontags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <jsp:useBean id="userSession" type="net.ehicks.loon.UserSession" scope="session"/>
+<jsp:useBean id="library" type="java.util.List<net.ehicks.loon.beans.Track>" scope="request"/>
+<jsp:useBean id="from" type="java.lang.Integer" scope="request"/>
 
-<c:set var="from" value="0"/>
+<script>
+    <c:forEach var="track" items="${library}" varStatus="loop">
+        playlistIndexToTrackInfo.push([
+            <c:out value="${from + loop.index}" />,
+            {
+                id: '<c:out value="${track.id}" />',
+                artist: '<c:out value="${track.artist}" />',
+                title: '<c:out value="${track.title}" />',
+                album: '<c:out value="${track.album}" />',
+                duration: '<c:out value="${track.duration}" />',
+                trackGain: '<c:out value="${track.trackGainLinear}" />',
+                size: '<c:out value="${ct:fileSize(track.size)}" />',
+                file: '${pageContext.request.contextPath}/media?id=${track.id}'
+            }
+        ]);
+    </c:forEach>
+
+    
+    var playlistIndexToTrackInfoMap = new Map(playlistIndexToTrackInfo);
+</script>
+
+<c:set var="loopCount" value="0" />
 <c:forEach var="track" items="${library}" varStatus="loop">
-    <tr id="track${loop.index}" class="list-song" title="${track.trackGain}" onclick="player.skipTo(${loop.index})">
-        <td class="has-text-right" style="width:1px;">
-                ${loop.count}.
-        </td>
-        <td class="has-text-right">
-            <figure class="image is-48x48">
-                <img src="${track.artwork.thumbnail.base64}" />
-            </figure>
-        </td>
-        <td>
-            <b>${track.title}</b>
-            <br>
-                ${track.artist} &centerdot; ${track.album}
-        </td>
-        <td class="has-text-right">
-                ${track.formattedDuration}
-        </td>
+    <article class="media list-song" id="track${from + loop.index}" title="${track.trackGain}" onclick="player.skipTo(${from + loop.index})">
+        <figure class="media-left">
+            <table>
+                <tr>
+                    <td class="has-text-right" style="padding-right:10px;">${from + loop.count}.</td>
+                    <td>
+                        <figure class="image is-48x48">
+                            <img src="${track.artwork.thumbnail.base64}" />
+                        </figure>
+                    </td>
+                </tr>
+            </table>
+        </figure>
+        <div class="media-content">
+            <div class="content">
+                <div>
+                    <b>${track.title}</b>
+                    <br />
+                    ${track.artist} &centerdot; ${track.album}
+                </div>
+            </div>
+        </div>
 
-        <c:set var="from" value="${from + 1}" />
-    </tr>
+        <div class="media-right">
+            ${track.formattedDuration}
+        </div>
+    </article>
+
+    <c:set var="loopCount" value="${loopCount + 1}" />
 </c:forEach>
-<c:if test="${haveMore}">
-    <tr>
-        <td class="has-text-right" style="width:1px;">
-        </td>
-        <td class="has-text-right">
-        </td>
-        <td>
-            <button class="button" onclick="ajaxGetMoreTracks(${from}, 100)">Load More...</button>
-        </td>
-        <td class="has-text-right">
-        </td>
-    </tr>
-</c:if>
+
+<script>
+    var from = from + ${loopCount};
+</script>
+<%--<c:if test="${haveMore}">--%>
+    <%--<button id="loadMoreTracksButton" class="button" onclick="ajaxGetMoreTracks(${from + loopCount}, 100)">Load More...</button>--%>
+<%--</c:if>--%>

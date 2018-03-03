@@ -24,12 +24,33 @@
 
         .playlist {overflow-y: auto; }
         .list-song {cursor: pointer;}
+
+        .media+.media {padding-top:.2rem;margin-top:.2rem;}
+
     </style>
 
     <script>
+        var playlistIndexToTrackInfo = [];
+        var from = 0;
+
         function ajaxGetMoreTracks(from, amount)
         {
-            $("#result").load('${pageContext.request.contextPath}/view?tab1=library&action=ajaxGetMoreTracks&from=${from}&amount=100');
+            $('#loadMoreTracksButton').remove();
+            $.get( '${pageContext.request.contextPath}/view?tab1=library&action=ajaxGetMoreTracks&from=' + from + '&amount=' + amount, function( data ) {
+                $( ".list-song:last" ).after( data );
+
+                $(window).on('scroll', scrollToBottomHandler);
+            });
+        }
+
+        $(window).on('scroll', scrollToBottomHandler);
+
+        function scrollToBottomHandler()
+        {
+            if($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
+                $(window).off('scroll');
+                ajaxGetMoreTracks(from, 100);
+            }
         }
     </script>
 </head>
@@ -50,9 +71,9 @@
                 <!-- Playlist -->
                 <div id="playlist" class="playlist">
                     <div id="list">
-                        <table class="table is-fullwidth is-hoverable is-narrow">
+                        <%--<table class="table is-fullwidth is-hoverable is-narrow">--%>
                             <jsp:include page="inc_libraryTracks.jsp" />
-                        </table>
+                        <%--</table>--%>
                     </div>
                 </div>
             </div>
@@ -117,27 +138,7 @@
 </section>
 <jsp:include page="footer.jsp"/>
 
-<script>
-    var playlistIndexToTrackInfo = [];
-    <c:forEach var="track" items="${library}" varStatus="loop">
-    playlistIndexToTrackInfo.push([
-            <c:out value="${loop.index}" />,
-            {
-                id: '<c:out value="${track.id}" />',
-                artist: '<c:out value="${track.artist}" />',
-                title: '<c:out value="${track.title}" />',
-                album: '<c:out value="${track.album}" />',
-                duration: '<c:out value="${track.duration}" />',
-                trackGain: '<c:out value="${track.trackGainLinear}" />',
-                size: '<c:out value="${ct:fileSize(track.size)}" />',
-                file: '${pageContext.request.contextPath}/media?id=${track.id}'
-            }
-        ]);
-    </c:forEach>
-
-    var playlistIndexToTrackInfoMap = new Map(playlistIndexToTrackInfo);
-</script>
-<script src="${pageContext.request.contextPath}/js/audioSampleLoader.js" ></script>
+<%--<script src="${pageContext.request.contextPath}/js/audioSampleLoader.js" ></script>--%>
 <script>
     // Cache references to DOM elements.
     var elms = ['track', 'timer', 'duration', 'playBtn', 'pauseBtn', 'prevBtn', 'nextBtn', 'volumeBtn', 'progress', 'list', 'volume', 'sliderBtn'];
@@ -170,7 +171,7 @@
      * @param {Array} playlist Array of objects with playlist song details ({title, file, howl}).
      */
     var Player = function(playlist) {
-        this.playlist = playlist;
+        // this.playlist = playlist;
         this.index = 0;
         this.muted = false;
         this.playing = false;
@@ -199,7 +200,7 @@
             document.getElementById('track' + index).classList.add('playingHighlight');
 
             index = typeof index === 'number' ? index : self.index;
-            var data = self.playlist.get(index);
+            var data = playlistIndexToTrackInfoMap.get(index);
 
             trackGainNode.gain.setTargetAtTime(data.trackGain, audioCtx.currentTime, 0.01);
 
@@ -280,11 +281,11 @@
             if (direction === 'prev') {
                 index = self.index - 1;
                 if (index < 0) {
-                    index = self.playlist.size - 1;
+                    index = playlistIndexToTrackInfoMap.size - 1;
                 }
             } else {
                 index = self.index + 1;
-                if (index >= self.playlist.size) {
+                if (index >= playlistIndexToTrackInfoMap.size) {
                     index = 0;
                 }
             }

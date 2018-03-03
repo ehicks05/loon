@@ -25,6 +25,9 @@ public class Seeder
         createUsers();
         log.debug(timer.printDuration("createUsers"));
 
+        createPlaylists();
+        log.debug(timer.printDuration("createPlaylists"));
+
         log.info(timer.printDuration("Done seeding dummy data"));
     }
 
@@ -40,7 +43,7 @@ public class Seeder
         loonSystem.setInstanceName("Loon of Bridgewater");
         loonSystem.setLogonMessage("<span>Welcome to Loon.</span>");
         loonSystem.setTheme("");
-        loonSystem.setMusicFolder("c:/k/music");
+        loonSystem.setMusicFolder("d:/music loon");
 
         EOI.update(loonSystem, SystemTask.SEEDER);
     }
@@ -61,7 +64,6 @@ public class Seeder
             String password = PasswordUtil.digestPassword(rawPassword);
 
             user.setPassword(password);
-            user.setEnabled(true);
 
             user.setFirstName(users.get(key).get(2));
             user.setLastName(users.get(key).get(3));
@@ -79,6 +81,25 @@ public class Seeder
             {
                 role.setRoleName("admin");
                 EOI.insert(role, SystemTask.SEEDER);
+            }
+        }
+    }
+
+    private static void createPlaylists()
+    {
+        for (User user : User.getAll())
+        {
+            Playlist playlist = new Playlist();
+            playlist.setUserId(user.getId());
+            playlist.setName("Rockin Tunes");
+            Long playlistId = EOI.insert(playlist, SystemTask.SEEDER);
+
+            for (long i = 0 ; i < 1; i++)
+            {
+                PlaylistTrack playlistTrack = new PlaylistTrack();
+                playlistTrack.setPlaylistId(playlistId);
+                playlistTrack.setTrackId(i);
+                EOI.insert(playlist, SystemTask.SEEDER);
             }
         }
     }

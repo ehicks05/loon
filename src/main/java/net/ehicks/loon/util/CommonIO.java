@@ -129,10 +129,15 @@ public class CommonIO
 
     public static byte[] getThumbnail(FileItem fileItem) throws IOException
     {
-        BufferedImage srcImage = ImageIO.read(fileItem.getInputStream()); // Load image
+        return getThumbnail(fileItem.getInputStream(), getContentType(fileItem));
+    }
+
+    public static byte[] getThumbnail(InputStream inputStream, String contentType) throws IOException
+    {
+        BufferedImage srcImage = ImageIO.read(inputStream); // Load image
         Scalr.Mode mode = srcImage.getWidth() > srcImage.getHeight() ? Scalr.Mode.FIT_TO_WIDTH : Scalr.Mode.FIT_TO_HEIGHT;
-        BufferedImage scaledImage = Scalr.resize(srcImage, mode, 200, 200); // Scale image
-        String formatName = getContentType(fileItem).replace("image/", "");
+        BufferedImage scaledImage = Scalr.resize(srcImage, mode, 128, 128); // Scale image
+        String formatName = contentType.replace("image/", "");
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ImageIO.write(scaledImage, formatName, byteArrayOutputStream);
         return byteArrayOutputStream.toByteArray();

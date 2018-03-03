@@ -2,7 +2,6 @@ package net.ehicks.loon;
 
 import net.ehicks.common.Common;
 import net.ehicks.loon.beans.Track;
-import net.ehicks.loon.util.CommonIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +10,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Date;

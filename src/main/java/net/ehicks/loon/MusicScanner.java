@@ -1,17 +1,21 @@
 package net.ehicks.loon;
 
 import net.ehicks.eoi.EOI;
+import net.ehicks.loon.beans.DBFile;
 import net.ehicks.loon.beans.LoonSystem;
 import net.ehicks.loon.beans.Track;
+import net.ehicks.loon.util.CommonIO;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagField;
+import org.jaudiotagger.tag.images.Artwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -55,10 +59,12 @@ public class MusicScanner
 
     private static void parseFile(Path path, AtomicInteger index)
     {
+        if (Track.getByPath(path.toString()) != null)
+            return;
+        
         AudioFile audioFile;
         try
         {
-            log.info("Scanning file #" + index.getAndIncrement() + "  " + path.getFileName());
             audioFile = AudioFileIO.read(path.toFile());
         }
         catch (Exception e)
@@ -89,9 +95,34 @@ public class MusicScanner
             track.setTrackGain(rpgain + " dB");
         }
 
+        if (tag.getArtworkList().size() > 0)
+        {
+            Artwork artwork = tag.getArtworkList().get(0);
+            DBFile artworkFile = new DBFile(track.getTitle(), artwork.getBinaryData());
+            Long artworkFileId = EOI.insert(artworkFile, SystemTask.STARTUP);
+            artworkFile.setId(artworkFileId);
+            track.setArtworkDbFileId(artworkFileId);
+            try
+            {
+                byte[] thumbnailData = CommonIO.getThumbnail(new ByteArrayInputStream(artwork.getBinaryData()), artwork.getMimeType());
+                DBFile thumbnail = new DBFile(track.getTitle(), thumbnailData);
+                Long thumbnailFileId = EOI.insert(thumbnail, SystemTask.STARTUP);
+
+                artworkFile.setThumbnailId(thumbnailFileId);
+                EOI.update(artworkFile, SystemTask.STARTUP);
+            }
+            catch (Exception e)
+            {
+                log.error(e.getMessage(), e);
+            }
+        }
+
         try
         {
             EOI.insert(track, SystemTask.STARTUP);
+            index.getAndIncrement();
+            if (index.get() % 1000 == 0)
+                log.info("Added file #" + index.get());
         }
         catch (Exception e)
         {

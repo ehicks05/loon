@@ -44,6 +44,9 @@ public class Track implements Serializable
     @Column(name = "track_peak", nullable = false)
     private String trackPeak;
 
+    @Column(name = "artwork_db_file_id")
+    private Long artworkDbFileId;
+
     public Track()
     {
     }
@@ -91,6 +94,11 @@ public class Track implements Serializable
         return EOI.executeQueryOneResult("select * from tracks where id=?", Arrays.asList(id));
     }
 
+    public static Track getByPath(String path)
+    {
+        return EOI.executeQueryOneResult("select * from tracks where path=?", Arrays.asList(path));
+    }
+
     public String getFormattedDuration()
     {
         int minutes = (int) (Math.floor(duration / 60));
@@ -106,6 +114,11 @@ public class Track implements Serializable
         BigDecimal twenty = new BigDecimal("20");
         BigDecimal result = BigDecimal.valueOf(Math.pow(10, dbAdjustment.divide(twenty, 3, BigDecimal.ROUND_HALF_UP).doubleValue())).setScale(3, BigDecimal.ROUND_HALF_UP);
         return result.doubleValue();
+    }
+
+    public DBFile getArtwork()
+    {
+        return DBFile.getById(artworkDbFileId);
     }
 
     // -------- Getters / Setters ----------
@@ -198,5 +211,15 @@ public class Track implements Serializable
     public void setTrackPeak(String trackPeak)
     {
         this.trackPeak = trackPeak;
+    }
+
+    public Long getArtworkDbFileId()
+    {
+        return artworkDbFileId;
+    }
+
+    public void setArtworkDbFileId(Long artworkDbFileId)
+    {
+        this.artworkDbFileId = artworkDbFileId;
     }
 }

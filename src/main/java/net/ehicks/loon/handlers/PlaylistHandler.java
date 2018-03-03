@@ -8,13 +8,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.ParseException;
 
-public class DashboardHandler
+public class PlaylistHandler
 {
-    @Route(tab1 = "dashboard", tab2 = "", tab3 = "", action = "form")
+    @Route(tab1 = "playlist", tab2 = "", tab3 = "", action = "form")
     public static String showDashboard(HttpServletRequest request, HttpServletResponse response) throws ParseException, IOException
     {
         UserSession userSession = (UserSession) request.getSession().getAttribute("userSession");
 
-        return "/webroot/dashboard.jsp";
+        return "/webroot/playlist.jsp";
     }
 }

@@ -72,11 +72,9 @@ public class UserHandler
             String logonId = Common.getSafeString(request.getParameter("logonId"));
             String firstName = Common.getSafeString(request.getParameter("firstName"));
             String lastName = Common.getSafeString(request.getParameter("lastName"));
-            boolean enabled = request.getParameter("enabled") != null;
             user.setLogonId(logonId);
             user.setFirstName(firstName);
             user.setLastName(lastName);
-            user.setEnabled(enabled);
             EOI.update(user, userSession);
         }
 

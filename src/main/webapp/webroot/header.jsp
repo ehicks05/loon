@@ -94,7 +94,11 @@
         <div class="navbar-menu" id="navMenu">
             <div class="navbar-start">
                 <c:set var="statusClass" value="${param.tab1 == 'music' ? 'is-active' : ''}"/>
-                <a class="navbar-item ${statusClass}" href="${pageContext.request.contextPath}/view?tab1=music&action=form">
+                <a class="navbar-item ${statusClass}" href="${pageContext.request.contextPath}/view?tab1=library&action=form">
+                    Library
+                </a>
+                <c:set var="statusClass" value="${param.tab1 == 'music' ? 'is-active' : ''}"/>
+                <a class="navbar-item ${statusClass}" href="${pageContext.request.contextPath}/view?tab1=playlist&action=form">
                     Playlist
                 </a>
                 <%--<c:set var="statusClass" value="${param.tab1 == 'search' ? 'is-active' : ''}"/>--%>

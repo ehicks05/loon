@@ -25,6 +25,13 @@
         .playlist {overflow-y: auto; }
         .list-song {cursor: pointer;}
     </style>
+
+    <script>
+        function ajaxGetMoreTracks(from, amount)
+        {
+            $("#result").load('${pageContext.request.contextPath}/view?tab1=library&action=ajaxGetMoreTracks&from=${from}&amount=100');
+        }
+    </script>
 </head>
 <body>
 
@@ -43,28 +50,14 @@
                 <!-- Playlist -->
                 <div id="playlist" class="playlist">
                     <div id="list">
-                        <table class="table is-fullwidth is-hoverable">
-                            <c:forEach var="track" items="${userSession.tracks}" varStatus="loop">
-                                <tr id="track${loop.index}" class="list-song" title="${track.trackGain}" onclick="player.skipTo(${loop.index})">
-                                    <td class="has-text-right" style="width:1px;">
-                                        ${loop.count}.
-                                    </td>
-                                    <td>
-                                        <b>${track.title}</b>
-                                        <br>
-                                        ${track.artist} &centerdot; ${track.album}
-                                    </td>
-                                    <td class="has-text-right">
-                                        ${track.formattedDuration}
-                                    </td>
-                                </tr>
-                            </c:forEach>
+                        <table class="table is-fullwidth is-hoverable is-narrow">
+                            <jsp:include page="inc_libraryTracks.jsp" />
                         </table>
                     </div>
                 </div>
             </div>
         </div>
-        <div style="height: 50px;">
+        <div style="height: 150px;">
 
         </div>
     <%--</div>--%>
@@ -81,7 +74,7 @@
                 </span>
                 </a>
                 <a class="button is-large" id="playBtn">
-                <span class="icon">
+                <span class="icon"> 
                     <i class="fas fa-play"></i>
                 </span>
                 </a>
@@ -97,6 +90,9 @@
                 </a>
             </p>
             <div class="level-item">
+                <span id="timer">0:00</span> /
+                <span id="duration">0:00</span>
+                <span style="width:10px;"></span>
                 <span id="track"></span>
             </div>
         </div>
@@ -107,12 +103,8 @@
                 <%--<progress id="progress" style="width:500px;" class="progress is-fullwidth is-small is-success" value="0" max="100">0%</progress>--%>
                 <input id="progress" style="width:500px;" class="slider is-fullwidth is-small is-success" type="range" value="0" max="100" />
             </p>
-            <p class="level-item">
-                <span id="timer">0:00</span> /
-                <span id="duration">0:00</span>
-            </p>
-            
-            <div class="level-item">
+
+            <div class="level-item is-hidden-mobile">
                 <a class="button is-small" id="volumeBtn" style="margin-right:1em;margin-left:3em;">
                     <span class="icon">
                         <i id="volumeBtnIcon" class="fas fa-volume-up"></i>
@@ -127,7 +119,7 @@
 
 <script>
     var playlistIndexToTrackInfo = [];
-    <c:forEach var="track" items="${userSession.tracks}" varStatus="loop">
+    <c:forEach var="track" items="${library}" varStatus="loop">
     playlistIndexToTrackInfo.push([
             <c:out value="${loop.index}" />,
             {
@@ -198,7 +190,7 @@
         play: function(index) {
             var self = this;
 
-            if (!index)
+            if (index !== 0 && !index)
                 index = this.index;
 
             document.querySelectorAll('.list-song').forEach(function (div) {

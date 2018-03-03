@@ -98,38 +98,19 @@ public class Controller extends HttpServlet
             // without this check, they will log in and immediately be logged out again.
             if (request.getParameter("action") != null && request.getParameter("action").equals("logout"))
             {
-                response.sendRedirect("view?tab1=music&action=form");
+                response.sendRedirect("view?tab1=library&action=form");
                 return;
             }
         }
         userSession.setLastActivity(new Date());
         userSession.setEnteredController(System.currentTimeMillis());
 
-        if (!User.getByUserId(userSession.getUserId()).getEnabled())
-        {
-            invalidateSession(request);
-
-            request.setAttribute("responseMessage", "Your account is disabled...");
-
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/webroot/login-failed.jsp");
-            dispatcher.forward(request, response);
-
-            return;
-        }
-
         // Set standard HTTP/1.1 no-cache headers.
         response.setHeader("Cache-Control", "private, no-store, no-cache, must-revalidate");
 
         if (request.getParameter("tab1") == null)
         {
-            response.sendRedirect("view?tab1=music&action=form");
-            return;
-        }
-
-        if (request.getParameter("tab1").equals("music"))
-        {
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/webroot/music.jsp");
-            dispatcher.forward(request, response);
+            response.sendRedirect("view?tab1=library&action=form");
             return;
         }
 
@@ -170,7 +151,7 @@ public class Controller extends HttpServlet
             catch (Exception e)
             {
                 log.error(e.getMessage(), e);
-                response.sendRedirect("view?tab1=music&action=form");
+                response.sendRedirect("view?tab1=library&action=form");
             }
         }
         
@@ -198,7 +179,7 @@ public class Controller extends HttpServlet
     {
         invalidateSession(request);
 
-        response.sendRedirect("view?tab1=music&action=form");
+        response.sendRedirect("view?tab1=library&action=form");
     }
 
     private static void invalidateSession(HttpServletRequest request)

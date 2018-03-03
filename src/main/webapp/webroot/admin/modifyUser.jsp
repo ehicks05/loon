@@ -38,7 +38,6 @@
                     <t:text id="logonId" label="Logon Id" value="${user.logonId}" />
                     <t:text id="firstName" label="First Name" value="${user.firstName}" />
                     <t:text id="lastName" label="Last Name" value="${user.lastName}" />
-                    <t:checkbox id="enabled" label="Enabled" checked="${user.enabled}" />
 
                     <input id="saveUserButton" type="submit" value="Save" class="button is-primary" />
                     <input id="changePasswordButton" type="button" value="Change Password" class="button" />

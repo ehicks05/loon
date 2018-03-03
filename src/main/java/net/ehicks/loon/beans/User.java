@@ -27,9 +27,6 @@ public class User implements Serializable
     @Column(name = "last_name")
     private String lastName = "";
 
-    @Column(name = "enabled")
-    private Boolean enabled;
-
     @Column(name = "created_on")
     @Temporal(TemporalType.DATE)
     private Date createdOn;
@@ -133,16 +130,6 @@ public class User implements Serializable
     public void setLastName(String lastName)
     {
         this.lastName = lastName;
-    }
-
-    public Boolean getEnabled()
-    {
-        return enabled;
-    }
-
-    public void setEnabled(Boolean enabled)
-    {
-        this.enabled = enabled;
     }
 
     public Date getCreatedOn()

@@ -4,6 +4,7 @@
 <%@ taglib prefix="ct" uri="http://eric-hicks.com/loon/commontags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <jsp:useBean id="userSession" type="net.ehicks.loon.UserSession" scope="session"/>
+<jsp:useBean id="loonSystem" type="net.ehicks.loon.beans.LoonSystem" scope="application"/>
 
 <!DOCTYPE html>
 <html>
@@ -15,7 +16,11 @@
             position: fixed;
             bottom: 0;
             width: 100%;
-            background-color: #dbdbdb;
+
+            <c:if test="${empty loonSystem.theme || loonSystem.theme eq 'default'}">
+                background-color: #dbdbdb;
+            </c:if>
+
         }
 
         section {padding: 10px !important;}
@@ -122,7 +127,7 @@
         <div class="level-right">
             <p class="level-item">
                 <%--<progress id="progress" style="width:500px;" class="progress is-fullwidth is-small is-success" value="0" max="100">0%</progress>--%>
-                <input id="progress" style="width:500px;" class="slider is-fullwidth is-small is-success" type="range" value="0" max="100" />
+                <input id="progress" style="width:300px;" class="slider is-fullwidth is-small is-success" type="range" value="0" max="100" />
             </p>
 
             <div class="level-item is-hidden-mobile">
@@ -180,7 +185,7 @@
         this.storedVolume = 1;
 
         // Display the title of the first track.
-        track.innerHTML = '1. ' + playlist.get(0).artist + ' &centerdot; <b>' + playlist.get(0).title + '</b>';
+        track.innerHTML = '1. ' + '<b>' + playlist.get(0).title + '</b> <br>' + playlist.get(0).artist + '&centerdot;';
     };
 
     Player.prototype = {
@@ -234,7 +239,7 @@
 
             audio.onloadedmetadata = function (ev) {
                 // Update the track display.
-                track.innerHTML = (index + 1) + '. ' + data.artist + ' &centerdot; <b>' + data.title + '</b>';
+                track.innerHTML = (index + 1) + '. ' + '<b>' + data.title + '</b><br>' + data.artist + ' &centerdot;';
                 duration.innerHTML = self.formatTime(Math.round(audio.duration));
 
                 // Show the pause button.

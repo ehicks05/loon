@@ -64,21 +64,13 @@
 <jsp:include page="header.jsp"/>
 
 <section class="section" id="root">
-    <%--<div class="container">--%>
         <div class="columns is-multiline is-centered">
-            <%--<div class="column is-one-fifth">--%>
-                <%--<h5 class="subtitle is-5">Menu</h5>--%>
-
-            <%--</div>--%>
             <div class="column is-three-fifths">
                 <h5 class="subtitle is-5">Playlist</h5>
 
-                <!-- Playlist -->
                 <div id="playlist" class="playlist">
                     <div id="list">
-                        <%--<table class="table is-fullwidth is-hoverable is-narrow">--%>
-                            <jsp:include page="inc_libraryTracks.jsp" />
-                        <%--</table>--%>
+                        <jsp:include page="inc_libraryTracks.jsp" />
                     </div>
                 </div>
             </div>
@@ -86,7 +78,6 @@
         <div style="height: 150px;">
 
         </div>
-    <%--</div>--%>
 </section>
 
 <section class="section" id="level">

@@ -84,6 +84,35 @@ public class SystemInfo
         );
     }
 
+    /** url, icon name, label, tab2 of the url */
+    public List<Tab> getAdminScreens()
+    {
+        return Arrays.asList(
+                new Tab("?tab1=admin&tab2=system&tab3=modify&action=form", "server", "Manage System", "system"),
+                new Tab("?tab1=admin&tab2=system&tab3=info&action=form", "chart-bar", "System Info", "system"),
+                new Tab("?tab1=admin&tab2=users&action=form", "user", "Manage Users", "users"),
+                new Tab("?tab1=admin&tab2=logs&action=form", "file-alt", "Logs", "logs"),
+                new Tab("?tab1=admin&tab2=backups&action=form", "cloud-upload-alt", "Backups", "backups"),
+                new Tab("?tab1=admin&tab2=sql&action=form", "database", "SQL", "sql")
+        );
+    }
+
+    public class Tab
+    {
+        String path;
+        String icon;
+        String description;
+        String tab2;
+
+        public Tab(String path, String icon, String description, String tab2)
+        {
+            this.path = path;
+            this.icon = icon;
+            this.description = description;
+            this.tab2 = tab2;
+        }
+    }
+
     public String getDatabaseCache()
     {
         return Common.toMetric(getDatabaseCacheInKBs() * 1024);

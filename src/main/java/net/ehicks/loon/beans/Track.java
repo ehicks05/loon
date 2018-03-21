@@ -41,6 +41,9 @@ public class Track implements Serializable
     @Column(name = "track_gain", nullable = false)
     private String trackGain;
 
+    @Column(name = "track_gain_linear", nullable = false)
+    private String trackGainLinear;
+
     @Column(name = "track_peak", nullable = false)
     private String trackPeak;
 
@@ -107,13 +110,13 @@ public class Track implements Serializable
         return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
     }
 
-    public double getTrackGainLinear()
+    public String convertDBToLinear()
     {
 //        db-to-linear(x) = 10^(x / 20)
         BigDecimal dbAdjustment = Common.stringToBigDecimal(trackGain.replace(" dB", ""));
         BigDecimal twenty = new BigDecimal("20");
         BigDecimal result = BigDecimal.valueOf(Math.pow(10, dbAdjustment.divide(twenty, 3, BigDecimal.ROUND_HALF_UP).doubleValue())).setScale(3, BigDecimal.ROUND_HALF_UP);
-        return result.doubleValue();
+        return result.toString();
     }
 
     public DBFile getArtwork()
@@ -201,6 +204,16 @@ public class Track implements Serializable
     public void setTrackGain(String trackGain)
     {
         this.trackGain = trackGain;
+    }
+
+    public String getTrackGainLinear()
+    {
+        return trackGainLinear;
+    }
+
+    public void setTrackGainLinear(String trackGainLinear)
+    {
+        this.trackGainLinear = trackGainLinear;
     }
 
     public String getTrackPeak()

@@ -32,4 +32,10 @@
         <dispatcher>INCLUDE</dispatcher>
         <dispatcher>ERROR</dispatcher>
     </filter-mapping>
+
+    <context-param>
+        <!-- Fixes issue with jetty locking static asset files and preventing hot-reloading -->
+        <param-name>org.eclipse.jetty.servlet.Default.useFileMappedBuffer</param-name>
+        <param-value>false</param-value>
+    </context-param>
 </web-app>

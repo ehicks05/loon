@@ -95,6 +95,8 @@ public class MusicScanner
             track.setTrackGain(rpgain + " dB");
         }
 
+        track.setTrackGainLinear(track.convertDBToLinear());
+
         if (tag.getArtworkList().size() > 0)
         {
             Artwork artwork = tag.getArtworkList().get(0);

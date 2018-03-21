@@ -43,7 +43,8 @@ public class Seeder
         loonSystem.setInstanceName("Loon of Bridgewater");
         loonSystem.setLogonMessage("<span>Welcome to Loon.</span>");
         loonSystem.setTheme("");
-        loonSystem.setMusicFolder("d:/music loon");
+//        loonSystem.setMusicFolder("d:/music loon");
+        loonSystem.setMusicFolder("c:/k/music");
 
         EOI.update(loonSystem, SystemTask.SEEDER);
     }

@@ -3,6 +3,7 @@ import Footer from "./Footer.jsx";
 import Header from "./Header.jsx";
 import Library from "./Library.jsx";
 import Player from "./Player.jsx";
+import MyHelmet from "./MyHelmet.jsx";
 
 export default class App extends React.Component {
 
@@ -50,6 +51,7 @@ export default class App extends React.Component {
         xhr.send();
 
         self.state.currentTrackIndex = 0;
+        self.state.theme = 'superhero';
     }
 
     handleCurrentTrackIndexChange(newIndex)
@@ -68,6 +70,8 @@ export default class App extends React.Component {
 
         return (
             <div style={{textAlign: 'center'}}>
+
+                <MyHelmet theme={this.state.theme}/>
                 <Header currentTab1="library" currentTab2="" isAdmin={isAdmin} pathName={window.location.pathname} adminSubscreens={adminScreens}/>
 
                 <Library audioTracks={tracks} currentTrackIndex={this.state.currentTrackIndex} onCurrentTrackIndexChange={this.handleCurrentTrackIndexChange} />
@@ -77,5 +81,4 @@ export default class App extends React.Component {
             </div>
         );
     }
-
 }

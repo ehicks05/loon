@@ -54,7 +54,7 @@ export default class Player extends React.Component {
         }
         if (newPlayerState === 'playing')
         {
-            if (!newIndex)
+            if (!newIndex && newIndex !== 0)
                 newIndex = this.props.currentTrackIndex;
             if (!newIndex)
                 newIndex = 0;
@@ -89,10 +89,6 @@ export default class Player extends React.Component {
 
             this.setState({pausedAt: 0});
 
-            // self.audio.onloadedmetadata = function (ev) {
-            //     document.getElementById('duration').innerHTML = Player.formatTime(Math.round(self.audio.duration));
-            // };
-
             // self.scrollToTrack(newIndex);
         }
         if (newPlayerState === 'stopped')
@@ -110,21 +106,21 @@ export default class Player extends React.Component {
         const self = this;
 
         // Get the next track based on the direction of the track.
-        let newIndex = 0;
+        let newIndex = -1;
         if (input === 'prev') {
             newIndex = this.props.currentTrackIndex - 1;
             if (newIndex < 0) {
-                newIndex = this.props.audioTracks.size - 1;
+                newIndex = this.props.audioTracks.length - 1;
             }
         }
         if (input === 'next') {
             newIndex = this.props.currentTrackIndex + 1;
-            if (newIndex >= this.props.audioTracks.size) {
+            if (newIndex >= this.props.audioTracks.length) {
                 newIndex = 0;
             }
         }
 
-        if (newIndex === 0)
+        if (newIndex === -1)
             newIndex = input;
 
         this.setState({pausedAt: 0}, () =>
@@ -136,16 +132,22 @@ export default class Player extends React.Component {
         });
     }
 
+    static scaleVolume(linearInput)
+    {
+        if (linearInput > 1) linearInput = 1;
+        if (linearInput < 0) linearInput = 0;
+
+        let scaledVolume = 3.16e-3 * Math.exp(linearInput * 5.757);
+        if (linearInput === 0)
+            scaledVolume = 0;
+
+        return scaledVolume;
+    }
+
     handleVolumeChange(volume) {
         let self = this;
 
-        if (volume > 1) volume = 1;
-        if (volume < 0) volume = 0;
-
-        let scaledVolume = 3.16e-3 * Math.exp(volume * 5.757);
-        if (volume === 0)
-            scaledVolume = 0;
-
+        const scaledVolume = Player.scaleVolume(volume);
         this.gainNode.gain.setTargetAtTime(scaledVolume, self.audioCtx.currentTime, 0.02);
 
         this.setState({volume: volume});
@@ -153,7 +155,7 @@ export default class Player extends React.Component {
 
     handleMuteChange(muted) {
         if (this.state.muted)
-            this.gainNode.gain.setTargetAtTime(this.state.volume, this.audioCtx.currentTime, 0.02);
+            this.gainNode.gain.setTargetAtTime(Player.scaleVolume(this.state.volume), this.audioCtx.currentTime, 0.02);
         else
             this.gainNode.gain.setTargetAtTime(0, this.audioCtx.currentTime, 0.02);
 

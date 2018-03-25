@@ -24,3 +24,21 @@ html {overflow-y: auto;}
 ::-webkit-scrollbar-thumb:hover {
     background: #777;
 }
+
+
+#level {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+
+    background-color: #0c0f29;
+}
+
+section {padding: 10px !important;}
+
+.playingHighlight {color: #1ed176;}
+
+.playlist {overflow-y: auto; }
+.list-song {cursor: pointer;}
+
+.media+.media {padding-top:.2rem;margin-top:.2rem;}

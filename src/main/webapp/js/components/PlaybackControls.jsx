@@ -86,7 +86,7 @@ export default class PlaybackControls extends React.Component {
                             <span id="timer">{timeElapsed}</span> /
                             <span id="duration">{PlaybackControls.formatTime(currentTrack.duration)}</span>
                             <span style={{width:'10px'}}/>
-                            <span id="track">{currentTrack.artist} - {currentTrack.title} - {currentTrack.album}</span>
+                            <span id="track"><b>{currentTrack.artist}</b> - {currentTrack.title} - {currentTrack.album}</span>
                         </div>
                     </div>
 

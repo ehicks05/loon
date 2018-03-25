@@ -31,18 +31,17 @@ export default class MediaItem extends React.Component {
         const currentTrackIndex = this.props.currentTrackIndex;
         const highlightClass = currentTrackIndex === trackIndex ? ' playingHighlight' : '';
 
-        return (
-            <article
+        const mediaFormat =
+            (<article
                 className={'media list-song' + highlightClass}
                 id={'track' + trackId}
                 onClick={(e) => this.handleCurrentTrackIndexChange(e, trackIndex)}
             >
-
                 <figure className={'media-left'}>
                     <table>
                         <tbody>
                         <tr>
-                            <td className={"has-text-right"} style={{paddingRight:'10px'}}>
+                            <td className={"has-text-right"} style={{paddingRight: '10px'}}>
                                 {trackIndex}.
                             </td>
                             <td>
@@ -72,5 +71,21 @@ export default class MediaItem extends React.Component {
                     {MediaItem.formatTime(formattedDuration)}
                 </div>
             </article>);
+
+        const tableFormat = (<tr
+            className={'list-song' + highlightClass}
+            id={'track' + trackId}
+            onClick={(e) => this.handleCurrentTrackIndexChange(e, trackIndex)}
+        >
+            <td className={"has-text-right"} style={{paddingRight:'10px'}}>
+                {trackIndex}.
+            </td>
+            <td>
+                <b>{trackTitle}</b> &middot; {artist} &middot; {album}
+            </td>
+            <td>{MediaItem.formatTime(formattedDuration)}</td>
+        </tr>);
+
+        return tableFormat;
     }
 }

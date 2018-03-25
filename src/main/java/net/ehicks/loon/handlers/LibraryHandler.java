@@ -51,7 +51,7 @@ public class LibraryHandler
         UserSession userSession = (UserSession) request.getSession().getAttribute("userSession");
 
         int from = 0;
-        int amount = 10;
+        int amount = 100;
         request.setAttribute("from", from);
         request.setAttribute("library", getTracks(from, amount));
         request.setAttribute("haveMore", isHaveMore(from + amount));

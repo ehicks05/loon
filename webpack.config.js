@@ -1,11 +1,7 @@
 const path = require('path');
+var Visualizer = require('webpack-visualizer-plugin');
 
-// const HtmlWebpackPlugin = require('html-webpack-plugin');
-// const HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
-//     template: './src/main/webapp/js/dev/index.html',
-//     filename: '../../webroot/index.html',
-//     inject: 'body'
-// })
+const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 module.exports = {
     entry: './src/main/webapp/js/dev/index.js',
@@ -32,5 +28,7 @@ module.exports = {
             }
         ]
     },
-    // plugins: [HtmlWebpackPluginConfig]
+    plugins: [
+        new Visualizer(), new HardSourceWebpackPlugin()
+    ]
 }

@@ -1,4 +1,14 @@
 import React from 'react';
+import 'bulma-extensions/bulma-slider/dist/bulma-slider.min.js'
+import 'bulma-extensions/bulma-slider/dist/bulma-slider.min.css'
+
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import faVolumeUp from '@fortawesome/fontawesome-free-solid/faVolumeUp'
+import faVolumeOff from '@fortawesome/fontawesome-free-solid/faVolumeOff'
+import faPlay from '@fortawesome/fontawesome-free-solid/faPlay'
+import faPause from '@fortawesome/fontawesome-free-solid/faPause'
+import faStepForward from '@fortawesome/fontawesome-free-solid/faStepForward'
+import faStepBackward from '@fortawesome/fontawesome-free-solid/faStepBackward'
 
 export default class PlaybackControls extends React.Component {
     constructor(props) {
@@ -53,7 +63,7 @@ export default class PlaybackControls extends React.Component {
                         <p className="level-item">
                             <a className="button" id="prevBtn" onClick={(e) => this.handleTrackChange(e, 'prev')}>
                                 <span className="icon">
-                                    <i className="fas fa-step-backward"/>
+                                    <FontAwesomeIcon icon={faStepBackward}/>
                                 </span>
                             </a>
 
@@ -61,7 +71,7 @@ export default class PlaybackControls extends React.Component {
                                 (this.props.playerState === 'paused' || this.props.playerState === 'stopped') ?
                                     <a className="button is-medium" id="playBtn" onClick={(e) => this.handlePlayerStateChange(e, 'playing')}>
                                         <span className="icon">
-                                            <i className="fas fa-play"/>
+                                            <FontAwesomeIcon icon={faPlay}/>
                                         </span>
                                     </a>
                                     : ''
@@ -70,7 +80,7 @@ export default class PlaybackControls extends React.Component {
                                 this.props.playerState === 'playing' ?
                                     <a className="button is-medium" id="pauseBtn" onClick={(e) => this.handlePlayerStateChange(e, 'paused')}>
                                         <span className="icon">
-                                            <i className="fas fa-pause"/>
+                                            <FontAwesomeIcon icon={faPause}/>
                                         </span>
                                     </a>
                                     : ''
@@ -78,7 +88,7 @@ export default class PlaybackControls extends React.Component {
 
                             <a className="button" id="nextBtn" onClick={(e) => this.handleTrackChange(e, 'next')}>
                                 <span className="icon">
-                                    <i className="fas fa-step-forward"/>
+                                    <FontAwesomeIcon icon={faStepForward}/>
                                 </span>
                             </a>
                         </p>
@@ -98,11 +108,8 @@ export default class PlaybackControls extends React.Component {
 
                         <div className="level-item is-hidden-mobile">
                             <a className="button is-small" id="volumeBtn" style={{marginRight:'1em', marginLeft:'3em'}} onClick={this.handleMuteChange}>
-                                <span className="icon" style={muted ? {}: {display:'none'}}>
-                                    <i id="volumeBtnIcon" className={"fas fa-volume-off"} />
-                                </span>
-                                <span className="icon" style={muted ? {display:'none'}: {}}>
-                                    <i id="volumeBtnIcon2" className={"fas fa-volume-up"} />
+                                <span className="icon">
+                                    <FontAwesomeIcon icon={muted ? faVolumeOff : faVolumeUp} fixedWidth/>
                                 </span>
                             </a>
                             <input name="sliderBtn" id="sliderBtn" className="slider is-small is-success" type="range" value={volume} max="1" step=".01" onChange={this.handleVolumeChange}/>

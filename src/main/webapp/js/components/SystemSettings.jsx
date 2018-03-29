@@ -1,5 +1,5 @@
 import React from 'react';
-import $ from 'jquery';
+import $ from 'jquery/dist/jquery.min';
 import TextInput from "./TextInput.jsx";
 import Select from "./Select.jsx";
 
@@ -9,9 +9,7 @@ export default class SystemSettings extends React.Component {
         let self = this;
 
         this.submitForm = this.submitForm.bind(this);
-        this.rescan = this.rescan.bind(this);
         this.handleThemeChange = this.handleThemeChange.bind(this);
-
 
         let xhr = new XMLHttpRequest();
         xhr.open('GET', window.location.pathname + '?action=form', false);
@@ -31,29 +29,15 @@ export default class SystemSettings extends React.Component {
         this.props.onThemeChange(newTheme);
     }
 
-    submitForm()
+    submitForm(rescan)
     {
         const self = this;
-        const url = '/loon/view/admin/systemSettings?action=modify';
+        const url = '/loon/view/admin/systemSettings?action=modify' + (rescan ? '&rescan=true' : '');
         const formData = $('#frmProject').serialize();
         
         $.ajax({method:"POST", url: url, data: formData, success: function (data) {
-                const newTheme = data.theme;
-                self.handleThemeChange(newTheme);
+                self.handleThemeChange(data.theme);
             }
-        });
-    }
-
-    // same as submitForm function, but adds 'rescan=true'
-    rescan()
-    {
-        const url = '/loon/view/admin/systemSettings?action=modify&rescan=true';
-        const formData = $('#frmProject').serialize();
-
-        $.ajax({method:"POST", url: url, data: formData, success: function (data) {
-                const newTheme = data.theme;
-                this.handleThemeChange(newTheme);
-        }
         });
     }
 
@@ -95,8 +79,8 @@ export default class SystemSettings extends React.Component {
                                     <Select id="theme" label="Theme" items={themes} value={systemSettings.theme} required={true}/>
                                     <TextInput id="musicFolder" label="Music Folder" value={systemSettings.musicFolder} />
 
-                                    <input id="saveSystemButton" type="button" value="Save" className="button is-primary" onClick={this.submitForm} />
-                                    <input id="saveAndRescanButton" type="button" value="Save and Re-scan" className="button is-success" onClick={this.rescan} />
+                                    <input id="saveSystemButton" type="button" value="Save" className="button is-primary" onClick={(e) => this.submitForm()} />
+                                    <input id="saveAndRescanButton" type="button" value="Save and Re-scan" className="button is-success" onClick={(e) => this.submitForm(true)} />
                                 </form>
                             </div>
                         </div>

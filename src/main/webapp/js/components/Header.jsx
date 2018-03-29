@@ -1,5 +1,12 @@
 import React from 'react';
 import {Link, NavLink} from "react-router-dom";
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import faServer from '@fortawesome/fontawesome-free-solid/faServer'
+import faChartBar from '@fortawesome/fontawesome-free-solid/faChartBar'
+import faUser from '@fortawesome/fontawesome-free-solid/faUser'
+import faFileAlt from '@fortawesome/fontawesome-free-solid/faFileAlt'
+import faCloudUploadAlt from '@fortawesome/fontawesome-free-solid/faCloudUploadAlt'
+import faDatabase from '@fortawesome/fontawesome-free-solid/faDatabase'
 
 export default class Header extends React.Component {
     componentDidMount() {
@@ -57,37 +64,37 @@ export default class Header extends React.Component {
                                     <div className="navbar-dropdown">
                                         <NavLink to={'/admin/systemSettings'} activeClassName='is-active' className="navbar-item">
                                             <span className="icon is-medium has-text-info">
-                                                <i className={"fas fa-lg fa-server"}/>
+                                                <FontAwesomeIcon icon={faServer}/>
                                             </span>
                                             Manage System
                                         </NavLink>
                                         <NavLink to={'/admin/systemInfo'} activeClassName='is-active' className="navbar-item">
                                             <span className="icon is-medium has-text-info">
-                                                <i className={"fas fa-lg fa-chart-bar"}/>
+                                                <FontAwesomeIcon icon={faChartBar}/>
                                             </span>
                                             System Info
                                         </NavLink>
                                         <NavLink to={'/admin/users'} activeClassName='is-active' className="navbar-item">
                                             <span className="icon is-medium has-text-info">
-                                                <i className={"fas fa-lg fa-user"}/>
+                                                <FontAwesomeIcon icon={faUser}/>
                                             </span>
                                             Manage Users
                                         </NavLink>
                                         <NavLink to={'/admin/logs'} activeClassName='is-active' className="navbar-item">
                                             <span className="icon is-medium has-text-info">
-                                                <i className={"fas fa-lg fa-file-alt"}/>
+                                                <FontAwesomeIcon icon={faFileAlt}/>
                                             </span>
                                             Logs
                                         </NavLink>
                                         <NavLink to={'/admin/backups'} activeClassName='is-active' className="navbar-item">
                                             <span className="icon is-medium has-text-info">
-                                                <i className={"fas fa-lg fa-cloud-upload-alt"}/>
+                                                <FontAwesomeIcon icon={faCloudUploadAlt}/>
                                             </span>
                                             Backups
                                         </NavLink>
                                         <NavLink to={'/admin/sql'} activeClassName='is-active' className="navbar-item">
                                             <span className="icon is-medium has-text-info">
-                                                <i className={"fas fa-lg fa-database"}/>
+                                                <FontAwesomeIcon icon={faDatabase}/>
                                             </span>
                                             SQL
                                         </NavLink>

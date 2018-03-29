@@ -30,8 +30,6 @@ html {overflow-y: auto;}
     position: fixed;
     bottom: 0;
     width: 100%;
-
-    background-color: #0c0f29;
 }
 
 section {padding: 10px !important;}

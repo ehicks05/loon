@@ -1,14 +1,7 @@
 import React from 'react';
+import {Link, NavLink} from "react-router-dom";
 
 export default class Header extends React.Component {
-
-    getActiveStatus(tab1, shouldEqual)
-    {
-        if (tab1 === shouldEqual)
-            return 'is-active';
-        return '';
-    }
-
     componentDidMount() {
         // Get all "navbar-burger" elements
         var $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
@@ -35,41 +28,14 @@ export default class Header extends React.Component {
 
     render()
     {
-        const pathName = this.props.pathName;
-        const currentTab1 = this.props.currentTab1;
-        const currentTab2 = this.props.currentTab2;
         const isAdmin = this.props.isAdmin;
-
-        const adminSubscreens = this.props.adminSubscreens.map((adminSubscreen) =>
-            <a key={adminSubscreen.description} className={"navbar-item " + this.getActiveStatus(currentTab2, adminSubscreen.tab2)} href={pathName + adminSubscreen.path}>
-                <span className="icon is-medium has-text-info">
-                    <i className={"fas fa-lg fa-" + adminSubscreen.icon}/>
-                </span>
-                {adminSubscreen.description}
-            </a>
-        );
-
-        let adminSubtabs = null;
-        if (isAdmin)
-        {
-            adminSubtabs =
-                <div className={"navbar-item has-dropdown is-hoverable"}>
-                    <a className={"navbar-link " + this.getActiveStatus(currentTab1, 'admin')}
-                       href={pathName + "/view?tab1=admin&action=form"}>
-                        Admin
-                    </a>
-                    <div className="navbar-dropdown">
-                        {adminSubscreens}
-                    </div>
-                </div>
-        }
 
         return (
             <nav className="navbar is-primary" role="navigation" aria-label="main navigation">
                 <div className="container">
                     <div className="navbar-brand">
                         <div className="navbar-item">
-                            <img src={"images/loon.png"} alt="Loon" />
+                            <img src={"/loon/images/loon.png"} alt="Loon" />
                         </div>
 
                         <button className="button navbar-burger" data-target="navMenu">
@@ -81,22 +47,60 @@ export default class Header extends React.Component {
 
                     <div className="navbar-menu" id="navMenu">
                         <div className="navbar-start">
-                            <a className={"navbar-item " + this.getActiveStatus(currentTab1, 'library')}
-                               href={pathName + "/view?tab1=library&action=form"}>
-                                Library
-                            </a>
-                            <a className={"navbar-item " + this.getActiveStatus(currentTab1, 'playlist')}
-                               href={pathName + "/view?tab1=playlist&action=form"}>
-                                Playlist
-                            </a>
-                            {adminSubtabs}
+                            <NavLink to='/library' activeClassName='is-active' className="navbar-item">Library</NavLink>
+                            <NavLink to='/playlist' activeClassName='is-active' className="navbar-item">Playlist</NavLink>
+
+                            {
+                                isAdmin &&
+                                <div className={"navbar-item has-dropdown is-hoverable"}>
+                                    <NavLink to='/admin' activeClassName='is-active' className="navbar-link">Admin</NavLink>
+                                    <div className="navbar-dropdown">
+                                        <NavLink to={'/admin/systemSettings'} activeClassName='is-active' className="navbar-item">
+                                            <span className="icon is-medium has-text-info">
+                                                <i className={"fas fa-lg fa-server"}/>
+                                            </span>
+                                            Manage System
+                                        </NavLink>
+                                        <NavLink to={'/admin/systemInfo'} activeClassName='is-active' className="navbar-item">
+                                            <span className="icon is-medium has-text-info">
+                                                <i className={"fas fa-lg fa-chart-bar"}/>
+                                            </span>
+                                            System Info
+                                        </NavLink>
+                                        <NavLink to={'/admin/users'} activeClassName='is-active' className="navbar-item">
+                                            <span className="icon is-medium has-text-info">
+                                                <i className={"fas fa-lg fa-user"}/>
+                                            </span>
+                                            Manage Users
+                                        </NavLink>
+                                        <NavLink to={'/admin/logs'} activeClassName='is-active' className="navbar-item">
+                                            <span className="icon is-medium has-text-info">
+                                                <i className={"fas fa-lg fa-file-alt"}/>
+                                            </span>
+                                            Logs
+                                        </NavLink>
+                                        <NavLink to={'/admin/backups'} activeClassName='is-active' className="navbar-item">
+                                            <span className="icon is-medium has-text-info">
+                                                <i className={"fas fa-lg fa-cloud-upload-alt"}/>
+                                            </span>
+                                            Backups
+                                        </NavLink>
+                                        <NavLink to={'/admin/sql'} activeClassName='is-active' className="navbar-item">
+                                            <span className="icon is-medium has-text-info">
+                                                <i className={"fas fa-lg fa-database"}/>
+                                            </span>
+                                            SQL
+                                        </NavLink>
+                                    </div>
+                                </div>
+                            }
                         </div>
                         <div className="navbar-end">
-                            <a className="navbar-item " href={pathName + "/logout"}>
+                            <Link to='/logout'  className="navbar-item">
                                 <span className="icon is-medium has-text-light">
                                     <i className="fas fa-lg fa-sign-out-alt" />
                                 </span>
-                            </a>
+                            </Link>
                         </div>
                     </div>
                 </div>

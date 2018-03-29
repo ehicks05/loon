@@ -9,7 +9,7 @@ import java.text.ParseException;
 
 public class SettingsHandler
 {
-    @Route(tab1 = "settings", tab2 = "", tab3 = "", action = "form")
+    @Route(path = "settings")
     public static String showSettings(HttpServletRequest request, HttpServletResponse response) throws ParseException, IOException
     {
         return "/webroot/settings.jsp";

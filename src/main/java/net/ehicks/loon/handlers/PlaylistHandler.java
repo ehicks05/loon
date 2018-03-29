@@ -10,7 +10,7 @@ import java.text.ParseException;
 
 public class PlaylistHandler
 {
-    @Route(tab1 = "playlist", tab2 = "", tab3 = "", action = "form")
+    @Route(path = "playlist")
     public static String showDashboard(HttpServletRequest request, HttpServletResponse response) throws ParseException, IOException
     {
         UserSession userSession = (UserSession) request.getSession().getAttribute("userSession");

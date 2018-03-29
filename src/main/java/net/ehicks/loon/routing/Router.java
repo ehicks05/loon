@@ -32,7 +32,7 @@ public class Router
             Route[] routes = handler.getAnnotationsByType(Route.class);
             for (Route route : routes)
             {
-                RouteDescription routeDescription = new RouteDescription(route.tab1(), route.tab2(), route.tab3(), route.action());
+                RouteDescription routeDescription = new RouteDescription(route.path());
 
                 if (routeMap.containsKey(routeDescription))
                     log.error("Found duplicate route description: " + routeDescription);

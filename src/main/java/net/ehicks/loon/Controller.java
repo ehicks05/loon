@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
 import java.security.Principal;
 import java.util.Date;
 
-@WebServlet(value = "/view", loadOnStartup = 1)
+@WebServlet(value = "/view/*", loadOnStartup = 1)
 public class Controller extends HttpServlet
 {
     private static final Logger log = LoggerFactory.getLogger(Controller.class);
@@ -96,23 +96,17 @@ public class Controller extends HttpServlet
 
             // this will hit if they 1. log out, 2. hit F5, and 3. attempt to log back in.
             // without this check, they will log in and immediately be logged out again.
-            if (request.getParameter("action") != null && request.getParameter("action").equals("logout"))
-            {
-                response.sendRedirect("view?tab1=library&action=form");
-                return;
-            }
+//            if (request.getParameter("action") != null && request.getParameter("action").equals("logout"))
+//            {
+//                response.sendRedirect("view/library");
+//                return;
+//            }
         }
         userSession.setLastActivity(new Date());
         userSession.setEnteredController(System.currentTimeMillis());
 
         // Set standard HTTP/1.1 no-cache headers.
         response.setHeader("Cache-Control", "private, no-store, no-cache, must-revalidate");
-
-        if (request.getParameter("tab1") == null)
-        {
-            response.sendRedirect("view?tab1=library&action=form");
-            return;
-        }
 
         String viewJsp = processRequest(request, response, userSession);
         long duration = System.currentTimeMillis() - start;
@@ -130,13 +124,15 @@ public class Controller extends HttpServlet
 
     private static String processRequest(HttpServletRequest request, HttpServletResponse response, UserSession userSession) throws IOException
     {
-        String tab1   = request.getParameter("tab1") == null ? "" : request.getParameter("tab1");
-        String tab2   = request.getParameter("tab2") == null ? "" : request.getParameter("tab2");
-        String tab3   = request.getParameter("tab3") == null ? "" : request.getParameter("tab3");
-        String action = request.getParameter("action") == null ? "form" : request.getParameter("action");
+        String path = request.getPathInfo().substring(1); // substring is a hack
+
+        if (request.getParameter("action") == null)
+        {
+            return "/webroot/index.html";
+        }
 
         // routing
-        RouteDescription routeDescription = new RouteDescription(tab1, tab2, tab3, action);
+        RouteDescription routeDescription = new RouteDescription(path);
         Method handler = Router.getRouteMap().get(routeDescription);
         if (handler != null)
         {
@@ -151,7 +147,7 @@ public class Controller extends HttpServlet
             catch (Exception e)
             {
                 log.error(e.getMessage(), e);
-                response.sendRedirect("view?tab1=library&action=form");
+                response.sendRedirect("view/library");
             }
         }
         
@@ -174,12 +170,12 @@ public class Controller extends HttpServlet
         return userSession;
     }
 
-    @Route(tab1 = "logout", tab2 = "", tab3 = "", action = "logout")
+    @Route(path = "logout")
     private static void logout(HttpServletRequest request, HttpServletResponse response) throws IOException
     {
         invalidateSession(request);
 
-        response.sendRedirect("view?tab1=library&action=form");
+        response.sendRedirect("view/library");
     }
 
     private static void invalidateSession(HttpServletRequest request)

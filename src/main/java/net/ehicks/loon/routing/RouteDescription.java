@@ -2,27 +2,18 @@ package net.ehicks.loon.routing;
 
 public class RouteDescription
 {
-    private String tab1 = "";
-    private String tab2 = "";
-    private String tab3 = "";
-    private String action = "";
+    private String path = "";
 
-    public RouteDescription(String tab1, String tab2, String tab3, String action)
+    public RouteDescription(String path)
     {
-        this.tab1 = tab1;
-        this.tab2 = tab2;
-        this.tab3 = tab3;
-        this.action = action;
+        this.path = path;
     }
 
     @Override
     public String toString()
     {
         return "RouteDescription{" +
-                "tab1='" + tab1 + '\'' +
-                ", tab2='" + tab2 + '\'' +
-                ", tab3='" + tab3 + '\'' +
-                ", action='" + action + '\'' +
+                "path='" + path + '\'' +
                 '}';
     }
 
@@ -34,19 +25,12 @@ public class RouteDescription
 
         RouteDescription that = (RouteDescription) o;
 
-        if (!tab1.equals(that.tab1)) return false;
-        if (!tab2.equals(that.tab2)) return false;
-        if (!tab3.equals(that.tab3)) return false;
-        return action.equals(that.action);
+        return path.equals(that.path);
     }
 
     @Override
     public int hashCode()
     {
-        int result = tab1.hashCode();
-        result = 31 * result + tab2.hashCode();
-        result = 31 * result + tab3.hashCode();
-        result = 31 * result + action.hashCode();
-        return result;
+        return path.hashCode();
     }
 }

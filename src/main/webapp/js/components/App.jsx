@@ -1,9 +1,13 @@
 import React from 'react';
+import { Router, Route } from 'react-router-dom'
+import { createBrowserHistory } from 'history'
+
 import Footer from "./Footer.jsx";
 import Header from "./Header.jsx";
 import Library from "./Library.jsx";
 import Player from "./Player.jsx";
 import MyHelmet from "./MyHelmet.jsx";
+import SystemSettings from "./SystemSettings.jsx";
 
 export default class App extends React.Component {
 
@@ -12,13 +16,17 @@ export default class App extends React.Component {
         let self = this;
 
         this.handleCurrentTrackIndexChange = this.handleCurrentTrackIndexChange.bind(this);
+        this.handleThemeChange = this.handleThemeChange.bind(this);
+
+        const basename = '/loon/view/';
+        const history = createBrowserHistory({ basename });
+        self.state = {history: history};
 
         let xhr = new XMLHttpRequest();
-        xhr.open('GET', window.location.pathname + '?tab1=library&action=ajaxGetInitialTracks', false);
+        xhr.open('GET', basename + 'library?action=ajaxGetInitialTracks', false);
         xhr.onload = function() {
             if (xhr.status === 200) {
-                const tracks = JSON.parse(this.responseText);
-                self.state = {tracks: tracks};
+                self.state.tracks = JSON.parse(this.responseText);
             }
             else {
                 alert('Request failed.  Returned status of ' + xhr.status);
@@ -27,19 +35,7 @@ export default class App extends React.Component {
         xhr.send();
 
         xhr = new XMLHttpRequest();
-        xhr.open('GET', window.location.pathname + '?tab1=library&action=ajaxGetVisibleAdminScreens', false);
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                self.state.adminScreens = JSON.parse(this.responseText);
-            }
-            else {
-                alert('Request failed.  Returned status of ' + xhr.status);
-            }
-        };
-        xhr.send();
-
-        xhr = new XMLHttpRequest();
-        xhr.open('GET', window.location.pathname + '?tab1=library&action=ajaxGetIsAdmin', false);
+        xhr.open('GET', basename + 'library?action=ajaxGetIsAdmin', false);
         xhr.onload = function() {
             if (xhr.status === 200) {
                 self.state.isAdmin = JSON.parse(this.responseText);
@@ -51,12 +47,28 @@ export default class App extends React.Component {
         xhr.send();
 
         self.state.currentTrackIndex = 0;
-        self.state.theme = 'superhero';
+
+        xhr = new XMLHttpRequest();
+        xhr.open('GET', basename + 'admin/systemSettings?action=form', false);
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                self.state.theme = JSON.parse(this.responseText).theme;
+            }
+            else {
+                alert('Request failed.  Returned status of ' + xhr.status);
+            }
+        };
+        xhr.send();
     }
 
     handleCurrentTrackIndexChange(newIndex)
     {
         this.setState({currentTrackIndex: newIndex});
+    }
+
+    handleThemeChange(newTheme)
+    {
+        this.setState({theme: newTheme});
     }
 
     componentDidMount() {
@@ -65,20 +77,23 @@ export default class App extends React.Component {
     
     render() {
         const tracks = this.state.tracks;
-        const adminScreens = this.state.adminScreens;
         const isAdmin = this.state.isAdmin;
 
         return (
-            <div style={{textAlign: 'center'}}>
+            <Router history={this.state.history}>
+                <div>
 
-                <MyHelmet theme={this.state.theme}/>
-                <Header currentTab1="library" currentTab2="" isAdmin={isAdmin} pathName={window.location.pathname} adminSubscreens={adminScreens}/>
+                    <MyHelmet theme={this.state.theme}/>
+                    <Header currentTab1="library" currentTab2="" isAdmin={isAdmin}/>
 
-                <Library audioTracks={tracks} currentTrackIndex={this.state.currentTrackIndex} onCurrentTrackIndexChange={this.handleCurrentTrackIndexChange} />
-                <Player audioTracks={tracks} currentTrackIndex={this.state.currentTrackIndex} onCurrentTrackIndexChange={this.handleCurrentTrackIndexChange} />
+                    <Route path='/admin/systemSettings' render={() => <SystemSettings onThemeChange={this.handleThemeChange} />}/>
+                    <Route path='/library' render={() => <Library audioTracks={tracks} currentTrackIndex={this.state.currentTrackIndex} onCurrentTrackIndexChange={this.handleCurrentTrackIndexChange} />} />
 
-                <Footer serverProcessingTime="123"/>
-            </div>
+                    <Player audioTracks={tracks} currentTrackIndex={this.state.currentTrackIndex} onCurrentTrackIndexChange={this.handleCurrentTrackIndexChange} />
+
+                    <Footer serverProcessingTime="123"/>
+                </div>
+            </Router>
         );
     }
 }

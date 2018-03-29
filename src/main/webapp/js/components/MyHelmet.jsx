@@ -8,6 +8,8 @@ export default class MyHelmet extends React.Component {
 
     render()
     {
+        const basename = '/loon';
+
         const theme = this.props.theme;
         let themeUrl = 'https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css';
         if (theme !== 'default')
@@ -26,7 +28,7 @@ export default class MyHelmet extends React.Component {
                     crossorigin="anonymous" />
 
                 // spin.js
-                <script src="js/spin.min.js" />
+                <script src={basename + "/js/spin.min.js"} />
 
                 // Font Awesome
                 <script defer src="https://use.fontawesome.com/releases/v5.0.4/js/all.js" />
@@ -34,13 +36,21 @@ export default class MyHelmet extends React.Component {
                 <link rel="stylesheet" href={themeUrl} />
 
                 // Bulma Slider
-                <link rel="stylesheet" type="text/css" href="styles/bulma-slider.min.css" media="screen" />
-                <script src="js/bulma-slider.min.js" />
+                <link rel="stylesheet" type="text/css" href={basename + "/styles/bulma-slider.min.css"} media="screen" />
+                <script src={basename + "/js/bulma-slider.min.js"} />
 
-                <link rel="shortcut icon" href="images/puffin.png" />
-                <link rel="stylesheet" type="text/css" href="styles/style.css" media="screen" />
-                <script src="js/util.js" />
-                <script src="js/ajaxUtil.js" />
+                <link rel="shortcut icon" href={basename + "/images/puffin.png"} />
+                <link rel="stylesheet" type="text/css" href={basename + "/styles/style.css"} media="screen" />
+                <script src={basename + "/js/util.js"} />
+                <script src={basename + "/js/ajaxUtil.js"} />
+
+                <style>
+                    {this.props.theme === 'superhero' ?
+                        `#level {background-color: #0c0f29;}`
+                        :
+                        `#level {background-color: #eee;}`
+                    }
+                </style>
             </Helmet>);
     }
 }

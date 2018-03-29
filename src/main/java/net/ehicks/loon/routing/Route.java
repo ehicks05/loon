@@ -7,8 +7,5 @@ import java.lang.annotation.*;
 @Repeatable(Routes.class)
 public @interface Route
 {
-    String tab1();
-    String tab2();
-    String tab3();
-    String action();
+    String path();
 }

@@ -18,85 +18,81 @@ public class UserHandler
 {
     private static final Logger log = LoggerFactory.getLogger(AdminHandler.class);
 
-    @Route(tab1 = "admin", tab2 = "users", tab3 = "", action = "form")
-    public static String showManageUsers(HttpServletRequest request, HttpServletResponse response) throws ParseException, IOException
+    @Route(path = "admin/users")
+    public static void showManageUsers(HttpServletRequest request, HttpServletResponse response) throws ParseException, IOException
     {
         UserSession userSession = (UserSession) request.getSession().getAttribute("userSession");
-        request.setAttribute("users", User.getAll());
 
-        return "/webroot/admin/users.jsp";
-    }
-
-    @Route(tab1 = "admin", tab2 = "users", tab3 = "", action = "create")
-    public static void createUser(HttpServletRequest request, HttpServletResponse response) throws ParseException, IOException
-    {
-        UserSession userSession = (UserSession) request.getSession().getAttribute("userSession");
-        String logonId = Common.getSafeString(request.getParameter("fldLogonId"));
-        User user = new User();
-        user.setLogonId(logonId);
-        long userId = EOI.insert(user, userSession);
-
-        response.sendRedirect("view?tab1=admin&tab2=users&action=form");
-    }
-
-    @Route(tab1 = "admin", tab2 = "users", tab3 = "", action = "delete")
-    public static void deleteUser(HttpServletRequest request, HttpServletResponse response) throws ParseException, IOException
-    {
-        UserSession userSession = (UserSession) request.getSession().getAttribute("userSession");
-        Long userId = Common.stringToLong(request.getParameter("userId"));
-        User user = User.getByUserId(userId);
-        if (user != null)
-            EOI.executeDelete(user, userSession);
-
-        response.sendRedirect("view?tab1=admin&tab2=users&action=form");
-    }
-
-    @Route(tab1 = "admin", tab2 = "users", tab3 = "modify", action = "form")
-    public static String showModifyUser(HttpServletRequest request, HttpServletResponse response) throws ParseException, IOException
-    {
-        Long userId = Common.stringToLong(request.getParameter("userId"));
-        User user = User.getByUserId(userId);
-        request.setAttribute("user", user);
-
-        return "/webroot/admin/modifyUser.jsp";
-    }
-
-    @Route(tab1 = "admin", tab2 = "users", tab3 = "modify", action = "modify")
-    public static void modifyUser(HttpServletRequest request, HttpServletResponse response) throws ParseException, IOException
-    {
-        UserSession userSession = (UserSession) request.getSession().getAttribute("userSession");
-        Long userId = Common.stringToLong(request.getParameter("userId"));
-        User user = User.getByUserId(userId);
-        if (user != null)
+        String action = request.getParameter("action");
+        if (action.equals("list"))
         {
-            String logonId = Common.getSafeString(request.getParameter("logonId"));
-            String firstName = Common.getSafeString(request.getParameter("firstName"));
-            String lastName = Common.getSafeString(request.getParameter("lastName"));
-            user.setLogonId(logonId);
-            user.setFirstName(firstName);
-            user.setLastName(lastName);
-            EOI.update(user, userSession);
+            request.setAttribute("users", User.getAll());
+
+            return;
         }
 
-        response.sendRedirect("view?tab1=admin&tab2=users&tab3=modify&action=form&userId=" + userId);
-    }
-
-    @Route(tab1 = "admin", tab2 = "users", tab3 = "", action = "changePassword")
-    public static void changePassword(HttpServletRequest request, HttpServletResponse response) throws ParseException, IOException
-    {
-        UserSession userSession = (UserSession) request.getSession().getAttribute("userSession");
-        Long userId = Common.stringToLong(request.getParameter("userId"));
-        User user = User.getByUserId(userId);
-        if (user != null)
+        if (action.equals("create"))
         {
-            String password = Common.getSafeString(request.getParameter("password"));
-            if (password.length() > 0)
+            String logonId = Common.getSafeString(request.getParameter("fldLogonId"));
+            User user = new User();
+            user.setLogonId(logonId);
+            long userId = EOI.insert(user, userSession);
+
+            response.sendRedirect("view?tab1=admin&tab2=users&action=form");
+        }
+
+        if (action.equals("delete"))
+        {
+            Long userId = Common.stringToLong(request.getParameter("userId"));
+            User user = User.getByUserId(userId);
+            if (user != null)
+                EOI.executeDelete(user, userSession);
+
+            response.sendRedirect("view?tab1=admin&tab2=users&action=form");
+        }
+
+        if (action.equals("form"))
+        {
+            Long userId = Common.stringToLong(request.getParameter("userId"));
+            User user = User.getByUserId(userId);
+            request.setAttribute("user", user);
+
+            return;
+        }
+
+        if (action.equals("modify"))
+        {
+            Long userId = Common.stringToLong(request.getParameter("userId"));
+            User user = User.getByUserId(userId);
+            if (user != null)
             {
-                user.setPassword(PasswordUtil.digestPassword(password));
+                String logonId = Common.getSafeString(request.getParameter("logonId"));
+                String firstName = Common.getSafeString(request.getParameter("firstName"));
+                String lastName = Common.getSafeString(request.getParameter("lastName"));
+                user.setLogonId(logonId);
+                user.setFirstName(firstName);
+                user.setLastName(lastName);
                 EOI.update(user, userSession);
             }
+
+            response.sendRedirect("view?tab1=admin&tab2=users&tab3=modify&action=form&userId=" + userId);
         }
 
-        response.sendRedirect("view?tab1=admin&tab2=users&tab3=modify&action=form&userId=" + userId);
+        if (action.equals("changePassword"))
+        {
+            Long userId = Common.stringToLong(request.getParameter("userId"));
+            User user = User.getByUserId(userId);
+            if (user != null)
+            {
+                String password = Common.getSafeString(request.getParameter("password"));
+                if (password.length() > 0)
+                {
+                    user.setPassword(PasswordUtil.digestPassword(password));
+                    EOI.update(user, userSession);
+                }
+            }
+
+            response.sendRedirect("view?tab1=admin&tab2=users&tab3=modify&action=form&userId=" + userId);
+        }
     }
 }

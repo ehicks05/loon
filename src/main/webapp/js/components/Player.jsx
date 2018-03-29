@@ -67,7 +67,7 @@ export default class Player extends React.Component {
                 self.audio.pause();
 
             self.audio = new Audio();
-            self.audio.src = window.location.pathname + '/../media?id=' + data.id;
+            self.audio.src = '/loon/media?id=' + data.id;
             self.audio.controls = false;
             self.audio.autoplay = false;
             document.body.appendChild(self.audio);

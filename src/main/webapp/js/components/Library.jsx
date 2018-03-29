@@ -23,12 +23,15 @@ export default class Library extends React.Component {
 
                             <div id="playlist" className="playlist">
                                 <table className={'table is-fullwidth is-hoverable is-narrow'} id="list">
-                                    {
-                                        this.props.audioTracks.map((audioTrack, index) =>
-                                            <MediaItem key={audioTrack.id} track={audioTrack} index={index} currentTrackIndex={this.props.currentTrackIndex}
-                                                       onCurrentTrackIndexChange={this.handleCurrentTrackIndexChange}/>
-                                        )
-                                    }
+                                    <tbody>
+                                        {
+                                            this.props.audioTracks.map((audioTrack, index) =>
+                                                <MediaItem key={audioTrack.id} track={audioTrack} index={index}
+                                                           currentTrackIndex={this.props.currentTrackIndex}
+                                                           onCurrentTrackIndexChange={this.handleCurrentTrackIndexChange}/>
+                                            )
+                                        }
+                                    </tbody>
                                 </table>
                             </div>
                         </div>

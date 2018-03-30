@@ -5,6 +5,7 @@ import 'bulma-extensions/bulma-slider/dist/bulma-slider.min.css'
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import faVolumeUp from '@fortawesome/fontawesome-free-solid/faVolumeUp'
 import faVolumeOff from '@fortawesome/fontawesome-free-solid/faVolumeOff'
+import faRandom from '@fortawesome/fontawesome-free-solid/faRandom'
 import faPlay from '@fortawesome/fontawesome-free-solid/faPlay'
 import faPause from '@fortawesome/fontawesome-free-solid/faPause'
 import faStepForward from '@fortawesome/fontawesome-free-solid/faStepForward'
@@ -17,6 +18,7 @@ export default class PlaybackControls extends React.Component {
         this.handleTrackChange = this.handleTrackChange.bind(this);
         this.handleVolumeChange = this.handleVolumeChange.bind(this);
         this.handleMuteChange = this.handleMuteChange.bind(this);
+        this.handleShuffleChange = this.handleShuffleChange.bind(this);
         this.handleProgressChange = this.handleProgressChange.bind(this);
     }
 
@@ -35,6 +37,9 @@ export default class PlaybackControls extends React.Component {
     handleMuteChange(e) {
         console.log('handleMuteChange');
         this.props.onMuteChange(e.target.value);
+    }
+    handleShuffleChange(e) {
+        this.props.onShuffleChange(e.target.value);
     }
     handleProgressChange(e) {
         console.log('e.target.value: ' + e.target.value);
@@ -55,6 +60,7 @@ export default class PlaybackControls extends React.Component {
         const currentTrack = this.props.currentTrack;
         const volume = this.props.volume;
         const muted = this.props.muted;
+        const shuffle = this.props.shuffle;
 
         return (
             <section className="section" id="level">
@@ -107,6 +113,22 @@ export default class PlaybackControls extends React.Component {
                         </p>
 
                         <div className="level-item is-hidden-mobile">
+
+                            {
+                                shuffle ?
+                                    <a className="button is-small is-success" id="shuffleBtn" onClick={this.handleShuffleChange}>
+                                        <span className="icon">
+                                            <FontAwesomeIcon icon={faRandom} fixedWidth/>
+                                        </span>
+                                    </a>
+                                    :
+                                    <a className="button is-small" id="shuffleBtn" onClick={this.handleShuffleChange}>
+                                        <span className="icon">
+                                            <FontAwesomeIcon icon={faRandom} fixedWidth/>
+                                        </span>
+                                    </a>
+                            }
+                            
                             <a className="button is-small" id="volumeBtn" style={{marginRight:'1em', marginLeft:'3em'}} onClick={this.handleMuteChange}>
                                 <span className="icon">
                                     <FontAwesomeIcon icon={muted ? faVolumeOff : faVolumeUp} fixedWidth/>

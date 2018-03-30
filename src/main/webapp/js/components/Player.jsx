@@ -10,6 +10,7 @@ export default class Player extends React.Component {
         this.handleTrackChange = this.handleTrackChange.bind(this);
         this.handleVolumeChange = this.handleVolumeChange.bind(this);
         this.handleMuteChange = this.handleMuteChange.bind(this);
+        this.handleShuffleChange = this.handleShuffleChange.bind(this);
         this.handleProgressChange = this.handleProgressChange.bind(this);
 
         this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -30,6 +31,7 @@ export default class Player extends React.Component {
             pausedAt: 0,
             volume: 1,
             muted: false,
+            shuffle: false,
             progressPercent: 0,
             timeElapsed: Player.formatTime(Math.round(0))
         };
@@ -89,6 +91,7 @@ export default class Player extends React.Component {
 
             this.setState({pausedAt: 0});
 
+            location.href = '#track' + data.id;
             // self.scrollToTrack(newIndex);
         }
         if (newPlayerState === 'stopped')
@@ -107,16 +110,24 @@ export default class Player extends React.Component {
 
         // Get the next track based on the direction of the track.
         let newIndex = -1;
-        if (input === 'prev') {
-            newIndex = this.props.currentTrackIndex - 1;
-            if (newIndex < 0) {
-                newIndex = this.props.audioTracks.length - 1;
-            }
+
+        if (this.state.shuffle)
+        {
+            newIndex = Math.floor (Math.random() * this.props.audioTracks.length);
         }
-        if (input === 'next') {
-            newIndex = this.props.currentTrackIndex + 1;
-            if (newIndex >= this.props.audioTracks.length) {
-                newIndex = 0;
+        else
+        {
+            if (input === 'prev') {
+                newIndex = this.props.currentTrackIndex - 1;
+                if (newIndex < 0) {
+                    newIndex = this.props.audioTracks.length - 1;
+                }
+            }
+            if (input === 'next') {
+                newIndex = this.props.currentTrackIndex + 1;
+                if (newIndex >= this.props.audioTracks.length) {
+                    newIndex = 0;
+                }
             }
         }
 
@@ -160,6 +171,10 @@ export default class Player extends React.Component {
             this.gainNode.gain.setTargetAtTime(0, this.audioCtx.currentTime, 0.02);
 
         this.setState({muted: !this.state.muted});
+    }
+
+    handleShuffleChange(shuffle) {
+        this.setState({shuffle: !this.state.shuffle});
     }
 
     handleProgressChange(progress) {
@@ -222,6 +237,7 @@ export default class Player extends React.Component {
                     playerState={this.state.playerState}
                     volume={this.state.volume}
                     muted={this.state.muted}
+                    shuffle={this.state.shuffle}
                     currentTrackIndex={this.props.currentTrackIndex}
                     currentTrack={this.props.audioTracks[this.props.currentTrackIndex]}
                     timeElapsed={this.state.timeElapsed}
@@ -232,6 +248,7 @@ export default class Player extends React.Component {
                     onTrackChange={this.handleTrackChange}
                     onVolumeChange={this.handleVolumeChange}
                     onMuteChange={this.handleMuteChange}
+                    onShuffleChange={this.handleShuffleChange}
                     onProgressChange={this.handleProgressChange}
                 />
             </div>);

@@ -90,18 +90,22 @@ public class Seeder
     {
         for (User user : User.getAll())
         {
-            Playlist playlist = new Playlist();
-            playlist.setUserId(user.getId());
-            playlist.setName("Rockin Tunes");
-            Long playlistId = EOI.insert(playlist, SystemTask.SEEDER);
+            List<String> playlistNames = Arrays.asList("Rockin Tunes", "Classics");
 
-            for (long i = 0 ; i < 1; i++)
-            {
-                PlaylistTrack playlistTrack = new PlaylistTrack();
-                playlistTrack.setPlaylistId(playlistId);
-                playlistTrack.setTrackId(i);
-                EOI.insert(playlist, SystemTask.SEEDER);
-            }
+            playlistNames.forEach(playlistName -> {
+                Playlist playlist = new Playlist();
+                playlist.setUserId(user.getId());
+                playlist.setName(playlistName);
+                Long playlistId = EOI.insert(playlist, SystemTask.SEEDER);
+
+                for (long i = 0 ; i < 2; i++)
+                {
+                    PlaylistTrack playlistTrack = new PlaylistTrack();
+                    playlistTrack.setPlaylistId(playlistId);
+                    playlistTrack.setTrackId(i);
+                    EOI.insert(playlistTrack, SystemTask.SEEDER);
+                }
+            });
         }
     }
 }

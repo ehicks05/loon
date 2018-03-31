@@ -5,15 +5,13 @@ import net.ehicks.common.Common;
 import net.ehicks.eoi.ConnectionInfo;
 import net.ehicks.eoi.EOI;
 import net.ehicks.eoi.Metrics;
-import net.ehicks.loon.MusicScanner;
-import net.ehicks.loon.SessionListener;
-import net.ehicks.loon.SystemInfo;
-import net.ehicks.loon.UserSession;
+import net.ehicks.loon.*;
 import net.ehicks.loon.beans.LoonSystem;
 import net.ehicks.loon.routing.Route;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -63,9 +61,6 @@ public class AdminHandler
         String action = request.getParameter("action");
         if (action.equals("form"))
         {
-            request.setAttribute("themes", Arrays.asList("default", "cosmo", "flatly", "journal", "lux", "pulse",
-                    "simplex", "superhero", "united", "yeti"));
-
             Gson gson = new Gson();
 
             String jsonResponse = gson.toJson(LoonSystem.getSystem());
@@ -90,15 +85,28 @@ public class AdminHandler
 
                 if (Common.getSafeString(request.getParameter("rescan")).equals("true"))
                 {
-                    MusicScanner.scan();
+                    new Thread(MusicScanner::scan).start();
                 }
-
-                request.getServletContext().setAttribute("loonSystem", LoonSystem.getSystem());
             }
 
             Gson gson = new Gson();
 
             String jsonResponse = gson.toJson(LoonSystem.getSystem());
+
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getOutputStream().print(jsonResponse);
+        }
+
+        if (action.equals("getScanProgress"))
+        {
+            Gson gson = new Gson();
+
+            ProgressStatus progressStatus = ProgressTracker.progressStatusMap.get("scanProgress");
+            if (progressStatus == null)
+                progressStatus = new ProgressStatus(0, "unknown");
+
+            String jsonResponse = gson.toJson(progressStatus);
 
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");

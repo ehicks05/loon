@@ -9,6 +9,8 @@ import Library from "./Library.jsx";
 import Player from "./Player.jsx";
 import MyHelmet from "./MyHelmet.jsx";
 import SystemSettings from "./SystemSettings.jsx";
+import Playlist from "./Playlist.jsx";
+import Playlists from "./Playlists.jsx";
 
 export default class App extends React.Component {
 
@@ -100,8 +102,11 @@ export default class App extends React.Component {
                     <MyHelmet theme={this.state.theme}/>
                     <Header isAdmin={isAdmin}/>
 
-                    <Route path='/admin/systemSettings' render={() => <SystemSettings onThemeChange={this.handleThemeChange} />}/>
-                    <Route path='/library' render={() => <Library audioTracks={tracks} currentTrackIndex={this.state.currentTrackIndex} onCurrentTrackIndexChange={this.handleCurrentTrackIndexChange} />} />
+                    <Route exact path='/admin/systemSettings' render={() => <SystemSettings onThemeChange={this.handleThemeChange} />}/>
+                    <Route exact path='/library' render={() => <Library audioTracks={tracks} currentTrackIndex={this.state.currentTrackIndex} onCurrentTrackIndexChange={this.handleCurrentTrackIndexChange} />} />
+                    <Route exact path='/playlists/:id' render={() => <Playlist audioTracks={tracks} currentTrackIndex={this.state.currentTrackIndex} onCurrentTrackIndexChange={this.handleCurrentTrackIndexChange} />} />
+                    <Route exact path='/playlists' render={() => <Playlists />} />
+
                     <Player audioTracks={tracks} currentTrackIndex={this.state.currentTrackIndex} onCurrentTrackIndexChange={this.handleCurrentTrackIndexChange} />
 
                     <Footer serverProcessingTime="123"/>

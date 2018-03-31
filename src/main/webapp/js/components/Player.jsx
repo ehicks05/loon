@@ -1,5 +1,6 @@
 import React from 'react';
 import PlaybackControls from "./PlaybackControls.jsx";
+import $ from "jquery/dist/jquery.min";
 
 export default class Player extends React.Component {
 
@@ -91,8 +92,22 @@ export default class Player extends React.Component {
 
             this.setState({pausedAt: 0});
 
-            location.href = '#track' + data.id;
-            // self.scrollToTrack(newIndex);
+            const thisElement = $('#track' + data.id);
+            const elementTop = thisElement.offset().top;
+            const elementBottom = elementTop + thisElement.outerHeight();
+            const viewportTop = $(window).scrollTop();
+            const viewportBottom = viewportTop + $(window).height();
+            if (!(elementBottom > viewportTop && elementTop < viewportBottom))
+            {
+                location.href = '#track' + data.id;
+                console.log(
+                    'elementTop: ' + elementTop + "\n" +
+                    'elementBottom: ' + elementBottom + "\n" +
+                    'viewportTop: ' + viewportTop + "\n" +
+                    'viewportBottom: ' + viewportBottom
+                )
+            }
+
         }
         if (newPlayerState === 'stopped')
         {

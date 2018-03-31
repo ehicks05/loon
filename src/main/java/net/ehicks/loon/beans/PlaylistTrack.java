@@ -53,9 +53,9 @@ public class PlaylistTrack implements Serializable
         return EOI.executeQueryOneResult("select * from playlist_tracks where id=?", Arrays.asList(id));
     }
 
-    public static PlaylistTrack getByPlaylistId(Long playlistId)
+    public static List<PlaylistTrack> getByPlaylistId(Long playlistId)
     {
-        return EOI.executeQueryOneResult("select * from playlist_tracks where playlist_id=?", Arrays.asList(playlistId));
+        return EOI.executeQuery("select * from playlist_tracks where playlist_id=?", Arrays.asList(playlistId));
     }
 
     // -------- Getters / Setters ----------

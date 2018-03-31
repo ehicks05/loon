@@ -1,6 +1,9 @@
 package net.ehicks.loon.handlers;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializer;
 import net.ehicks.common.Common;
 import net.ehicks.loon.UserSession;
 import net.ehicks.loon.beans.DBFile;
@@ -22,14 +25,32 @@ public class LibraryHandler
 
         if (action.equals("ajaxGetInitialTracks"))
         {
+            GsonBuilder gsonBuilder = new GsonBuilder();
+
+            JsonSerializer<Track> playlistSerializer = (src, typeOfSrc, context) -> {
+                JsonObject jsonPlaylist = new JsonObject();
+
+                jsonPlaylist.addProperty("id", src.getId());
+                jsonPlaylist.addProperty("album", src.getAlbum());
+                jsonPlaylist.addProperty("artist", src.getArtist());
+                jsonPlaylist.addProperty("title", src.getTitle());
+                jsonPlaylist.addProperty("size", src.getSize());
+                jsonPlaylist.addProperty("duration", src.getDuration());
+                jsonPlaylist.addProperty("trackGain", src.getTrackGain());
+                jsonPlaylist.addProperty("trackGainLinear", src.getTrackGainLinear());
+                jsonPlaylist.addProperty("artworkDbFileId", src.getArtworkDbFileId());
+
+                return jsonPlaylist;
+            };
+
+            gsonBuilder.registerTypeAdapter(Track.class, playlistSerializer);
+
+            Gson gson = gsonBuilder.create();
+
             int from = 0;
             int amount = 10000;
-            request.setAttribute("from", from);
-            request.setAttribute("library", getTracks(from, amount));
-            request.setAttribute("haveMore", isHaveMore(from + amount));
-
-            Gson gson = new Gson();
             String tracks = gson.toJson(getTracks(from, amount));
+            
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getOutputStream().print(tracks);

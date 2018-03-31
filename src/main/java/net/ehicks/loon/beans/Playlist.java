@@ -53,9 +53,14 @@ public class Playlist implements Serializable
         return EOI.executeQueryOneResult("select * from playlists where id=?", Arrays.asList(id));
     }
 
-    public static Playlist getByUserId(Long userId)
+    public static List<Playlist> getByUserId(Long userId)
     {
-        return EOI.executeQueryOneResult("select * from playlists where user_id=?", Arrays.asList(userId));
+        return EOI.executeQuery("select * from playlists where user_id=?", Arrays.asList(userId));
+    }
+
+    public int getSize()
+    {
+        return PlaylistTrack.getByPlaylistId(id).size();
     }
 
     // -------- Getters / Setters ----------

@@ -15,6 +15,8 @@ import org.jaudiotagger.tag.images.Artwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
@@ -26,6 +28,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class MusicScanner
 {
@@ -38,11 +41,22 @@ public class MusicScanner
         
         try
         {
+            ProgressTracker.progressStatusMap.put("scanProgress", new ProgressStatus(0, "incomplete"));
+
             AtomicInteger index = new AtomicInteger();
             Path basePath = Paths.get(LoonSystem.getSystem().getMusicFolder());
-            Files.walk(basePath, FileVisitOption.FOLLOW_LINKS)
+
+            List<AudioFile> audioFilesToImport = Files.walk(basePath, FileVisitOption.FOLLOW_LINKS)
                     .filter(MusicScanner::isRecognizedExtension)
-                    .forEach(path -> parseFile(path, index));
+                    .map(MusicScanner::getAudioFile).collect(Collectors.toList());
+
+            audioFilesToImport.forEach(audioFile -> {
+                parseAudioFile(audioFile, index);
+                ProgressTracker.progressStatusMap.get("scanProgress").setProgress((int) Math.floor((double) (index.get() * 100)) / audioFilesToImport.size());
+            });
+
+            log.info("Scan complete");
+            ProgressTracker.progressStatusMap.put("scanProgress", new ProgressStatus(100, "complete"));
         }
         catch (Exception e)
         {
@@ -57,29 +71,35 @@ public class MusicScanner
         return (RECOGNIZED_EXTENSIONS.contains(extension.toLowerCase()));
     }
 
-    private static void parseFile(Path path, AtomicInteger index)
+    private static AudioFile getAudioFile(Path path)
     {
         if (Track.getByPath(path.toString()) != null)
-            return;
-        
+            return null;
+
         AudioFile audioFile;
         try
         {
+            log.info(path.toFile().getName());
             audioFile = AudioFileIO.read(path.toFile());
         }
         catch (Exception e)
         {
             log.error(e.getMessage(), e);
-            return;
+            return null;
         }
 
+        return audioFile;
+    }
+
+    private static void parseAudioFile(AudioFile audioFile, AtomicInteger index)
+    {
         AudioHeader audioHeader = audioFile.getAudioHeader();
         Tag tag = audioFile.getTag();
 
         Track track = new Track();
-        track.setPath(path.toString());
+        track.setPath(audioFile.getFile().toPath().toString());
         track.setDuration((long) audioHeader.getTrackLength());
-        track.setSize(path.toFile().length());
+        track.setSize(audioFile.getFile().length());
 
         audioHeader.getSampleRateAsNumber();
 

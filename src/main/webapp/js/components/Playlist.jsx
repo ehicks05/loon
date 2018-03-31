@@ -1,7 +1,7 @@
 import React from 'react';
 import MediaItem from "./MediaItem.jsx";
 
-export default class Library extends React.Component {
+export default class Playlist extends React.Component {
     constructor(props) {
         super(props);
         this.handleCurrentTrackIndexChange = this.handleCurrentTrackIndexChange.bind(this);
@@ -18,7 +18,7 @@ export default class Library extends React.Component {
             <div>
                 <section className={"section"}>
                     <div className="container">
-                        <h1 className="title">Library</h1>
+                        <h1 className="title">Playlist</h1>
                     </div>
                 </section>
 
@@ -29,13 +29,13 @@ export default class Library extends React.Component {
                             <div id="playlist" className="playlist">
                                 <table className={'table is-fullwidth is-hoverable is-narrow is-striped'} id="list">
                                     <tbody>
-                                        {
-                                            this.props.audioTracks.map((audioTrack, index) =>
-                                                <MediaItem key={audioTrack.id} track={audioTrack} index={index}
-                                                           currentTrackIndex={this.props.currentTrackIndex}
-                                                           onCurrentTrackIndexChange={this.handleCurrentTrackIndexChange}/>
-                                            )
-                                        }
+                                    {
+                                        this.props.audioTracks.map((audioTrack, index) =>
+                                            <MediaItem key={audioTrack.id} track={audioTrack} index={index}
+                                                       currentTrackIndex={this.props.currentTrackIndex}
+                                                       onCurrentTrackIndexChange={this.handleCurrentTrackIndexChange}/>
+                                        )
+                                    }
                                     </tbody>
                                 </table>
                             </div>

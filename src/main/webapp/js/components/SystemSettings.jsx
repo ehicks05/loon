@@ -10,12 +10,42 @@ export default class SystemSettings extends React.Component {
 
         this.submitForm = this.submitForm.bind(this);
         this.handleThemeChange = this.handleThemeChange.bind(this);
+        this.getScanProgress = this.getScanProgress.bind(this);
 
         let xhr = new XMLHttpRequest();
-        xhr.open('GET', window.location.pathname + '?action=form', false);
+        xhr.open('GET', '/loon/view/admin/systemSettings?action=form', false);
         xhr.onload = function() {
             if (xhr.status === 200) {
                 self.state = {settings: JSON.parse(this.responseText)};
+            }
+            else {
+                alert('Request failed.  Returned status of ' + xhr.status);
+            }
+        };
+        xhr.send();
+
+        self.state.scanProgress = {progress: 0, status: 'unknown'};
+        // setTimeout(this.getScanProgress, 1000);
+    }
+
+    componentDidMount()
+    {
+        this.getScanProgress();
+    }
+
+    getScanProgress()
+    {
+        let self = this;
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', '/loon/view/admin/systemSettings?action=getScanProgress', false);
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                const scanProgress = JSON.parse(this.responseText);
+                console.log(scanProgress);
+                self.setState({scanProgress: scanProgress});
+
+                if (scanProgress.progress !== 100)
+                    setTimeout(self.getScanProgress, 200);
             }
             else {
                 alert('Request failed.  Returned status of ' + xhr.status);
@@ -37,6 +67,9 @@ export default class SystemSettings extends React.Component {
         
         $.ajax({method:"POST", url: url, data: formData, success: function (data) {
                 self.handleThemeChange(data.theme);
+
+                if (rescan)
+                    self.getScanProgress();
             }
         });
     }
@@ -44,6 +77,9 @@ export default class SystemSettings extends React.Component {
     render()
     {
         const systemSettings = this.state.settings;
+        const scanProgress = this.state.scanProgress;
+        const progressClass = 'progress ' + (scanProgress.status === 'complete' ? 'is-success' : 'is-info');
+        const showProgressBar = scanProgress.status === 'complete' || scanProgress.status === 'incomplete';
 
         const themes = [
             {value:'default', text:'default'},
@@ -68,7 +104,6 @@ export default class SystemSettings extends React.Component {
                         </h2>
                     </div>
                 </section>
-
                 <section className="section">
                     <div className="container">
                         <div className="columns is-multiline is-centered">
@@ -84,6 +119,12 @@ export default class SystemSettings extends React.Component {
                                 </form>
                             </div>
                         </div>
+
+                        {
+                            showProgressBar &&
+                            <progress className={progressClass} value={scanProgress.progress} max={"100"}>{scanProgress.progress}%</progress>
+                        }
+
                     </div>
                 </section>
             </div>);

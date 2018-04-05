@@ -88,9 +88,10 @@ public class Seeder
 
     private static void createPlaylists()
     {
+        Random r = new Random();
         for (User user : User.getAll())
         {
-            List<String> playlistNames = Arrays.asList("Rockin Tunes", "Classics");
+            List<String> playlistNames = Arrays.asList("Driving Songs", "Rockin Tunes", "Classics");
 
             playlistNames.forEach(playlistName -> {
                 Playlist playlist = new Playlist();
@@ -98,11 +99,25 @@ public class Seeder
                 playlist.setName(playlistName);
                 Long playlistId = EOI.insert(playlist, SystemTask.SEEDER);
 
-                for (long i = 0 ; i < 2; i++)
+                List<Long> selectedTracks = new ArrayList<>();
+
+                while (selectedTracks.size() < 5)
+                {
+                    int tries = 0;
+                    Long random = (long) r.nextInt(100) + 1;
+                    while (selectedTracks.contains(random) && tries < 10)
+                    {
+                        random = (long) r.nextInt(100) + 1;
+                        tries++;
+                    }
+                    selectedTracks.add(random);
+                }
+                
+                for (Long selectedTrackId : selectedTracks)
                 {
                     PlaylistTrack playlistTrack = new PlaylistTrack();
                     playlistTrack.setPlaylistId(playlistId);
-                    playlistTrack.setTrackId(i);
+                    playlistTrack.setTrackId(selectedTrackId);
                     EOI.insert(playlistTrack, SystemTask.SEEDER);
                 }
             });

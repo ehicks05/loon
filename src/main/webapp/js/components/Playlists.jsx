@@ -1,26 +1,28 @@
 import React from 'react';
+import {Link} from "react-router-dom";
 
 export default class Playlists extends React.Component {
     constructor(props) {
         super(props);
-        const self = this;
-
-        let xhr = new XMLHttpRequest();
-        xhr.open('GET', '/loon/view/playlists?action=form', false);
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                self.state = {playlists: JSON.parse(this.responseText)};
-            }
-            else {
-                alert('Request failed.  Returned status of ' + xhr.status);
-            }
-        };
-        xhr.send();
     }
 
     render()
     {
-        const playlists = this.state.playlists;
+        const playlists = this.props.playlists.map((playlist, index) => {
+                const highlightClass = playlist.id === this.props.selectedPlaylistId ? ' playingHighlight' : '';
+
+                return (<tr key={playlist.id} className={highlightClass}>
+                    <td> {index + 1} </td>
+                    <td> </td>
+                    <td style={{width: '100%'}}>
+                        <Link to={'/playlists/' + playlist.id} className="">
+                            {playlist.name}
+                        </Link>
+                    </td>
+                    <td> {playlist.trackIds.length} </td>
+                </tr>);
+            }
+        );
 
         return (
             <div>
@@ -38,13 +40,7 @@ export default class Playlists extends React.Component {
                                 <table className={'table is-fullwidth is-hoverable is-narrow is-striped'}>
                                     <tbody>
                                     {
-                                        playlists.map((playlist, index) =>
-                                            <tr key={playlist.id} >
-                                                <td> {index + 1} </td>
-                                                <td style={{width: '100%'}}> {playlist.name} </td>
-                                                <td> {playlist.size} </td>
-                                            </tr>
-                                        )
+                                        playlists
                                     }
                                     </tbody>
                                 </table>

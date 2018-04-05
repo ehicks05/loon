@@ -1,5 +1,9 @@
 package net.ehicks.loon.beans;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import net.ehicks.common.Common;
 import net.ehicks.eoi.EOI;
 
@@ -8,6 +12,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
@@ -61,6 +66,27 @@ public class Track implements Serializable
         this.path = path;
         this.duration = duration;
         this.size = size;
+    }
+
+    public static class Serializer implements JsonSerializer<Track>
+    {
+        @Override
+        public JsonElement serialize(Track src, Type typeOfSrc, JsonSerializationContext context)
+        {
+            JsonObject jsonPlaylist = new JsonObject();
+
+            jsonPlaylist.addProperty("id", src.getId());
+            jsonPlaylist.addProperty("album", src.getAlbum());
+            jsonPlaylist.addProperty("artist", src.getArtist());
+            jsonPlaylist.addProperty("title", src.getTitle());
+            jsonPlaylist.addProperty("size", src.getSize());
+            jsonPlaylist.addProperty("duration", src.getDuration());
+            jsonPlaylist.addProperty("trackGain", src.getTrackGain());
+            jsonPlaylist.addProperty("trackGainLinear", src.getTrackGainLinear());
+            jsonPlaylist.addProperty("artworkDbFileId", src.getArtworkDbFileId());
+
+            return jsonPlaylist;
+        }
     }
 
     @Override

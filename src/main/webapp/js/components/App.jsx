@@ -1,11 +1,10 @@
 import React from 'react';
-import { Router, Route } from 'react-router-dom'
-import { createBrowserHistory } from 'history'
+import {Route, Router} from 'react-router-dom'
+import {createBrowserHistory} from 'history'
 import 'bulma-extensions/bulma-pageloader/dist/bulma-pageloader.min.css'
 
 import Footer from "./Footer.jsx";
 import Header from "./Header.jsx";
-import Library from "./Library.jsx";
 import Player from "./Player.jsx";
 import MyHelmet from "./MyHelmet.jsx";
 import SystemSettings from "./SystemSettings.jsx";
@@ -18,18 +17,28 @@ export default class App extends React.Component {
         super(props);
         let self = this;
 
-        this.handleCurrentTrackIndexChange = this.handleCurrentTrackIndexChange.bind(this);
+        this.handleCurrentPlaylistChange = this.handleCurrentPlaylistChange.bind(this);
+        this.handleSelectedTrackIdChange = this.handleSelectedTrackIdChange.bind(this);
         this.handleThemeChange = this.handleThemeChange.bind(this);
 
         const basename = '/loon/view/';
         const history = createBrowserHistory({ basename });
         self.state = {history: history};
-        self.state.currentTrackIndex = 0;
+
+        // self.state.tracks = [];
+        self.state.selectedTrackId = 1;
+        // self.state.playlists = [];
+        self.state.selectedPlaylistId = 0;
     }
 
-    handleCurrentTrackIndexChange(newIndex)
+    handleCurrentPlaylistChange(selectedPlaylistId, selectedTrackId)
     {
-        this.setState({currentTrackIndex: newIndex});
+        this.setState({selectedPlaylistId: selectedPlaylistId, selectedTrackId: selectedTrackId});
+    }
+
+    handleSelectedTrackIdChange(selectedTrackId)
+    {
+        this.setState({selectedTrackId: selectedTrackId});
     }
 
     handleThemeChange(newTheme)
@@ -59,8 +68,6 @@ export default class App extends React.Component {
         xhr.onload = function() {
             if (xhr.status === 200) {
                 self.setState({theme: JSON.parse(this.responseText).theme});
-                console.log('theme is now: ' + JSON.parse(this.responseText).theme);
-                console.log('theme is now: ' + self.state.theme);
             }
             else {
                 console.log('Request failed.  Returned status of ' + xhr.status);
@@ -69,7 +76,20 @@ export default class App extends React.Component {
         xhr.send();
 
         xhr = new XMLHttpRequest();
-        xhr.open('GET', basename + 'library?action=ajaxGetInitialTracks', true);
+        xhr.open('GET', basename + 'playlists?action=getPlaylists', false);
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                self.setState({playlists: JSON.parse(this.responseText)});
+            }
+            else {
+                console.log('Request failed.  Returned status of ' + xhr.status);
+            }
+        };
+        xhr.send();
+
+        let url = basename + 'library?action=ajaxGetInitialTracks';
+        xhr = new XMLHttpRequest();
+        xhr.open('GET', url, false);
         xhr.onload = function() {
             if (xhr.status === 200) {
                 self.setState({tracks: JSON.parse(this.responseText)});
@@ -83,9 +103,10 @@ export default class App extends React.Component {
     
     render() {
         const tracks = this.state.tracks;
+        const playlists = this.state.playlists;
         const isAdmin = this.state.isAdmin;
 
-        if (!tracks)
+        if (!tracks || !playlists)
         {
             return (
                 <div>
@@ -103,11 +124,30 @@ export default class App extends React.Component {
                     <Header isAdmin={isAdmin}/>
 
                     <Route exact path='/admin/systemSettings' render={() => <SystemSettings onThemeChange={this.handleThemeChange} />}/>
-                    <Route exact path='/library' render={() => <Library audioTracks={tracks} currentTrackIndex={this.state.currentTrackIndex} onCurrentTrackIndexChange={this.handleCurrentTrackIndexChange} />} />
-                    <Route exact path='/playlists/:id' render={() => <Playlist audioTracks={tracks} currentTrackIndex={this.state.currentTrackIndex} onCurrentTrackIndexChange={this.handleCurrentTrackIndexChange} />} />
-                    <Route exact path='/playlists' render={() => <Playlists />} />
 
-                    <Player audioTracks={tracks} currentTrackIndex={this.state.currentTrackIndex} onCurrentTrackIndexChange={this.handleCurrentTrackIndexChange} />
+                    <Route exact path='/library' render={(props) => <Playlist {...props}
+                                                                              tracks={tracks}
+                                                                              playlists={playlists}
+                                                                              selectedTrackId={this.state.selectedTrackId}
+                                                                              onCurrentPlaylistChange={this.handleCurrentPlaylistChange}
+                                                                              onSelectedTrackIdChange={this.handleSelectedTrackIdChange} />} />
+
+                    <Route exact path='/playlists' render={() => <Playlists
+                        selectedPlaylistId={this.state.selectedPlaylistId}
+                        playlists={playlists} />} />
+                    <Route exact path='/playlists/:id' render={(props) => <Playlist {...props}
+                                                                                    tracks={tracks}
+                                                                                    playlists={playlists}
+                                                                                    selectedTrackId={this.state.selectedTrackId}
+                                                                                    onCurrentPlaylistChange={this.handleCurrentPlaylistChange}
+                                                                                    onSelectedTrackIdChange={this.handleSelectedTrackIdChange} />} />
+
+                    <Player tracks={tracks}
+                            selectedTrackId={this.state.selectedTrackId}
+                            playlists={playlists}
+                            selectedPlaylistId={this.state.selectedPlaylistId}
+                            onCurrentPlaylistChange={this.handleCurrentPlaylistChange}
+                            onSelectedTrackIdChange={this.handleSelectedTrackIdChange} />
 
                     <Footer serverProcessingTime="123"/>
                 </div>

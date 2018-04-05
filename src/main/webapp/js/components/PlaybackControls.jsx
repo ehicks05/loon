@@ -57,7 +57,7 @@ export default class PlaybackControls extends React.Component {
     {
         const progressPercent = this.props.progressPercent;
         const timeElapsed = this.props.timeElapsed;
-        const currentTrack = this.props.currentTrack;
+        const selectedTrack = this.props.selectedTrack;
         const volume = this.props.volume;
         const muted = this.props.muted;
         const shuffle = this.props.shuffle;
@@ -100,9 +100,9 @@ export default class PlaybackControls extends React.Component {
                         </p>
                         <div className="level-item">
                             <span id="timer">{timeElapsed}</span> /
-                            <span id="duration">{PlaybackControls.formatTime(currentTrack.duration)}</span>
+                            <span id="duration">{PlaybackControls.formatTime(selectedTrack ? selectedTrack.duration : 0)}</span>
                             <span style={{width:'10px'}}/>
-                            <span id="track"><b>{currentTrack.artist}</b> - {currentTrack.title} - {currentTrack.album}</span>
+                            <span id="track"><b>{selectedTrack ? selectedTrack.artist : ""}</b> - {selectedTrack ? selectedTrack.title : ""} - {selectedTrack ? selectedTrack.album : ""}</span>
                         </div>
                     </div>
 

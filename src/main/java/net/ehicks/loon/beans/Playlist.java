@@ -1,5 +1,6 @@
 package net.ehicks.loon.beans;
 
+import com.google.gson.*;
 import net.ehicks.eoi.EOI;
 
 import javax.persistence.Column;
@@ -7,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,6 +26,26 @@ public class Playlist implements Serializable
     @Column(name = "name", nullable = false)
     private String name = "";
 
+    public static class Serializer implements JsonSerializer<Playlist>
+    {
+        @Override
+        public JsonElement serialize(Playlist src, Type typeOfSrc, JsonSerializationContext context)
+        {
+            JsonArray playlistTrackIds = new JsonArray();
+
+            PlaylistTrack.getByPlaylistId(src.getId())
+                    .stream().map(PlaylistTrack::getTrackId).forEach(playlistTrackIds::add);
+
+            JsonObject jsonPlaylist = new JsonObject();
+
+            jsonPlaylist.addProperty("id", src.getId());
+            jsonPlaylist.addProperty("name", src.getName());
+            jsonPlaylist.add("trackIds", playlistTrackIds);
+
+            return jsonPlaylist;
+        }
+    }
+    
     @Override
     public boolean equals(Object obj)
     {

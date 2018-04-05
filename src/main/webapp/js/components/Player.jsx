@@ -40,14 +40,14 @@ export default class Player extends React.Component {
 
     componentWillUpdate(nextProps, nextState)
     {
-        if (nextProps.currentTrackIndex !== this.props.currentTrackIndex)
+        if (nextProps.selectedTrackId !== this.props.selectedTrackId)
         {
-            this.handlePlayerStateChange('playing', nextProps.currentTrackIndex);
+            this.handlePlayerStateChange('playing', nextProps.selectedTrackId);
         }
     }
 
-    handlePlayerStateChange(newPlayerState, newIndex) {
-        console.log('in Player.handlePlayerStateChange(' + newPlayerState + ', ' + newIndex + ')');
+    handlePlayerStateChange(newPlayerState, newTrackId) {
+        console.log('in Player.handlePlayerStateChange(' + newPlayerState + ', ' + newTrackId + ')');
         const self = this;
 
         if (newPlayerState === 'paused')
@@ -57,12 +57,12 @@ export default class Player extends React.Component {
         }
         if (newPlayerState === 'playing')
         {
-            if (!newIndex && newIndex !== 0)
-                newIndex = this.props.currentTrackIndex;
-            if (!newIndex)
-                newIndex = 0;
+            if (!newTrackId && newTrackId !== 0)
+                newTrackId = this.props.selectedTrackId;
+            if (!newTrackId)
+                newTrackId = 0;
 
-            let data = this.props.audioTracks[newIndex];
+            let data = this.props.tracks.find(track => track.id === newTrackId);
             console.log(data);
             this.trackGainNode.gain.setTargetAtTime(data.trackGainLinear, self.audioCtx.currentTime, 0.01);
 
@@ -82,7 +82,7 @@ export default class Player extends React.Component {
                 self.handleTrackChange('next');
             };
 
-            this.props.onCurrentTrackIndexChange(newIndex);
+            this.props.onSelectedTrackIdChange(newTrackId);
 
             // Start updating the progress of the track.
             requestAnimationFrame(self.step.bind(self));
@@ -93,21 +93,23 @@ export default class Player extends React.Component {
             this.setState({pausedAt: 0});
 
             const thisElement = $('#track' + data.id);
-            const elementTop = thisElement.offset().top;
-            const elementBottom = elementTop + thisElement.outerHeight();
-            const viewportTop = $(window).scrollTop();
-            const viewportBottom = viewportTop + $(window).height();
-            if (!(elementBottom > viewportTop && elementTop < viewportBottom))
+            if (thisElement && thisElement.offset())
             {
-                location.href = '#track' + data.id;
-                console.log(
-                    'elementTop: ' + elementTop + "\n" +
-                    'elementBottom: ' + elementBottom + "\n" +
-                    'viewportTop: ' + viewportTop + "\n" +
-                    'viewportBottom: ' + viewportBottom
-                )
+                const elementTop = thisElement.offset().top;
+                const elementBottom = elementTop + thisElement.outerHeight();
+                const viewportTop = $(window).scrollTop();
+                const viewportBottom = viewportTop + $(window).height();
+                if (!(elementBottom > viewportTop && elementTop < viewportBottom))
+                {
+                    location.href = '#track' + data.id;
+                    console.log(
+                        'elementTop: ' + elementTop + "\n" +
+                        'elementBottom: ' + elementBottom + "\n" +
+                        'viewportTop: ' + viewportTop + "\n" +
+                        'viewportBottom: ' + viewportBottom
+                    )
+                }
             }
-
         }
         if (newPlayerState === 'stopped')
         {
@@ -123,36 +125,51 @@ export default class Player extends React.Component {
     handleTrackChange(input) {
         const self = this;
 
-        // Get the next track based on the direction of the track.
-        let newIndex = -1;
-
-        if (this.state.shuffle)
+        let currentPlaylistTrackIds = [];
+        const currentPlaylist = this.props.playlists.find(playlist => playlist.id === this.props.selectedPlaylistId);
+        if (currentPlaylist)
         {
-            newIndex = Math.floor (Math.random() * this.props.audioTracks.length);
+            currentPlaylistTrackIds = currentPlaylist.trackIds;
         }
         else
         {
+            currentPlaylistTrackIds = this.props.tracks.map(track => track.id);
+        }
+
+        let newTrackId = -1;
+
+        if (this.state.shuffle)
+        {
+            newTrackId = Math.floor (Math.random() * currentPlaylistTrackIds.length);
+        }
+        else
+        {
+            const currentTrackIndex = currentPlaylistTrackIds.indexOf(this.props.selectedTrackId);
+
+            let newIndex;
             if (input === 'prev') {
-                newIndex = this.props.currentTrackIndex - 1;
+                newIndex = currentTrackIndex - 1;
                 if (newIndex < 0) {
-                    newIndex = this.props.audioTracks.length - 1;
+                    newIndex = currentPlaylistTrackIds.length - 1;
                 }
             }
             if (input === 'next') {
-                newIndex = this.props.currentTrackIndex + 1;
-                if (newIndex >= this.props.audioTracks.length) {
+                newIndex = currentTrackIndex + 1;
+                if (newIndex >= currentPlaylistTrackIds.length) {
                     newIndex = 0;
                 }
             }
+
+            newTrackId = currentPlaylistTrackIds[newIndex];
         }
 
-        if (newIndex === -1)
-            newIndex = input;
+        if (newTrackId === -1)
+            newTrackId = input;
 
         this.setState({pausedAt: 0}, () =>
         {
-            self.handlePlayerStateChange('playing', newIndex);
-            this.props.onCurrentTrackIndexChange(newIndex);
+            self.handlePlayerStateChange('playing', newTrackId);
+            this.props.onSelectedTrackIdChange(newTrackId);
 
             console.log('pausedAt: ' + this.state.pausedAt);
         });
@@ -253,11 +270,9 @@ export default class Player extends React.Component {
                     volume={this.state.volume}
                     muted={this.state.muted}
                     shuffle={this.state.shuffle}
-                    currentTrackIndex={this.props.currentTrackIndex}
-                    currentTrack={this.props.audioTracks[this.props.currentTrackIndex]}
+                    selectedTrack={this.props.tracks.find(track => track.id === this.props.selectedTrackId)}
                     timeElapsed={this.state.timeElapsed}
                     progressPercent={this.state.progressPercent}
-                    tracks={this.props.audioTracks}
 
                     onPlayerStateChange={this.handlePlayerStateChange}
                     onTrackChange={this.handleTrackChange}

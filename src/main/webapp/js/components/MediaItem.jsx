@@ -3,12 +3,12 @@ import React from 'react';
 export default class MediaItem extends React.Component {
     constructor(props) {
         super(props);
-        this.handleCurrentTrackIndexChange = this.handleCurrentTrackIndexChange.bind(this);
+        this.handleSelectedTrackIdChange = this.handleSelectedTrackIdChange.bind(this);
     }
 
-    handleCurrentTrackIndexChange(e, newIndex)
+    handleSelectedTrackIdChange(e, selectedTrackId)
     {
-        this.props.onCurrentTrackIndexChange(newIndex);
+        this.props.onSelectedTrackIdChange(selectedTrackId);
     }
 
     static formatTime(secs) {
@@ -28,13 +28,12 @@ export default class MediaItem extends React.Component {
         const album = this.props.track.album;
         const formattedDuration = this.props.track.duration;
 
-        const currentTrackIndex = this.props.currentTrackIndex;
-        const highlightClass = currentTrackIndex === trackIndex ? ' playingHighlight' : '';
+        const highlightClass = trackId === this.props.selectedTrackId ? ' playingHighlight' : '';
 
         return (
-            <tr className={'list-song' + highlightClass} id={'track' + trackId} onClick={(e) => this.handleCurrentTrackIndexChange(e, trackIndex)}>
+            <tr className={'list-song' + highlightClass} id={'track' + trackId} onClick={(e) => this.handleSelectedTrackIdChange(e, trackId)}>
                 <td className={"has-text-right"} style={{paddingRight: '10px'}}>
-                    {trackIndex}.
+                    {trackIndex + 1}.
                 </td>
                 <td>
                     <b>{trackTitle}</b> - {artist} - {album}

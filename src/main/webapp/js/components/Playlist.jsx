@@ -4,21 +4,57 @@ import MediaItem from "./MediaItem.jsx";
 export default class Playlist extends React.Component {
     constructor(props) {
         super(props);
-        this.handleCurrentTrackIndexChange = this.handleCurrentTrackIndexChange.bind(this);
+        this.handleSelectedTrackIdChange = this.handleSelectedTrackIdChange.bind(this);
+        this.handleCurrentPlaylistChange = this.handleCurrentPlaylistChange.bind(this);
+
+        let playlistId = this.props.match.params.id ? this.props.match.params.id : 0;
+        playlistId = Number(playlistId);
+        this.state = {playlistId: playlistId};
+        console.log(this.state.playlistId);
     }
 
-    handleCurrentTrackIndexChange(newIndex)
+    handleCurrentPlaylistChange(newPlaylist)
     {
-        this.props.onCurrentTrackIndexChange(newIndex);
+        this.props.onCurrentPlaylistChange(this.state.playlistId);
+    }
+
+    handleSelectedTrackIdChange(selectedTrackId)
+    {
+        this.props.onCurrentPlaylistChange(this.state.playlistId, selectedTrackId);
     }
 
     render()
     {
+        const tracks = this.props.tracks;
+        const selectedTrackId = this.props.selectedTrackId;
+        const playlists = this.props.playlists;
+
+        const routeParamPlaylistId = this.state.playlistId;
+
+        let mediaItems;
+        const playlist = playlists.find(playlist => playlist.id === routeParamPlaylistId);
+        console.log(playlist);
+        if (playlist)
+        {
+            mediaItems = playlist.trackIds.map((trackId, index) => {
+                    const track = tracks.find(track => track.id === trackId);
+                    return <MediaItem key={track.id} track={track} index={index} selectedTrackId={selectedTrackId} onSelectedTrackIdChange={this.handleSelectedTrackIdChange}/>
+                }
+            );
+        }
+        else
+        {
+            mediaItems = tracks.map((track, index) => {
+                    return <MediaItem key={track.id} track={track} index={index} selectedTrackId={selectedTrackId} onSelectedTrackIdChange={this.handleSelectedTrackIdChange}/>
+                }
+            );
+        }
+
         return (
             <div>
                 <section className={"section"}>
                     <div className="container">
-                        <h1 className="title">Playlist</h1>
+                        <h1 className="title">Library</h1>
                     </div>
                 </section>
 
@@ -29,13 +65,7 @@ export default class Playlist extends React.Component {
                             <div id="playlist" className="playlist">
                                 <table className={'table is-fullwidth is-hoverable is-narrow is-striped'} id="list">
                                     <tbody>
-                                    {
-                                        this.props.audioTracks.map((audioTrack, index) =>
-                                            <MediaItem key={audioTrack.id} track={audioTrack} index={index}
-                                                       currentTrackIndex={this.props.currentTrackIndex}
-                                                       onCurrentTrackIndexChange={this.handleCurrentTrackIndexChange}/>
-                                        )
-                                    }
+                                        {mediaItems}
                                     </tbody>
                                 </table>
                             </div>

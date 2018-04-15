@@ -1,5 +1,5 @@
 import React from 'react';
-import {Route, Router} from 'react-router-dom'
+import {Route, Router, Switch} from 'react-router-dom'
 import {createBrowserHistory} from 'history'
 import 'bulma-extensions/bulma-pageloader/dist/bulma-pageloader.min.css'
 
@@ -10,6 +10,7 @@ import MyHelmet from "./MyHelmet.jsx";
 import SystemSettings from "./SystemSettings.jsx";
 import Playlist from "./Playlist.jsx";
 import Playlists from "./Playlists.jsx";
+import PlaylistBuilder from "./PlaylistBuilder.jsx";
 
 export default class App extends React.Component {
 
@@ -132,15 +133,23 @@ export default class App extends React.Component {
                                                                               onCurrentPlaylistChange={this.handleCurrentPlaylistChange}
                                                                               onSelectedTrackIdChange={this.handleSelectedTrackIdChange} />} />
 
-                    <Route exact path='/playlists' render={() => <Playlists
-                        selectedPlaylistId={this.state.selectedPlaylistId}
-                        playlists={playlists} />} />
-                    <Route exact path='/playlists/:id' render={(props) => <Playlist {...props}
-                                                                                    tracks={tracks}
-                                                                                    playlists={playlists}
-                                                                                    selectedTrackId={this.state.selectedTrackId}
-                                                                                    onCurrentPlaylistChange={this.handleCurrentPlaylistChange}
-                                                                                    onSelectedTrackIdChange={this.handleSelectedTrackIdChange} />} />
+                    <Switch>
+                        <Route exact path='/playlists/new' render={(props) => <PlaylistBuilder {...props} />} />
+                        <Route exact path='/playlists/:id/edit' render={(props) => <PlaylistBuilder {...props} />} />
+
+                        <Route exact path='/playlists' render={() => <Playlists
+                            selectedPlaylistId={this.state.selectedPlaylistId}
+                            playlists={playlists} />} />
+                        <Route exact path='/playlists/:id' render={(props) => <Playlist {...props}
+                                                                                        tracks={tracks}
+                                                                                        playlists={playlists}
+                                                                                        selectedTrackId={this.state.selectedTrackId}
+                                                                                        onCurrentPlaylistChange={this.handleCurrentPlaylistChange}
+                                                                                        onSelectedTrackIdChange={this.handleSelectedTrackIdChange} />} />
+                    </Switch>
+
+                    {/* Prevents the PlaybackControls from covering up the last few tracks. */}
+                    <div style={{height: '150px'}} />
 
                     <Player tracks={tracks}
                             selectedTrackId={this.state.selectedTrackId}

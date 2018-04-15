@@ -68,36 +68,36 @@ export default class Header extends React.Component {
                                             </span>
                                             Manage System
                                         </NavLink>
-                                        <NavLink to={'/admin/systemInfo'} activeClassName='is-active' className="navbar-item">
-                                            <span className="icon is-medium has-text-info">
-                                                <FontAwesomeIcon icon={faChartBar}/>
-                                            </span>
-                                            System Info
-                                        </NavLink>
-                                        <NavLink to={'/admin/users'} activeClassName='is-active' className="navbar-item">
-                                            <span className="icon is-medium has-text-info">
-                                                <FontAwesomeIcon icon={faUser}/>
-                                            </span>
-                                            Manage Users
-                                        </NavLink>
-                                        <NavLink to={'/admin/logs'} activeClassName='is-active' className="navbar-item">
-                                            <span className="icon is-medium has-text-info">
-                                                <FontAwesomeIcon icon={faFileAlt}/>
-                                            </span>
-                                            Logs
-                                        </NavLink>
-                                        <NavLink to={'/admin/backups'} activeClassName='is-active' className="navbar-item">
-                                            <span className="icon is-medium has-text-info">
-                                                <FontAwesomeIcon icon={faCloudUploadAlt}/>
-                                            </span>
-                                            Backups
-                                        </NavLink>
-                                        <NavLink to={'/admin/sql'} activeClassName='is-active' className="navbar-item">
-                                            <span className="icon is-medium has-text-info">
-                                                <FontAwesomeIcon icon={faDatabase}/>
-                                            </span>
-                                            SQL
-                                        </NavLink>
+                                        {/*<NavLink to={'/admin/systemInfo'} activeClassName='is-active' className="navbar-item">*/}
+                                            {/*<span className="icon is-medium has-text-info">*/}
+                                                {/*<FontAwesomeIcon icon={faChartBar}/>*/}
+                                            {/*</span>*/}
+                                            {/*System Info*/}
+                                        {/*</NavLink>*/}
+                                        {/*<NavLink to={'/admin/users'} activeClassName='is-active' className="navbar-item">*/}
+                                            {/*<span className="icon is-medium has-text-info">*/}
+                                                {/*<FontAwesomeIcon icon={faUser}/>*/}
+                                            {/*</span>*/}
+                                            {/*Manage Users*/}
+                                        {/*</NavLink>*/}
+                                        {/*<NavLink to={'/admin/logs'} activeClassName='is-active' className="navbar-item">*/}
+                                            {/*<span className="icon is-medium has-text-info">*/}
+                                                {/*<FontAwesomeIcon icon={faFileAlt}/>*/}
+                                            {/*</span>*/}
+                                            {/*Logs*/}
+                                        {/*</NavLink>*/}
+                                        {/*<NavLink to={'/admin/backups'} activeClassName='is-active' className="navbar-item">*/}
+                                            {/*<span className="icon is-medium has-text-info">*/}
+                                                {/*<FontAwesomeIcon icon={faCloudUploadAlt}/>*/}
+                                            {/*</span>*/}
+                                            {/*Backups*/}
+                                        {/*</NavLink>*/}
+                                        {/*<NavLink to={'/admin/sql'} activeClassName='is-active' className="navbar-item">*/}
+                                            {/*<span className="icon is-medium has-text-info">*/}
+                                                {/*<FontAwesomeIcon icon={faDatabase}/>*/}
+                                            {/*</span>*/}
+                                            {/*SQL*/}
+                                        {/*</NavLink>*/}
                                     </div>
                                 </div>
                             }

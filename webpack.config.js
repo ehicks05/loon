@@ -17,6 +17,11 @@ module.exports = {
                     { loader: "css-loader" }
                 ]
             },
+            { test: /\.(png|jpg|gif|svg|eot|woff2|woff|ttf)/,
+                use: [
+                    { loader: "url-loader" }
+                ]
+            },
             {
                 test: /\.js$/,
                 exclude: /node_modules/,

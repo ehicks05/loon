@@ -59,15 +59,17 @@ export default class Playlist extends React.Component {
                 </section>
 
                 <section className="section" id="root">
-                    <div className="columns is-multiline is-centered">
-                        <div className="column is-four-fifths">
+                    <div className="container">
+                        <div className="columns is-multiline is-centered">
+                            <div className="column">
 
-                            <div id="playlist" className="playlist">
-                                <table className={'table is-fullwidth is-hoverable is-narrow is-striped'} id="list">
-                                    <tbody>
-                                        {mediaItems}
-                                    </tbody>
-                                </table>
+                                <div id="playlist" className="playlist">
+                                    <table className={'table is-fullwidth is-hoverable is-narrow is-striped'} id="list">
+                                        <tbody>
+                                            {mediaItems}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -2,6 +2,7 @@ package net.ehicks.loon.beans;
 
 import com.google.gson.*;
 import net.ehicks.eoi.EOI;
+import net.ehicks.loon.UserSession;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,8 +10,10 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "playlists")
@@ -83,6 +86,30 @@ public class Playlist implements Serializable
     public int getSize()
     {
         return PlaylistTrack.getByPlaylistId(id).size();
+    }
+
+    public void setTrackIds(List<Long> newTrackIds, UserSession userSession)
+    {
+        List<Long> currentTrackIds = PlaylistTrack.getByPlaylistId(id).stream()
+                .map(PlaylistTrack::getTrackId).collect(Collectors.toList());
+
+        List<Long> trackIdsToRemove = new ArrayList<>(currentTrackIds);
+        trackIdsToRemove.removeAll(newTrackIds);
+
+        List<Long> trackIdsToAdd = new ArrayList<>(newTrackIds);
+        trackIdsToAdd.removeAll(currentTrackIds);
+
+        trackIdsToRemove.forEach(trackId -> {
+            PlaylistTrack playlistTrack = PlaylistTrack.getById(trackId);
+            EOI.executeDelete(playlistTrack, userSession);
+        });
+
+        trackIdsToAdd.forEach(trackId -> {
+            PlaylistTrack playlistTrack = new PlaylistTrack();
+            playlistTrack.setPlaylistId(id);
+            playlistTrack.setTrackId(trackId);
+            EOI.insert(playlistTrack, userSession);
+        });
     }
 
     // -------- Getters / Setters ----------

@@ -1,4 +1,5 @@
 import React from 'react';
+import {Redirect} from 'react-router-dom'
 
 import 'font-awesome/css/font-awesome.css';
 import 'font-awesome/fonts/fontawesome-webfont.svg';
@@ -17,9 +18,8 @@ export default class PlaylistBuilder extends React.Component {
 
         const self = this;
 
+        self.state = {toPlaylists: false};
         let url = '/loon/view/' + 'playlists?action=getLibraryTrackPaths';
-
-        self.state = {};
 
         let xhr = new XMLHttpRequest();
         xhr.open('GET', url, false);
@@ -71,6 +71,9 @@ export default class PlaylistBuilder extends React.Component {
 
         $.ajax({method:"POST", url: url, data: formData, success: function (data) {
                 // todo: receive playlist and set state?
+                self.props.onUpdatePlaylists();
+
+                self.setState({toPlaylists: true});
             }
         });
     }
@@ -85,6 +88,9 @@ export default class PlaylistBuilder extends React.Component {
 
     render()
     {
+        if (this.state.toPlaylists)
+            return <Redirect to={'/playlists'} />;
+
         return (
             <div>
                 <section className={"section"}>

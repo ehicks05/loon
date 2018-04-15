@@ -21,6 +21,7 @@ export default class App extends React.Component {
         this.handleCurrentPlaylistChange = this.handleCurrentPlaylistChange.bind(this);
         this.handleSelectedTrackIdChange = this.handleSelectedTrackIdChange.bind(this);
         this.handleThemeChange = this.handleThemeChange.bind(this);
+        this.reloadPlaylists = this.reloadPlaylists.bind(this);
 
         const basename = '/loon/view/';
         const history = createBrowserHistory({ basename });
@@ -45,6 +46,24 @@ export default class App extends React.Component {
     handleThemeChange(newTheme)
     {
         this.setState({theme: newTheme});
+    }
+
+    reloadPlaylists()
+    {
+        const basename = '/loon/view/';
+        const self = this;
+
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', basename + 'playlists?action=getPlaylists', false);
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                self.setState({playlists: JSON.parse(this.responseText)});
+            }
+            else {
+                console.log('Request failed.  Returned status of ' + xhr.status);
+            }
+        };
+        xhr.send();
     }
 
     componentDidMount() {
@@ -76,17 +95,7 @@ export default class App extends React.Component {
         };
         xhr.send();
 
-        xhr = new XMLHttpRequest();
-        xhr.open('GET', basename + 'playlists?action=getPlaylists', false);
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                self.setState({playlists: JSON.parse(this.responseText)});
-            }
-            else {
-                console.log('Request failed.  Returned status of ' + xhr.status);
-            }
-        };
-        xhr.send();
+        this.reloadPlaylists();
 
         let url = basename + 'library?action=ajaxGetInitialTracks';
         xhr = new XMLHttpRequest();
@@ -134,12 +143,13 @@ export default class App extends React.Component {
                                                                               onSelectedTrackIdChange={this.handleSelectedTrackIdChange} />} />
 
                     <Switch>
-                        <Route exact path='/playlists/new' render={(props) => <PlaylistBuilder {...props} />} />
-                        <Route exact path='/playlists/:id/edit' render={(props) => <PlaylistBuilder {...props} />} />
+                        <Route exact path='/playlists/new' render={(props) => <PlaylistBuilder {...props} onUpdatePlaylists={this.reloadPlaylists} />} />
+                        <Route exact path='/playlists/:id/edit' render={(props) => <PlaylistBuilder {...props} onUpdatePlaylists={this.reloadPlaylists}/>} />
 
                         <Route exact path='/playlists' render={() => <Playlists
                             selectedPlaylistId={this.state.selectedPlaylistId}
-                            playlists={playlists} />} />
+                            playlists={playlists}
+                            onUpdatePlaylists={this.reloadPlaylists}/>} />
                         <Route exact path='/playlists/:id' render={(props) => <Playlist {...props}
                                                                                         tracks={tracks}
                                                                                         playlists={playlists}

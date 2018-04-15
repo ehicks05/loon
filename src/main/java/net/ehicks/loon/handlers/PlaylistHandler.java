@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -140,8 +141,6 @@ public class PlaylistHandler
                 List<Long> trackIds = Arrays.stream(trackIdsParam.split(","))
                         .map(Long::parseLong).collect(Collectors.toList());
 
-                playlist.setTrackIds(trackIds, userSession);
-
                 if (action.equals("add"))
                 {
                     Long newPlaylistId = EOI.insert(playlist, userSession);
@@ -149,9 +148,38 @@ public class PlaylistHandler
                 }
                 if (action.equals("modify"))
                     EOI.update(playlist, userSession);
+
+                // playlist must have an ID at this point
+                playlist.setTrackIds(trackIds, userSession);
             }
 
             String jsonResponse = gson.toJson(playlist);
+
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getOutputStream().print(jsonResponse);
+        }
+
+        if (action.equals("delete"))
+        {
+            GsonBuilder gsonBuilder = new GsonBuilder();
+
+            gsonBuilder.registerTypeAdapter(Playlist.class, new Playlist.Serializer());
+
+            Gson gson = gsonBuilder.create();
+
+            long playlistId = Common.stringToLong(request.getParameter("id"));
+            Playlist playlist = Playlist.getById(playlistId);
+
+            if (playlist != null)
+            {
+                // playlist must have an ID at this point
+                playlist.setTrackIds(Collections.EMPTY_LIST, userSession);
+
+                EOI.executeDelete(playlist, userSession);
+            }
+
+            String jsonResponse = gson.toJson(Playlist.getByUserId(userSession.getUserId()));
 
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");

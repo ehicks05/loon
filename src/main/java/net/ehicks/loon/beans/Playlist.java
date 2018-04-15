@@ -101,7 +101,8 @@ public class Playlist implements Serializable
 
         trackIdsToRemove.forEach(trackId -> {
             PlaylistTrack playlistTrack = PlaylistTrack.getById(trackId);
-            EOI.executeDelete(playlistTrack, userSession);
+            if (playlistTrack != null)
+                EOI.executeDelete(playlistTrack, userSession);
         });
 
         trackIdsToAdd.forEach(trackId -> {

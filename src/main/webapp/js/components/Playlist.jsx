@@ -54,7 +54,7 @@ export default class Playlist extends React.Component {
             <div>
                 <section className={"section"}>
                     <div className="container">
-                        <h1 className="title">Library</h1>
+                        <h1 className="title">{playlist ? playlist.name : 'Library'}</h1>
                     </div>
                 </section>
 

@@ -100,7 +100,7 @@ public class Playlist implements Serializable
         trackIdsToAdd.removeAll(currentTrackIds);
 
         trackIdsToRemove.forEach(trackId -> {
-            PlaylistTrack playlistTrack = PlaylistTrack.getById(trackId);
+            PlaylistTrack playlistTrack = PlaylistTrack.getByTrackId(id, trackId);
             if (playlistTrack != null)
                 EOI.executeDelete(playlistTrack, userSession);
         });
@@ -109,8 +109,36 @@ public class Playlist implements Serializable
             PlaylistTrack playlistTrack = new PlaylistTrack();
             playlistTrack.setPlaylistId(id);
             playlistTrack.setTrackId(trackId);
+            playlistTrack.setIndex(getNextAvailableIndex());
             EOI.insert(playlistTrack, userSession);
         });
+
+        consolidateTrackIndexes();
+    }
+
+    // close up gaps in indexes, keeping ordering the same.
+    public void consolidateTrackIndexes()
+    {
+        List<PlaylistTrack> tracks = PlaylistTrack.getByPlaylistId(id);
+
+        long nextIndex = 1;
+
+        for (PlaylistTrack track : tracks)
+        {
+            if (!track.getIndex().equals(nextIndex))
+            {
+                track.setIndex(nextIndex++);
+                EOI.update(track, null);
+            }
+        }
+
+    }
+
+    public long getNextAvailableIndex()
+    {
+        List<PlaylistTrack> tracks = EOI.executeQuery("select * from playlist_tracks where playlist_id=?", Arrays.asList(id));
+
+        return tracks.stream().mapToLong(PlaylistTrack::getIndex).max().orElse(1);
     }
 
     // -------- Getters / Setters ----------

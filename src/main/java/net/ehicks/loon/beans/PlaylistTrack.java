@@ -24,6 +24,9 @@ public class PlaylistTrack implements Serializable
     @Column(name = "track_id", nullable = false)
     private Long trackId;
 
+    @Column(name = "index", nullable = false)
+    private Long index;
+
     @Override
     public boolean equals(Object obj)
     {
@@ -53,9 +56,14 @@ public class PlaylistTrack implements Serializable
         return EOI.executeQueryOneResult("select * from playlist_tracks where id=?", Arrays.asList(id));
     }
 
+    public static PlaylistTrack getByTrackId(Long playlistId, Long trackId)
+    {
+        return EOI.executeQueryOneResult("select * from playlist_tracks where playlist_id=? and track_id=?", Arrays.asList(playlistId, trackId));
+    }
+
     public static List<PlaylistTrack> getByPlaylistId(Long playlistId)
     {
-        return EOI.executeQuery("select * from playlist_tracks where playlist_id=?", Arrays.asList(playlistId));
+        return EOI.executeQuery("select * from playlist_tracks where playlist_id=? order by index", Arrays.asList(playlistId));
     }
 
     // -------- Getters / Setters ----------
@@ -88,5 +96,15 @@ public class PlaylistTrack implements Serializable
     public void setTrackId(Long trackId)
     {
         this.trackId = trackId;
+    }
+
+    public Long getIndex()
+    {
+        return index;
+    }
+
+    public void setIndex(Long index)
+    {
+        this.index = index;
     }
 }

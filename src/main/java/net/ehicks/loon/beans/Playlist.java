@@ -2,6 +2,7 @@ package net.ehicks.loon.beans;
 
 import com.google.gson.*;
 import net.ehicks.eoi.EOI;
+import net.ehicks.loon.SystemTask;
 import net.ehicks.loon.UserSession;
 
 import javax.persistence.Column;
@@ -35,15 +36,21 @@ public class Playlist implements Serializable
         public JsonElement serialize(Playlist src, Type typeOfSrc, JsonSerializationContext context)
         {
             JsonArray playlistTrackIds = new JsonArray();
+            JsonArray playlistTracks = new JsonArray();
 
             PlaylistTrack.getByPlaylistId(src.getId())
                     .stream().map(PlaylistTrack::getTrackId).forEach(playlistTrackIds::add);
+
+            PlaylistTrack.getByPlaylistId(src.getId()).forEach(playlistTrack -> {
+                playlistTracks.add(context.serialize(playlistTrack));
+            });
 
             JsonObject jsonPlaylist = new JsonObject();
 
             jsonPlaylist.addProperty("id", src.getId());
             jsonPlaylist.addProperty("name", src.getName());
             jsonPlaylist.add("trackIds", playlistTrackIds);
+            jsonPlaylist.add("playlistTracks", playlistTracks);
 
             return jsonPlaylist;
         }
@@ -121,15 +128,16 @@ public class Playlist implements Serializable
     {
         List<PlaylistTrack> tracks = PlaylistTrack.getByPlaylistId(id);
 
-        long nextIndex = 1;
+        long nextIndex = 0;
 
         for (PlaylistTrack track : tracks)
         {
             if (!track.getIndex().equals(nextIndex))
             {
-                track.setIndex(nextIndex++);
-                EOI.update(track, null);
+                track.setIndex(nextIndex);
+                EOI.update(track, SystemTask.STARTUP);
             }
+            nextIndex++;
         }
 
     }
@@ -138,7 +146,7 @@ public class Playlist implements Serializable
     {
         List<PlaylistTrack> tracks = EOI.executeQuery("select * from playlist_tracks where playlist_id=?", Arrays.asList(id));
 
-        return tracks.stream().mapToLong(PlaylistTrack::getIndex).max().orElse(1);
+        return tracks.stream().mapToLong(track -> track.getIndex() + 1).max().orElse(0);
     }
 
     // -------- Getters / Setters ----------

@@ -1,4 +1,14 @@
 import React from 'react';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import faBars from "@fortawesome/fontawesome-free-solid/faBars";
+
+const getRowStyle = (draggableStyle, isDragging) => ({
+    // some basic styles to make the items look a bit nicer
+    userSelect: "none",
+    filter: isDragging ? 'brightness(150%)' : '',
+    // styles we need to apply on draggables
+    ...draggableStyle
+});
 
 export default class MediaItem extends React.Component {
     constructor(props) {
@@ -30,15 +40,49 @@ export default class MediaItem extends React.Component {
 
         const highlightClass = trackId === this.props.selectedTrackId ? ' playingHighlight' : '';
 
+        const isDraggable = this.props.isDraggable;
+
+        const provided = this.props.provided;
+        const snapshot = this.props.snapshot;
+
+        const innerRef          = provided ? provided.innerRef : null;
+        const draggableStyle    = provided ? provided.draggableProps.style : null;
+        const draggableProps    = provided ? provided.draggableProps : null;
+        const dragHandleProps   = provided ? provided.dragHandleProps : null;
+
+        const isDragging = snapshot ? snapshot.isDragging : false;
+
         return (
-            <tr className={'list-song' + highlightClass} id={'track' + trackId} onClick={(e) => this.handleSelectedTrackIdChange(e, trackId)}>
-                <td className={"has-text-right"} style={{paddingRight: '10px'}}>
-                    {trackIndex + 1}.
-                </td>
-                <td>
-                    <b>{trackTitle}</b> - {artist} - {album}
-                </td>
-                <td>{MediaItem.formatTime(formattedDuration)}</td>
-            </tr>);
+            <li className={highlightClass} id={'track' + trackId}
+                ref={innerRef}
+                {...draggableProps}
+                style={getRowStyle(draggableStyle, isDragging)}
+            >
+                <div style={{padding: '5px', verticalAlign: 'middle', display: 'flex', flexDirection: 'horizontal', justifyContent: 'space-between'}}>
+
+                    {isDraggable &&
+                        <div style={{minWidth: '40px', flex: '.3'}}>
+                            <a className="button is-small" {...dragHandleProps}>
+                                <span className="icon">
+                                    <FontAwesomeIcon icon={faBars}/>
+                                </span>
+                            </a>
+                        </div>
+                    }
+
+                    <div style={{textAlign: 'right', marginRight: '5px', minWidth: '30px', flexBasis: '30px'}}>
+                        {trackIndex + 1}.
+                    </div>
+
+                    <div className={'list-song'} style={{flex: '8'}}
+                         onClick={(e) => this.handleSelectedTrackIdChange(e, trackId)}>
+                        <b>{trackTitle}</b> - {artist} - {album}
+                    </div>
+
+                    <div style={{flexBasis: '20px'}}>
+                        {MediaItem.formatTime(formattedDuration)}
+                    </div>
+                </div>
+            </li>);
     }
 }

@@ -98,6 +98,7 @@ public class Seeder
                 playlist.setUserId(user.getId());
                 playlist.setName(playlistName);
                 Long playlistId = EOI.insert(playlist, SystemTask.SEEDER);
+                playlist.setId(playlistId);
 
                 List<Long> selectedTracks = new ArrayList<>();
 
@@ -118,6 +119,7 @@ public class Seeder
                     PlaylistTrack playlistTrack = new PlaylistTrack();
                     playlistTrack.setPlaylistId(playlistId);
                     playlistTrack.setTrackId(selectedTrackId);
+                    playlistTrack.setIndex(playlist.getNextAvailableIndex());
                     EOI.insert(playlistTrack, SystemTask.SEEDER);
                 }
             });

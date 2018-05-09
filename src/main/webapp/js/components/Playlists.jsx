@@ -39,7 +39,7 @@ export default class Playlists extends React.Component {
                             {playlist.name}
                         </Link>
                     </td>
-                    <td className={'has-text-right'}>{playlist.trackIds.length}</td>
+                    <td className={'has-text-right'}>{playlist.playlistTracks.length}</td>
                     <td>
                         <Link className={"button is-small"} to={'/playlists/' + playlist.id + '/edit'}>
                             Edit

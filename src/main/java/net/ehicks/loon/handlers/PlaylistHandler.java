@@ -185,5 +185,27 @@ public class PlaylistHandler
             response.setCharacterEncoding("UTF-8");
             response.getOutputStream().print(jsonResponse);
         }
+
+        if (action.equals("dragAndDrop"))
+        {
+            long playlistId = Common.stringToLong(request.getParameter("playlistId"));
+            long oldIndex = Common.stringToLong(request.getParameter("oldIndex").trim());
+            long newIndex = Common.stringToLong(request.getParameter("newIndex").trim());
+
+            final long LOW = Math.min(oldIndex, newIndex);
+            final long HIGH = Math.max(oldIndex, newIndex);
+
+            // increment the index of all other tracks in the playlist with indexes >= to the new index and < the previous index.
+            List<PlaylistTrack> tracks = PlaylistTrack.getByPlaylistId(playlistId);
+
+            int adjustOthersBy = newIndex < oldIndex ? 1 : -1;
+
+            tracks.stream()
+                    .filter(track -> track.getIndex() >= LOW && track.getIndex() <= HIGH)
+                    .forEach(track -> {
+                        track.setIndex(track.getIndex() == oldIndex ? newIndex : track.getIndex() + adjustOthersBy);
+                        EOI.update(track, userSession);
+                    });
+        }
     }
 }

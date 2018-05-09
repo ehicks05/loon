@@ -155,7 +155,8 @@ export default class App extends React.Component {
                                                                                         playlists={playlists}
                                                                                         selectedTrackId={this.state.selectedTrackId}
                                                                                         onCurrentPlaylistChange={this.handleCurrentPlaylistChange}
-                                                                                        onSelectedTrackIdChange={this.handleSelectedTrackIdChange} />} />
+                                                                                        onSelectedTrackIdChange={this.handleSelectedTrackIdChange}
+                                                                                        onUpdatePlaylists={this.reloadPlaylists} />} />
                     </Switch>
 
                     {/* Prevents the PlaybackControls from covering up the last few tracks. */}

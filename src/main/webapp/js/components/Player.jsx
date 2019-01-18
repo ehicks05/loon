@@ -89,6 +89,9 @@ export default class Player extends React.Component {
 
             self.audio.currentTime = this.state.pausedAt;
             self.audio.play();
+            self.audioCtx.resume().then(() => {
+                console.log('Playback resumed successfully');
+            });
 
             this.setState({pausedAt: 0});
 

@@ -14,6 +14,7 @@ import javax.persistence.Table;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.List;
 
@@ -141,7 +142,8 @@ public class Track implements Serializable
 //        db-to-linear(x) = 10^(x / 20)
         BigDecimal dbAdjustment = Common.stringToBigDecimal(trackGain.replace(" dB", ""));
         BigDecimal twenty = new BigDecimal("20");
-        BigDecimal result = BigDecimal.valueOf(Math.pow(10, dbAdjustment.divide(twenty, 3, BigDecimal.ROUND_HALF_UP).doubleValue())).setScale(3, BigDecimal.ROUND_HALF_UP);
+        BigDecimal result = BigDecimal.valueOf(Math.pow(10,
+                dbAdjustment.divide(twenty, 3, RoundingMode.HALF_UP).doubleValue())).setScale(3, RoundingMode.HALF_UP);
         return result.toString();
     }
 

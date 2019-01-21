@@ -1,10 +1,11 @@
 package net.ehicks.loon;
 
-import net.ehicks.eoi.EOI;
 import net.ehicks.loon.beans.DBFile;
-import net.ehicks.loon.beans.LoonSystem;
 import net.ehicks.loon.beans.Track;
-import net.ehicks.loon.util.CommonIO;
+import net.ehicks.loon.repos.DbFileRepository;
+import net.ehicks.loon.repos.LoonSystemRepository;
+import net.ehicks.loon.repos.TrackRepository;
+import org.imgscalr.Scalr;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
@@ -14,10 +15,14 @@ import org.jaudiotagger.tag.TagField;
 import org.jaudiotagger.tag.images.Artwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Configuration;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,25 +35,39 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+@Configuration
 public class MusicScanner
 {
-    private static final Logger log = LoggerFactory.getLogger(Controller.class);
+    private static final Logger log = LoggerFactory.getLogger(MusicScanner.class);
     private static final List<String> RECOGNIZED_EXTENSIONS = Arrays.asList("mp3", "flac", "wav", "m4a");
 
-    public static void scan()
+    private LoonSystemRepository loonSystemRepo;
+    private DbFileRepository dbFileRepo;
+    private TrackRepository trackRepo;
+
+    public MusicScanner(LoonSystemRepository loonSystemRepo, DbFileRepository dbFileRepo, TrackRepository trackRepo)
     {
-        log.info("Deleted {} tracks", Track.deleteAll());
-        
+        this.loonSystemRepo = loonSystemRepo;
+        this.dbFileRepo = dbFileRepo;
+        this.trackRepo = trackRepo;
+    }
+
+    public void scan()
+    {
+        log.info("Deleting {} tracks", trackRepo.count());
+        trackRepo.deleteAll();
+        log.info("Done deleting");
+
         try
         {
-            ProgressTracker.progressStatusMap.put("scanProgress", new ProgressStatus(0, "incomplete"));
+            ProgressTracker.progressStatusMap.put("scanProgress", new ProgressTracker.ProgressStatus(0, "incomplete"));
 
             AtomicInteger index = new AtomicInteger();
-            Path basePath = Paths.get(LoonSystem.getSystem().getMusicFolder());
+            Path basePath = Paths.get(loonSystemRepo.findById(1L).get().getMusicFolder());
 
             List<AudioFile> audioFilesToImport = Files.walk(basePath, FileVisitOption.FOLLOW_LINKS)
-                    .filter(MusicScanner::isRecognizedExtension)
-                    .map(MusicScanner::getAudioFile).collect(Collectors.toList());
+                    .filter(this::isRecognizedExtension)
+                    .map(this::getAudioFile).collect(Collectors.toList());
 
             audioFilesToImport.forEach(audioFile -> {
                 parseAudioFile(audioFile, index);
@@ -56,7 +75,7 @@ public class MusicScanner
             });
 
             log.info("Scan complete");
-            ProgressTracker.progressStatusMap.put("scanProgress", new ProgressStatus(100, "complete"));
+            ProgressTracker.progressStatusMap.put("scanProgress", new ProgressTracker.ProgressStatus(100, "complete"));
         }
         catch (Exception e)
         {
@@ -64,16 +83,16 @@ public class MusicScanner
         }
     }
 
-    private static boolean isRecognizedExtension(Path path)
+    private boolean isRecognizedExtension(Path path)
     {
         String filename = path.getFileName().toString();
         String extension = filename.substring(filename.lastIndexOf(".") + 1);
         return (RECOGNIZED_EXTENSIONS.contains(extension.toLowerCase()));
     }
 
-    private static AudioFile getAudioFile(Path path)
+    private AudioFile getAudioFile(Path path)
     {
-        if (Track.getByPath(path.toString()) != null)
+        if (trackRepo.findByPath(path.toString()) != null)
             return null;
 
         AudioFile audioFile;
@@ -91,7 +110,7 @@ public class MusicScanner
         return audioFile;
     }
 
-    private static void parseAudioFile(AudioFile audioFile, AtomicInteger index)
+    private void parseAudioFile(AudioFile audioFile, AtomicInteger index)
     {
         AudioHeader audioHeader = audioFile.getAudioHeader();
         Tag tag = audioFile.getTag();
@@ -121,17 +140,16 @@ public class MusicScanner
         {
             Artwork artwork = tag.getArtworkList().get(0);
             DBFile artworkFile = new DBFile(track.getTitle(), artwork.getBinaryData());
-            Long artworkFileId = EOI.insert(artworkFile, SystemTask.STARTUP);
-            artworkFile.setId(artworkFileId);
-            track.setArtworkDbFileId(artworkFileId);
+            artworkFile = dbFileRepo.save(artworkFile);
+            track.setArtworkDbFileId(artworkFile.getId());
             try
             {
-                byte[] thumbnailData = CommonIO.getThumbnail(new ByteArrayInputStream(artwork.getBinaryData()), artwork.getMimeType());
+                byte[] thumbnailData = getThumbnail(new ByteArrayInputStream(artwork.getBinaryData()), artwork.getMimeType());
                 DBFile thumbnail = new DBFile(track.getTitle(), thumbnailData);
-                Long thumbnailFileId = EOI.insert(thumbnail, SystemTask.STARTUP);
+                thumbnail = dbFileRepo.save(thumbnail);
 
-                artworkFile.setThumbnailId(thumbnailFileId);
-                EOI.update(artworkFile, SystemTask.STARTUP);
+                artworkFile.setThumbnailId(thumbnail.getId());
+                artworkFile = dbFileRepo.save(artworkFile);
             }
             catch (Exception e)
             {
@@ -141,7 +159,7 @@ public class MusicScanner
 
         try
         {
-            EOI.insert(track, SystemTask.STARTUP);
+            trackRepo.save(track);
             index.getAndIncrement();
             if (index.get() % 1000 == 0)
                 log.info("Added file #" + index.get());
@@ -161,7 +179,7 @@ public class MusicScanner
         tag.getFirst(FieldKey.ARTIST_SORT);
     }
 
-    private static String deepScanForReplayGain(Tag tag)
+    private String deepScanForReplayGain(Tag tag)
     {
         final Pattern getGain = Pattern.compile("-?[.\\d]+");
         Iterator<TagField> fields = tag.getFields();
@@ -176,5 +194,16 @@ public class MusicScanner
             }
         }
         return "";
+    }
+
+    private byte[] getThumbnail(InputStream inputStream, String contentType) throws IOException
+    {
+        BufferedImage srcImage = ImageIO.read(inputStream); // Load image
+        Scalr.Mode mode = srcImage.getWidth() > srcImage.getHeight() ? Scalr.Mode.FIT_TO_WIDTH : Scalr.Mode.FIT_TO_HEIGHT;
+        BufferedImage scaledImage = Scalr.resize(srcImage, mode, 128, 128); // Scale image
+        String formatName = contentType.replace("image/", "");
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ImageIO.write(scaledImage, formatName, byteArrayOutputStream);
+        return byteArrayOutputStream.toByteArray();
     }
 }

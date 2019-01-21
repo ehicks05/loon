@@ -1,133 +1,87 @@
 package net.ehicks.loon;
 
-import net.ehicks.common.Common;
-import net.ehicks.eoi.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Configuration;
 
-import javax.servlet.ServletContext;
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.ZonedDateTime;
-import java.util.Properties;
+import java.util.Arrays;
+import java.util.List;
 
+@Configuration
 public class Startup
 {
     private static final Logger log = LoggerFactory.getLogger(Startup.class);
+    private Seeder seeder;
+    private MusicScanner musicScanner;
 
-    static void loadProperties(ServletContext servletContext)
+    public Startup(Seeder seeder, MusicScanner musicScanner)
     {
-        Properties properties = new Properties();
-
-        try (InputStream input = servletContext.getResourceAsStream("/WEB-INF/loon.properties");)
-        {
-            properties.load(input);
-        }
-        catch (IOException e)
-        {
-            log.error(e.getMessage(), e);
-        }
-
-        SystemInfo.INSTANCE.setSystemStart(System.currentTimeMillis());
-        SystemInfo.INSTANCE.setServletContext(servletContext);
-
-        SystemInfo.INSTANCE.setAppName(Common.getSafeString(properties.getProperty("appName")));
-        SystemInfo.INSTANCE.setDebugLevel(Common.stringToInt(properties.getProperty("debugLevel")));
-        SystemInfo.INSTANCE.setDropCreateLoad(properties.getProperty("dropCreateLoad").equals("true"));
-
-        SystemInfo.INSTANCE.setBackupDirectory(properties.getProperty("backupDirectory"));
-        SystemInfo.INSTANCE.setOverridePropertiesDirectory(properties.getProperty("overridePropertiesDirectory"));
-
-        ConnectionInfo dbConnectionInfo = new ConnectionInfo(Common.getSafeString(properties.getProperty("dbMode")),
-                Common.getSafeString(properties.getProperty("dbHost")),
-                Common.getSafeString(properties.getProperty("dbPort")),
-                Common.getSafeString(properties.getProperty("dbName")),
-                Common.getSafeString(properties.getProperty("dbUser")),
-                Common.getSafeString(properties.getProperty("dbPass")),
-                Common.getSafeString(properties.getProperty("h2DbCacheKBs")),
-                Common.getSafeString(properties.getProperty("pgDumpPath")),
-                Common.getSafeString(properties.getProperty("sqlserverServerInstance")));
-        SystemInfo.INSTANCE.setDbConnectionInfo(dbConnectionInfo);
-
-        servletContext.setAttribute("systemInfo", SystemInfo.INSTANCE);
+        this.seeder = seeder;
+        this.musicScanner = musicScanner;
     }
 
-    static void loadVersionFile(ServletContext servletContext)
+    void start()
     {
-        Properties properties = new Properties();
-
-        try (InputStream input = servletContext.getResourceAsStream("/WEB-INF/version.txt");)
+        if (true)
         {
-            properties.load(input);
-        }
-        catch (IOException e)
-        {
-            log.error(e.getMessage(), e);
+            seeder.createLoonSystem();
+            seeder.createUsers();;
         }
 
-        SystemInfo.INSTANCE.setVersion(properties.getProperty("Version"));
-        SystemInfo.INSTANCE.setGitVersion(properties.getProperty("Revision"));
-        SystemInfo.INSTANCE.setGitVersionDate(ZonedDateTime.parse(properties.getProperty("Revision-Date")));
+        musicScanner.scan(); // needs music file path from loonSystem
 
-        servletContext.setAttribute("systemInfo", SystemInfo.INSTANCE);
+        if (true)
+            seeder.createPlaylists(); // needs music tracks to have been loaded
     }
 
-    static void loadDBMaps(ServletContext servletContext)
+    /** url, icon name, label, tab2 of the url */
+    public List<List<String>> getSettingsSubscreens()
     {
-        long subTaskStart = System.currentTimeMillis();
-        DBMap.loadDbMaps(servletContext.getRealPath("/WEB-INF/classes/net/ehicks/loon/beans"), "net.ehicks.loon.beans");
-        log.debug("Loaded DBMAPS in {} ms", (System.currentTimeMillis() - subTaskStart));
+        return Arrays.asList(
+                Arrays.asList("view?tab1=settings&tab2=savedSearches&action=form", "search", "Saved Searches", "savedSearches"),
+                Arrays.asList("view?tab1=settings&tab2=subscriptions&action=form", "envelope", "Subscriptions", "subscriptions")
+        );
     }
 
-    static void createTables()
+    /** url, icon name, label, tab2 of the url */
+    public List<List<String>> getAdminSubscreens()
     {
-        long subTaskStart = System.currentTimeMillis();
-        int tablesCreated = 0;
-        for (DBMap dbMap : DBMap.dbMaps)
-            if (!EOI.isTableExists(dbMap.tableName))
-            {
-                String createTableStatement = SQLGenerator.getCreateTableStatement(dbMap);
-                EOI.executeUpdate(createTableStatement);
-                tablesCreated++;
-
-                for (String indexDefinition : dbMap.indexDefinitions)
-                    EOI.executeUpdate(indexDefinition);
-            }
-        log.info("Autocreated {}/{} tables in {} ms", tablesCreated, DBMap.dbMaps.size(), (System.currentTimeMillis() - subTaskStart));
+        return Arrays.asList(
+                Arrays.asList("view?tab1=admin&tab2=system&tab3=modify&action=form", "server", "Manage System", "system"),
+                Arrays.asList("view?tab1=admin&tab2=users&action=form", "user", "Manage Users", "users"),
+                Arrays.asList("view?tab1=admin&tab2=system&tab3=info&action=form", "chart-bar", "System Info", "system"),
+                Arrays.asList("view?tab1=admin&tab2=logs&action=form", "file-alt", "Logs", "logs"),
+                Arrays.asList("view?tab1=admin&tab2=backups&action=form", "cloud-upload-alt", "Backups", "backups"),
+                Arrays.asList("view?tab1=admin&tab2=sql&action=form", "database", "SQL", "sql")
+        );
     }
 
-    static void dropTables()
+    /** url, icon name, label, tab2 of the url */
+    public List<Tab> getAdminScreens()
     {
-        long subTaskStart;
-        subTaskStart = System.currentTimeMillis();
-        int tablesDropped = 0;
-        for (DBMap dbMap : DBMap.dbMaps)
+        return Arrays.asList(
+                new Tab("?tab1=admin&tab2=system&tab3=modify&action=form", "server", "Manage System", "system"),
+                new Tab("?tab1=admin&tab2=system&tab3=info&action=form", "chart-bar", "System Info", "system"),
+                new Tab("?tab1=admin&tab2=users&action=form", "user", "Manage Users", "users"),
+                new Tab("?tab1=admin&tab2=logs&action=form", "file-alt", "Logs", "logs"),
+                new Tab("?tab1=admin&tab2=backups&action=form", "cloud-upload-alt", "Backups", "backups"),
+                new Tab("?tab1=admin&tab2=sql&action=form", "database", "SQL", "sql")
+        );
+    }
+
+    public class Tab
+    {
+        String path;
+        String icon;
+        String description;
+        String tab2;
+
+        public Tab(String path, String icon, String description, String tab2)
         {
-            String tableName = dbMap.tableName;
-            try
-            {
-                if (EOI.isTableExists(tableName))
-                {
-                    log.debug("Dropping " + tableName + "...");
-                    EOI.executeUpdate("drop table " + tableName);
-                    tablesDropped++;
-                }
-            }
-            catch (Exception e)
-            {
-                log.error("didnt drop {}", tableName);
-            }
+            this.path = path;
+            this.icon = icon;
+            this.description = description;
+            this.tab2 = tab2;
         }
-        log.info("Dropped {}/{} existing tables in {} ms", tablesDropped, DBMap.dbMaps.size(), (System.currentTimeMillis() - subTaskStart));
-    }
-
-    static void migrateDb()
-    {
-        SQLMigrator.migrate(DBMap.dbMaps);
-    }
-
-    static void runSqlScripts()
-    {
-
     }
 }

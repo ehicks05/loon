@@ -1,33 +1,27 @@
 package net.ehicks.loon.beans;
 
 import net.ehicks.common.Common;
-import net.ehicks.eoi.EOI;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Entity
 @Table(name = "db_files")
 public class DBFile implements Serializable
 {
     @Id
-    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "bigint not null auto_increment primary key")
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(nullable = false)
     private String name = "";
 
-    @Column(name = "content", nullable = false)
+    @Column(nullable = false)
     private byte[] content;
 
-    @Column(name = "length", nullable = false)
+    @Column(nullable = false)
     private Long length;
 
-    @Column(name = "thumbnail_id")
     private Long thumbnailId;
 
     public DBFile()
@@ -60,36 +54,10 @@ public class DBFile implements Serializable
         return this.getClass().getSimpleName() + ":" + id.toString();
     }
 
-    public static List<DBFile> getAll()
-    {
-        return EOI.executeQuery("select * from db_files");
-    }
-
-    public static DBFile getById(Long id)
-    {
-        return EOI.executeQueryOneResult("select * from db_files where id=?", Arrays.asList(id));
-    }
-
-    public static DBFile getByName(String name)
-    {
-        return EOI.executeQueryOneResult("select * from db_files where name=?", Arrays.asList(name));
-    }
-
-    public DBFile getThumbnail()
-    {
-        return DBFile.getById(thumbnailId);
-    }
-
-    public String getPreviewIcon()
-    {
-        Map<String, String> extToPreviewIcon = new HashMap<>();
-        extToPreviewIcon.put("docx", "file-word");
-        extToPreviewIcon.put("pdf", "file-pdf");
-        extToPreviewIcon.put("pptx", "file-powerpoint");
-        extToPreviewIcon.put("xlsx", "file-excel");
-        String ext = name.substring(name.lastIndexOf(".") + 1);
-        return extToPreviewIcon.getOrDefault(ext, "file");
-    }
+//    public DBFile getThumbnail()
+//    {
+//        return DBFile.getById(thumbnailId);
+//    }
 
     public String getBase64()
     {

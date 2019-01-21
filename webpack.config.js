@@ -4,9 +4,9 @@ var Visualizer = require('webpack-visualizer-plugin');
 const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 module.exports = {
-    entry: './src/main/webapp/js/dev/index.js',
+    entry: './src/main/resources/static/js/dev/index.js',
     output: {
-        path: path.resolve('src/main/webapp/js/dist'),
+        path: path.resolve('src/main/resources/static/js/dist'),
         filename: 'index_bundle.js'
     },
     module: {

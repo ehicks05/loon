@@ -5,25 +5,19 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import net.ehicks.common.Common;
-import net.ehicks.eoi.EOI;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Arrays;
-import java.util.List;
 
 @Entity
 @Table(name = "tracks")
 public class Track implements Serializable
 {
     @Id
-    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "bigint not null auto_increment primary key")
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
 
     @Column(name = "artist", nullable = false)
@@ -109,26 +103,6 @@ public class Track implements Serializable
         return this.getClass().getSimpleName() + ":" + id.toString();
     }
 
-    public static List<Track> getAll()
-    {
-        return EOI.executeQuery("select * from tracks");
-    }
-
-    public static int deleteAll()
-    {
-        return EOI.executeUpdate("delete from tracks");
-    }
-
-    public static Track getById(Long id)
-    {
-        return EOI.executeQueryOneResult("select * from tracks where id=?", Arrays.asList(id));
-    }
-
-    public static Track getByPath(String path)
-    {
-        return EOI.executeQueryOneResult("select * from tracks where path=?", Arrays.asList(path));
-    }
-
     public String getFormattedDuration()
     {
         int minutes = (int) (Math.floor(duration / 60));
@@ -147,10 +121,10 @@ public class Track implements Serializable
         return result.toString();
     }
 
-    public DBFile getArtwork()
-    {
-        return DBFile.getById(artworkDbFileId);
-    }
+//    public DBFile getArtwork()
+//    {
+//        return DBFile.getById(artworkDbFileId);
+//    }
 
     // -------- Getters / Setters ----------
 

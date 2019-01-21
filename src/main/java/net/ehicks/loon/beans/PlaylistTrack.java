@@ -1,21 +1,14 @@
 package net.ehicks.loon.beans;
 
-import net.ehicks.eoi.EOI;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
 
 @Entity
 @Table(name = "playlist_tracks")
 public class PlaylistTrack implements Serializable
 {
     @Id
-    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "bigint not null auto_increment primary key")
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
 
     @Column(name = "playlist_id", nullable = false)
@@ -26,6 +19,10 @@ public class PlaylistTrack implements Serializable
 
     @Column(name = "index", nullable = false)
     private Long index;
+
+    public PlaylistTrack()
+    {
+    }
 
     @Override
     public boolean equals(Object obj)
@@ -44,26 +41,6 @@ public class PlaylistTrack implements Serializable
     public String toString()
     {
         return this.getClass().getSimpleName() + ":" + id.toString();
-    }
-
-    public static List<PlaylistTrack> getAll()
-    {
-        return EOI.executeQuery("select * from playlist_tracks");
-    }
-
-    public static PlaylistTrack getById(Long id)
-    {
-        return EOI.executeQueryOneResult("select * from playlist_tracks where id=?", Arrays.asList(id));
-    }
-
-    public static PlaylistTrack getByTrackId(Long playlistId, Long trackId)
-    {
-        return EOI.executeQueryOneResult("select * from playlist_tracks where playlist_id=? and track_id=?", Arrays.asList(playlistId, trackId));
-    }
-
-    public static List<PlaylistTrack> getByPlaylistId(Long playlistId)
-    {
-        return EOI.executeQuery("select * from playlist_tracks where playlist_id=? order by index", Arrays.asList(playlistId));
     }
 
     // -------- Getters / Setters ----------

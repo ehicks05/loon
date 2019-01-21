@@ -1,14 +1,5 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: eric
-  Date: 7/7/2016
-  Time: 10:59 PM
-  To change this template use File | Settings | File Templates.
---%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <c:if test="${!empty loonSystem}">
     <jsp:useBean id="loonSystem" type="net.ehicks.loon.beans.LoonSystem" scope="application"/>
 </c:if>
@@ -22,7 +13,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <jsp:include page="inc_title.jsp"/>
+    <title>Loon</title>
     <jsp:include page="inc_header.jsp"/>
 
     <script>

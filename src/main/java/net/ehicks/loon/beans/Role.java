@@ -1,18 +1,14 @@
 package net.ehicks.loon.beans;
 
-import net.ehicks.eoi.EOI;
-
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
 
 @Entity
 @Table(name = "loon_roles")
 public class Role implements Serializable
 {
     @Id
-    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "bigint not null auto_increment primary key")
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
 
     @Column(name = "user_id", nullable = false)
@@ -23,6 +19,10 @@ public class Role implements Serializable
 
     @Column(name = "role_name", nullable = false, unique = true)
     private String roleName = "";
+
+    public Role()
+    {
+    }
 
     @Override
     public boolean equals(Object obj)
@@ -44,25 +44,15 @@ public class Role implements Serializable
     }
 
     // -------- Magic ----------
-    public static List<Role> getAll()
-    {
-        return EOI.executeQuery("select * from loon_roles");
-    }
-
-    public static Role getById(Long id)
-    {
-        return EOI.executeQueryOneResult("select * from loon_roles where id=?", Arrays.asList(id));
-    }
-
-    public static List<Role> getByUserId(Long userId)
-    {
-        return EOI.executeQuery("select * from loon_roles where user_id=?", Arrays.asList(userId));
-    }
-
-    public static Role getByUserIdAndRoleName(Long userId, String roleName)
-    {
-        return EOI.executeQueryOneResult("select * from loon_roles where user_id=? and role_name=?", Arrays.asList(userId, roleName));
-    }
+//    public static List<Role> getByUserId(Long userId)
+//    {
+//        return EOI.executeQuery("select * from loon_roles where user_id=?", Arrays.asList(userId));
+//    }
+//
+//    public static Role getByUserIdAndRoleName(Long userId, String roleName)
+//    {
+//        return EOI.executeQueryOneResult("select * from loon_roles where user_id=? and role_name=?", Arrays.asList(userId, roleName));
+//    }
 
     // -------- Getters / Setters ----------
 

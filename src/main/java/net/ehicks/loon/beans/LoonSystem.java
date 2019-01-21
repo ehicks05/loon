@@ -1,33 +1,24 @@
 package net.ehicks.loon.beans;
 
-import net.ehicks.eoi.EOI;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Collections;
 
 @Entity
-@Table(name = "loon_system")
+@Table
 public class LoonSystem implements Serializable
 {
     @Id
-    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "bigint not null auto_increment primary key")
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "instance_name")
     private String instanceName = "";
-
-    @Column(name = "logon_message")
     private String logonMessage = "";
-
-    @Column(name = "theme")
     private String theme = "";
-
-    @Column(name = "music_folder")
     private String musicFolder = "";
+
+    public LoonSystem()
+    {
+    }
 
     @Override
     public boolean equals(Object obj)
@@ -46,18 +37,6 @@ public class LoonSystem implements Serializable
     public String toString()
     {
         return this.getClass().getSimpleName() + ":" + id;
-    }
-
-    // --------
-
-    public static LoonSystem getSystem()
-    {
-        return EOI.executeQueryOneResult("select * from loon_system");
-    }
-
-    public static LoonSystem getById(long id)
-    {
-        return EOI.executeQueryOneResult("select * from loon_system where id=?", Collections.singletonList(id));
     }
 
     // -------- Getters / Setters ----------

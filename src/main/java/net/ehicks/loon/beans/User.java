@@ -1,39 +1,35 @@
 package net.ehicks.loon.beans;
 
-import net.ehicks.eoi.EOI;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.io.Serializable;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.Collection;
 
 @Entity
 @Table(name = "loon_users")
-public class User implements Serializable
+public class User implements UserDetails
 {
     @Id
-    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "bigint not null auto_increment primary key")
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "logon_id", nullable = false, unique = true)
-    private String logonId = "";
-
-    @Column(name = "password", nullable = false)
+    private String username = "";
     private String password = "";
+    private String fullName = "";
 
-    @Column(name = "first_name")
-    private String firstName = "";
+    public User()
+    {
+    }
 
-    @Column(name = "last_name")
-    private String lastName = "";
-
-    @Column(name = "created_on")
-    @Temporal(TemporalType.DATE)
-    private Date createdOn;
-
-    @Column(name = "updated_on")
-    @Temporal(TemporalType.DATE)
-    private Date updatedOn;
+    public User(String username, String password, String fullName)
+    {
+        this.username = username;
+        this.password = password;
+        this.fullName = fullName;
+    }
 
     @Override
     public boolean equals(Object obj)
@@ -56,30 +52,31 @@ public class User implements Serializable
 
     // --------
 
-    public boolean isAdmin()
-    {
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"));
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
         return true;
     }
 
-    public static List<User> getAll()
-    {
-        return EOI.executeQuery("select * from loon_users;");
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
     }
 
-    public static User getByLogonId(String logonid)
-    {
-        return EOI.executeQueryOneResult("select * from loon_users where logon_id=?;", new ArrayList<>(Arrays.asList(logonid)));
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
     }
 
-    public static User getByUserId(Long userId)
-    {
-        return EOI.executeQueryOneResult("select * from loon_users where id=?;", new ArrayList<>(Arrays.asList(userId)));
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 
-    public String getName()
-    {
-        return firstName + " " + lastName;
-    }
     // -------- Getters / Setters ----------
 
     public Long getId()
@@ -92,14 +89,14 @@ public class User implements Serializable
         this.id = id;
     }
 
-    public String getLogonId()
+    public String getUsername()
     {
-        return logonId;
+        return username;
     }
 
-    public void setLogonId(String logonId)
+    public void setUsername(String username)
     {
-        this.logonId = logonId;
+        this.username = username;
     }
 
     public String getPassword()
@@ -112,43 +109,13 @@ public class User implements Serializable
         this.password = password;
     }
 
-    public String getFirstName()
+    public String getFullName()
     {
-        return firstName;
+        return fullName;
     }
 
-    public void setFirstName(String firstName)
+    public void setFullName(String fullName)
     {
-        this.firstName = firstName;
-    }
-
-    public String getLastName()
-    {
-        return lastName;
-    }
-
-    public void setLastName(String lastName)
-    {
-        this.lastName = lastName;
-    }
-
-    public Date getCreatedOn()
-    {
-        return createdOn;
-    }
-
-    public void setCreatedOn(Date createdOn)
-    {
-        this.createdOn = createdOn;
-    }
-
-    public Date getUpdatedOn()
-    {
-        return updatedOn;
-    }
-
-    public void setUpdatedOn(Date updatedOn)
-    {
-        this.updatedOn = updatedOn;
+        this.fullName = fullName;
     }
 }

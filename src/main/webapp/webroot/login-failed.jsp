@@ -1,15 +1,8 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: eric
-  Date: 7/7/2016
-  Time: 11:00 PM
-  To change this template use File | Settings | File Templates.
---%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
 <head>
-    <jsp:include page="inc_title.jsp"/>
+    <title>Loon</title>
     <jsp:include page="inc_header.jsp"/>
 
     <script>

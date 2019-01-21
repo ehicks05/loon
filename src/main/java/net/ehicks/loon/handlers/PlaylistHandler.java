@@ -4,208 +4,179 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializer;
-import net.ehicks.common.Common;
-import net.ehicks.eoi.EOI;
-import net.ehicks.loon.LibraryLogic;
-import net.ehicks.loon.UserSession;
+import net.ehicks.loon.*;
 import net.ehicks.loon.beans.Playlist;
 import net.ehicks.loon.beans.PlaylistTrack;
 import net.ehicks.loon.beans.Track;
-import net.ehicks.loon.routing.Route;
+import net.ehicks.loon.beans.User;
+import net.ehicks.loon.repos.PlaylistRepository;
+import net.ehicks.loon.repos.PlaylistTrackRepository;
+import net.ehicks.loon.repos.TrackRepository;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@RestController
+@RequestMapping("/api/playlists")
 public class PlaylistHandler
 {
-    @Route(path = "playlists")
-    public static void playlists(HttpServletRequest request, HttpServletResponse response) throws IOException
+    private PlaylistRepository playlistRepo;
+    private TrackRepository trackRepo;
+    private PlaylistTrackRepository playlistTrackRepo;
+    private LibraryLogic libraryLogic;
+    private PlaylistLogic playlistLogic;
+    private PlaylistSerializer playlistSerializer;
+
+    public PlaylistHandler(PlaylistRepository playlistRepo, TrackRepository trackRepo, PlaylistTrackRepository playlistTrackRepo,
+                           LibraryLogic libraryLogic, PlaylistLogic playlistLogic, PlaylistSerializer playlistSerializer)
     {
-        String action = request.getParameter("action");
-        UserSession userSession = (UserSession) request.getSession().getAttribute("userSession");
+        this.playlistRepo = playlistRepo;
+        this.trackRepo = trackRepo;
+        this.playlistTrackRepo = playlistTrackRepo;
+        this.libraryLogic = libraryLogic;
+        this.playlistLogic = playlistLogic;
+        this.playlistSerializer = playlistSerializer;
+    }
 
-        if (action.equals("form"))
+    @GetMapping("/form")
+    public String form(@AuthenticationPrincipal User user)
+    {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+
+        JsonSerializer<Playlist> playlistSerializer = (src, typeOfSrc, context) -> {
+
+            long size = playlistTrackRepo.findByPlaylistIdOrderByIndex(src.getId()).size();
+
+            JsonObject jsonPlaylist = new JsonObject();
+
+            jsonPlaylist.addProperty("id", src.getId());
+            jsonPlaylist.addProperty("userId", src.getUserId());
+            jsonPlaylist.addProperty("name", src.getName());
+            jsonPlaylist.addProperty("size", size);
+
+            return jsonPlaylist;
+        };
+
+        gsonBuilder.registerTypeAdapter(Playlist.class, playlistSerializer);
+
+        return gsonBuilder.create().toJson(playlistRepo.findByUserId(user.getId()));
+    }
+
+    @GetMapping("/getPlaylists")
+    public String getPlaylists(@AuthenticationPrincipal User user)
+    {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+
+        gsonBuilder.registerTypeAdapter(Playlist.class, playlistSerializer);
+
+        return gsonBuilder.create().toJson(playlistRepo.findByUserId(user.getId()));
+    }
+
+    @GetMapping("/getPlaylist")
+    public Playlist getPlaylist(@RequestParam long playlistId)
+    {
+        return playlistRepo.findById(playlistId).orElse(null);
+    }
+
+    @GetMapping("/getLibraryTrackPaths")
+    public String getLibraryTrackPaths()
+    {
+        return libraryLogic.getLibraryPathsJson();
+    }
+
+    @GetMapping("/ajaxGetInitialTracks")
+    public String ajaxGetInitialTracks(@RequestParam long playlistId)
+    {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+
+        gsonBuilder.registerTypeAdapter(Track.class, new Track.Serializer());
+
+        List<Track> trackList = playlistTrackRepo.findByPlaylistIdOrderByIndex(playlistId).stream()
+                .map(playlistTrack -> trackRepo.findById(playlistTrack.getTrackId()).orElse(null))
+                .collect(Collectors.toList());
+
+        return gsonBuilder.create().toJson(trackList);
+    }
+
+    @GetMapping("/addOrModify")
+    public String add(@AuthenticationPrincipal User user, @RequestParam long playlistId, @RequestParam String action,
+                      @RequestParam String name, @RequestParam List<Long> trackIds)
+    {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+
+        gsonBuilder.registerTypeAdapter(Playlist.class, playlistSerializer);
+
+        Gson gson = gsonBuilder.create();
+
+        Playlist playlist = playlistRepo.findById(playlistId).orElse(null);
+
+        if (playlist == null && action.equals("add") && name != null)
         {
-            GsonBuilder gsonBuilder = new GsonBuilder();
-
-            JsonSerializer<Playlist> playlistSerializer = (src, typeOfSrc, context) -> {
-                JsonObject jsonPlaylist = new JsonObject();
-
-                jsonPlaylist.addProperty("id", src.getId());
-                jsonPlaylist.addProperty("userId", src.getUserId());
-                jsonPlaylist.addProperty("name", src.getName());
-                jsonPlaylist.addProperty("size", src.getSize());
-
-                return jsonPlaylist;
-            };
-
-            gsonBuilder.registerTypeAdapter(Playlist.class, playlistSerializer);
-
-            Gson gson = gsonBuilder.create();
-
-            String jsonResponse = gson.toJson(Playlist.getByUserId(userSession.getUserId()));
-
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getOutputStream().print(jsonResponse);
+            playlist = new Playlist();
+            playlist.setUserId(user.getId());
         }
 
-        if (action.equals("getPlaylists"))
+        if (playlist != null)
         {
-            GsonBuilder gsonBuilder = new GsonBuilder();
+            if (!name.isEmpty())
+                playlist.setName(name);
 
-            gsonBuilder.registerTypeAdapter(Playlist.class, new Playlist.Serializer());
+            playlist = playlistRepo.save(playlist);
 
-            Gson gson = gsonBuilder.create();
-
-            String jsonResponse = gson.toJson(Playlist.getByUserId(userSession.getUserId()));
-
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getOutputStream().print(jsonResponse);
+            // playlist must have an ID at this point
+            playlistLogic.setTrackIds(playlist.getId(), trackIds);
         }
 
-        if (action.equals("getPlaylist"))
+        return gson.toJson(playlist);
+    }
+
+    @GetMapping("/delete")
+    public String delete(@AuthenticationPrincipal User user, @RequestParam long playlistId)
+    {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+
+        gsonBuilder.registerTypeAdapter(Playlist.class, playlistSerializer);
+
+        Gson gson = gsonBuilder.create();
+
+        Playlist playlist = playlistRepo.getOne(playlistId);
+
+        if (playlist != null)
         {
-            GsonBuilder gsonBuilder = new GsonBuilder();
+            // playlist must have an ID at this point
+            playlistLogic.setTrackIds(playlist.getId(), Collections.EMPTY_LIST);
 
-            gsonBuilder.registerTypeAdapter(Playlist.class, new Playlist.Serializer());
-
-            Gson gson = gsonBuilder.create();
-
-            long playlistId = Common.stringToLong(request.getParameter("id"));
-            String jsonResponse = gson.toJson(Playlist.getById(playlistId));
-
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getOutputStream().print(jsonResponse);
+            playlistRepo.delete(playlist);
         }
 
-        if (action.equals("getLibraryTrackPaths"))
-        {
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getOutputStream().print(LibraryLogic.getLibraryPathsJson());
-        }
+        return gson.toJson(playlistRepo.findByUserId(user.getId()));
+    }
 
-        if (action.equals("ajaxGetInitialTracks"))
-        {
-            GsonBuilder gsonBuilder = new GsonBuilder();
+    @GetMapping("/dragAndDrop")
+    public String dragAndDrop(@AuthenticationPrincipal User user, @RequestParam long playlistId,
+                              @RequestParam long oldIndex, @RequestParam long newIndex)
+    {
+        final long LOW = Math.min(oldIndex, newIndex);
+        final long HIGH = Math.max(oldIndex, newIndex);
 
-            long playlistId = Common.stringToLong(request.getParameter("id"));
+        // increment the index of all other tracks in the playlist with indexes >= to the new index and < the previous index.
+        List<PlaylistTrack> playlistTracks = playlistTrackRepo.findByPlaylistIdOrderByIndex(playlistId);
 
-            gsonBuilder.registerTypeAdapter(Track.class, new Track.Serializer());
+        int adjustOthersBy = newIndex < oldIndex ? 1 : -1;
 
-            Gson gson = gsonBuilder.create();
+        playlistTracks.stream()
+                .filter(playlistTrack -> playlistTrack.getIndex() >= LOW && playlistTrack.getIndex() <= HIGH)
+                .forEach(track -> {
+                    track.setIndex(track.getIndex() == oldIndex ? newIndex : track.getIndex() + adjustOthersBy);
+                    playlistTrackRepo.save(track);
+                });
 
-            List<Track> trackList = PlaylistTrack.getByPlaylistId(playlistId).stream()
-                    .map(playlistTrack -> Track.getById(playlistTrack.getTrackId()))
-                    .collect(Collectors.toList());
-
-            String tracks = gson.toJson(trackList);
-
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getOutputStream().print(tracks);
-        }
-
-        if (action.equals("add") || action.equals("modify"))
-        {
-            GsonBuilder gsonBuilder = new GsonBuilder();
-
-            gsonBuilder.registerTypeAdapter(Playlist.class, new Playlist.Serializer());
-
-            Gson gson = gsonBuilder.create();
-
-            long playlistId = Common.stringToLong(request.getParameter("id"));
-            Playlist playlist = Playlist.getById(playlistId);
-
-            if (playlist == null && action.equals("add") && request.getParameter("name") != null)
-            {
-                playlist = new Playlist();
-                playlist.setUserId(userSession.getUserId());
-            }
-
-            if (playlist != null)
-            {
-                String name = Common.getSafeString(request.getParameter("name"));
-                if (!name.isEmpty())
-                    playlist.setName(name);
-
-                String trackIdsParam = Common.getSafeString(request.getParameter("trackIds"));
-                List<Long> trackIds = Arrays.stream(trackIdsParam.split(","))
-                        .map(Long::parseLong).collect(Collectors.toList());
-
-                if (action.equals("add"))
-                {
-                    Long newPlaylistId = EOI.insert(playlist, userSession);
-                    playlist.setId(newPlaylistId);
-                }
-                if (action.equals("modify"))
-                    EOI.update(playlist, userSession);
-
-                // playlist must have an ID at this point
-                playlist.setTrackIds(trackIds, userSession);
-            }
-
-            String jsonResponse = gson.toJson(playlist);
-
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getOutputStream().print(jsonResponse);
-        }
-
-        if (action.equals("delete"))
-        {
-            GsonBuilder gsonBuilder = new GsonBuilder();
-
-            gsonBuilder.registerTypeAdapter(Playlist.class, new Playlist.Serializer());
-
-            Gson gson = gsonBuilder.create();
-
-            long playlistId = Common.stringToLong(request.getParameter("id"));
-            Playlist playlist = Playlist.getById(playlistId);
-
-            if (playlist != null)
-            {
-                // playlist must have an ID at this point
-                playlist.setTrackIds(Collections.EMPTY_LIST, userSession);
-
-                EOI.executeDelete(playlist, userSession);
-            }
-
-            String jsonResponse = gson.toJson(Playlist.getByUserId(userSession.getUserId()));
-
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getOutputStream().print(jsonResponse);
-        }
-
-        if (action.equals("dragAndDrop"))
-        {
-            long playlistId = Common.stringToLong(request.getParameter("playlistId"));
-            long oldIndex = Common.stringToLong(request.getParameter("oldIndex").trim());
-            long newIndex = Common.stringToLong(request.getParameter("newIndex").trim());
-
-            final long LOW = Math.min(oldIndex, newIndex);
-            final long HIGH = Math.max(oldIndex, newIndex);
-
-            // increment the index of all other tracks in the playlist with indexes >= to the new index and < the previous index.
-            List<PlaylistTrack> tracks = PlaylistTrack.getByPlaylistId(playlistId);
-
-            int adjustOthersBy = newIndex < oldIndex ? 1 : -1;
-
-            tracks.stream()
-                    .filter(track -> track.getIndex() >= LOW && track.getIndex() <= HIGH)
-                    .forEach(track -> {
-                        track.setIndex(track.getIndex() == oldIndex ? newIndex : track.getIndex() + adjustOthersBy);
-                        EOI.update(track, userSession);
-                    });
-        }
+        return "";
     }
 }

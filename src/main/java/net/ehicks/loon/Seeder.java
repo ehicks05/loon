@@ -1,95 +1,76 @@
 package net.ehicks.loon;
 
 import net.ehicks.loon.beans.*;
-import net.ehicks.loon.util.PasswordUtil;
-import net.ehicks.common.Timer;
-import net.ehicks.eoi.EOI;
+import net.ehicks.loon.repos.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.*;
 
+@Configuration
 public class Seeder
 {
     private static final Logger log = LoggerFactory.getLogger(Seeder.class);
+    private UserRepository userRepo;
+    private TrackRepository trackRepo;
+    private PlaylistRepository playlistRepo;
+    private PlaylistTrackRepository playlistTrackRepo;
+    private PasswordEncoder passwordEncoder;
+    private LoonSystemRepository loonSystemRepo;
+    private PlaylistLogic playlistLogic;
 
-    static void createDemoData()
+    public Seeder(UserRepository userRepo, TrackRepository trackRepo, PlaylistRepository playlistRepo,
+                  PlaylistTrackRepository playlistTrackRepo, PasswordEncoder passwordEncoder, LoonSystemRepository loonSystemRepo,
+                  PlaylistLogic playlistLogic)
     {
-        log.info("Seeding dummy data");
-        Timer timer = new Timer();
-
-        // use in production
-        createLoonSystem();
-        log.debug(timer.printDuration("createLoonSystem"));
-
-        createUsers();
-        log.debug(timer.printDuration("createUsers"));
-
-        createPlaylists();
-        log.debug(timer.printDuration("createPlaylists"));
-
-        log.info(timer.printDuration("Done seeding dummy data"));
+        this.userRepo = userRepo;
+        this.trackRepo = trackRepo;
+        this.playlistRepo = playlistRepo;
+        this.playlistTrackRepo = playlistTrackRepo;
+        this.passwordEncoder = passwordEncoder;
+        this.loonSystemRepo = loonSystemRepo;
+        this.playlistLogic = playlistLogic;
     }
 
-    private static void createLoonSystem()
+    void createDemoData()
     {
-        LoonSystem loonSystem = LoonSystem.getSystem();
-        if (loonSystem == null)
-        {
-            loonSystem = new LoonSystem();
-            long id = EOI.insert(loonSystem, SystemTask.SEEDER);
-            loonSystem = LoonSystem.getById(id);
-        }
+        createLoonSystem();
+        createUsers();
+        createPlaylists();
+    }
+
+    public void createLoonSystem()
+    {
+        LoonSystem loonSystem = new LoonSystem();
         loonSystem.setInstanceName("Loon of Bridgewater");
         loonSystem.setLogonMessage("<span>Welcome to Loon.</span>");
-        loonSystem.setTheme("");
-//        loonSystem.setMusicFolder("d:/music loon");
+        loonSystem.setTheme("default");
         loonSystem.setMusicFolder("c:/k/music");
-
-        EOI.update(loonSystem, SystemTask.SEEDER);
+        loonSystem = loonSystemRepo.save(loonSystem);
     }
 
-    private static void createUsers()
+    public void createUsers()
     {
         Map<String, List<String>> users = new LinkedHashMap<>();
-        users.put("eric@test.com", new ArrayList<>(Arrays.asList("eric", "2", "Eric", "Tester")));
-        users.put("steve@test.com", new ArrayList<>(Arrays.asList("steve", "15", "Steve", "Tester")));
-        users.put("tupac@test.com", new ArrayList<>(Arrays.asList("tupac", "3", "2", "Pac")));
+        users.put("eric@test.com", new ArrayList<>(Arrays.asList("eric", "Eric Tester")));
+        users.put("steve@test.com", new ArrayList<>(Arrays.asList("steve", "Steve Tester")));
+        users.put("tupac@test.com", new ArrayList<>(Arrays.asList("tupac", "2 Pac")));
 
-        for (String key : users.keySet())
-        {
-            User user = new User();
-            user.setLogonId(key);
-
-            String rawPassword = users.get(key).get(0);
-            String password = PasswordUtil.digestPassword(rawPassword);
-
-            user.setPassword(password);
-
-            user.setFirstName(users.get(key).get(2));
-            user.setLastName(users.get(key).get(3));
-            user.setCreatedOn(new Date());
-            user.setUpdatedOn(new Date());
-            long userId = EOI.insert(user, SystemTask.SEEDER);
-
-            Role role = new Role();
-            role.setLogonId(user.getLogonId());
-            role.setUserId(userId);
-            role.setRoleName("user");
-            EOI.insert(role, SystemTask.SEEDER);
-
-            if (user.getLogonId().equals("eric@test.com"))
-            {
-                role.setRoleName("admin");
-                EOI.insert(role, SystemTask.SEEDER);
-            }
-        }
+        users.forEach((key, value) -> {
+            RegistrationForm registrationForm = new RegistrationForm(key, value.get(0), value.get(1));
+            userRepo.save(registrationForm.toUser(passwordEncoder));
+        });
     }
 
-    private static void createPlaylists()
+    public void createPlaylists()
     {
         Random r = new Random();
-        for (User user : User.getAll())
+
+        List<Track> tracks = trackRepo.findAll();
+
+        for (User user : userRepo.findAll())
         {
             List<String> playlistNames = Arrays.asList("Driving Songs", "Rockin Tunes", "Classics");
 
@@ -97,30 +78,29 @@ public class Seeder
                 Playlist playlist = new Playlist();
                 playlist.setUserId(user.getId());
                 playlist.setName(playlistName);
-                Long playlistId = EOI.insert(playlist, SystemTask.SEEDER);
-                playlist.setId(playlistId);
 
-                List<Long> selectedTracks = new ArrayList<>();
+                playlist = playlistRepo.save(playlist);
 
-                while (selectedTracks.size() < 5)
+                List<Long> selectedTrackIds = new ArrayList<>();
+
+                int tries = 0;
+                while (tries < 10)
                 {
-                    int tries = 0;
-                    Long random = (long) r.nextInt(100) + 1;
-                    while (selectedTracks.contains(random) && tries < 10)
-                    {
-                        random = (long) r.nextInt(100) + 1;
-                        tries++;
-                    }
-                    selectedTracks.add(random);
+                    int trackListIndex = r.nextInt(tracks.size());
+                    Long trackId = tracks.get(trackListIndex).getId();
+                    if (!selectedTrackIds.contains(trackId))
+                        selectedTrackIds.add(trackId);
+
+                    tries++;
                 }
                 
-                for (Long selectedTrackId : selectedTracks)
+                for (Long selectedTrackId : selectedTrackIds)
                 {
                     PlaylistTrack playlistTrack = new PlaylistTrack();
-                    playlistTrack.setPlaylistId(playlistId);
+                    playlistTrack.setPlaylistId(playlist.getId());
                     playlistTrack.setTrackId(selectedTrackId);
-                    playlistTrack.setIndex(playlist.getNextAvailableIndex());
-                    EOI.insert(playlistTrack, SystemTask.SEEDER);
+                    playlistTrack.setIndex(playlistLogic.getNextAvailableIndex(playlist.getId()));
+                    playlistTrackRepo.save(playlistTrack);
                 }
             });
         }

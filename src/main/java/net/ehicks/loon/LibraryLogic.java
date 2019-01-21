@@ -2,9 +2,11 @@ package net.ehicks.loon;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.ehicks.loon.beans.LoonSystem;
-import net.ehicks.loon.beans.PlaylistTrack;
 import net.ehicks.loon.beans.Track;
+import net.ehicks.loon.repos.LoonSystemRepository;
+import net.ehicks.loon.repos.PlaylistTrackRepository;
+import net.ehicks.loon.repos.TrackRepository;
+import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,14 +14,26 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Service
 public class LibraryLogic
 {
-    public static String getLibraryPathsJson()
+    private LoonSystemRepository loonSystemRepo;
+    private TrackRepository trackRepo;
+    private PlaylistTrackRepository playlistTrackRepository;
+
+    public LibraryLogic(LoonSystemRepository loonSystemRepo, TrackRepository trackRepo, PlaylistTrackRepository playlistTrackRepository)
+    {
+        this.loonSystemRepo = loonSystemRepo;
+        this.trackRepo = trackRepo;
+        this.playlistTrackRepository = playlistTrackRepository;
+    }
+
+    public String getLibraryPathsJson()
     {
         Node root = getLibraryPaths();
 
         // todo this is test code
-        PlaylistTrack.getByPlaylistId(1L).forEach(playlistTrack ->
+        playlistTrackRepository.findByPlaylistIdOrderByIndex(1L).forEach(playlistTrack ->
                 root.getDescendantById(playlistTrack.getTrackId().intValue()).ifPresent(node -> node.checked = true)
         );
 
@@ -36,17 +50,16 @@ public class LibraryLogic
         return json;
     }
 
-    private static Node getLibraryPaths()
+    private Node getLibraryPaths()
     {
-        List<Track> tracks = Track.getAll();
-        Path libraryPath = Paths.get(LoonSystem.getSystem().getMusicFolder());
+        Path libraryPath = Paths.get(loonSystemRepo.findById(1L).orElse(null).getMusicFolder());
 
         AtomicInteger folderId = new AtomicInteger();
         Node root = new Node(libraryPath, libraryPath.getRoot().toString(), folderId.getAndDecrement(), libraryPath.toFile().isDirectory());
 
         buildNodesFromPath(root, libraryPath, folderId, 0);
 
-        for (Track track : tracks)
+        for (Track track : trackRepo.findAll())
         {
             Path path = Paths.get(track.getPath());
             buildNodesFromPath(root, path, folderId, track.getId());
@@ -54,7 +67,7 @@ public class LibraryLogic
         return root;
     }
 
-    private static void buildNodesFromPath(Node root, Path path, AtomicInteger folderId, long trackId)
+    private void buildNodesFromPath(Node root, Path path, AtomicInteger folderId, long trackId)
     {
         Node context = root;
         for (int i = 0; i < path.getNameCount(); i++)

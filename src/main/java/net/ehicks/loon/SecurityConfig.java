@@ -26,14 +26,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
         auth
                 .userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder);
-
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/login", "/images/**", "/js/**", "/styles/**").permitAll()
+                .antMatchers("/login", "/register", "/images/**", "/js/**", "/styles/**").permitAll()
                 .antMatchers("/**")
                 .hasRole("USER")
                 .and()
@@ -47,31 +46,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
         http.csrf().disable(); // todo deal with this
 
     }
-
-//    DataSource dataSource;
-//
-//    public SecurityConfig(DataSource dataSource)
-//    {
-//        this.dataSource = dataSource;
-//    }
-//    @Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception
-//    {
-//        // in memory
-////        auth.inMemoryAuthentication()
-////                .withUser("eric@test.com")
-////                .password("eric")
-////                .authorities("ROLE_USER");
-//
-//        // jdbc
-//        auth.jdbcAuthentication()
-//                .dataSource(dataSource)
-//                .usersByUsernameQuery(
-//                        "select username, password, enabled from Users " +
-//                                "where username=?")
-//                .authoritiesByUsernameQuery(
-//                        "select username, authority from UserAuthorities " +
-//                                "where username=?")
-//                .passwordEncoder(new BCryptPasswordEncoder());
-//    }
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.nio.file.Paths;
 
 @Controller
@@ -18,35 +19,35 @@ public class MediaController
     private static final Logger log = LoggerFactory.getLogger(MediaController.class);
 
     private TrackRepository trackRepo;
+    private MyResourceHttpRequestHandler handler;
 
-    public MediaController(TrackRepository trackRepo)
+    public MediaController(TrackRepository trackRepo, MyResourceHttpRequestHandler handler)
     {
         this.trackRepo = trackRepo;
+        this.handler = handler;
     }
 
     @GetMapping("/media")
     protected void getMedia(HttpServletRequest request, HttpServletResponse response, @RequestParam Long id)
     {
-        // Set standard HTTP/1.1 no-cache headers.
-//        response.setHeader("Cache-Control", "private, no-store, no-cache, must-revalidate");
-
         Track track = trackRepo.findById(id).orElse(null);
         if (track != null)
         {
             try
             {
-                // works but no seeking:
-//                byte[] bytes = Files.readAllBytes(Paths.get(track.getPath()));
-//                response.getOutputStream().write(bytes);
-
                 MultipartFileSender.fromPath(Paths.get(track.getPath()))
                         .with(request)
                         .with(response)
                         .serveResource();
+
+                // todo: ran into a range off-by-one error with this. would like to eventually remove MultipartFileSender.
+//                request.setAttribute(MyResourceHttpRequestHandler.ATTR_FILE, new File(track.getPath()));
+//                handler.handleRequest(request, response);
+
             }
             catch (Exception e)
             {
-                log.error(e.getMessage(), e);
+                log.error(e.getMessage());
             }
         }
     }

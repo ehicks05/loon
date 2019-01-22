@@ -1,7 +1,7 @@
 import React from 'react';
-import {Route, Router, Switch} from 'react-router-dom'
+import {Redirect, Route, Router, Switch} from 'react-router-dom'
 import {createBrowserHistory} from 'history'
-import 'bulma-extensions/bulma-pageloader/dist/bulma-pageloader.min.css'
+import 'bulma-extensions/bulma-pageloader/dist/css/bulma-pageloader.min.css'
 
 import Footer from "./Footer.jsx";
 import Header from "./Header.jsx";
@@ -131,6 +131,7 @@ export default class App extends React.Component {
                     <MyHelmet theme={this.state.theme}/>
                     <Header isAdmin={isAdmin}/>
 
+                    <Route exact path='/' render={() => <Redirect to='/library' /> } />
                     <Route exact path='/admin/systemSettings' render={() => <SystemSettings onThemeChange={this.handleThemeChange} />}/>
 
                     <Route exact path='/library' render={(props) => <Playlist {...props}

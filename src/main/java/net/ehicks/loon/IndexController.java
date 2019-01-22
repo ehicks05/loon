@@ -1,31 +1,30 @@
 package net.ehicks.loon;
 
-import net.ehicks.loon.repos.UserRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import net.ehicks.loon.beans.LoonSystem;
+import net.ehicks.loon.repos.LoonSystemRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/")
 public class IndexController
 {
-    private UserRepository userRepo;
-    private PasswordEncoder passwordEncoder;
+    private LoonSystemRepository loonSystemRepo;
 
-    public IndexController(UserRepository userRepo, PasswordEncoder passwordEncoder) {
-        this.userRepo = userRepo;
-        this.passwordEncoder = passwordEncoder;
+    public IndexController(LoonSystemRepository loonSystemRepo) {
+        this.loonSystemRepo = loonSystemRepo;
+    }
+
+    @ModelAttribute("loonSystem")
+    public LoonSystem loonSystem()
+    {
+        return loonSystemRepo.findById(1L).orElse(null);
     }
 
     @GetMapping
     public String showIndex() {
         return "index";
     }
-
-//    @PostMapping
-//    public String processRegistration(RegistrationForm form) {
-//        userRepo.save(form.toUser(passwordEncoder));
-//        return "redirect:/login";
-//    }
 }

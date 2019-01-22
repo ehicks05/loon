@@ -2,28 +2,82 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Loon</title>
+    <span th:replace="inc_head"> </span>
+
+    <style>
+        html,body {
+            font-size: 14px;
+            font-weight: 300;
+        }
+        .hero.is-success {
+            background: #F2F6FA;
+        }
+    </style>
+
+    <script>
+        function validateRegistrationForm()
+        {
+            let email = document.getElementById('username').value;
+            let password = document.getElementById('password').value;
+            let confirm = document.getElementById('confirm').value;
+            let fullname = document.getElementById('fullname').value;
+            if (!email || !password || !confirm || !fullname)
+            {
+                alert('please fill out all fields.');
+                return;
+            }
+            if (password !== confirm)
+            {
+                alert('Password was not entered the same twice.');
+                return;
+            }
+
+            document.getElementById('registerForm').submit();
+        }
+    </script>
 </head>
 
 <body>
-<h1>Register</h1>
-<img th:src="@{/images/TacoCloud.png}"/>
+<section class="hero is-success is-fullheight">
+    <div class="hero-body">
+        <div class="container has-text-centered">
+            <div class="column is-4 is-offset-4">
+                <h3 class="title has-text-grey" th:text="${loonSystem.instanceName}"> </h3>
+                <p class="subtitle has-text-grey">Please register below.</p>
+                <div class="box">
+                    <figure class="avatar">
+                        <img th:src="@{/images/loon.png}" style="width: 128px">
+                    </figure>
+                    <form method="POST" th:action="@{/register}" id="registerForm">
+                        <div class="field">
+                            <div class="control">
+                                <input class="input is-medium" type="email" placeholder="Your Email" autofocus="" id="username" name="username">
+                            </div>
+                        </div>
 
-<form method="POST" th:action="@{/register}" id="registerForm">
+                        <div class="field">
+                            <div class="control">
+                                <input class="input is-medium" type="password" placeholder="Your Password" id="password" name="password">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="control">
+                                <input class="input is-medium" type="password" placeholder="Confirm Your Password" id="confirm" name="confirm">
+                            </div>
+                        </div>
 
-    <label for="username">Username: </label>
-    <input type="text" id="username" name="username"/><br/>
-
-    <label for="password">Password: </label>
-    <input type="password" id="password" name="password"/><br/>
-
-    <label for="confirm">Confirm password: </label>
-    <input type="password" id="confirm" name="confirm"/><br/>
-
-    <label for="fullname">Full name: </label>
-    <input type="text" id="fullname" name="fullname"/><br/>
-
-    <input type="submit" value="Register"/>
-</form>
+                        <div class="field">
+                            <div class="control">
+                                <input class="input is-medium" type="text" placeholder="Your Name" id="fullname" name="fullname">
+                            </div>
+                        </div>
+                        <input type="button" value="Register" class="button is-block is-primary is-medium" onclick="validateRegistrationForm();" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 </body>
 </html>

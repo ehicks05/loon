@@ -13,10 +13,7 @@ import net.ehicks.loon.repos.PlaylistRepository;
 import net.ehicks.loon.repos.PlaylistTrackRepository;
 import net.ehicks.loon.repos.TrackRepository;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -79,9 +76,13 @@ public class PlaylistHandler
     }
 
     @GetMapping("/getPlaylist")
-    public Playlist getPlaylist(@RequestParam long playlistId)
+    public String getPlaylist(@RequestParam long playlistId)
     {
-        return playlistRepo.findById(playlistId).orElse(null);
+        GsonBuilder gsonBuilder = new GsonBuilder();
+
+        gsonBuilder.registerTypeAdapter(Playlist.class, playlistSerializer);
+
+        return gsonBuilder.create().toJson(playlistRepo.findById(playlistId).orElse(null));
     }
 
     @GetMapping("/getLibraryTrackPaths")
@@ -104,7 +105,7 @@ public class PlaylistHandler
         return gsonBuilder.create().toJson(trackList);
     }
 
-    @GetMapping("/addOrModify")
+    @PostMapping("/addOrModify")
     public String add(@AuthenticationPrincipal User user, @RequestParam long playlistId, @RequestParam String action,
                       @RequestParam String name, @RequestParam List<Long> trackIds)
     {
@@ -158,7 +159,7 @@ public class PlaylistHandler
         return gson.toJson(playlistRepo.findByUserId(user.getId()));
     }
 
-    @GetMapping("/dragAndDrop")
+    @PostMapping("/dragAndDrop")
     public String dragAndDrop(@AuthenticationPrincipal User user, @RequestParam long playlistId,
                               @RequestParam long oldIndex, @RequestParam long newIndex)
     {

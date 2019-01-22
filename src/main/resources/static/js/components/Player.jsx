@@ -143,7 +143,9 @@ export default class Player extends React.Component {
 
         if (this.state.shuffle)
         {
-            newTrackId = Math.floor (Math.random() * currentPlaylistTrackIds.length);
+            let newPlaylistTrackIndex = Math.floor (Math.random() * currentPlaylistTrackIds.length);
+            newTrackId = currentPlaylistTrackIds[newPlaylistTrackIndex];
+            console.log("new random trackId: " + newTrackId)
         }
         else
         {

@@ -1,8 +1,10 @@
 import React from 'react';
 import {Link, NavLink} from "react-router-dom";
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import faServer from '@fortawesome/fontawesome-free-solid/faServer'
-import faUser from '@fortawesome/fontawesome-free-solid/faUser'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faServer, faUser, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
+
+library.add(faServer, faUser, faSignOutAlt);
 
 export default class Header extends React.Component {
     componentDidMount() {
@@ -38,7 +40,7 @@ export default class Header extends React.Component {
                 <div className="container">
                     <div className="navbar-brand">
                         <div className="navbar-item">
-                            <a href="/"><img src={"/images/loon.png"} alt="Loon" /></a>
+                            <img src={"/images/loon.png"} style={{height: '28px'}} alt="Loon" />
                         </div>
 
                         <button className="button navbar-burger" data-target="navMenu">
@@ -75,11 +77,11 @@ export default class Header extends React.Component {
                             }
                         </div>
                         <div className="navbar-end">
-                            <Link to='/logout'  className="navbar-item">
+                            <a href='/logout' className="navbar-item">
                                 <span className="icon is-medium has-text-light">
-                                    <i className="fas fa-lg fa-sign-out-alt" />
+                                    <FontAwesomeIcon icon={faSignOutAlt}/>
                                 </span>
-                            </Link>
+                            </a>
                         </div>
                     </div>
                 </div>

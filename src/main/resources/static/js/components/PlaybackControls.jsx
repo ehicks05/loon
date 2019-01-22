@@ -1,15 +1,9 @@
 import React from 'react';
-import 'bulma-extensions/bulma-slider/dist/bulma-slider.min.js'
-import 'bulma-extensions/bulma-slider/dist/bulma-slider.min.css'
+import 'bulma-extensions/bulma-slider/dist/js/bulma-slider.min.js'
+import 'bulma-extensions/bulma-slider/dist/css/bulma-slider.min.css'
 
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import faVolumeUp from '@fortawesome/fontawesome-free-solid/faVolumeUp'
-import faVolumeOff from '@fortawesome/fontawesome-free-solid/faVolumeOff'
-import faRandom from '@fortawesome/fontawesome-free-solid/faRandom'
-import faPlay from '@fortawesome/fontawesome-free-solid/faPlay'
-import faPause from '@fortawesome/fontawesome-free-solid/faPause'
-import faStepForward from '@fortawesome/fontawesome-free-solid/faStepForward'
-import faStepBackward from '@fortawesome/fontawesome-free-solid/faStepBackward'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faVolumeUp, faVolumeOff, faRandom, faPlay, faPause, faStepForward, faStepBackward } from '@fortawesome/free-solid-svg-icons'
 
 export default class PlaybackControls extends React.Component {
     constructor(props) {

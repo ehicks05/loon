@@ -16,8 +16,11 @@ public class User implements UserDetails
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
 
+    @Column(nullable=false)
     private String username = "";
+    @Column(nullable=false)
     private String password = "";
+    @Column(nullable=false)
     private String fullName = "";
 
     public User()

@@ -62,10 +62,10 @@ export default class PlaylistBuilder extends React.Component {
     save()
     {
         const self = this;
-        const action = this.state.playlist ? 'modify' : 'add';
-        const url = '/api/playlists/' + action;
+        const url = '/api/playlists/addOrModify';
         const formData = {};
-        formData.id = this.state.playlist ? this.state.playlist.id : 0;
+        formData.action = this.state.playlist ? 'modify' : 'add';
+        formData.playlistId = this.state.playlist ? this.state.playlist.id : 0;
         formData.name = document.getElementById('name').value;
         formData.trackIds = this.state.checked.toString();
 

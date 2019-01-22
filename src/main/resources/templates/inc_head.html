@@ -23,7 +23,7 @@
 
     <!--Bulma-->
     <!--<link rel="stylesheet" th:href="@{'https://unpkg.com/bulmaswatch/' + loonSystem.theme + '/bulmaswatch.min.css'}">-->
-    <link rel="stylesheet" th:href="@{'https://unpkg.com/bulmaswatch/default/bulmaswatch.min.css'}">
+    <link rel="stylesheet" th:href="@{'https://unpkg.com/bulmaswatch/' + ${loonSystem.theme} + '/bulmaswatch.min.css'}">
     <!--Bulma-->
 
     <!--Font Awesome-->
@@ -32,8 +32,8 @@
 
     <link rel="shortcut icon" th:href="@{/images/puffin.png}">
     <link rel="stylesheet" type="text/css" th:href="@{/styles/style.css}" media="screen" />
-    <script th:src="@{/js/util.js}"></script>
-    <script th:src="@{/js/ajaxUtil.js}"></script>
+    <!--<script th:src="@{/js/util.js}"></script>-->
+    <!--<script th:src="@{/js/ajaxUtil.js}"></script>-->
 </head>
 <body>
 

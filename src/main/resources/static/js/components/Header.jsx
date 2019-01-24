@@ -34,6 +34,8 @@ export default class Header extends React.Component {
     render()
     {
         const isAdmin = this.props.isAdmin;
+        const selectedPlaylistId = this.props.selectedPlaylistId;
+        const currentPlaylist = selectedPlaylistId === 0 ? '\'The Library\'' : '\'' + this.props.playlists.filter((playlist) => playlist.id === selectedPlaylistId)[0].name + '\'';
 
         return (
             <nav className="navbar is-primary" role="navigation" aria-label="main navigation">
@@ -75,6 +77,10 @@ export default class Header extends React.Component {
                                     </div>
                                 </div>
                             }
+
+                            <div className={"navbar-item"}>
+                                Playing Tracks from {currentPlaylist}
+                            </div>
                         </div>
                         <div className="navbar-end">
                             <a href='/logout' className="navbar-item">

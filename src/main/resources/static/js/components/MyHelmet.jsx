@@ -14,9 +14,7 @@ export default class MyHelmet extends React.Component {
         if (!theme)
             theme = 'default';
 
-        let themeUrl = 'https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css';
-        if (theme !== 'default')
-            themeUrl = 'https://unpkg.com/bulmaswatch/' + theme + '/bulmaswatch.min.css';
+        let themeUrl = 'https://unpkg.com/bulmaswatch/' + theme + '/bulmaswatch.min.css';
 
         return (
             <Helmet>

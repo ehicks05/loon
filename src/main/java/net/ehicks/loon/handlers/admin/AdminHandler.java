@@ -32,10 +32,12 @@ public class AdminHandler
     @PostMapping("/systemSettings/modify")
     public LoonSystem modify(LoonSystem loonSystem, @RequestParam boolean rescan)
     {
+        loonSystem = loonSystemRepo.save(loonSystem);
+
         if (rescan)
             new Thread(musicScanner::scan).start();
 
-        return loonSystemRepo.save(loonSystem);
+        return loonSystem;
     }
 
     @GetMapping("/systemSettings/getScanProgress")

@@ -1,24 +1,9 @@
-<!--<jsp:useBean id="signUpResultMessage" type="java.lang.String" scope="session"/>-->
-<!--<jsp:useBean id="signUpResultClass" type="java.lang.String" scope="session"/>-->
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Loon</title>
     <span th:replace="inc_head"> </span>
 
-    <script>
-        $(function () {
-            $('#j_username').focus();
-
-            $('#j_password').on('keypress', function (e) {
-                if (e.keyCode === 13)
-                {
-                    $('#frmLogin').submit();
-                }
-            });
-        });
-    </script>
     <style>
         html,body {
             font-size: 14px;

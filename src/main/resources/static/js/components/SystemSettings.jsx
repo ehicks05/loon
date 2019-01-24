@@ -10,6 +10,7 @@ export default class SystemSettings extends React.Component {
 
         this.submitForm = this.submitForm.bind(this);
         this.handleThemeChange = this.handleThemeChange.bind(this);
+        this.handleUpdateTracks = this.handleUpdateTracks.bind(this);
         this.getScanProgress = this.getScanProgress.bind(this);
 
         let xhr = new XMLHttpRequest();
@@ -45,7 +46,18 @@ export default class SystemSettings extends React.Component {
                 self.setState({scanProgress: scanProgress});
 
                 if (scanProgress.progress !== 100)
+                {
                     setTimeout(self.getScanProgress, 200);
+                    self.setState({scanSinceLastTrackUpdate: true})
+                }
+                else
+                {
+                    if (self.state.scanSinceLastTrackUpdate)
+                    {
+                        self.handleUpdateTracks();
+                        self.setState({scanSinceLastTrackUpdate: false})
+                    }
+                }
             }
             else {
                 alert('Request failed.  Returned status of ' + xhr.status);
@@ -57,6 +69,12 @@ export default class SystemSettings extends React.Component {
     handleThemeChange(newTheme)
     {
         this.props.onThemeChange(newTheme);
+    }
+
+    handleUpdateTracks()
+    {
+        console.log('Finished rescan, updating track listing.');
+        this.props.onUpdateTracks();
     }
 
     submitForm(rescan)

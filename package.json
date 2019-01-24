@@ -6,43 +6,40 @@
   "author": "Eric Hicks <ehicks05@yahoo.com>",
   "license": "MIT",
   "scripts": {
-    "start": "webpack-dev-server --mode development",
     "build": "webpack --mode production",
     "dev": "webpack --mode development"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.12",
+    "@fortawesome/free-regular-svg-icons": "^5.6.3",
     "@fortawesome/free-solid-svg-icons": "^5.6.3",
     "@fortawesome/react-fontawesome": "^0.1.4",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "bulma": "^0.7.2",
     "bulma-extensions": "^4.0.1",
-    "font-awesome": "^4.7.0",
     "history": "^4.7.2",
-    "html-webpack-plugin": "^3.2.0",
     "jquery": "^3.3.1",
-    "jquery.fancytree": "^2.30.2",
-    "path": "^0.12.7",
     "react": "^16.7.0",
     "react-beautiful-dnd": "^10.0.3",
     "react-checkbox-tree": "^1.4.1",
     "react-dom": "^16.7.0",
     "react-helmet": "^5.2.0",
-    "react-router-dom": "^4.3.1",
-    "webpack": "^4.29.0",
-    "webpack-cli": "^3.2.1",
-    "webpack-dev-server": "^3.1.14"
+    "react-loadable": "^5.5.0",
+    "react-router-dom": "^4.3.1"
   },
   "devDependencies": {
-    "babel-core": "^6.26.3",
-    "babel-loader": "^7.1.5",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-react": "^6.24.1",
+    "@babel/core": "^7.2.2",
+    "@babel/plugin-proposal-object-rest-spread": "^7.3.1",
+    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+    "@babel/preset-env": "^7.3.1",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.5",
     "css-loader": "^2.1.0",
     "hard-source-webpack-plugin": "^0.13.1",
-    "speed-measure-webpack-plugin": "^1.3.0",
+    "path": "^0.12.7",
     "style-loader": "^0.23.1",
     "url-loader": "^1.1.2",
-    "webpack-visualizer-plugin": "^0.1.11"
+    "webpack": "^4.29.0",
+    "webpack-bundle-analyzer": "^3.0.3",
+    "webpack-cli": "^3.2.1"
   }
 }

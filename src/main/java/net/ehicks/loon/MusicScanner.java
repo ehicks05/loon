@@ -23,33 +23,31 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Configuration
 public class MusicScanner
 {
     private static final Logger log = LoggerFactory.getLogger(MusicScanner.class);
-    private static final List<String> RECOGNIZED_EXTENSIONS = Arrays.asList("mp3", "flac", "wav", "m4a");
 
     private LoonSystemRepository loonSystemRepo;
     private DbFileRepository dbFileRepo;
     private TrackRepository trackRepo;
+    private FileWalker fileWalker;
 
-    public MusicScanner(LoonSystemRepository loonSystemRepo, DbFileRepository dbFileRepo, TrackRepository trackRepo)
+    public MusicScanner(LoonSystemRepository loonSystemRepo, DbFileRepository dbFileRepo, TrackRepository trackRepo, FileWalker fileWalker)
     {
         this.loonSystemRepo = loonSystemRepo;
         this.dbFileRepo = dbFileRepo;
         this.trackRepo = trackRepo;
+        this.fileWalker = fileWalker;
     }
 
     public void scan()
@@ -62,32 +60,30 @@ public class MusicScanner
         {
             ProgressTracker.progressStatusMap.put("scanProgress", new ProgressTracker.ProgressStatus(0, "incomplete"));
 
-            AtomicInteger index = new AtomicInteger();
+            AtomicInteger filesProcessed = new AtomicInteger();
+            AtomicInteger tracksAdded = new AtomicInteger();
             Path basePath = Paths.get(loonSystemRepo.findById(1L).get().getMusicFolder());
 
-            List<AudioFile> audioFilesToImport = Files.walk(basePath, FileVisitOption.FOLLOW_LINKS)
-                    .filter(this::isRecognizedExtension)
-                    .map(this::getAudioFile).collect(Collectors.toList());
+            Files.walkFileTree(basePath, fileWalker);
+            List<Path> paths = fileWalker.getPaths();
 
-            audioFilesToImport.forEach(audioFile -> {
-                parseAudioFile(audioFile, index);
-                ProgressTracker.progressStatusMap.get("scanProgress").setProgress((int) Math.floor((double) (index.get() * 100)) / audioFilesToImport.size());
+            paths.forEach(path -> {
+                AudioFile audioFile = getAudioFile(path);
+                if (audioFile == null)
+                    return;
+
+                parseAudioFile(audioFile, tracksAdded);
+                int progress = (int) ((filesProcessed.incrementAndGet() * 100) / (double) paths.size());
+                ProgressTracker.progressStatusMap.get("scanProgress").setProgress(progress);
             });
 
-            log.info("Scan complete");
+            log.info("Scan complete: Added " + tracksAdded + " tracks.");
             ProgressTracker.progressStatusMap.put("scanProgress", new ProgressTracker.ProgressStatus(100, "complete"));
         }
         catch (Exception e)
         {
             log.error(e.getMessage(), e);
         }
-    }
-
-    private boolean isRecognizedExtension(Path path)
-    {
-        String filename = path.getFileName().toString();
-        String extension = filename.substring(filename.lastIndexOf(".") + 1);
-        return (RECOGNIZED_EXTENSIONS.contains(extension.toLowerCase()));
     }
 
     private AudioFile getAudioFile(Path path)
@@ -110,7 +106,7 @@ public class MusicScanner
         return audioFile;
     }
 
-    private void parseAudioFile(AudioFile audioFile, AtomicInteger index)
+    private void parseAudioFile(AudioFile audioFile, AtomicInteger tracksAdded)
     {
         AudioHeader audioHeader = audioFile.getAudioHeader();
         Tag tag = audioFile.getTag();
@@ -160,9 +156,7 @@ public class MusicScanner
         try
         {
             trackRepo.save(track);
-            index.getAndIncrement();
-            if (index.get() % 1000 == 0)
-                log.info("Added file #" + index.get());
+            tracksAdded.getAndIncrement();
         }
         catch (Exception e)
         {

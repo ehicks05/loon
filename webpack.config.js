@@ -1,5 +1,5 @@
 const path = require('path');
-var Visualizer = require('webpack-visualizer-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
@@ -7,7 +7,8 @@ module.exports = {
     entry: './src/main/resources/static/js/dev/index.js',
     output: {
         path: path.resolve('src/main/resources/static/js/dist'),
-        filename: 'index_bundle.js'
+        filename: 'index_bundle.js',
+        publicPath: '/js/dist/'
     },
     module: {
         rules: [
@@ -34,6 +35,6 @@ module.exports = {
         ]
     },
     plugins: [
-        new Visualizer(), new HardSourceWebpackPlugin()
+        new BundleAnalyzerPlugin({analyzerMode: 'static', openAnalyzer: false}), new HardSourceWebpackPlugin()
     ]
 }

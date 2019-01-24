@@ -10,7 +10,7 @@ const getRowStyle = (draggableStyle, isDragging) => ({
     ...draggableStyle
 });
 
-export default class MediaItem extends React.Component {
+export default class MediaItem extends React.PureComponent {
     constructor(props) {
         super(props);
         this.handleSelectedTrackIdChange = this.handleSelectedTrackIdChange.bind(this);
@@ -70,13 +70,14 @@ export default class MediaItem extends React.Component {
                         </div>
                     }
 
-                    <div style={{textAlign: 'right', marginRight: '5px', minWidth: '30px', flexBasis: '30px'}}>
+                    <div style={{textAlign: 'right', marginRight: '5px', minWidth: '30px', flexBasis: '36px'}}>
                         {trackIndex + 1}.
                     </div>
 
                     <div className={'list-song'} style={{flex: '8'}}
                          onClick={(e) => this.handleSelectedTrackIdChange(e, trackId)}>
-                        <b>{trackTitle}</b> - {artist} - {album}
+                        <b>{trackTitle}</b>
+                        <br />{artist} - <i>{album}</i>
                     </div>
 
                     <div style={{flexBasis: '20px'}}>

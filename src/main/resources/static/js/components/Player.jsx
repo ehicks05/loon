@@ -1,6 +1,7 @@
 import React from 'react';
 import PlaybackControls from "./PlaybackControls.jsx";
 import $ from "jquery/dist/jquery.min";
+import {Howl, Howler} from 'howler';
 
 export default class Player extends React.Component {
 
@@ -14,20 +15,11 @@ export default class Player extends React.Component {
         this.handleShuffleChange = this.handleShuffleChange.bind(this);
         this.handleProgressChange = this.handleProgressChange.bind(this);
 
-        this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-        this.audio = null;
-        this.audioBufferSourceNode = this.audioCtx.createBufferSource;
-
-        this.trackGainNode = this.audioCtx.createGain();
-        this.trackGainNode.connect(this.audioCtx.destination);
-
-        this.gainNode = this.audioCtx.createGain();
-        this.gainNode.connect(this.trackGainNode);
-
         this.lastAnimationFrame = Date.now();
+        Howler.autoSuspend = false;
 
         this.state = {
+            howl: null,
             playerState: 'stopped',
             pausedAt: 0,
             volume: 1,
@@ -52,50 +44,66 @@ export default class Player extends React.Component {
 
         if (newPlayerState === 'paused')
         {
-            self.setState({pausedAt: self.audio.currentTime});
-            self.audio.pause();
+            self.state.howl.pause();
         }
         if (newPlayerState === 'playing')
         {
-            if (!newTrackId && newTrackId !== 0)
-                newTrackId = this.props.selectedTrackId;
-            if (!newTrackId)
-                newTrackId = 0;
+            if (!newTrackId && self.state.howl && !self.state.howl.playing())
+            {
+                // we need to resume
+                self.state.howl.play();
 
-            let data = this.props.tracks.find(track => track.id === newTrackId);
-            console.log(data);
-            this.trackGainNode.gain.setTargetAtTime(data.trackGainLinear, self.audioCtx.currentTime, 0.01);
+                // Start updating the progress of the track.
+                requestAnimationFrame(self.step.bind(self));  // do this since we're exiting early
 
-            if (self.audio)
-                self.audio.pause();
+                this.setState({playerState: newPlayerState}); // do this since we're exiting early
+                return;
+            }
 
-            self.audio = new Audio();
-            self.audio.src = '/media?id=' + data.id;
-            self.audio.controls = false;
-            self.audio.autoplay = false;
-            document.body.appendChild(self.audio);
+            let track = this.props.tracks.find(track => track.id === newTrackId);
 
-            self.audioBufferSourceNode = self.audioCtx.createMediaElementSource(self.audio);
-            self.audioBufferSourceNode.connect(self.gainNode);
+            if (self.state.howl && self.state.howl.playing())
+            {
+                if (self.state.howl._src === '/media?id=' + track.id)
+                {
+                    // we need to pause
+                    self.state.howl.pause();
+                    this.setState({playerState: 'paused'}); // do this since we're exiting early
+                    return;
+                }
+            }
+            
+            if (self.state.howl)
+                self.state.howl.unload();
 
-            self.audio.onended = function () {
-                self.handleTrackChange('next');
-            };
+            self.setState({
+                howl: new Howl({
+                    src: '/media?id=' + track.id,
+                    html5: false,
+                    format: [track.path.substring(track.path.lastIndexOf('.') + 1)],
+                    volume: track.trackGainLinear,
+                    // pool: 0,
+                    onend: function () {
+                        self.handleTrackChange('next');
+                    },
+                    onloaderror: function (id, msg) {
+                        console.log(msg);
+                    },
+                    onplayerror: function (id, msg) {
+                        console.log(msg);
+                    }
+                })
+            }, function () {
+                self.state.howl.play();
+                console.log('now playing ' + track.title);
+            });
 
             this.props.onSelectedTrackIdChange(newTrackId);
 
             // Start updating the progress of the track.
             requestAnimationFrame(self.step.bind(self));
 
-            self.audio.currentTime = this.state.pausedAt;
-            self.audio.play();
-            self.audioCtx.resume().then(() => {
-                console.log('Playback resumed successfully');
-            });
-
-            this.setState({pausedAt: 0});
-
-            const thisElement = $('#track' + data.id);
+            const thisElement = $('#track' + track.id);
             if (thisElement && thisElement.offset())
             {
                 const elementTop = thisElement.offset().top;
@@ -104,7 +112,7 @@ export default class Player extends React.Component {
                 const viewportBottom = viewportTop + $(window).height();
                 if (!(elementBottom > viewportTop && elementTop < viewportBottom))
                 {
-                    location.href = '#track' + data.id;
+                    location.href = '#track' + track.id;
                     console.log(
                         'elementTop: ' + elementTop + "\n" +
                         'elementBottom: ' + elementBottom + "\n" +
@@ -114,30 +122,20 @@ export default class Player extends React.Component {
                 }
             }
         }
-        if (newPlayerState === 'stopped')
-        {
-            if (self.audio) {
-                self.audio.pause();
-                self.audio.currentTime = 0;
-            }
-        }
 
         this.setState({playerState: newPlayerState});
     }
 
     handleTrackChange(input) {
+        console.log('handleTrackChange');
         const self = this;
 
         let currentPlaylistTrackIds = [];
         const currentPlaylist = this.props.playlists.find(playlist => playlist.id === this.props.selectedPlaylistId);
         if (currentPlaylist)
-        {
             currentPlaylistTrackIds = currentPlaylist.trackIds;
-        }
         else
-        {
             currentPlaylistTrackIds = this.props.tracks.map(track => track.id);
-        }
 
         let newTrackId = -1;
 
@@ -171,13 +169,8 @@ export default class Player extends React.Component {
         if (newTrackId === -1)
             newTrackId = input;
 
-        this.setState({pausedAt: 0}, () =>
-        {
-            self.handlePlayerStateChange('playing', newTrackId);
-            this.props.onSelectedTrackIdChange(newTrackId);
-
-            console.log('pausedAt: ' + this.state.pausedAt);
-        });
+        // self.handlePlayerStateChange('playing', newTrackId);
+        this.props.onSelectedTrackIdChange(newTrackId);
     }
 
     static scaleVolume(linearInput)
@@ -195,19 +188,14 @@ export default class Player extends React.Component {
     handleVolumeChange(volume) {
         let self = this;
 
-        const scaledVolume = Player.scaleVolume(volume);
-        this.gainNode.gain.setTargetAtTime(scaledVolume, self.audioCtx.currentTime, 0.02);
-
-        this.setState({volume: volume});
+        // todo: fade
+        Howler.volume(Player.scaleVolume(volume));
+        self.setState({volume: volume});
     }
 
     handleMuteChange(muted) {
-        if (this.state.muted)
-            this.gainNode.gain.setTargetAtTime(Player.scaleVolume(this.state.volume), this.audioCtx.currentTime, 0.02);
-        else
-            this.gainNode.gain.setTargetAtTime(0, this.audioCtx.currentTime, 0.02);
-
-        this.setState({muted: !this.state.muted});
+        this.state.howl.mute(!this.state.howl.mute());
+        this.setState({muted: this.state.howl.mute()});
     }
 
     handleShuffleChange(shuffle) {
@@ -218,14 +206,12 @@ export default class Player extends React.Component {
         let self = this;
 
         // Convert the percent into a seek position.
-        self.audio.currentTime = self.audio.duration * progress;
+        // self.state.howl.fade(self.state.howl.volume(), 0, 50);
+        self.state.howl.seek(self.state.howl.duration() * progress);
+        // self.state.howl.fade(0, self.state.howl.volume(), 50);
 
-        this.gainNode.gain.setTargetAtTime(0, this.audioCtx.currentTime, 0.06);
         this.setState({progress: progress}); // todo: this should probably be delayed or debounced
-        this.gainNode.gain.setTargetAtTime(Player.scaleVolume(this.state.volume), this.audioCtx.currentTime, 0.06);
     }
-
-    // document.getElementById('sliderBtn').addEventListener('mousemove', move);
 
     static formatTime(secs) {
         const minutes = Math.floor(secs / 60) || 0;
@@ -253,11 +239,11 @@ export default class Player extends React.Component {
         {
             // console.log(elapsed);
             // Determine our current seek position.
-            let audioCurrentTime = self.audio.currentTime;
+            let audioCurrentTime = self.state.howl.seek();
             // console.log(audioCurrentTime);
             this.setState({timeElapsed: Player.formatTime(Math.round(audioCurrentTime))});
-            if (self.audio)
-                this.setState({progressPercent: (((audioCurrentTime / self.audio.duration) * 100) || 0)});
+            if (self.state.howl)
+                this.setState({progressPercent: (((audioCurrentTime / self.state.howl.duration()) * 100) || 0)});
 
             this.lastAnimationFrame = Date.now();
         }

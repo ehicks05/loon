@@ -34,15 +34,11 @@ public class Seeder
         this.playlistLogic = playlistLogic;
     }
 
-    void createDemoData()
-    {
-        createLoonSystem();
-        createUsers();
-        createPlaylists();
-    }
-
     public void createLoonSystem()
     {
+        if (loonSystemRepo.findById(1L).orElse(null) != null)
+            return;
+
         LoonSystem loonSystem = new LoonSystem();
         loonSystem.setInstanceName("Loon of Bridgewater");
         loonSystem.setLogonMessage("<span>Welcome to Loon.</span>");
@@ -53,10 +49,13 @@ public class Seeder
 
     public void createUsers()
     {
+        if (userRepo.count() > 0)
+            return;
+
         Map<String, List<String>> users = new LinkedHashMap<>();
         users.put("eric@test.com", new ArrayList<>(Arrays.asList("eric", "Eric Tester")));
         users.put("steve@test.com", new ArrayList<>(Arrays.asList("steve", "Steve Tester")));
-        users.put("tupac@test.com", new ArrayList<>(Arrays.asList("tupac", "2 Pac")));
+        users.put("val@test.com", new ArrayList<>(Arrays.asList("val", "Val Tester")));
 
         users.forEach((key, value) -> {
             RegistrationForm registrationForm = new RegistrationForm(key, value.get(0), value.get(1));
@@ -66,9 +65,14 @@ public class Seeder
 
     public void createPlaylists()
     {
+        if (playlistRepo.count() > 0)
+            return;
+
         Random r = new Random();
 
         List<Track> tracks = trackRepo.findAll();
+        if (tracks.size() == 0)
+            return;
 
         for (User user : userRepo.findAll())
         {

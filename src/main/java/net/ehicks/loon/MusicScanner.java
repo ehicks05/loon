@@ -1,6 +1,7 @@
 package net.ehicks.loon;
 
 import net.ehicks.loon.beans.DBFile;
+import net.ehicks.loon.beans.LoonSystem;
 import net.ehicks.loon.beans.Track;
 import net.ehicks.loon.repos.DbFileRepository;
 import net.ehicks.loon.repos.LoonSystemRepository;
@@ -52,9 +53,8 @@ public class MusicScanner
 
     public void scan()
     {
-        log.info("Deleting {} tracks", trackRepo.count());
-        trackRepo.deleteAll();
-        log.info("Done deleting");
+        if (trackRepo.count() > 0)
+            return;
 
         try
         {
@@ -62,7 +62,16 @@ public class MusicScanner
 
             AtomicInteger filesProcessed = new AtomicInteger();
             AtomicInteger tracksAdded = new AtomicInteger();
-            Path basePath = Paths.get(loonSystemRepo.findById(1L).get().getMusicFolder());
+            LoonSystem loonSystem = loonSystemRepo.findById(1L).orElse(null);
+            if (loonSystem == null)
+                return;
+
+            Path basePath = Paths.get(loonSystem.getMusicFolder());
+            if (!basePath.toFile().exists())
+            {
+                log.info("basePath doesn't exist.");
+                return;
+            }
 
             Files.walkFileTree(basePath, fileWalker);
             List<Path> paths = fileWalker.getPaths();
@@ -133,25 +142,7 @@ public class MusicScanner
         track.setTrackGainLinear(track.convertDBToLinear());
 
         if (tag.getArtworkList().size() > 0)
-        {
-            Artwork artwork = tag.getArtworkList().get(0);
-            DBFile artworkFile = new DBFile(track.getTitle(), artwork.getBinaryData());
-            artworkFile = dbFileRepo.save(artworkFile);
-            track.setArtworkDbFileId(artworkFile.getId());
-            try
-            {
-                byte[] thumbnailData = getThumbnail(new ByteArrayInputStream(artwork.getBinaryData()), artwork.getMimeType());
-                DBFile thumbnail = new DBFile(track.getTitle(), thumbnailData);
-                thumbnail = dbFileRepo.save(thumbnail);
-
-                artworkFile.setThumbnailId(thumbnail.getId());
-                artworkFile = dbFileRepo.save(artworkFile);
-            }
-            catch (Exception e)
-            {
-                log.error(e.getMessage(), e);
-            }
-        }
+//            saveArtwork(tag, track);
 
         try
         {
@@ -171,6 +162,27 @@ public class MusicScanner
         tag.getFirst(FieldKey.DISC_NO);
         tag.getFirst(FieldKey.COMPOSER);
         tag.getFirst(FieldKey.ARTIST_SORT);
+    }
+
+    private void saveArtwork(Tag tag, Track track)
+    {
+        Artwork artwork = tag.getArtworkList().get(0);
+        DBFile artworkFile = new DBFile(track.getTitle(), artwork.getBinaryData());
+        artworkFile = dbFileRepo.save(artworkFile);
+        track.setArtworkDbFileId(artworkFile.getId());
+        try
+        {
+            byte[] thumbnailData = getThumbnail(new ByteArrayInputStream(artwork.getBinaryData()), artwork.getMimeType());
+            DBFile thumbnail = new DBFile(track.getTitle(), thumbnailData);
+            thumbnail = dbFileRepo.save(thumbnail);
+
+            artworkFile.setThumbnailId(thumbnail.getId());
+            artworkFile = dbFileRepo.save(artworkFile);
+        }
+        catch (Exception e)
+        {
+            log.error(e.getMessage(), e);
+        }
     }
 
     private String deepScanForReplayGain(Tag tag)

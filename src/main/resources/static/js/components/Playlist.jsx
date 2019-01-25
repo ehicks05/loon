@@ -13,7 +13,6 @@ export default class Playlist extends React.Component {
         let playlistId = this.props.match.params.id ? this.props.match.params.id : 0;
         playlistId = Number(playlistId);
         this.state = {playlistId: playlistId};
-        console.log(this.state.playlistId);
     }
 
     onDragEnd (result) {
@@ -63,7 +62,6 @@ export default class Playlist extends React.Component {
 
         let mediaItems;
         const playlist = playlists.find(playlist => playlist.id === routeParamPlaylistId);
-        console.log(playlist);
 
         let isDraggable = false;
         if (playlist)

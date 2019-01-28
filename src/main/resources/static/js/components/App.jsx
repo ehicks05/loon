@@ -178,7 +178,7 @@ export default class App extends React.Component {
                     </Switch>
 
                     {/* Prevents the PlaybackControls from covering up the last few tracks. */}
-                    <div style={{height: '150px'}} />
+                    <div style={{height: '650px'}} />
 
                     <Player tracks={tracks}
                             selectedTrackId={this.state.selectedTrackId}

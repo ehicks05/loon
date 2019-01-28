@@ -45,11 +45,11 @@ export default class Header extends React.Component {
                             <img src={"/images/loon.png"} style={{height: '28px'}} alt="Loon" />
                         </div>
 
-                        <button className="button navbar-burger" data-target="navMenu">
+                        <a role="button" className="navbar-burger burger" data-target="navMenu">
                             <span />
                             <span />
                             <span />
-                        </button>
+                        </a>
                     </div>
 
                     <div className="navbar-menu" id="navMenu">

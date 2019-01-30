@@ -152,6 +152,7 @@ export default class App extends React.Component {
 
                     <Route exact path='/' render={() => <Redirect to='/library' /> } />
                     <Route exact path='/admin/systemSettings' render={() => <SystemSettings onThemeChange={this.handleThemeChange} onUpdateTracks={this.reloadTracks}  />}/>
+                    <Route exact path='/admin/users' render={() => <div>TODO</div>}/>
 
                     <Route exact path='/library' render={(props) => <Playlist {...props}
                                                                               tracks={tracks}

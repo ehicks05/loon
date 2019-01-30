@@ -62,18 +62,18 @@ export default class Header extends React.Component {
                                 <div className={"navbar-item has-dropdown is-hoverable"}>
                                     <NavLink to='/admin' activeClassName='is-active' className="navbar-link">Admin</NavLink>
                                     <div className="navbar-dropdown">
-                                        <NavLink to={'/admin/systemSettings'} activeClassName='is-active' className="navbar-item">
+                                        <NavLink to={'/admin/systemSettings'} className="navbar-item">
                                             <span className="icon is-medium has-text-info">
                                                 <FontAwesomeIcon icon={faServer}/>
                                             </span>
                                             Manage System
                                         </NavLink>
-                                        {/*<NavLink to={'/admin/users'} activeClassName='is-active' className="navbar-item">*/}
-                                            {/*<span className="icon is-medium has-text-info">*/}
-                                                {/*<FontAwesomeIcon icon={faUser}/>*/}
-                                            {/*</span>*/}
-                                            {/*Manage Users*/}
-                                        {/*</NavLink>*/}
+                                        <NavLink to={'/admin/users'} className="navbar-item">
+                                            <span className="icon is-medium has-text-info">
+                                                <FontAwesomeIcon icon={faUser}/>
+                                            </span>
+                                            Manage Users
+                                        </NavLink>
                                     </div>
                                 </div>
                             }
@@ -84,7 +84,7 @@ export default class Header extends React.Component {
                         </div>
                         <div className="navbar-end">
                             <a href='/logout' className="navbar-item">
-                                <span className="icon is-medium has-text-light">
+                                <span className="icon is-medium">
                                     <FontAwesomeIcon icon={faSignOutAlt}/>
                                 </span>
                             </a>

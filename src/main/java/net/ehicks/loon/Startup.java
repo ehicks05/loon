@@ -23,7 +23,8 @@ public class Startup
     void start()
     {
         seeder.createLoonSystem();
-        seeder.createDefaultUsers();
+        seeder.createDefaultRoles();
+        seeder.createDefaultUsers(); // requires roles to exist
 
         if (trackRepo.count() == 0)
             musicScanner.scan(); // needs music file path from loonSystem

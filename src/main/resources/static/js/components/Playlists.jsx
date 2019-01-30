@@ -11,7 +11,7 @@ export default class Playlists extends React.Component {
     {
         const self = this;
         if (window.confirm("Do you really want to delete this playlist?")) {
-            let url = '/api/playlists/delete?id=' + playlistId;
+            let url = '/api/playlists/delete?playlistId=' + playlistId;
 
             let xhr = new XMLHttpRequest();
             xhr.open('GET', url, false);

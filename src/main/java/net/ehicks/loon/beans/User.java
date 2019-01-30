@@ -5,8 +5,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.*;
 
 @Entity
 @Table(name = "loon_users")
@@ -23,15 +22,23 @@ public class User implements UserDetails
     @Column(nullable=false)
     private String fullName = "";
 
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @JoinTable(name = "user_roles",
+            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")}
+    )
+    private Set<Role> roles = new HashSet<>();
+
     public User()
     {
     }
 
-    public User(String username, String password, String fullName)
+    public User(String username, String password, String fullName, Set<Role> roles)
     {
         this.username = username;
         this.password = password;
         this.fullName = fullName;
+        this.roles = roles;
     }
 
     @Override
@@ -57,7 +64,7 @@ public class User implements UserDetails
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"));
+        return roles;
     }
 
     @Override
@@ -90,6 +97,16 @@ public class User implements UserDetails
     public void setId(Long id)
     {
         this.id = id;
+    }
+
+    public Set<Role> getRoles()
+    {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles)
+    {
+        this.roles = roles;
     }
 
     public String getUsername()

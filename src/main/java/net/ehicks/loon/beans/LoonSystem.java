@@ -8,7 +8,6 @@ import java.io.Serializable;
 public class LoonSystem implements Serializable
 {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
 
     private String instanceName = "";

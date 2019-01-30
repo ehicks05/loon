@@ -1,9 +1,11 @@
 package net.ehicks.loon.handlers;
 
 import net.ehicks.loon.beans.DBFile;
+import net.ehicks.loon.beans.Role;
 import net.ehicks.loon.beans.Track;
 import net.ehicks.loon.beans.User;
 import net.ehicks.loon.repos.DbFileRepository;
+import net.ehicks.loon.repos.RoleRepository;
 import net.ehicks.loon.repos.TrackRepository;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,11 +21,13 @@ public class LibraryHandler
 {
     private DbFileRepository dbFileRepo;
     private TrackRepository trackRepo;
+    private RoleRepository roleRepo;
 
-    public LibraryHandler(DbFileRepository dbFileRepo, TrackRepository trackRepo)
+    public LibraryHandler(DbFileRepository dbFileRepo, TrackRepository trackRepo, RoleRepository roleRepo)
     {
         this.dbFileRepo = dbFileRepo;
         this.trackRepo = trackRepo;
+        this.roleRepo = roleRepo;
     }
 
     @GetMapping("/ajaxGetInitialTracks")
@@ -61,9 +65,10 @@ public class LibraryHandler
     }
 
     @GetMapping("/ajaxGetIsAdmin")
-    public String ajaxGetIsAdmin(@AuthenticationPrincipal User user)
+    public boolean ajaxGetIsAdmin(@AuthenticationPrincipal User user)
     {
-        return "true";
+        Role adminRole = roleRepo.findByRole("ROLE_ADMIN");
+        return user.getAuthorities().contains(adminRole);
     }
 
     private List<Track> getTracks(int from, int amount)

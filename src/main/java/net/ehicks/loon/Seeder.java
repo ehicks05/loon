@@ -14,6 +14,7 @@ public class Seeder
 {
     private static final Logger log = LoggerFactory.getLogger(Seeder.class);
     private UserRepository userRepo;
+    private RoleRepository roleRepo;
     private TrackRepository trackRepo;
     private PlaylistRepository playlistRepo;
     private PlaylistTrackRepository playlistTrackRepo;
@@ -21,11 +22,12 @@ public class Seeder
     private LoonSystemRepository loonSystemRepo;
     private PlaylistLogic playlistLogic;
 
-    public Seeder(UserRepository userRepo, TrackRepository trackRepo, PlaylistRepository playlistRepo,
+    public Seeder(UserRepository userRepo, RoleRepository roleRepo, TrackRepository trackRepo, PlaylistRepository playlistRepo,
                   PlaylistTrackRepository playlistTrackRepo, PasswordEncoder passwordEncoder, LoonSystemRepository loonSystemRepo,
                   PlaylistLogic playlistLogic)
     {
         this.userRepo = userRepo;
+        this.roleRepo = roleRepo;
         this.trackRepo = trackRepo;
         this.playlistRepo = playlistRepo;
         this.playlistTrackRepo = playlistTrackRepo;
@@ -39,7 +41,10 @@ public class Seeder
         if (loonSystemRepo.findById(1L).orElse(null) != null)
             return;
 
+        loonSystemRepo.deleteAll();
+        
         LoonSystem loonSystem = new LoonSystem();
+        loonSystem.setId(1L);
         loonSystem.setInstanceName("Loon");
         loonSystem.setLogonMessage("<span>Welcome to Loon.</span>");
         loonSystem.setTheme("default");
@@ -49,19 +54,36 @@ public class Seeder
         loonSystemRepo.save(loonSystem);
     }
 
+    public void createDefaultRoles()
+    {
+        if (roleRepo.count() > 0)
+            return;
+
+        Arrays.asList("ROLE_USER", "ROLE_ADMIN").forEach((r) -> {
+            Role role = new Role();
+            role.setRole(r);
+            roleRepo.save(role);
+        });
+    }
+
     public void createDefaultUsers()
     {
         if (userRepo.count() > 0)
             return;
 
         List<List<String>> users = Arrays.asList(
-                Arrays.asList("admin", "password", "Admin"),
-                Arrays.asList("user", "password", "User")
+                Arrays.asList("admin@test.com", "password", "Admin"),
+                Arrays.asList("user@test.com", "password", "User")
         );
 
-        users.forEach((user) -> {
-            RegistrationForm registrationForm = new RegistrationForm(user.get(0), user.get(1), user.get(2));
-            userRepo.save(registrationForm.toUser(passwordEncoder));
+        users.forEach((userData) -> {
+            RegistrationForm registrationForm = new RegistrationForm(userData.get(0), userData.get(1), userData.get(2));
+            Set<Role> roles = new HashSet<>(Set.of(roleRepo.findByRole("USER")));
+            if (userData.get(0).equals("admin"))
+                roles.add(roleRepo.findByRole("ADMIN"));
+            
+            User user = registrationForm.toUser(passwordEncoder, roles);
+            userRepo.save(user);
         });
     }
 

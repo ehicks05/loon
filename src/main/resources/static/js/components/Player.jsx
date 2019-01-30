@@ -79,7 +79,7 @@ export default class Player extends React.Component {
             self.setState({
                 howl: new Howl({
                     src: '/media?id=' + track.id,
-                    html5: false,
+                    html5: true,
                     format: [track.path.substring(track.path.lastIndexOf('.') + 1)],
                     volume: track.trackGainLinear,
                     // pool: 0,
@@ -87,10 +87,10 @@ export default class Player extends React.Component {
                         self.handleTrackChange('next');
                     },
                     onloaderror: function (id, msg) {
-                        console.log(msg);
+                        console.log('error code: ' + msg);
                     },
                     onplayerror: function (id, msg) {
-                        console.log(msg);
+                        console.log('error code: ' + msg);
                     }
                 })
             }, function () {

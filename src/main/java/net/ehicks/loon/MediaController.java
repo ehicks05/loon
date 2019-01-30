@@ -1,6 +1,8 @@
 package net.ehicks.loon;
 
+import net.ehicks.loon.beans.LoonSystem;
 import net.ehicks.loon.beans.Track;
+import net.ehicks.loon.repos.LoonSystemRepository;
 import net.ehicks.loon.repos.TrackRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Controller
@@ -20,22 +22,35 @@ public class MediaController
 
     private TrackRepository trackRepo;
     private MyResourceHttpRequestHandler handler;
+    private Transcoder transcoder;
+    private LoonSystemRepository loonSystemRepo;
 
-    public MediaController(TrackRepository trackRepo, MyResourceHttpRequestHandler handler)
+    public MediaController(TrackRepository trackRepo, MyResourceHttpRequestHandler handler, Transcoder transcoder,
+                           LoonSystemRepository loonSystemRepo)
     {
         this.trackRepo = trackRepo;
         this.handler = handler;
+        this.transcoder = transcoder;
+        this.loonSystemRepo = loonSystemRepo;
     }
 
     @GetMapping("/media")
     protected void getMedia(HttpServletRequest request, HttpServletResponse response, @RequestParam Long id)
     {
+        LoonSystem loonSystem = loonSystemRepo.findById(1L).orElse(null);
         Track track = trackRepo.findById(id).orElse(null);
         if (track != null)
         {
             try
             {
-                MultipartFileSender.fromPath(Paths.get(track.getPath()))
+                Path output;
+
+                if (!loonSystem.getTranscodeQuality().equals("default"))
+                    output = transcoder.transcode(track, Integer.valueOf(loonSystem.getTranscodeQuality()));
+                else
+                    output = Paths.get(track.getPath());
+
+                MultipartFileSender.fromPath(output)
                         .with(request)
                         .with(response)
                         .serveResource();

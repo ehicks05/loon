@@ -47,7 +47,7 @@ export default class SystemSettings extends React.Component {
 
                 if (scanProgress.progress !== 100)
                 {
-                    setTimeout(self.getScanProgress, 200);
+                    setTimeout(self.getScanProgress, 1000);
                     self.setState({scanSinceLastTrackUpdate: true})
                 }
                 else
@@ -77,11 +77,12 @@ export default class SystemSettings extends React.Component {
         this.props.onUpdateTracks();
     }
 
-    submitForm(rescan)
+    submitForm(rescan, clearLibrary)
     {
         const self = this;
         const rescanValue = rescan ? 'true' : 'false';
-        const url = '/api/admin/systemSettings/modify?id=1&rescan=' + rescanValue;
+        const clearLibraryValue = clearLibrary ? 'true' : 'false';
+        const url = '/api/admin/systemSettings/modify?id=1&rescan=' + rescanValue + '&clearLibrary=' + clearLibraryValue;
         const formData = $('#frmProject').serialize();
         console.log(url);
         $.ajax({method:"POST", url: url, data: formData, success: function (data) {
@@ -102,17 +103,32 @@ export default class SystemSettings extends React.Component {
 
         const themes = [
             {value:'default', text:'default'},
-            {value:'cosmo', text:'cosmo'},
-            {value:'darkly', text:'darkly'},
-            {value:'flatly', text:'flatly'},
-            {value:'journal', text:'journal'},
-            {value:'lux', text:'lux'},
-            {value:'pulse', text:'pulse'},
-            {value:'simplex', text:'simplex'},
-            {value:'slate', text:'slate'},
-            {value:'superhero', text:'superhero'},
-            {value:'united', text:'united'},
-            {value:'yeti', text:'yeti'},
+            {value:'cosmo', text:'Cosmo'},
+            {value:'darkly', text:'Darkly'},
+            {value:'flatly', text:'Flatly'},
+            {value:'journal', text:'Journal'},
+            {value:'lux', text:'Lux'},
+            {value:'pulse', text:'Pulse'},
+            {value:'simplex', text:'Simplex'},
+            {value:'slate', text:'Slate'},
+            {value:'superhero', text:'Superhero'},
+            {value:'united', text:'United'},
+            {value:'yeti', text:'Yeti'}
+        ];
+
+        const trueFalse = [{value:'false', text:'False'}, {value:'true', text:'True'}];
+
+        const transcodeQualityOptions = [
+            {value:'default', text:'Default (Don\'t Transcode)'},
+            {value:'9', text:'9'},
+            {value:'8', text:'8'},
+            {value:'7', text:'7'},
+            {value:'6', text:'6'},
+            {value:'5', text:'5'},
+            {value:'4', text:'4'},
+            {value:'3', text:'3'},
+            {value:'2', text:'2'},
+            {value:'1', text:'1'}
         ];
 
         return (
@@ -135,9 +151,12 @@ export default class SystemSettings extends React.Component {
                                     <Select id="theme" label="Theme" items={themes} value={systemSettings.theme} required={true}/>
                                     <TextInput id="musicFolder" label="Music Folder" value={systemSettings.musicFolder} />
                                     <TextInput id="logonMessage" label="Welcome Message" value={systemSettings.logonMessage} size={50} />
+                                    <Select id="registrationEnabled" label="Registration Enabled" items={trueFalse} value={systemSettings.registrationEnabled} required={true} />
+                                    <Select id="transcodeQuality" label="Transcode Quality" items={transcodeQualityOptions} value={systemSettings.transcodeQuality} required={true} />
 
                                     <input id="saveSystemButton" type="button" value="Save" className="button is-primary" onClick={(e) => this.submitForm()} />
-                                    <input id="saveAndRescanButton" type="button" value="Save and Re-scan" className="button is-success" onClick={(e) => this.submitForm(true)} />
+                                    <input id="saveAndRescanButton" type="button" value="Save and Re-scan" className="button is-success" onClick={(e) => this.submitForm(true, false)} />
+                                    <input id="clearLibraryButton" type="button" value="Clear Library" className="button is-danger" onClick={(e) => this.submitForm(false, true)} />
                                 </form>
                             </div>
                         </div>

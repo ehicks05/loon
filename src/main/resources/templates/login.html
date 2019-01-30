@@ -80,7 +80,7 @@
                     <!--<c:remove var="signUpResultClass" scope="session"/>-->
                 <!--</c:if>-->
 
-                <p class="has-text-grey">
+                <p class="has-text-grey" th:if="${loonSystem.registrationEnabled}">
                     <a th:href="@{/register}" id="signUpButton">Sign Up</a>
                     <!--&nbsp;&centerdot;&nbsp;-->
                     <!--<a href="">Forgot Password</a> -->

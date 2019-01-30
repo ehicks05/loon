@@ -5,9 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Arrays;
-import java.util.List;
-
 @Configuration
 public class Startup
 {
@@ -26,11 +23,9 @@ public class Startup
     void start()
     {
         seeder.createLoonSystem();
-        seeder.createUsers();
+        seeder.createDefaultUsers();
 
         if (trackRepo.count() == 0)
             musicScanner.scan(); // needs music file path from loonSystem
-
-        seeder.createPlaylists(); // needs music tracks to have been loaded
     }
 }

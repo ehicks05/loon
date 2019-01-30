@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -53,9 +54,6 @@ public class MusicScanner
 
     public void scan()
     {
-        if (trackRepo.count() > 0)
-            return;
-
         try
         {
             ProgressTracker.progressStatusMap.put("scanProgress", new ProgressTracker.ProgressStatus(0, "incomplete"));
@@ -73,6 +71,7 @@ public class MusicScanner
                 return;
             }
 
+            fileWalker.setPaths(new ArrayList<>());
             Files.walkFileTree(basePath, fileWalker);
             List<Path> paths = fileWalker.getPaths();
 

@@ -100,6 +100,11 @@ public class MultipartFileSender
         long lastModified = LocalDateTime.ofInstant(lastModifiedObj.toInstant(), ZoneId.of(ZoneOffset.systemDefault().getId())).toEpochSecond(ZoneOffset.UTC);
         String contentType = "video/mp4";
 
+        if (fileName.endsWith("flac"))
+            contentType = "audio/flac";
+        if (fileName.endsWith("mp3"))
+            contentType = "audio/mpeg";
+
         // Validate request headers for caching ---------------------------------------------------
 
         // If-None-Match header should contain "*" or ETag. If so, then return 304.

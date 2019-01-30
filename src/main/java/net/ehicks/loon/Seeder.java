@@ -40,73 +40,68 @@ public class Seeder
             return;
 
         LoonSystem loonSystem = new LoonSystem();
-        loonSystem.setInstanceName("Loon of Bridgewater");
+        loonSystem.setInstanceName("Loon");
         loonSystem.setLogonMessage("<span>Welcome to Loon.</span>");
         loonSystem.setTheme("default");
         loonSystem.setMusicFolder("c:/k/music");
-        loonSystem = loonSystemRepo.save(loonSystem);
+        loonSystem.setRegistrationEnabled(false);
+        loonSystem.setTranscodeQuality("default");
+        loonSystemRepo.save(loonSystem);
     }
 
-    public void createUsers()
+    public void createDefaultUsers()
     {
         if (userRepo.count() > 0)
             return;
 
-        Map<String, List<String>> users = new LinkedHashMap<>();
-        users.put("eric@test.com", new ArrayList<>(Arrays.asList("eric", "Eric Tester")));
-        users.put("steve@test.com", new ArrayList<>(Arrays.asList("steve", "Steve Tester")));
-        users.put("val@test.com", new ArrayList<>(Arrays.asList("val", "Val Tester")));
+        List<List<String>> users = Arrays.asList(
+                Arrays.asList("admin", "password", "Admin"),
+                Arrays.asList("user", "password", "User")
+        );
 
-        users.forEach((key, value) -> {
-            RegistrationForm registrationForm = new RegistrationForm(key, value.get(0), value.get(1));
+        users.forEach((user) -> {
+            RegistrationForm registrationForm = new RegistrationForm(user.get(0), user.get(1), user.get(2));
             userRepo.save(registrationForm.toUser(passwordEncoder));
         });
     }
 
-    public void createPlaylists()
+    public void createRandomPlaylist(long userId)
     {
-        if (playlistRepo.count() > 0)
-            return;
-
-        Random r = new Random();
-
+        int playlistSize = 10;
         List<Track> tracks = trackRepo.findAll();
         if (tracks.size() == 0)
             return;
 
-        for (User user : userRepo.findAll())
+        Random r = new Random();
+
+        String playlistName = "Random Playlist";
+
+        Playlist playlist = new Playlist();
+        playlist.setUserId(userId);
+        playlist.setName(playlistName);
+
+        playlist = playlistRepo.save(playlist);
+
+        List<Long> selectedTrackIds = new ArrayList<>();
+
+        int tries = 0;
+        while (tries < playlistSize)
         {
-            List<String> playlistNames = Arrays.asList("Driving Songs", "Rockin Tunes", "Classics");
+            int trackListIndex = r.nextInt(tracks.size());
+            Long trackId = tracks.get(trackListIndex).getId();
+            if (!selectedTrackIds.contains(trackId))
+                selectedTrackIds.add(trackId);
 
-            playlistNames.forEach(playlistName -> {
-                Playlist playlist = new Playlist();
-                playlist.setUserId(user.getId());
-                playlist.setName(playlistName);
+            tries++;
+        }
 
-                playlist = playlistRepo.save(playlist);
-
-                List<Long> selectedTrackIds = new ArrayList<>();
-
-                int tries = 0;
-                while (tries < 10)
-                {
-                    int trackListIndex = r.nextInt(tracks.size());
-                    Long trackId = tracks.get(trackListIndex).getId();
-                    if (!selectedTrackIds.contains(trackId))
-                        selectedTrackIds.add(trackId);
-
-                    tries++;
-                }
-                
-                for (Long selectedTrackId : selectedTrackIds)
-                {
-                    PlaylistTrack playlistTrack = new PlaylistTrack();
-                    playlistTrack.setPlaylistId(playlist.getId());
-                    playlistTrack.setTrackId(selectedTrackId);
-                    playlistTrack.setIndex(playlistLogic.getNextAvailableIndex(playlist.getId()));
-                    playlistTrackRepo.save(playlistTrack);
-                }
-            });
+        for (Long selectedTrackId : selectedTrackIds)
+        {
+            PlaylistTrack playlistTrack = new PlaylistTrack();
+            playlistTrack.setPlaylistId(playlist.getId());
+            playlistTrack.setTrackId(selectedTrackId);
+            playlistTrack.setIndex(playlistLogic.getNextAvailableIndex(playlist.getId()));
+            playlistTrackRepo.save(playlistTrack);
         }
     }
 }

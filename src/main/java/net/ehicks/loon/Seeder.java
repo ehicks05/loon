@@ -78,10 +78,10 @@ public class Seeder
 
         users.forEach((userData) -> {
             RegistrationForm registrationForm = new RegistrationForm(userData.get(0), userData.get(1), userData.get(2));
-            Set<Role> roles = new HashSet<>(Set.of(roleRepo.findByRole("USER")));
-            if (userData.get(0).equals("admin"))
-                roles.add(roleRepo.findByRole("ADMIN"));
-            
+            Set<Role> roles = new HashSet<>(Set.of(roleRepo.findByRole("ROLE_USER")));
+            if (userData.get(0).contains("admin"))
+                roles.add(roleRepo.findByRole("ROLE_ADMIN"));
+
             User user = registrationForm.toUser(passwordEncoder, roles);
             userRepo.save(user);
         });

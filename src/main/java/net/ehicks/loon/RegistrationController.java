@@ -44,7 +44,7 @@ public class RegistrationController
 
     @PostMapping
     public String processRegistration(RegistrationForm form) {
-        Set<Role> roles = new HashSet<>(Arrays.asList(roleRepo.findByRole("USER")));
+        Set<Role> roles = new HashSet<>(Arrays.asList(roleRepo.findByRole("ROLE_USER")));
         if (loonSystemRepo.findById(1L).orElse(null).isRegistrationEnabled())
             userRepo.save(form.toUser(passwordEncoder, roles));
         return "redirect:/login";

@@ -121,6 +121,7 @@ public class MusicScanner
 
         Track track = new Track();
         track.setPath(audioFile.getFile().toPath().toString());
+        track.setExtension(audioFile.getExt());
         track.setDuration((long) audioHeader.getTrackLength());
         track.setSize(audioFile.getFile().length());
 

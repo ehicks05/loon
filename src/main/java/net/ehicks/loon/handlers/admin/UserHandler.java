@@ -1,67 +1,67 @@
 package net.ehicks.loon.handlers.admin;
 
-import net.ehicks.loon.repos.UserRepository;
+import net.ehicks.loon.SessionManager;
 import net.ehicks.loon.beans.User;
+import net.ehicks.loon.repos.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+import java.util.List;
+
+@RestController
 @RequestMapping("/api/admin/users")
 public class UserHandler
 {
     private static final Logger log = LoggerFactory.getLogger(AdminHandler.class);
     private UserRepository userRepo;
     private PasswordEncoder passwordEncoder;
+    private SessionManager sessionManager;
 
-    public UserHandler(UserRepository userRepo, PasswordEncoder passwordEncoder)
+    public UserHandler(UserRepository userRepo, PasswordEncoder passwordEncoder, SessionManager sessionManager)
     {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
+        this.sessionManager = sessionManager;
     }
 
-    @GetMapping("/list")
-    public String list()
+    @GetMapping("/")
+    public List<User> list()
     {
-        Iterable<User> users = userRepo.findAll();
-        return "";
+        return userRepo.findAll();
     }
 
-    @GetMapping("/create")
-    public String create(@RequestParam String username)
+    @DeleteMapping("/{username}")
+    public String delete(@PathVariable String username)
     {
         User user = userRepo.findByUsername(username);
         if (user != null)
             userRepo.delete(user);
 
-        return "redirect:/";
+        return "";
     }
 
-    @GetMapping("/form")
-    public String form(@RequestParam String username)
+    @GetMapping("/{username}")
+    public User form(@PathVariable String username)
     {
-        User user = userRepo.findByUsername(username);
-
-        return "userview";
+        return userRepo.findByUsername(username);
     }
 
-    @GetMapping("/modify")
-    public String modify(@RequestParam String username, @RequestParam String newUsername, @RequestParam String fullName)
+    @PutMapping("/{username}")
+    public User modify(@PathVariable String username, @RequestParam String newUsername, @RequestParam String fullName)
     {
         User user = userRepo.findByUsername(username);
         user.setUsername(newUsername);
         user.setFullName(fullName);
-        userRepo.save(user);
+        user = userRepo.save(user);
 
-        return "userview";
+        return user;
     }
 
-    @GetMapping("/changePassword")
-    public String changePassword(@RequestParam String username, @RequestParam String password)
+    @GetMapping("/{username}/changePassword")
+    public User changePassword(@PathVariable String username, @RequestParam String password)
     {
         User user = userRepo.findByUsername(username);
 
@@ -71,6 +71,12 @@ public class UserHandler
             userRepo.save(user);
         }
 
-        return "userview";
+        return user;
+    }
+
+    @GetMapping("/activeSessions")
+    public List<SessionInformation> activeSessions()
+    {
+        return sessionManager.getUsersFromSessionRegistry();
     }
 }

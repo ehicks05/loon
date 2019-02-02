@@ -10,20 +10,14 @@ export default class Playlists extends React.Component {
     delete(playlistId)
     {
         const self = this;
-        if (window.confirm("Do you really want to delete this playlist?")) {
-            let url = '/api/playlists/delete?playlistId=' + playlistId;
-
-            let xhr = new XMLHttpRequest();
-            xhr.open('GET', url, false);
-            xhr.onload = function() {
-                if (xhr.status === 200) {
-                    self.props.onUpdatePlaylists();
-                }
-                else {
-                    console.log('Request failed.  Returned status of ' + xhr.status);
-                }
-            };
-            xhr.send();
+        if (window.confirm("Do you really want to delete this playlist?"))
+        {
+            return fetch('/api/playlists/' + playlistId, {
+                method: 'delete'
+            }).then(data => {
+                console.log(data);
+                self.props.onUpdatePlaylists();
+            });
         }
     }
 

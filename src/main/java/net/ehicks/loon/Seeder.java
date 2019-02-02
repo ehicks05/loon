@@ -120,8 +120,8 @@ public class Seeder
         for (Long selectedTrackId : selectedTrackIds)
         {
             PlaylistTrack playlistTrack = new PlaylistTrack();
-            playlistTrack.setPlaylistId(playlist.getId());
-            playlistTrack.setTrackId(selectedTrackId);
+            playlistTrack.setPlaylist(playlist);
+            playlistTrack.setTrack(trackRepo.findById(selectedTrackId).orElse(null));
             playlistTrack.setIndex(playlistLogic.getNextAvailableIndex(playlist.getId()));
             playlistTrackRepo.save(playlistTrack);
         }

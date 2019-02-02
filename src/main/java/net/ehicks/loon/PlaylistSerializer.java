@@ -25,7 +25,7 @@ public class PlaylistSerializer implements JsonSerializer<Playlist>
         JsonArray playlistTracks = new JsonArray();
 
         playlistTrackRepo.findByPlaylistIdOrderByIndex(src.getId())
-                .stream().map(PlaylistTrack::getTrackId).forEach(playlistTrackIds::add);
+                .stream().map(playlistTrack -> playlistTrack.getTrack().getId()).forEach(playlistTrackIds::add);
 
         playlistTrackRepo.findByPlaylistIdOrderByIndex(src.getId()).forEach(playlistTrack -> {
             playlistTracks.add(context.serialize(playlistTrack));

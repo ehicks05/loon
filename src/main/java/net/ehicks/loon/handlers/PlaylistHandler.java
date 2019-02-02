@@ -1,10 +1,11 @@
 package net.ehicks.loon.handlers;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializer;
-import net.ehicks.loon.*;
+import net.ehicks.loon.LibraryLogic;
+import net.ehicks.loon.PlaylistLogic;
+import net.ehicks.loon.PlaylistSerializer;
 import net.ehicks.loon.beans.Playlist;
 import net.ehicks.loon.beans.PlaylistTrack;
 import net.ehicks.loon.beans.Track;
@@ -12,11 +13,14 @@ import net.ehicks.loon.beans.User;
 import net.ehicks.loon.repos.PlaylistRepository;
 import net.ehicks.loon.repos.PlaylistTrackRepository;
 import net.ehicks.loon.repos.TrackRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -66,23 +70,15 @@ public class PlaylistHandler
     }
 
     @GetMapping("/getPlaylists")
-    public String getPlaylists(@AuthenticationPrincipal User user)
+    public List<Playlist> getPlaylists(@AuthenticationPrincipal User user)
     {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-
-        gsonBuilder.registerTypeAdapter(Playlist.class, playlistSerializer);
-
-        return gsonBuilder.create().toJson(playlistRepo.findByUserId(user.getId()));
+        return playlistRepo.findByUserId(user.getId());
     }
 
     @GetMapping("/getPlaylist")
-    public String getPlaylist(@RequestParam long playlistId)
+    public Playlist getPlaylist(@RequestParam long playlistId)
     {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-
-        gsonBuilder.registerTypeAdapter(Playlist.class, playlistSerializer);
-
-        return gsonBuilder.create().toJson(playlistRepo.findById(playlistId).orElse(null));
+        return playlistRepo.findById(playlistId).orElse(null);
     }
 
     @GetMapping("/getLibraryTrackPaths")
@@ -92,29 +88,16 @@ public class PlaylistHandler
     }
 
     @GetMapping("/ajaxGetInitialTracks")
-    public String ajaxGetInitialTracks(@RequestParam long playlistId)
+    public List<Track> ajaxGetInitialTracks(@RequestParam long playlistId)
     {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-
-        gsonBuilder.registerTypeAdapter(Track.class, new Track.Serializer());
-
-        List<Track> trackList = playlistTrackRepo.findByPlaylistIdOrderByIndex(playlistId).stream()
-                .map(playlistTrack -> trackRepo.findById(playlistTrack.getTrackId()).orElse(null))
-                .collect(Collectors.toList());
-
-        return gsonBuilder.create().toJson(trackList);
+        Playlist playlist = playlistRepo.findById(playlistId).orElse(null);
+        return playlist.getPlaylistTracks().stream().map(PlaylistTrack::getTrack).collect(Collectors.toList());
     }
 
     @PostMapping("/addOrModify")
-    public String add(@AuthenticationPrincipal User user, @RequestParam long playlistId, @RequestParam String action,
+    public Playlist add(@AuthenticationPrincipal User user, @RequestParam long playlistId, @RequestParam String action,
                       @RequestParam String name, @RequestParam List<Long> trackIds)
     {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-
-        gsonBuilder.registerTypeAdapter(Playlist.class, playlistSerializer);
-
-        Gson gson = gsonBuilder.create();
-
         Playlist playlist = playlistRepo.findById(playlistId).orElse(null);
 
         if (playlist == null && action.equals("add") && name != null)
@@ -131,32 +114,23 @@ public class PlaylistHandler
             playlist = playlistRepo.save(playlist);
 
             // playlist must have an ID at this point
-            playlistLogic.setTrackIds(playlist.getId(), trackIds);
+            playlistLogic.setTrackIds(playlist, trackIds);
         }
 
-        return gson.toJson(playlist);
+        return playlist;
     }
 
-    @GetMapping("/delete")
-    public String delete(@AuthenticationPrincipal User user, @RequestParam long playlistId)
+    @DeleteMapping("/{playlistId}")
+    public ResponseEntity delete(@AuthenticationPrincipal User user, @PathVariable long playlistId)
     {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-
-        gsonBuilder.registerTypeAdapter(Playlist.class, playlistSerializer);
-
-        Gson gson = gsonBuilder.create();
-
-        Playlist playlist = playlistRepo.getOne(playlistId);
-
+        Playlist playlist = playlistRepo.findById(playlistId).orElse(null);
         if (playlist != null)
         {
-            // playlist must have an ID at this point
-            playlistLogic.setTrackIds(playlist.getId(), Collections.EMPTY_LIST);
-
+            playlistLogic.setTrackIds(playlist, new ArrayList<>());
             playlistRepo.delete(playlist);
         }
 
-        return gson.toJson(playlistRepo.findByUserId(user.getId()));
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping("/dragAndDrop")
@@ -165,9 +139,10 @@ public class PlaylistHandler
     {
         final long LOW = Math.min(oldIndex, newIndex);
         final long HIGH = Math.max(oldIndex, newIndex);
+        Playlist playlist = playlistRepo.findById(playlistId).orElse(null);
 
         // increment the index of all other tracks in the playlist with indexes >= to the new index and < the previous index.
-        List<PlaylistTrack> playlistTracks = playlistTrackRepo.findByPlaylistIdOrderByIndex(playlistId);
+        Set<PlaylistTrack> playlistTracks = playlist.getPlaylistTracks();
 
         int adjustOthersBy = newIndex < oldIndex ? 1 : -1;
 
@@ -177,6 +152,8 @@ public class PlaylistHandler
                     track.setIndex(track.getIndex() == oldIndex ? newIndex : track.getIndex() + adjustOthersBy);
                     playlistTrackRepo.save(track);
                 });
+
+        playlist.setPlaylistTracks(playlistTracks);
 
         return "";
     }

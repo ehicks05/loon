@@ -2,6 +2,11 @@ import React from 'react';
 import MediaItem from "./MediaItem.jsx";
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
+function parsePlaylistId(component)
+{
+    return component.props.match.params.id ? Number(component.props.match.params.id) : 0;
+}
+
 export default class Playlist extends React.Component {
     constructor(props) {
         super(props);
@@ -10,9 +15,14 @@ export default class Playlist extends React.Component {
         this.onDragEnd = this.onDragEnd.bind(this);
         this.persistDragAndDrop = this.persistDragAndDrop.bind(this);
 
-        let playlistId = this.props.match.params.id ? this.props.match.params.id : 0;
-        playlistId = Number(playlistId);
-        this.state = {playlistId: playlistId};
+        this.state = {playlistId: parsePlaylistId(this)};
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot)
+    {
+        let playlistId = parsePlaylistId(this);
+        if (prevState.playlistId !== playlistId)
+            this.setState({playlistId: playlistId});
     }
 
     onDragEnd (result) {
@@ -63,20 +73,11 @@ export default class Playlist extends React.Component {
         let mediaItems;
         const playlist = playlists.find(playlist => playlist.id === routeParamPlaylistId);
 
-        let isDraggable = false;
         if (playlist)
         {
-            isDraggable = true;
-        }
-        else
-        {
-
-        }
-
-        if (playlist)
-        {
-            mediaItems = playlist.playlistTracks.map((playlistTrack, index) => {
-                    const track = tracks.find(track => track.id === playlistTrack.trackId);
+            const playlistTracks = playlist.playlistTracks.sort((o1, o2) => o1.index - o2.index);
+            mediaItems = playlistTracks.map((playlistTrack, index) => {
+                    const track = tracks.find(track => track.id === playlistTrack.track.id);
                     return (
                     <Draggable
                         key={track.id}
@@ -107,15 +108,15 @@ export default class Playlist extends React.Component {
             <DragDropContext onDragEnd={this.onDragEnd}>
                 <Droppable droppableId="droppable">
                     {(provided, snapshot) => (
-                        <div ref={provided.innerRef}>
-                            <section className={"section"}>
-                                <div className="container">
+                        <div className={'is-marginless is-paddingless'} ref={provided.innerRef}>
+                            {/*<section className={"section"}>*/}
+                                {/*<div className="container">*/}
                                     <h1 className="title">{playlist ? playlist.name : 'Library'}</h1>
-                                </div>
-                            </section>
+                                {/*</div>*/}
+                            {/*</section>*/}
 
-                            <section className="section" id="root">
-                                <div className="container">
+                            {/*<section className="section" id="root">*/}
+                                {/*<div className="container">*/}
                                     {/*<div className="columns is-multiline is-centered">*/}
                                         {/*<div className="column">*/}
     
@@ -127,11 +128,8 @@ export default class Playlist extends React.Component {
                                             {/*</div>*/}
                                         {/*</div>*/}
                                     </div>
-                                </div>
-
-                                {/* Prevents the PlaybackControls from covering up the last few tracks. */}
-                                <div style={{height: '150px'}} />
-                            </section>
+                                {/*</div>*/}
+                            {/*</section>*/}
                             {provided.placeholder}
                         </div>
                     )}

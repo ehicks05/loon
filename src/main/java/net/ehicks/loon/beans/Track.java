@@ -1,16 +1,13 @@
 package net.ehicks.loon.beans;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import net.ehicks.common.Common;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Objects;
 
 @Entity
 @Table(name = "tracks")
@@ -30,85 +27,64 @@ public class Track implements Serializable
     private String album = "";
 
     @Column(name = "path", nullable = false)
+    @JsonIgnore
     private String path;
+
+    private String extension;
 
     @Column(name = "duration", nullable = false)
     private Long duration;
 
     @Column(name = "size", nullable = false)
+    @JsonIgnore
     private Long size;
 
     @Column(name = "track_gain", nullable = false)
+    @JsonIgnore
     private String trackGain;
 
     @Column(name = "track_gain_linear", nullable = false)
     private String trackGainLinear;
 
     @Column(name = "track_peak", nullable = false)
+    @JsonIgnore
     private String trackPeak;
 
     @Column(name = "artwork_db_file_id")
     private Long artworkDbFileId;
 
-    public Track()
-    {
-    }
-
-    public Track(String artist, String title, String path, Long duration, Long size)
-    {
-        this.artist = artist;
-        this.title = title;
-        this.path = path;
-        this.duration = duration;
-        this.size = size;
-    }
-
-    public static class Serializer implements JsonSerializer<Track>
-    {
-        @Override
-        public JsonElement serialize(Track src, Type typeOfSrc, JsonSerializationContext context)
-        {
-            JsonObject jsonPlaylist = new JsonObject();
-
-            jsonPlaylist.addProperty("id", src.getId());
-            jsonPlaylist.addProperty("album", src.getAlbum());
-            jsonPlaylist.addProperty("artist", src.getArtist());
-            jsonPlaylist.addProperty("title", src.getTitle());
-            jsonPlaylist.addProperty("size", src.getSize());
-            jsonPlaylist.addProperty("duration", src.getDuration());
-            jsonPlaylist.addProperty("trackGain", src.getTrackGain());
-            jsonPlaylist.addProperty("trackGainLinear", src.getTrackGainLinear());
-            jsonPlaylist.addProperty("artworkDbFileId", src.getArtworkDbFileId());
-
-            return jsonPlaylist;
-        }
-    }
-
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(Object o)
     {
-        if (!(obj instanceof Track)) return false;
-        Track that = (Track) obj;
-        return this.id.equals(that.getId());
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Track track = (Track) o;
+        return id.equals(track.id);
     }
 
     @Override
     public int hashCode()
     {
-        return 17 * 37 * id.intValue();
+        return Objects.hash(id);
     }
 
+    @Override
     public String toString()
     {
-        return this.getClass().getSimpleName() + ":" + id.toString();
-    }
-
-    public String getFormattedDuration()
-    {
-        int minutes = (int) (Math.floor(duration / 60));
-        int seconds = (int) (duration - minutes * 60);
-
-        return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+        return "Track{" +
+                "id=" + id +
+                ", artist='" + artist + '\'' +
+                ", title='" + title + '\'' +
+                ", album='" + album + '\'' +
+                ", path='" + path + '\'' +
+                ", extension='" + extension + '\'' +
+                ", duration=" + duration +
+                ", size=" + size +
+                ", trackGain='" + trackGain + '\'' +
+                ", trackGainLinear='" + trackGainLinear + '\'' +
+                ", trackPeak='" + trackPeak + '\'' +
+                ", artworkDbFileId=" + artworkDbFileId +
+                '}';
     }
 
     public String convertDBToLinear()
@@ -120,11 +96,6 @@ public class Track implements Serializable
                 dbAdjustment.divide(twenty, 3, RoundingMode.HALF_UP).doubleValue())).setScale(3, RoundingMode.HALF_UP);
         return result.toString();
     }
-
-//    public DBFile getArtwork()
-//    {
-//        return DBFile.getById(artworkDbFileId);
-//    }
 
     // -------- Getters / Setters ----------
 
@@ -176,6 +147,16 @@ public class Track implements Serializable
     public void setPath(String path)
     {
         this.path = path;
+    }
+
+    public String getExtension()
+    {
+        return extension;
+    }
+
+    public void setExtension(String extension)
+    {
+        this.extension = extension;
     }
 
     public Long getDuration()

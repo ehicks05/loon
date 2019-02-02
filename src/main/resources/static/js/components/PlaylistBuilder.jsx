@@ -7,7 +7,6 @@ import {faSquare} from '@fortawesome/free-regular-svg-icons'
 
 import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
-import $ from "jquery/dist/jquery.min";
 import TextInput from "./TextInput.jsx";
 
 export default class PlaylistBuilder extends React.Component {
@@ -37,25 +36,28 @@ export default class PlaylistBuilder extends React.Component {
         let playlistId = this.props.match.params.id ? this.props.match.params.id : 0;
         playlistId = Number(playlistId);
 
-        url = '/api/playlists/getPlaylist?playlistId=' + playlistId;
+        if (playlistId)
+        {
+            url = '/api/playlists/getPlaylist?playlistId=' + playlistId;
 
-        xhr = new XMLHttpRequest();
-        xhr.open('GET', url, false);
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                self.state.playlist = JSON.parse(this.responseText);
-            }
-            else {
-                console.log('Request failed.  Returned status of ' + xhr.status);
-            }
-        };
-        xhr.send();
+            xhr = new XMLHttpRequest();
+            xhr.open('GET', url, false);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    self.state.playlist = JSON.parse(this.responseText);
+                }
+                else {
+                    console.log('Request failed.  Returned status of ' + xhr.status);
+                }
+            };
+            xhr.send();
+        }
 
         this.state.checked = [];
         this.state.expanded = [];
         if (this.state.playlist)
         {
-            this.state.checked = this.state.playlist.trackIds;
+            this.state.checked = this.state.playlist.playlistTracks.map(playlistTrack => playlistTrack.track.id);
         }
         this.state.expanded = ['0', '-1', '-2'];
     }
@@ -64,18 +66,20 @@ export default class PlaylistBuilder extends React.Component {
     {
         const self = this;
         const url = '/api/playlists/addOrModify';
-        const formData = {};
-        formData.action = this.state.playlist ? 'modify' : 'add';
-        formData.playlistId = this.state.playlist ? this.state.playlist.id : 0;
-        formData.name = document.getElementById('name').value;
-        formData.trackIds = this.state.checked.toString();
 
-        $.ajax({method:"POST", url: url, data: formData, success: function (data) {
-                // todo: receive playlist and set state?
-                self.props.onUpdatePlaylists();
+        const formData = new FormData();
+        formData.append("action", this.state.playlist ? 'modify' : 'add');
+        formData.append("playlistId", this.state.playlist ? this.state.playlist.id : 0);
+        formData.append("name", document.getElementById('name').value);
+        formData.append("trackIds", this.state.checked.toString());
 
-                self.setState({toPlaylists: true});
-            }
+        fetch(url, {
+            method: 'POST',
+            body: formData
+        }).then(response => response.json()).then(data => {
+            // todo: receive playlist and set state?
+            self.props.onUpdatePlaylists();
+            self.setState({toPlaylists: true});
         });
     }
 

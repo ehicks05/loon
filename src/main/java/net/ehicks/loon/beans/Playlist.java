@@ -1,7 +1,12 @@
 package net.ehicks.loon.beans;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "playlists")
@@ -17,27 +22,31 @@ public class Playlist implements Serializable
     @Column(name = "name", nullable = false)
     private String name = "";
 
-    public Playlist()
-    {
-    }
+    @OneToMany(mappedBy = "playlist")
+    @JsonIgnoreProperties("playlist")
+    private Set<PlaylistTrack> playlistTracks = new HashSet<>();
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(Object o)
     {
-        if (!(obj instanceof Playlist)) return false;
-        Playlist that = (Playlist) obj;
-        return this.id.equals(that.getId());
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Playlist playlist = (Playlist) o;
+        return id.equals(playlist.id);
     }
 
     @Override
     public int hashCode()
     {
-        return 17 * 37 * id.intValue();
+        return Objects.hash(id);
     }
 
+    @Override
     public String toString()
     {
-        return this.getClass().getSimpleName() + ":" + id.toString();
+        return "Playlist{" +
+                "id=" + id +
+                '}';
     }
 
     // -------- Getters / Setters ----------
@@ -70,5 +79,15 @@ public class Playlist implements Serializable
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    public Set<PlaylistTrack> getPlaylistTracks()
+    {
+        return playlistTracks;
+    }
+
+    public void setPlaylistTracks(Set<PlaylistTrack> playlistTracks)
+    {
+        this.playlistTracks = playlistTracks;
     }
 }

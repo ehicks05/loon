@@ -1,27 +1,35 @@
 package net.ehicks.loon;
 
+import net.ehicks.loon.beans.Playlist;
 import net.ehicks.loon.beans.PlaylistTrack;
+import net.ehicks.loon.beans.Track;
+import net.ehicks.loon.repos.PlaylistRepository;
 import net.ehicks.loon.repos.PlaylistTrackRepository;
+import net.ehicks.loon.repos.TrackRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class PlaylistLogic
 {
     private PlaylistTrackRepository playlistTrackRepo;
+    private PlaylistRepository playlistRepo;
+    private TrackRepository trackRepo;
 
-    public PlaylistLogic(PlaylistTrackRepository playlistTrackRepo)
+    public PlaylistLogic(PlaylistTrackRepository playlistTrackRepo, PlaylistRepository playlistRepo, TrackRepository trackRepo)
     {
         this.playlistTrackRepo = playlistTrackRepo;
+        this.playlistRepo = playlistRepo;
+        this.trackRepo = trackRepo;
     }
 
-    public void setTrackIds(long playlistId, List<Long> newTrackIds)
+    public void setTrackIds(Playlist playlist, List<Long> newTrackIds)
     {
-        List<Long> currentTrackIds = playlistTrackRepo.findByPlaylistIdOrderByIndex(playlistId).stream()
-                .map(PlaylistTrack::getTrackId).collect(Collectors.toList());
+        List<Long> currentTrackIds = playlist.getPlaylistTracks().stream().map(playlistTrack -> playlistTrack.getTrack().getId()).collect(Collectors.toList());
 
         List<Long> trackIdsToRemove = new ArrayList<>(currentTrackIds);
         trackIdsToRemove.removeAll(newTrackIds);
@@ -30,35 +38,42 @@ public class PlaylistLogic
         trackIdsToAdd.removeAll(currentTrackIds);
 
         trackIdsToRemove.forEach(trackId -> {
-            PlaylistTrack playlistTrack = playlistTrackRepo.findByPlaylistIdAndTrackId(playlistId, trackId);
+            Track track = trackRepo.findById(trackId).orElse(null);
+            PlaylistTrack playlistTrack = playlist.getPlaylistTracks().stream().filter(playlistTrack1 -> playlistTrack1.getTrack().getId().equals(trackId)).findFirst().orElse(null);
             if (playlistTrack != null)
+            {
+                playlist.getPlaylistTracks().remove(playlistTrack);
+//                track.getPlaylistTracks().remove(playlistTrack);
                 playlistTrackRepo.delete(playlistTrack);
+            }
         });
 
         trackIdsToAdd.forEach(trackId -> {
+            Track track = trackRepo.findById(trackId).orElse(null);
             PlaylistTrack playlistTrack = new PlaylistTrack();
-            playlistTrack.setPlaylistId(playlistId);
-            playlistTrack.setTrackId(trackId);
-            playlistTrack.setIndex(getNextAvailableIndex(playlistId));
-            playlistTrackRepo.save(playlistTrack);
+            playlistTrack.setPlaylist(playlist);
+            playlistTrack.setTrack(track);
+            playlistTrack.setIndex(getNextAvailableIndex(playlist.getId()));
+            playlistTrack = playlistTrackRepo.save(playlistTrack);
+
+//            track.getPlaylistTracks().add(playlistTrack);
+            playlist.getPlaylistTracks().add(playlistTrack);
         });
 
-        consolidateTrackIndexes(playlistId);
+        consolidateTrackIndexes(playlist.getPlaylistTracks());
     }
 
     // close up gaps in indexes, keeping ordering the same.
-    public void consolidateTrackIndexes(long playlistId)
+    public void consolidateTrackIndexes(Set<PlaylistTrack> playlistTracks)
     {
-        List<PlaylistTrack> tracks = playlistTrackRepo.findByPlaylistIdOrderByIndex(playlistId);
-
         long nextIndex = 0;
 
-        for (PlaylistTrack track : tracks)
+        for (PlaylistTrack playlistTrack : playlistTracks)
         {
-            if (!track.getIndex().equals(nextIndex))
+            if (!playlistTrack.getIndex().equals(nextIndex))
             {
-                track.setIndex(nextIndex);
-                playlistTrackRepo.save(track);
+                playlistTrack.setIndex(nextIndex);
+                playlistTrackRepo.save(playlistTrack);
             }
             nextIndex++;
         }

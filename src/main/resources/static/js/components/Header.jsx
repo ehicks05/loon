@@ -1,5 +1,5 @@
 import React from 'react';
-import {Link, NavLink} from "react-router-dom";
+import {NavLink} from "react-router-dom";
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faServer, faUser, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
@@ -38,7 +38,7 @@ export default class Header extends React.Component {
         const currentPlaylist = selectedPlaylistId === 0 ? '\'The Library\'' : '\'' + this.props.playlists.filter((playlist) => playlist.id === selectedPlaylistId)[0].name + '\'';
 
         return (
-            <nav className="navbar is-primary" role="navigation" aria-label="main navigation">
+            <nav className="navbar is-fixed-top is-primary" role="navigation" aria-label="main navigation">
                 <div className="container">
                     <div className="navbar-brand">
                         <div className="navbar-item">

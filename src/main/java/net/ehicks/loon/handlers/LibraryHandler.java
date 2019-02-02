@@ -41,9 +41,6 @@ public class LibraryHandler
     @GetMapping("/ajaxGetMoreTracks")
     public String ajaxGetMoreTracks(@RequestParam Integer from, @RequestParam Integer amount)
     {
-//        request.setAttribute("from", from);
-//        request.setAttribute("library", getTracks(from, amount));
-//        request.setAttribute("haveMore", isHaveMore(from + amount));
         // todo
         return "";
     }
@@ -51,15 +48,9 @@ public class LibraryHandler
     @GetMapping("/ajaxGetImage")
     public byte[] ajaxGetImage(@RequestParam Long dbFileId)
     {
-        DBFile dbFile = dbFileRepo.getOne(dbFileId);
-        if (dbFile != null)
-        {
-            byte[] content = dbFile.getContent();
-            if (content != null)
-            {
-                return content;
-            }
-        }
+        DBFile dbFile = dbFileRepo.findById(dbFileId).orElse(null);
+        if (dbFile != null && dbFile.getContent() != null)
+            return dbFile.getContent();
 
         return new byte[0];
     }

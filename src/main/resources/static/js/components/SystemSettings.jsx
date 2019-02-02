@@ -1,5 +1,4 @@
 import React from 'react';
-import $ from 'jquery/dist/jquery.min';
 import TextInput from "./TextInput.jsx";
 import Select from "./Select.jsx";
 
@@ -13,17 +12,7 @@ export default class SystemSettings extends React.Component {
         this.handleUpdateTracks = this.handleUpdateTracks.bind(this);
         this.getScanProgress = this.getScanProgress.bind(this);
 
-        let xhr = new XMLHttpRequest();
-        xhr.open('GET', '/api/admin/systemSettings/form', false);
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                self.state = {settings: JSON.parse(this.responseText)};
-            }
-            else {
-                alert('Request failed.  Returned status of ' + xhr.status);
-            }
-        };
-        xhr.send();
+        self.state = {};
 
         self.state.scanProgress = {progress: 0, status: 'unknown'};
         // setTimeout(this.getScanProgress, 1000);
@@ -31,39 +20,38 @@ export default class SystemSettings extends React.Component {
 
     componentDidMount()
     {
+        let self = this;
+        fetch('/api/admin/systemSettings/form', {
+            method: 'GET'
+        }).then(response => response.json()).then(data => self.setState({settings: data}));
+
         this.getScanProgress();
     }
 
     getScanProgress()
     {
         let self = this;
-        let xhr = new XMLHttpRequest();
-        xhr.open('GET', '/api/admin/systemSettings/getScanProgress', false);
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                const scanProgress = JSON.parse(this.responseText);
-                console.log(scanProgress);
-                self.setState({scanProgress: scanProgress});
 
-                if (scanProgress.progress !== 100)
+        fetch('/api/admin/systemSettings/getScanProgress', {
+            method: 'GET'
+        }).then(response => response.json()).then(scanProgress => {
+            console.log(scanProgress);
+            self.setState({scanProgress: scanProgress});
+
+            if (scanProgress.progress !== 100)
+            {
+                setTimeout(self.getScanProgress, 1000);
+                self.setState({scanSinceLastTrackUpdate: true})
+            }
+            else
+            {
+                if (self.state.scanSinceLastTrackUpdate)
                 {
-                    setTimeout(self.getScanProgress, 1000);
-                    self.setState({scanSinceLastTrackUpdate: true})
-                }
-                else
-                {
-                    if (self.state.scanSinceLastTrackUpdate)
-                    {
-                        self.handleUpdateTracks();
-                        self.setState({scanSinceLastTrackUpdate: false})
-                    }
+                    self.handleUpdateTracks();
+                    self.setState({scanSinceLastTrackUpdate: false})
                 }
             }
-            else {
-                alert('Request failed.  Returned status of ' + xhr.status);
-            }
-        };
-        xhr.send();
+        });
     }
 
     handleThemeChange(newTheme)
@@ -83,19 +71,24 @@ export default class SystemSettings extends React.Component {
         const rescanValue = rescan ? 'true' : 'false';
         const clearLibraryValue = clearLibrary ? 'true' : 'false';
         const url = '/api/admin/systemSettings/modify?id=1&rescan=' + rescanValue + '&clearLibrary=' + clearLibraryValue;
-        const formData = $('#frmProject').serialize();
-        console.log(url);
-        $.ajax({method:"POST", url: url, data: formData, success: function (data) {
-                self.handleThemeChange(data.theme);
+        const formData = new FormData(document.getElementById('frmProject'));
 
-                if (rescan)
-                    self.getScanProgress();
-            }
+        fetch(url, {
+            method: 'POST',
+            body: formData
+        }).then(response => response.json()).then(data => {
+            self.handleThemeChange(data.theme);
+            console.log(data);
+            if (rescan)
+                self.getScanProgress();
         });
     }
 
     render()
     {
+        if (!this.state.settings)
+            return (<div>Loading...</div>);
+
         const systemSettings = this.state.settings;
         const scanProgress = this.state.scanProgress;
         const progressClass = 'progress ' + (scanProgress.status === 'complete' ? 'is-success' : 'is-info');

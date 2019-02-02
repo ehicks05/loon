@@ -5,6 +5,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
@@ -13,11 +14,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
 {
     private UserRepositoryUserDetailsService userDetailsService;
     private PasswordEncoder passwordEncoder;
+    private SessionRegistry sessionRegistry;
 
-    public SecurityConfig(UserRepositoryUserDetailsService userDetailsService, PasswordEncoder passwordEncoder)
+    public SecurityConfig(UserRepositoryUserDetailsService userDetailsService, PasswordEncoder passwordEncoder, SessionRegistry sessionRegistry)
     {
         this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;
+        this.sessionRegistry = sessionRegistry;
     }
 
     @Override
@@ -41,7 +44,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
                 .and()
                 .logout()
                 .logoutSuccessUrl("/")
-                .and();
+                .and()
+                .sessionManagement()
+                .maximumSessions(1).sessionRegistry(sessionRegistry);
 
         http.csrf().disable(); // todo deal with this
 

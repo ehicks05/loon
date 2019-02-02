@@ -10,7 +10,14 @@ const getRowStyle = (draggableStyle, isDragging) => ({
     ...draggableStyle
 });
 
-export default class MediaItem extends React.PureComponent {
+function formatTime(secs) {
+    const minutes = Math.floor(secs / 60) || 0;
+    const seconds = (secs - minutes * 60) || 0;
+
+    return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+}
+
+export default class MediaItem extends React.Component {
     constructor(props) {
         super(props);
         this.handleSelectedTrackIdChange = this.handleSelectedTrackIdChange.bind(this);
@@ -19,13 +26,6 @@ export default class MediaItem extends React.PureComponent {
     handleSelectedTrackIdChange(e, selectedTrackId)
     {
         this.props.onSelectedTrackIdChange(selectedTrackId);
-    }
-
-    static formatTime(secs) {
-        const minutes = Math.floor(secs / 60) || 0;
-        const seconds = (secs - minutes * 60) || 0;
-
-        return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
     }
 
     render()
@@ -77,11 +77,11 @@ export default class MediaItem extends React.PureComponent {
                     <div className={'list-song'} style={{flex: '8'}}
                          onClick={(e) => this.handleSelectedTrackIdChange(e, trackId)}>
                         <b>{trackTitle}</b>
-                        <br />{artist} - <i>{album}</i>
+                        <br /><span style={{fontSize: '.875rem'}}>{artist} - <i>{album}</i></span>
                     </div>
 
                     <div style={{flexBasis: '20px'}}>
-                        {MediaItem.formatTime(formattedDuration)}
+                        {formatTime(formattedDuration)}
                     </div>
                 </div>
             </li>);

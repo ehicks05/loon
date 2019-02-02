@@ -13,6 +13,7 @@ import Playlists from "./Playlists.jsx";
 // import PlaylistBuilder from "./PlaylistBuilder.jsx";
 
 import Loadable from "react-loadable";
+import SidePanel from "./SidePanel.jsx";
 
 function Loading() {
     return <div>Loading...</div>;
@@ -64,64 +65,26 @@ export default class App extends React.Component {
     {
         const self = this;
 
-        let xhr = new XMLHttpRequest();
-        xhr.open('GET', '/api/playlists/getPlaylists', false);
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                self.setState({playlists: JSON.parse(this.responseText)});
-            }
-            else {
-                console.log('Request failed.  Returned status of ' + xhr.status);
-            }
-        };
-        xhr.send();
+        fetch('/api/playlists/getPlaylists', {method: 'GET'})
+            .then(response => response.json()).then(data => self.setState({playlists: data}));
     }
 
     reloadTracks()
     {
         const self = this;
 
-        let url = '/api/library/ajaxGetInitialTracks';
-        let xhr = new XMLHttpRequest();
-        xhr.open('GET', url, false);
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                self.setState({tracks: JSON.parse(this.responseText)});
-            }
-            else {
-                console.log('Request failed.  Returned status of ' + xhr.status);
-            }
-        };
-        xhr.send();
+        fetch('/api/library/ajaxGetInitialTracks', {method: 'GET'})
+            .then(response => response.json()).then(data => self.setState({tracks: data}));
     }
 
     componentDidMount() {
         const self = this;
 
-        let xhr = new XMLHttpRequest();
+        fetch('/api/library/ajaxGetIsAdmin', {method: 'GET'})
+            .then(response => response.json()).then(data => self.setState({isAdmin: data}));
 
-        xhr.open('GET', '/api/library/ajaxGetIsAdmin', false);
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                self.setState({isAdmin: JSON.parse(this.responseText)});
-            }
-            else {
-                console.log('Request failed.  Returned status of ' + xhr.status);
-            }
-        };
-        xhr.send();
-
-        xhr = new XMLHttpRequest();
-        xhr.open('GET', '/api/admin/systemSettings/form', false);
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                self.setState({theme: JSON.parse(this.responseText).theme});
-            }
-            else {
-                console.log('Request failed.  Returned status of ' + xhr.status);
-            }
-        };
-        xhr.send();
+        fetch('/api/admin/systemSettings/form', {method: 'GET'})
+            .then(response => response.json()).then(data => self.setState({theme: data.theme}));
 
         this.reloadPlaylists();
         this.reloadTracks();
@@ -150,36 +113,43 @@ export default class App extends React.Component {
                     <MyHelmet theme={this.state.theme}/>
                     <Header isAdmin={isAdmin} playlists={playlists} selectedPlaylistId={selectedPlaylistId}/>
 
-                    <Route exact path='/' render={() => <Redirect to='/library' /> } />
-                    <Route exact path='/admin/systemSettings' render={() => <SystemSettings onThemeChange={this.handleThemeChange} onUpdateTracks={this.reloadTracks}  />}/>
-                    <Route exact path='/admin/users' render={() => <div>TODO</div>}/>
+                    <div className={'columns'}>
+                        <div className="column is-2 is-hidden-touch">
+                            <SidePanel isAdmin={isAdmin} playlists={playlists} selectedPlaylistId={selectedPlaylistId}/>
+                        </div>
+                        <div className="column">
+                            <Route exact path='/' render={() => <Redirect to='/library' /> } />
+                            <Route exact path='/admin/systemSettings' render={() => <SystemSettings onThemeChange={this.handleThemeChange} onUpdateTracks={this.reloadTracks}  />}/>
+                            <Route exact path='/admin/users' render={() => <div>TODO</div>}/>
 
-                    <Route exact path='/library' render={(props) => <Playlist {...props}
-                                                                              tracks={tracks}
-                                                                              playlists={playlists}
-                                                                              selectedTrackId={this.state.selectedTrackId}
-                                                                              onCurrentPlaylistChange={this.handleCurrentPlaylistChange}
-                                                                              onSelectedTrackIdChange={this.handleSelectedTrackIdChange} />} />
+                            <Route exact path='/library' render={(props) => <Playlist {...props}
+                                                                                      tracks={tracks}
+                                                                                      playlists={playlists}
+                                                                                      selectedTrackId={this.state.selectedTrackId}
+                                                                                      onCurrentPlaylistChange={this.handleCurrentPlaylistChange}
+                                                                                      onSelectedTrackIdChange={this.handleSelectedTrackIdChange} />} />
 
-                    <Switch>
-                        <Route exact path='/playlists/new' render={(props) => <LoadablePlaylistBuilder {...props} onUpdatePlaylists={this.reloadPlaylists} />} />
-                        <Route exact path='/playlists/:id/edit' render={(props) => <LoadablePlaylistBuilder {...props} onUpdatePlaylists={this.reloadPlaylists}/>} />
+                            <Switch>
+                                <Route exact path='/playlists/new' render={(props) => <LoadablePlaylistBuilder {...props} onUpdatePlaylists={this.reloadPlaylists} />} />
+                                <Route exact path='/playlists/:id/edit' render={(props) => <LoadablePlaylistBuilder {...props} onUpdatePlaylists={this.reloadPlaylists}/>} />
 
-                        <Route exact path='/playlists' render={() => <Playlists
-                            selectedPlaylistId={this.state.selectedPlaylistId}
-                            playlists={playlists}
-                            onUpdatePlaylists={this.reloadPlaylists}/>} />
-                        <Route exact path='/playlists/:id' render={(props) => <Playlist {...props}
-                                                                                        tracks={tracks}
-                                                                                        playlists={playlists}
-                                                                                        selectedTrackId={this.state.selectedTrackId}
-                                                                                        onCurrentPlaylistChange={this.handleCurrentPlaylistChange}
-                                                                                        onSelectedTrackIdChange={this.handleSelectedTrackIdChange}
-                                                                                        onUpdatePlaylists={this.reloadPlaylists} />} />
-                    </Switch>
+                                <Route exact path='/playlists' render={() => <Playlists
+                                    selectedPlaylistId={this.state.selectedPlaylistId}
+                                    playlists={playlists}
+                                    onUpdatePlaylists={this.reloadPlaylists}/>} />
+                                <Route exact path='/playlists/:id' render={(props) => <Playlist {...props}
+                                                                                                tracks={tracks}
+                                                                                                playlists={playlists}
+                                                                                                selectedTrackId={this.state.selectedTrackId}
+                                                                                                onCurrentPlaylistChange={this.handleCurrentPlaylistChange}
+                                                                                                onSelectedTrackIdChange={this.handleSelectedTrackIdChange}
+                                                                                                onUpdatePlaylists={this.reloadPlaylists} />} />
+                            </Switch>
 
-                    {/* Prevents the PlaybackControls from covering up the last few tracks. */}
-                    <div style={{height: '650px'}} />
+                            {/* Prevents the PlaybackControls from covering up the last few tracks. */}
+                            <div style={{height: '300px'}} />
+                        </div>
+                    </div>
 
                     <Player tracks={tracks}
                             selectedTrackId={this.state.selectedTrackId}

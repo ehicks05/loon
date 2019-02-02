@@ -1,7 +1,18 @@
 import React from 'react';
 import PlaybackControls from "./PlaybackControls.jsx";
-import $ from "jquery/dist/jquery.min";
 import {Howl, Howler} from 'howler';
+
+function isScrolledIntoView(el) {
+    var rect = el.getBoundingClientRect();
+    var elemTop = rect.top;
+    var elemBottom = rect.bottom;
+
+    // Only completely visible elements return true:
+    // var isVisible = (elemTop >= 0) && (elemBottom <= window.innerHeight);
+    // Partially visible elements return true:
+    var isVisible = elemTop < window.innerHeight && elemBottom >= 0;
+    return isVisible;
+}
 
 export default class Player extends React.Component {
 
@@ -80,8 +91,8 @@ export default class Player extends React.Component {
                 howl: new Howl({
                     src: '/media?id=' + track.id,
                     html5: true,
-                    format: [track.path.substring(track.path.lastIndexOf('.') + 1)],
-                    volume: track.trackGainLinear,
+                    format: [track.extension],
+                    volume: track.trackGainLinear > 1 ? 1 : track.trackGainLinear,
                     // pool: 0,
                     onend: function () {
                         self.handleTrackChange('next');
@@ -103,23 +114,11 @@ export default class Player extends React.Component {
             // Start updating the progress of the track.
             requestAnimationFrame(self.step.bind(self));
 
-            const thisElement = $('#track' + track.id);
-            if (thisElement && thisElement.offset())
+            // scroll to the now-playing track (if it isn't already in view)
+            if (!isScrolledIntoView(document.getElementById('track' + track.id)))
             {
-                const elementTop = thisElement.offset().top;
-                const elementBottom = elementTop + thisElement.outerHeight();
-                const viewportTop = $(window).scrollTop();
-                const viewportBottom = viewportTop + $(window).height();
-                if (!(elementBottom > viewportTop && elementTop < viewportBottom))
-                {
-                    location.href = '#track' + track.id;
-                    console.log(
-                        'elementTop: ' + elementTop + "\n" +
-                        'elementBottom: ' + elementBottom + "\n" +
-                        'viewportTop: ' + viewportTop + "\n" +
-                        'viewportBottom: ' + viewportBottom
-                    )
-                }
+                location.href = '#track' + track.id;
+                window.scrollBy(0, -50);
             }
         }
 
@@ -133,7 +132,11 @@ export default class Player extends React.Component {
         let currentPlaylistTrackIds = [];
         const currentPlaylist = this.props.playlists.find(playlist => playlist.id === this.props.selectedPlaylistId);
         if (currentPlaylist)
-            currentPlaylistTrackIds = currentPlaylist.trackIds;
+        {
+            currentPlaylistTrackIds = currentPlaylist.playlistTracks.map((playlistTrack) => {
+                return playlistTrack.track.id;
+            });
+        }
         else
             currentPlaylistTrackIds = this.props.tracks.map(track => track.id);
 

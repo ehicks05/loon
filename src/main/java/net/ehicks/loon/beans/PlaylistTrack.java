@@ -1,78 +1,71 @@
 package net.ehicks.loon.beans;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 @Entity
 @Table(name = "playlist_tracks")
+@IdClass(PlaylistTrackPK.class)
 public class PlaylistTrack implements Serializable
 {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    private Long id;
+    @ManyToOne
+    @JoinColumn(name = "playlist_id", referencedColumnName = "id")
+    private Playlist playlist;
 
-    @Column(name = "playlist_id", nullable = false)
-    private Long playlistId;
-
-    @Column(name = "track_id", nullable = false)
-    private Long trackId;
+    @Id
+    @ManyToOne
+    @JsonIgnoreProperties("playlistTracks")
+    @JoinColumn(name = "track_id", referencedColumnName = "id")
+    private Track track;
 
     @Column(name = "index", nullable = false)
     private Long index;
 
-    public PlaylistTrack()
-    {
-    }
-
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(Object o)
     {
-        if (!(obj instanceof PlaylistTrack)) return false;
-        PlaylistTrack that = (PlaylistTrack) obj;
-        return this.id.equals(that.getId());
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PlaylistTrack that = (PlaylistTrack) o;
+        return playlist.equals(that.playlist) &&
+                track.equals(that.track);
     }
 
     @Override
     public int hashCode()
     {
-        return 17 * 37 * id.intValue();
+        return Objects.hash(playlist, track);
     }
 
     public String toString()
     {
-        return this.getClass().getSimpleName() + ":" + id.toString();
+        return this.getClass().getSimpleName() + ":" + track.toString() + ", " + playlist.toString();
     }
 
     // -------- Getters / Setters ----------
 
-    public Long getId()
+    public Playlist getPlaylist()
     {
-        return id;
+        return playlist;
     }
 
-    public void setId(Long id)
+    public void setPlaylist(Playlist playlist)
     {
-        this.id = id;
+        this.playlist = playlist;
     }
 
-    public Long getPlaylistId()
+    public Track getTrack()
     {
-        return playlistId;
+        return track;
     }
 
-    public void setPlaylistId(Long playlistId)
+    public void setTrack(Track track)
     {
-        this.playlistId = playlistId;
-    }
-
-    public Long getTrackId()
-    {
-        return trackId;
-    }
-
-    public void setTrackId(Long trackId)
-    {
-        this.trackId = trackId;
+        this.track = track;
     }
 
     public Long getIndex()

@@ -34,7 +34,7 @@ public class LibraryLogic
 
         // todo this is test code
         playlistTrackRepository.findByPlaylistIdOrderByIndex(1L).forEach(playlistTrack ->
-                root.getDescendantById(playlistTrack.getTrackId().intValue()).ifPresent(node -> node.checked = true)
+                root.getDescendantById(playlistTrack.getTrack().getId().intValue()).ifPresent(node -> node.checked = true)
         );
 
         GsonBuilder gsonBuilder = new GsonBuilder().setPrettyPrinting();

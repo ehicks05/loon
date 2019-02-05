@@ -13,18 +13,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/admin")
-public class AdminHandler
+@RequestMapping("/api/admin/systemSettings")
+public class AdminSystemSettingsHandler
 {
-    private static final Logger log = LoggerFactory.getLogger(AdminHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(AdminSystemSettingsHandler.class);
     private LoonSystemRepository loonSystemRepo;
     private MusicScanner musicScanner;
     private TrackRepository trackRepo;
     private PlaylistRepository playlistRepo;
     private PlaylistTrackRepository playlistTrackRepo;
 
-    public AdminHandler(LoonSystemRepository loonSystemRepo, MusicScanner musicScanner, TrackRepository trackRepo,
-                        PlaylistRepository playlistRepo, PlaylistTrackRepository playlistTrackRepo)
+    public AdminSystemSettingsHandler(LoonSystemRepository loonSystemRepo, MusicScanner musicScanner, TrackRepository trackRepo,
+                                      PlaylistRepository playlistRepo, PlaylistTrackRepository playlistTrackRepo)
     {
         this.loonSystemRepo = loonSystemRepo;
         this.musicScanner = musicScanner;
@@ -33,15 +33,16 @@ public class AdminHandler
         this.playlistTrackRepo = playlistTrackRepo;
     }
 
-    @GetMapping("/systemSettings/form")
+    @GetMapping("")
     public LoonSystem form()
     {
         return loonSystemRepo.findById(1L).orElse(null);
     }
 
-    @PostMapping("/systemSettings/modify")
+    @PutMapping("")
     public LoonSystem modify(LoonSystem loonSystem, @RequestParam boolean rescan, @RequestParam boolean clearLibrary)
     {
+        loonSystem.setId(1L);
         loonSystem = loonSystemRepo.save(loonSystem);
 
         if (clearLibrary)
@@ -53,7 +54,7 @@ public class AdminHandler
         return loonSystem;
     }
 
-    @GetMapping("/systemSettings/getScanProgress")
+    @GetMapping("/getScanProgress")
     public String getScanProgress()
     {
         ProgressTracker.ProgressStatus progressStatus = ProgressTracker.progressStatusMap.get("scanProgress");
@@ -63,7 +64,7 @@ public class AdminHandler
         return new Gson().toJson(progressStatus);
     }
 
-    public void clearLibrary()
+    private void clearLibrary()
     {
         log.info("Clearing library...");
         trackRepo.deleteAll();

@@ -28,24 +28,41 @@ export default class Player extends React.Component {
 
         this.lastAnimationFrame = Date.now();
         Howler.autoSuspend = false;
+        Howler.volume(Player.scaleVolume(this.props.userState.volume));
 
         this.state = {
             howl: null,
             playerState: 'stopped',
             pausedAt: 0,
-            volume: 1,
+            volume: this.props.userState.volume,
             muted: false,
-            shuffle: false,
+            shuffle: this.props.userState.shuffle,
             progressPercent: 0,
             timeElapsed: Player.formatTime(Math.round(0))
         };
     }
 
-    componentWillUpdate(nextProps, nextState)
+    componentDidUpdate(prevProps, prevState)
     {
-        if (nextProps.selectedTrackId !== this.props.selectedTrackId)
+        if (prevProps.selectedTrackId !== this.props.selectedTrackId)
         {
-            this.handlePlayerStateChange('playing', nextProps.selectedTrackId);
+            this.handlePlayerStateChange('playing', this.props.selectedTrackId);
+        }
+        if (this.state.volume !== prevState.volume)
+        {
+            const formData = new FormData();
+            formData.append('volume', this.state.volume);
+            fetch('/api/users/' + this.props.userState.id, {method: 'PUT', body: formData}).then(response => response.json()).then(data => {
+                console.log(data);
+            });
+        }
+        if (this.state.shuffle !== prevState.shuffle)
+        {
+            const formData = new FormData();
+            formData.append('shuffle', this.state.shuffle);
+            fetch('/api/users/' + this.props.userState.id, {method: 'PUT', body: formData}).then(response => response.json()).then(data => {
+                console.log(data);
+            });
         }
     }
 
@@ -71,6 +88,9 @@ export default class Player extends React.Component {
                 return;
             }
 
+            if (!newTrackId)
+                newTrackId = this.props.selectedTrackId;
+
             let track = this.props.tracks.find(track => track.id === newTrackId);
 
             if (self.state.howl && self.state.howl.playing())
@@ -90,9 +110,10 @@ export default class Player extends React.Component {
             self.setState({
                 howl: new Howl({
                     src: '/media?id=' + track.id,
-                    html5: true,
+                    html5: false,
                     format: [track.extension],
                     volume: track.trackGainLinear > 1 ? 1 : track.trackGainLinear,
+                    mute: this.state.muted,
                     // pool: 0,
                     onend: function () {
                         self.handleTrackChange('next');
@@ -106,6 +127,16 @@ export default class Player extends React.Component {
                 })
             }, function () {
                 self.state.howl.play();
+                // self.state.howl.addFilter({
+                //     filterType: 'highpass',
+                //     frequency: 400.0,
+                //     Q: 3.0
+                // });
+                // self.state.howl.addFilter({
+                //     filterType: 'lowpass',
+                //     frequency: 2000.0,
+                //     Q: 3.0
+                // });
                 console.log('now playing ' + track.title);
             });
 
@@ -115,7 +146,8 @@ export default class Player extends React.Component {
             requestAnimationFrame(self.step.bind(self));
 
             // scroll to the now-playing track (if it isn't already in view)
-            if (!isScrolledIntoView(document.getElementById('track' + track.id)))
+            const el = document.getElementById('track' + track.id);
+            if (el && !isScrolledIntoView(el))
             {
                 location.href = '#track' + track.id;
                 window.scrollBy(0, -50);
@@ -197,8 +229,10 @@ export default class Player extends React.Component {
     }
 
     handleMuteChange(muted) {
-        this.state.howl.mute(!this.state.howl.mute());
-        this.setState({muted: this.state.howl.mute()});
+        this.setState({muted: !this.state.muted}, () => {
+            if (this.state.howl)
+                this.state.howl.mute(this.state.muted);
+        });
     }
 
     handleShuffleChange(shuffle) {
@@ -208,12 +242,15 @@ export default class Player extends React.Component {
     handleProgressChange(progress) {
         let self = this;
 
-        // Convert the percent into a seek position.
-        // self.state.howl.fade(self.state.howl.volume(), 0, 50);
-        self.state.howl.seek(self.state.howl.duration() * progress);
-        // self.state.howl.fade(0, self.state.howl.volume(), 50);
+        if (self.state.howl)
+        {
+            // Convert the percent into a seek position.
+            // self.state.howl.fade(self.state.howl.volume(), 0, 50);
+            self.state.howl.seek(self.state.howl.duration() * progress);
+            // self.state.howl.fade(0, self.state.howl.volume(), 50);
 
-        this.setState({progress: progress}); // todo: this should probably be delayed or debounced
+            this.setState({progress: progress}); // todo: this should probably be delayed or debounced
+        }
     }
 
     static formatTime(secs) {
@@ -222,16 +259,6 @@ export default class Player extends React.Component {
 
         return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
     }
-
-    scrollToTrack(index)
-    {
-        const element = document.getElementById('track' + index);
-        const elementRect = element.getBoundingClientRect();
-        const absoluteElementTop = elementRect.top + window.pageYOffset;
-        const middle = absoluteElementTop - (window.innerHeight / 2);
-        window.scrollTo(0, middle);
-    }
-
 
     /** The step called within requestAnimationFrame to update the playback position. */
     step() {

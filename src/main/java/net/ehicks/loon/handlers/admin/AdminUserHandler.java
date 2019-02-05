@@ -13,14 +13,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/users")
-public class UserHandler
+public class AdminUserHandler
 {
-    private static final Logger log = LoggerFactory.getLogger(AdminHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(AdminUserHandler.class);
     private UserRepository userRepo;
     private PasswordEncoder passwordEncoder;
     private SessionManager sessionManager;
 
-    public UserHandler(UserRepository userRepo, PasswordEncoder passwordEncoder, SessionManager sessionManager)
+    public AdminUserHandler(UserRepository userRepo, PasswordEncoder passwordEncoder, SessionManager sessionManager)
     {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
@@ -33,26 +33,26 @@ public class UserHandler
         return userRepo.findAll();
     }
 
-    @DeleteMapping("/{username}")
-    public String delete(@PathVariable String username)
+    @DeleteMapping("/{id}")
+    public String delete(@PathVariable Long id)
     {
-        User user = userRepo.findByUsername(username);
+        User user = userRepo.findById(id).orElse(null);
         if (user != null)
             userRepo.delete(user);
 
         return "";
     }
 
-    @GetMapping("/{username}")
-    public User form(@PathVariable String username)
+    @GetMapping("/{id}")
+    public User form(@PathVariable Long id)
     {
-        return userRepo.findByUsername(username);
+        return userRepo.findById(id).orElse(null);
     }
 
-    @PutMapping("/{username}")
-    public User modify(@PathVariable String username, @RequestParam String newUsername, @RequestParam String fullName)
+    @PutMapping("/{id}")
+    public User modify(@PathVariable Long id, @RequestParam String newUsername, @RequestParam String fullName)
     {
-        User user = userRepo.findByUsername(username);
+        User user = userRepo.findById(id).orElse(null);
         user.setUsername(newUsername);
         user.setFullName(fullName);
         user = userRepo.save(user);
@@ -60,10 +60,10 @@ public class UserHandler
         return user;
     }
 
-    @GetMapping("/{username}/changePassword")
-    public User changePassword(@PathVariable String username, @RequestParam String password)
+    @GetMapping("/{id}/changePassword")
+    public User changePassword(@PathVariable Long id, @RequestParam String password)
     {
-        User user = userRepo.findByUsername(username);
+        User user = userRepo.findById(id).orElse(null);
 
         if (!password.isEmpty())
         {

@@ -21,7 +21,7 @@ export default class SystemSettings extends React.Component {
     componentDidMount()
     {
         let self = this;
-        fetch('/api/admin/systemSettings/form', {
+        fetch('/api/admin/systemSettings', {
             method: 'GET'
         }).then(response => response.json()).then(data => self.setState({settings: data}));
 
@@ -70,11 +70,11 @@ export default class SystemSettings extends React.Component {
         const self = this;
         const rescanValue = rescan ? 'true' : 'false';
         const clearLibraryValue = clearLibrary ? 'true' : 'false';
-        const url = '/api/admin/systemSettings/modify?id=1&rescan=' + rescanValue + '&clearLibrary=' + clearLibraryValue;
-        const formData = new FormData(document.getElementById('frmProject'));
+        const url = '/api/admin/systemSettings?rescan=' + rescanValue + '&clearLibrary=' + clearLibraryValue;
+        const formData = new FormData(document.getElementById('frmSystemSettings'));
 
         fetch(url, {
-            method: 'POST',
+            method: 'PUT',
             body: formData
         }).then(response => response.json()).then(data => {
             self.handleThemeChange(data.theme);
@@ -138,7 +138,7 @@ export default class SystemSettings extends React.Component {
                     <div className="container">
                         <div className="columns is-multiline is-centered">
                             <div className="column">
-                                <form id="frmProject" method="post" action="">
+                                <form id="frmSystemSettings" method="post" action="">
 
                                     <TextInput id="instanceName" label="Instance Name" value={systemSettings.instanceName} />
                                     <Select id="theme" label="Theme" items={themes} value={systemSettings.theme} required={true}/>

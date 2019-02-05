@@ -26,8 +26,6 @@ export default class MyHelmet extends React.Component {
 
                 <link rel="shortcut icon" href={basename + "/images/puffin.png"} />
                 <link rel="stylesheet" type="text/css" href={basename + "/styles/style.css"} media="screen" />
-                {/*<script src={basename + "/js/util.js"} />*/}
-                {/*<script src={basename + "/js/ajaxUtil.js"} />*/}
 
                 <style>
                     {this.props.theme === 'superhero' || this.props.theme === 'darkly' || this.props.theme === 'slate' ?

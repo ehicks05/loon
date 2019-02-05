@@ -14,6 +14,7 @@ public class Seeder
 {
     private static final Logger log = LoggerFactory.getLogger(Seeder.class);
     private UserRepository userRepo;
+    private UserStateRepository userStateRepo;
     private RoleRepository roleRepo;
     private TrackRepository trackRepo;
     private PlaylistRepository playlistRepo;
@@ -22,11 +23,12 @@ public class Seeder
     private LoonSystemRepository loonSystemRepo;
     private PlaylistLogic playlistLogic;
 
-    public Seeder(UserRepository userRepo, RoleRepository roleRepo, TrackRepository trackRepo, PlaylistRepository playlistRepo,
+    public Seeder(UserRepository userRepo, UserStateRepository userStateRepo, RoleRepository roleRepo, TrackRepository trackRepo, PlaylistRepository playlistRepo,
                   PlaylistTrackRepository playlistTrackRepo, PasswordEncoder passwordEncoder, LoonSystemRepository loonSystemRepo,
                   PlaylistLogic playlistLogic)
     {
         this.userRepo = userRepo;
+        this.userStateRepo = userStateRepo;
         this.roleRepo = roleRepo;
         this.trackRepo = trackRepo;
         this.playlistRepo = playlistRepo;
@@ -83,6 +85,14 @@ public class Seeder
                 roles.add(roleRepo.findByRole("ROLE_ADMIN"));
 
             User user = registrationForm.toUser(passwordEncoder, roles);
+
+            UserState userState = new UserState();
+            userState.setUser(user);
+//            userState.setLastPlaylistId(0L);
+//            userState.setLastTrackId(1L);
+
+            user.setUserState(userState);
+
             userRepo.save(user);
         });
     }

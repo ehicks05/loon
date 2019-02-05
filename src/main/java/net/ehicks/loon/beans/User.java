@@ -1,11 +1,13 @@
 package net.ehicks.loon.beans;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "loon_users")
@@ -18,16 +20,21 @@ public class User implements UserDetails
     @Column(nullable=false)
     private String username = "";
     @Column(nullable=false)
+    @JsonIgnore
     private String password = "";
     @Column(nullable=false)
     private String fullName = "";
 
-    @ManyToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")}
     )
     private Set<Role> roles = new HashSet<>();
+
+    @OneToOne(mappedBy="user", cascade=CascadeType.ALL, fetch = FetchType.LAZY)
+    @PrimaryKeyJoinColumn
+    private UserState userState = new UserState();
 
     public User()
     {
@@ -87,6 +94,11 @@ public class User implements UserDetails
         return true;
     }
 
+    public boolean isAdmin()
+    {
+        return roles.stream().anyMatch(role -> role.getRole().equals("ROLE_ADMIN"));
+    }
+
     // -------- Getters / Setters ----------
 
     public Long getId()
@@ -107,6 +119,16 @@ public class User implements UserDetails
     public void setRoles(Set<Role> roles)
     {
         this.roles = roles;
+    }
+
+    public UserState getUserState()
+    {
+        return userState;
+    }
+
+    public void setUserState(UserState userState)
+    {
+        this.userState = userState;
     }
 
     public String getUsername()

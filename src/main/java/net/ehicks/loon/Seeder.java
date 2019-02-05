@@ -48,7 +48,7 @@ public class Seeder
         LoonSystem loonSystem = new LoonSystem();
         loonSystem.setId(1L);
         loonSystem.setInstanceName("Loon");
-        loonSystem.setLogonMessage("<span>Welcome to Loon.</span>");
+        loonSystem.setLogonMessage("Welcome to Loon.");
         loonSystem.setTheme("default");
         loonSystem.setMusicFolder("c:/k/music");
         loonSystem.setRegistrationEnabled(false);

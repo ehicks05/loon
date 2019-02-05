@@ -46,7 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
                 .logoutSuccessUrl("/")
                 .and()
                 .sessionManagement()
-                .maximumSessions(1).sessionRegistry(sessionRegistry);
+                .maximumSessions(5).sessionRegistry(sessionRegistry);
 
         http.csrf().disable(); // todo deal with this
 

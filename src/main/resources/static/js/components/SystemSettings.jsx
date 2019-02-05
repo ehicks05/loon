@@ -10,6 +10,7 @@ export default class SystemSettings extends React.Component {
         this.submitForm = this.submitForm.bind(this);
         this.handleThemeChange = this.handleThemeChange.bind(this);
         this.handleUpdateTracks = this.handleUpdateTracks.bind(this);
+        this.handleUpdatePlaylists = this.handleUpdatePlaylists.bind(this);
         this.getScanProgress = this.getScanProgress.bind(this);
 
         self.state = {};
@@ -47,7 +48,7 @@ export default class SystemSettings extends React.Component {
             {
                 if (self.state.scanSinceLastTrackUpdate)
                 {
-                    self.handleUpdateTracks();
+                    self.handleUpdateTracks('scanning library');
                     self.setState({scanSinceLastTrackUpdate: false})
                 }
             }
@@ -59,10 +60,16 @@ export default class SystemSettings extends React.Component {
         this.props.onThemeChange(newTheme);
     }
 
-    handleUpdateTracks()
+    handleUpdateTracks(action)
     {
-        console.log('Finished rescan, updating track listing.');
+        console.log('Finished ' + action + ', updating track listing.');
         this.props.onUpdateTracks();
+    }
+
+    handleUpdatePlaylists(action)
+    {
+        console.log('Finished ' + action + ', updating playlist listing.');
+        this.props.onUpdatePlaylists();
     }
 
     submitForm(rescan, clearLibrary)
@@ -81,6 +88,11 @@ export default class SystemSettings extends React.Component {
             console.log(data);
             if (rescan)
                 self.getScanProgress();
+            if (clearLibrary)
+            {
+                self.handleUpdateTracks('clearing library');
+                self.handleUpdatePlaylists('clearing library');
+            }
         });
     }
 
@@ -158,7 +170,7 @@ export default class SystemSettings extends React.Component {
 
                         {
                             showProgressBar &&
-                            <progress style={{width: "10em"}} className={progressClass} value={scanProgress.progress} max={"100"}>{scanProgress.progress}%</progress>
+                            <progress style={{width: "20em"}} title={scanProgress.progress + '%'} className={progressClass} value={scanProgress.progress} max={"100"}>{scanProgress.progress}%</progress>
                         }
 
                     </div>

@@ -2,7 +2,7 @@ import React from 'react';
 import {NavLink} from "react-router-dom";
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faServer, faUser, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
+import { faServer, faUser, faSignOutAlt, faSlidersH } from '@fortawesome/free-solid-svg-icons'
 
 library.add(faServer, faUser, faSignOutAlt);
 
@@ -69,15 +69,15 @@ export default class Header extends React.Component {
                             {
                                 isAdmin &&
                                 <div className={"navbar-item has-dropdown is-hoverable"}>
-                                    <NavLink to='/admin' activeClassName='is-active' className="navbar-link">Admin</NavLink>
+                                    <div className="navbar-link">Admin</div>
                                     <div className="navbar-dropdown">
-                                        <NavLink to={'/admin/systemSettings'} className="navbar-item">
+                                        <NavLink to={'/admin/systemSettings'} className="navbar-item" activeClassName='is-active'>
                                             <span className="icon is-medium has-text-info">
                                                 <FontAwesomeIcon icon={faServer}/>
                                             </span>
                                             Manage System
                                         </NavLink>
-                                        <NavLink to={'/admin/users'} className="navbar-item">
+                                        <NavLink to={'/admin/users'} className="navbar-item" activeClassName='is-active'>
                                             <span className="icon is-medium has-text-info">
                                                 <FontAwesomeIcon icon={faUser}/>
                                             </span>
@@ -86,6 +86,18 @@ export default class Header extends React.Component {
                                     </div>
                                 </div>
                             }
+
+                            <div className={"navbar-item has-dropdown is-hoverable"}>
+                                <div className="navbar-link">Settings</div>
+                                <div className="navbar-dropdown">
+                                    <NavLink to={'/settings/eq'} className="navbar-item" activeClassName='is-active'>
+                                            <span className="icon is-medium has-text-info">
+                                                <FontAwesomeIcon icon={faSlidersH} rotation={90}/>
+                                            </span>
+                                        Equalizer
+                                    </NavLink>
+                                </div>
+                            </div>
 
                             <div className={"navbar-item"}>
                                 Playing Tracks from {currentPlaylist}

@@ -153,7 +153,7 @@ public class PlaylistHandler
                     playlistTrackRepo.save(track);
                 });
 
-        playlist.setPlaylistTracks(playlistTracks);
+        playlist.setPlaylistTracks(playlistTracks); // todo is this needed?
 
         return "";
     }

@@ -93,6 +93,12 @@ export default class Player extends React.Component {
 
             let track = this.props.tracks.find(track => track.id === newTrackId);
 
+            if (!track)
+            {
+                console.log('no track found...');
+                return;
+            }
+
             if (self.state.howl && self.state.howl.playing())
             {
                 if (self.state.howl._src === '/media?id=' + track.id)

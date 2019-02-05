@@ -6,6 +6,8 @@ import net.ehicks.loon.beans.Track;
 import net.ehicks.loon.repos.PlaylistRepository;
 import net.ehicks.loon.repos.PlaylistTrackRepository;
 import net.ehicks.loon.repos.TrackRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,6 +18,8 @@ import java.util.stream.Collectors;
 @Service
 public class PlaylistLogic
 {
+    private static final Logger log = LoggerFactory.getLogger(PlaylistLogic.class);
+
     private PlaylistTrackRepository playlistTrackRepo;
     private PlaylistRepository playlistRepo;
     private TrackRepository trackRepo;
@@ -43,20 +47,27 @@ public class PlaylistLogic
             if (playlistTrack != null)
             {
                 playlist.getPlaylistTracks().remove(playlistTrack);
-//                track.getPlaylistTracks().remove(playlistTrack);
+                if (track != null)
+                    track.getPlaylistTracks().remove(playlistTrack);
                 playlistTrackRepo.delete(playlistTrack);
             }
         });
 
         trackIdsToAdd.forEach(trackId -> {
             Track track = trackRepo.findById(trackId).orElse(null);
+            if (track == null)
+            {
+                log.error("Can't add track:" + trackId + " to " + playlist);
+                return;
+            }
+            
             PlaylistTrack playlistTrack = new PlaylistTrack();
             playlistTrack.setPlaylist(playlist);
             playlistTrack.setTrack(track);
             playlistTrack.setIndex(getNextAvailableIndex(playlist.getId()));
             playlistTrack = playlistTrackRepo.save(playlistTrack);
 
-//            track.getPlaylistTracks().add(playlistTrack);
+            track.getPlaylistTracks().add(playlistTrack);
             playlist.getPlaylistTracks().add(playlistTrack);
         });
 

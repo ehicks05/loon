@@ -20,13 +20,13 @@
         <div class="container has-text-centered">
             <div class="column is-4 is-offset-4">
                 <h3 class="title has-text-grey" th:text="${loonSystem.instanceName}"> </h3>
-                <p class="subtitle has-text-grey">Please login to proceed.</p>
+                <p class="subtitle has-text-grey">Please log in to proceed.</p>
                 <div class="box">
                     <figure class="avatar">
                         <img th:src="@{/images/loon.png}" style="width: 128px">
                     </figure>
                     <div th:if="${error}">
-                        Unable to login. Check your username and password.
+                        Unable to log in. Check your username and password.
                     </div>
 
                     <form method="POST" th:action="@{/login}" id="loginForm">

@@ -100,7 +100,7 @@ export default class App extends React.Component {
                         lastPlaylistId = 0;
                     if (!self.state.tracks.some(p => p.id === lastTrackId))
                     {
-                        if (self.state.tracks)
+                        if (self.state.tracks[0])
                             lastTrackId = self.state.tracks[0].id;
                         else
                             console.log('app:reloadUser: no tracks found?');
@@ -171,7 +171,9 @@ export default class App extends React.Component {
                         </div>
                         <div className="column">
                             <Route exact path='/' render={() => <Redirect to='/library' /> } />
-                            <Route exact path='/admin/systemSettings' render={() => <SystemSettings onThemeChange={this.handleThemeChange} onUpdateTracks={this.reloadTracks}  />}/>
+                            <Route exact path='/admin/systemSettings' render={() => <SystemSettings onThemeChange={this.handleThemeChange}
+                                                                                                    onUpdateTracks={this.reloadTracks}
+                                                                                                    onUpdatePlaylists={this.reloadPlaylists} />}/>
                             <Route exact path='/admin/users' render={() => <div>TODO</div>}/>
                             <Route exact path='/settings/eq' render={() => <Eq />}/>
 
@@ -200,7 +202,7 @@ export default class App extends React.Component {
                             </Switch>
 
                             {/* Prevents the PlaybackControls from covering up the last few tracks. */}
-                            <div style={{height: '200px'}} />
+                            <div style={{height: '220px'}} />
                         </div>
                     </div>
 

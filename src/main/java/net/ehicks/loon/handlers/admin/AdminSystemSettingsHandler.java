@@ -68,8 +68,8 @@ public class AdminSystemSettingsHandler
     {
         log.info("Clearing library...");
         trackRepo.deleteAll();
-        playlistRepo.deleteAll();
-        playlistTrackRepo.deleteAll();
+//        playlistRepo.deleteAll();
+//        playlistTrackRepo.deleteAll();
         log.info("Done clearing library...");
     }
 }

@@ -22,7 +22,7 @@ public class Playlist implements Serializable
     @Column(name = "name", nullable = false)
     private String name = "";
 
-    @OneToMany(mappedBy = "playlist")
+    @OneToMany(mappedBy = "playlist", cascade = CascadeType.REMOVE)
     @JsonIgnoreProperties("playlist")
     private Set<PlaylistTrack> playlistTracks = new HashSet<>();
 

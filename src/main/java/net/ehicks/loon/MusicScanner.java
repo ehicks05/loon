@@ -102,7 +102,7 @@ public class MusicScanner
         AudioFile audioFile;
         try
         {
-            log.info(path.toFile().getName());
+            log.debug(path.toFile().getName());
             audioFile = AudioFileIO.read(path.toFile());
         }
         catch (Exception e)

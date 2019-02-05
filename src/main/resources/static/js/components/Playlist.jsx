@@ -98,7 +98,12 @@ export default class Playlist extends React.Component {
         }
         else
         {
-            mediaItems = tracks.map((track, index) => {
+            const sortedTracks = tracks.sort((o1, o2) => {
+                if (o1.artist === o2.artist)
+                    return o1.album > o2.album ? 1 : -1;
+                return o1.artist > o2.artist ? 1 : -1;
+            });
+            mediaItems = sortedTracks.map((track, index) => {
                     return <MediaItem key={track.id} track={track} index={index} selectedTrackId={selectedTrackId} onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={false}/>
                 }
             );

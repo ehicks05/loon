@@ -1,13 +1,16 @@
 package net.ehicks.loon.beans;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import net.ehicks.common.Common;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "tracks")
@@ -52,6 +55,10 @@ public class Track implements Serializable
 
     @Column(name = "artwork_db_file_id")
     private Long artworkDbFileId;
+
+    @OneToMany(mappedBy = "track", cascade = CascadeType.REMOVE)
+    @JsonIgnoreProperties
+    private Set<PlaylistTrack> playlistTracks = new HashSet<>();
 
     @Override
     public boolean equals(Object o)
@@ -217,5 +224,15 @@ public class Track implements Serializable
     public void setArtworkDbFileId(Long artworkDbFileId)
     {
         this.artworkDbFileId = artworkDbFileId;
+    }
+
+    public Set<PlaylistTrack> getPlaylistTracks()
+    {
+        return playlistTracks;
+    }
+
+    public void setPlaylistTracks(Set<PlaylistTrack> playlistTracks)
+    {
+        this.playlistTracks = playlistTracks;
     }
 }

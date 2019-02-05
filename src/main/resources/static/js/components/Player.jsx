@@ -28,7 +28,6 @@ export default class Player extends React.Component {
 
         this.lastAnimationFrame = Date.now();
         Howler.autoSuspend = false;
-        Howler.volume(Player.scaleVolume(this.props.userState.volume));
 
         this.state = {
             howl: null,
@@ -38,7 +37,8 @@ export default class Player extends React.Component {
             muted: false,
             shuffle: this.props.userState.shuffle,
             progressPercent: 0,
-            timeElapsed: Player.formatTime(Math.round(0))
+            timeElapsed: Player.formatTime(Math.round(0)),
+            firstSoundPlayed: false
         };
     }
 
@@ -127,6 +127,9 @@ export default class Player extends React.Component {
                 })
             }, function () {
                 self.state.howl.play();
+                Howler.volume(Player.scaleVolume(this.props.userState.volume));
+                if (!self.state.firstSoundPlayed)
+                    self.setState({firstSoundPlayed: true});
                 // self.state.howl.addFilter({
                 //     filterType: 'highpass',
                 //     frequency: 400.0,
@@ -208,16 +211,16 @@ export default class Player extends React.Component {
         this.props.onSelectedTrackIdChange(newTrackId);
     }
 
-    static scaleVolume(linearInput)
+    static scaleVolume(dB)
     {
-        if (linearInput > 1) linearInput = 1;
-        if (linearInput < 0) linearInput = 0;
+        if (dB > 0) dB = 0;
+        if (dB < -60) dB = -60;
 
-        let scaledVolume = 3.16e-3 * Math.exp(linearInput * 5.757);
-        if (linearInput === 0)
-            scaledVolume = 0;
+        let level = Math.pow(10, (dB / 20));
+        if (dB === -60)
+            level = 0;
 
-        return scaledVolume;
+        return level;
     }
 
     handleVolumeChange(volume) {

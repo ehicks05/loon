@@ -128,7 +128,7 @@ export default class PlaybackControls extends React.Component {
                                     <FontAwesomeIcon icon={muted ? faVolumeOff : faVolumeUp} fixedWidth/>
                                 </span>
                             </a>
-                            <input name="sliderBtn" id="sliderBtn" className="slider is-small is-success" type="range" value={volume} max="1" step=".01" onChange={this.handleVolumeChange}/>
+                            <input name="sliderBtn" id="sliderBtn" className="slider is-small is-success" type="range" value={volume} min="-30" max="0" step="1" onChange={this.handleVolumeChange}/>
                         </div>
                     </div>
                 </nav>

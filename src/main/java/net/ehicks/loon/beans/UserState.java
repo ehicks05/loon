@@ -21,7 +21,7 @@ public class UserState implements Serializable
     private Long lastPlaylistId = 0L;
     private Long lastTrackId = 1L;
     private boolean shuffle = false;
-    private Double volume = 1D;
+    private Double volume = 0D;
 
     @Override
     public boolean equals(Object obj)

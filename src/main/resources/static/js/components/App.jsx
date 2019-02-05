@@ -15,6 +15,7 @@ import Eq from "./Eq.jsx";
 
 import Loadable from "react-loadable";
 import SidePanel from "./SidePanel.jsx";
+import UserSettings from "./UserSettings.jsx";
 
 function Loading() {
     return <div>Loading...</div>;
@@ -174,7 +175,7 @@ export default class App extends React.Component {
                             <Route exact path='/admin/systemSettings' render={() => <SystemSettings onThemeChange={this.handleThemeChange}
                                                                                                     onUpdateTracks={this.reloadTracks}
                                                                                                     onUpdatePlaylists={this.reloadPlaylists} />}/>
-                            <Route exact path='/admin/users' render={() => <div>TODO</div>}/>
+                            <Route exact path='/admin/users' render={() => <UserSettings />}/>
                             <Route exact path='/settings/eq' render={() => <Eq />}/>
 
                             <Route exact path='/library' render={(props) => <Playlist {...props}

@@ -44,7 +44,7 @@ ext['springBootAdminVersion'] = '2.1.1'
 dependencies {
     compile 'com.github.ehicks05:common:-SNAPSHOT'
 
-    compile 'org.bitbucket.ijabz:jaudiotagger:v2.2.5'
+    compile 'com.github.goxr3plus:jaudiotagger:V2.2.6'
     compile 'org.apache.commons:commons-lang3:3.7'
     compile 'org.imgscalr:imgscalr-lib:4.2'
     compile 'com.google.code.gson:gson:2.8.2'

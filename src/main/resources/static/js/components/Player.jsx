@@ -116,7 +116,7 @@ export default class Player extends React.Component {
             self.setState({
                 howl: new Howl({
                     src: '/media?id=' + track.id,
-                    html5: false,
+                    html5: true,
                     format: [track.extension],
                     volume: track.trackGainLinear > 1 ? 1 : track.trackGainLinear,
                     mute: this.state.muted,
@@ -133,9 +133,11 @@ export default class Player extends React.Component {
                 })
             }, function () {
                 self.state.howl.play();
-                Howler.volume(Player.scaleVolume(this.props.userState.volume));
                 if (!self.state.firstSoundPlayed)
+                {
+                    Howler.volume(Player.scaleVolume(this.props.userState.volume));
                     self.setState({firstSoundPlayed: true});
+                }
                 // self.state.howl.addFilter({
                 //     filterType: 'highpass',
                 //     frequency: 400.0,

@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,6 +55,8 @@ public class MusicScanner
 
     public void scan()
     {
+        java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(Level.WARNING);
+
         try
         {
             ProgressTracker.progressStatusMap.put("scanProgress", new ProgressTracker.ProgressStatus(0, "incomplete"));
@@ -142,7 +145,9 @@ public class MusicScanner
         track.setTrackGainLinear(track.convertDBToLinear());
 
         if (tag.getArtworkList().size() > 0)
+        {
 //            saveArtwork(tag, track);
+        }
 
         try
         {
@@ -154,14 +159,12 @@ public class MusicScanner
             log.error("Unable to add " + track.getArtist() + " - " + track.getTitle());
         }
 
-        tag.getFirst("REPLAYGAIN_TRACK_GAIN");
-        tag.getFirst("REPLAYGAIN_TRACK_PEAK");
-        tag.getFirst(FieldKey.COMMENT);
-        tag.getFirst(FieldKey.YEAR);
-        tag.getFirst(FieldKey.TRACK);
-        tag.getFirst(FieldKey.DISC_NO);
-        tag.getFirst(FieldKey.COMPOSER);
-        tag.getFirst(FieldKey.ARTIST_SORT);
+//        tag.getFirst(FieldKey.COMMENT);
+//        tag.getFirst(FieldKey.YEAR);
+//        tag.getFirst(FieldKey.TRACK);
+//        tag.getFirst(FieldKey.DISC_NO);
+//        tag.getFirst(FieldKey.COMPOSER);
+//        tag.getFirst(FieldKey.ARTIST_SORT);
     }
 
     private void saveArtwork(Tag tag, Track track)

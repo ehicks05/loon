@@ -165,7 +165,7 @@ export default class App extends React.Component {
                     <MyHelmet theme={theme}/>
                     <Header isAdmin={isAdmin} playlists={playlists} selectedPlaylistId={selectedPlaylistId}/>
 
-                    <div className={'columns'}>
+                    <div className={'columns is-gapless'}>
                         <div className="column is-2 is-hidden-touch">
                             <SidePanel isAdmin={isAdmin} playlists={playlists} selectedPlaylistId={selectedPlaylistId}/>
                         </div>
@@ -200,7 +200,7 @@ export default class App extends React.Component {
                             </Switch>
 
                             {/* Prevents the PlaybackControls from covering up the last few tracks. */}
-                            <div style={{height: '300px'}} />
+                            <div style={{height: '200px'}} />
                         </div>
                     </div>
 

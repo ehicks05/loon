@@ -57,7 +57,7 @@ export default class PlaybackControls extends React.Component {
         const shuffle = this.props.shuffle;
 
         return (
-            <section className="section" id="level">
+            <section className="section" id="level" style={{zIndex: '5'}}>
                 <nav className="level">
                     <div className="level-left">
                         <p className="level-item">

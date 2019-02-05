@@ -111,15 +111,15 @@ export default class Playlist extends React.Component {
                         <div className={'is-marginless is-paddingless'} ref={provided.innerRef}>
                             {/*<section className={"section"}>*/}
                                 {/*<div className="container">*/}
-                                    <h1 className="title">{playlist ? playlist.name : 'Library'}</h1>
                                 {/*</div>*/}
                             {/*</section>*/}
 
-                            {/*<section className="section" id="root">*/}
-                                {/*<div className="container">*/}
+                            <section className="section">
+                                <div className="container">
                                     {/*<div className="columns is-multiline is-centered">*/}
                                         {/*<div className="column">*/}
-    
+
+                                    <h1 className="title">{playlist ? playlist.name : 'Library'}</h1>
                                             <div id="playlist" className="playlist">
                                                 <br />
                                                 <ul id="list" style={{}}>
@@ -128,8 +128,8 @@ export default class Playlist extends React.Component {
                                             {/*</div>*/}
                                         {/*</div>*/}
                                     </div>
-                                {/*</div>*/}
-                            {/*</section>*/}
+                                </div>
+                            </section>
                             {provided.placeholder}
                         </div>
                     )}

@@ -91,7 +91,7 @@ export default class SystemSettings extends React.Component {
 
         const systemSettings = this.state.settings;
         const scanProgress = this.state.scanProgress;
-        const progressClass = 'progress ' + (scanProgress.status === 'complete' ? 'is-success' : 'is-info');
+        const progressClass = 'progress is-small ' + (scanProgress.status === 'complete' ? 'is-success' : 'is-info');
         const showProgressBar = scanProgress.status === 'complete' || scanProgress.status === 'incomplete';
 
         const themes = [
@@ -158,7 +158,7 @@ export default class SystemSettings extends React.Component {
 
                         {
                             showProgressBar &&
-                            <progress className={progressClass} value={scanProgress.progress} max={"100"}>{scanProgress.progress}%</progress>
+                            <progress style={{width: "10em"}} className={progressClass} value={scanProgress.progress} max={"100"}>{scanProgress.progress}%</progress>
                         }
 
                     </div>

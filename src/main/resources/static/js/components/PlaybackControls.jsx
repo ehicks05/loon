@@ -96,14 +96,14 @@ export default class PlaybackControls extends React.Component {
                             <span id="timer">{timeElapsed}</span> /
                             <span id="duration">{PlaybackControls.formatTime(selectedTrack ? selectedTrack.duration : 0)}</span>
                             <span style={{width:'10px'}}/>
-                            <span id="track"><b>{selectedTrack ? selectedTrack.title : ""}</b> - <span style={{fontSize: '.875rem'}}>{selectedTrack ? selectedTrack.artist : ""}
+                            <span id="track" style={{maxHeight: '70px', overflow: 'auto'}}><b>{selectedTrack ? selectedTrack.title : ""}</b> - <span style={{fontSize: '.875rem'}}>{selectedTrack ? selectedTrack.artist : ""}
                                 <br /> <i>{selectedTrack ? selectedTrack.album : ""}</i></span>
                             </span>
                         </div>
                     </div>
 
-                    <div className="level-right">
-                        <p className="level-item">
+                    <div className="level-right" style={{marginTop: '0'}}>
+                        <p className="level-item" style={{marginBottom: '0'}}>
                             <input name="progress" id="progress" style={{width:'300px'}} className="slider is-fullwidth is-small is-success"
                                    type="range" value={progressPercent} max="100" step={'any'} onChange={this.handleProgressChange}/>
                         </p>

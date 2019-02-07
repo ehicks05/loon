@@ -1,4 +1,4 @@
-import React, {lazy, Suspense} from 'react';
+import React from 'react';
 import MediaItem from "./MediaItem.jsx";
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { AutoSizer, CellMeasurer, List } from 'react-virtualized'
@@ -92,7 +92,8 @@ export default class Playlist extends React.Component {
                             <MediaItem
                                 provided={provided}
                                 snapshot={snapshot}
-                                key={track.id} track={track} index={playlistTrack.index} selectedTrackId={selectedTrackId} onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={true}/>
+                                key={track.id} track={track} index={playlistTrack.index} selectedTrackId={selectedTrackId}
+                                onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={true}/>
 
                         )}
                     </Draggable>
@@ -103,7 +104,8 @@ export default class Playlist extends React.Component {
         else
         {
             mediaItems = tracks.map((track, index) => {
-                    return <MediaItem key={track.id} track={track} index={index} selectedTrackId={selectedTrackId} onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={false}/>
+                    return <MediaItem key={track.id} track={track} index={index} selectedTrackId={selectedTrackId}
+                                      onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={false}/>
                 }
             );
         }
@@ -115,29 +117,13 @@ export default class Playlist extends React.Component {
                     <Droppable droppableId="droppable">
                         {(provided, snapshot) => (
                             <div className={'is-marginless is-paddingless'} ref={provided.innerRef}>
-                                {/*<section className={"section"}>*/}
-                                {/*<div className="container">*/}
-                                {/*</div>*/}
-                                {/*</section>*/}
 
-                                <section className="section">
-                                    <div className="container">
-                                        {/*<div className="columns is-multiline is-centered">*/}
-                                        {/*<div className="column">*/}
-
-                                        <h1 className="title">{playlist ? playlist.name : 'Library'}</h1>
-                                        <div id="playlist" className="playlist">
-                                            <br />
-                                            {/*<Suspense fallback={<p>LOADING!!!</p>}>*/}
-                                                <ul id="list" style={{}}>
-                                                    {mediaItems}
-                                                </ul>
-                                            {/*</Suspense>*/}
-                                            {/*</div>*/}
-                                            {/*</div>*/}
-                                        </div>
-                                    </div>
-                                </section>
+                                <h1 className="title">{playlist ? playlist.name : 'Library'}</h1>
+                                <div id="playlist" className="playlist" style={{display: 'flex', flexDirection: 'column'}}>
+                                    <ul id="list" style={{flex: '1', flexGrow: '1'}}>
+                                        {mediaItems}
+                                    </ul>
+                                </div>
                                 {provided.placeholder}
                             </div>
                         )}
@@ -146,22 +132,22 @@ export default class Playlist extends React.Component {
         }
         else {
             return (
-                        <div id="playlist" className="playlist" style={{display: 'flex', flexDirection: 'column'}}>
-                            <ul id="list" style={{flex: '1', flexGrow: '1'}}>
-                                {mediaItems}
-                            </ul>
-                            {/*<AutoSizer>*/}
-                                {/*{({ height, width }) => (*/}
-                                    {/*<List*/}
-                                        {/*height={height}*/}
-                                        {/*rowHeight={({ index }) => 58}*/}
-                                        {/*rowRenderer={({ index, key, style }) => <div key={key} style={style}>{self.renderMediaItem(index, key, selectedTrackId)}</div>}*/}
-                                        {/*rowCount={this.props.tracks.length}*/}
-                                        {/*width={width}*/}
-                                    {/*/>*/}
-                                {/*)}*/}
-                            {/*</AutoSizer>*/}
-                        </div>
+                <div id="playlist" className="playlist" style={{display: 'flex', flexDirection: 'column'}}>
+                    <ul id="list" style={{flex: '1', flexGrow: '1'}}>
+                        {mediaItems}
+                    </ul>
+                    {/*<AutoSizer>*/}
+                        {/*{({ height, width }) => (*/}
+                            {/*<List*/}
+                                {/*height={height}*/}
+                                {/*rowHeight={({ index }) => 58}*/}
+                                {/*rowRenderer={({ index, key, style }) => <div key={key} style={style}>{self.renderMediaItem(index, key, selectedTrackId)}</div>}*/}
+                                {/*rowCount={this.props.tracks.length}*/}
+                                {/*width={width}*/}
+                            {/*/>*/}
+                        {/*)}*/}
+                    {/*</AutoSizer>*/}
+                </div>
             );
         }
 

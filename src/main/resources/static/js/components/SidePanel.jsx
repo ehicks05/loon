@@ -1,10 +1,7 @@
 import React from 'react';
 import {Link, NavLink} from "react-router-dom";
-import {library} from '@fortawesome/fontawesome-svg-core'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faServer, faUser, faSignOutAlt, faSearch, faBook, faCodeBranch, faMusic} from '@fortawesome/free-solid-svg-icons'
-
-library.add(faServer, faUser, faSignOutAlt);
+import {faSearch, faServer, faMusic, faUsers, faFolderOpen, faListUl} from '@fortawesome/free-solid-svg-icons'
 
 export default class SidePanel extends React.Component {
     componentDidMount()
@@ -17,38 +14,50 @@ export default class SidePanel extends React.Component {
         const selectedPlaylistId = this.props.selectedPlaylistId;
 
         const playlists = this.props.playlists.map((playlist) => {
-            const selected = playlist.id === selectedPlaylistId;
-            const className = selected ? 'panel-block is-active' : 'panel-block';
             return (
-                <Link key={playlist.id} to={'/playlists/' + playlist.id} className={className}>
+                <NavLink key={playlist.id} to={'/playlists/' + playlist.id} className={'panel-block'}
+                         activeClassName={'is-active'}
+                         isActive={() => playlist.id === selectedPlaylistId}>
                     <span className="panel-icon">
                         <FontAwesomeIcon icon={faMusic} aria-hidden="true"/>
                     </span>
                     {playlist.name}
-                </Link>
+                </NavLink>
             )
         });
 
         return (
             <nav className={'panel'} style={{}}>
-                <p className="panel-heading">
-                    Loon
-                </p>
-                <Link to={'/search'} className="panel-block">
+                <NavLink to={'/search'} className="panel-block" activeClassName="is-active">
                     <span className="panel-icon">
                         <FontAwesomeIcon icon={faSearch} aria-hidden="true" />
                     </span>
                     Search
-                </Link>
-                <Link to={'/library'} className={"panel-block" + (selectedPlaylistId === 0 ? ' is-active' : '')}>
+                </NavLink>
+                <NavLink to={'/library'} className="panel-block" activeClassName="is-active" isActive={() => selectedPlaylistId === 0}>
                     <span className="panel-icon">
-                        <FontAwesomeIcon icon={faBook} aria-hidden="true" />
+                        <FontAwesomeIcon icon={faServer} aria-hidden="true" />
                     </span>
                     Library
-                </Link>
-                <div className="panel-block">
+                </NavLink>
+                <NavLink to={'/artists'} className="panel-block" activeClassName="is-active">
+                    <span className="panel-icon">
+                        <FontAwesomeIcon icon={faUsers} aria-hidden="true" />
+                    </span>
+                    Artists
+                </NavLink>
+                <NavLink to={'/albums'} className="panel-block" activeClassName="is-active">
+                    <span className="panel-icon">
+                        <FontAwesomeIcon icon={faFolderOpen} aria-hidden="true" />
+                    </span>
+                    Albums
+                </NavLink>
+                <NavLink to={'/playlists'} className="panel-block" activeClassName="is-active">
+                    <span className="panel-icon">
+                        <FontAwesomeIcon icon={faListUl} aria-hidden="true" />
+                    </span>
                     Playlists
-                </div>
+                </NavLink>
                 {
                     playlists
                 }

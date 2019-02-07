@@ -15,6 +15,8 @@ import Eq from "./Eq.jsx";
 import Loadable from "react-loadable";
 import SidePanel from "./SidePanel.jsx";
 import UserSettings from "./UserSettings.jsx";
+import Artists from "./Artists.jsx";
+import Albums from "./Albums.jsx";
 
 function Loading() {
     return <div>Loading...</div>;
@@ -176,6 +178,8 @@ export default class App extends React.Component {
                                                                                                     onUpdatePlaylists={this.reloadPlaylists} />}/>
                             <Route exact path='/admin/users' render={() => <UserSettings />}/>
                             <Route exact path='/settings/eq' render={() => <Eq />}/>
+                            <Route exact path='/artists' render={() => <Artists tracks={tracks} />}/>
+                            <Route exact path='/albums' render={() => <Albums tracks={tracks} />}/>
 
                             <Route exact path='/library' render={(props) => <Playlist {...props}
                                                                                       tracks={tracks}

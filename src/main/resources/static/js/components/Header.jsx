@@ -46,7 +46,7 @@ export default class Header extends React.Component {
         const currentPlaylist = selectedPlaylistId === 0 ? '\'The Library\'' : '\'' + this.props.playlists.filter((playlist) => playlist.id === selectedPlaylistId)[0].name + '\'';
 
         return (
-            <nav className="navbar is-fixed-top is-primary" role="navigation" aria-label="main navigation">
+            <nav className="navbar is-primary" role="navigation" aria-label="main navigation">
                 <div className="container">
                     <div className="navbar-brand">
                         <div className="navbar-item">

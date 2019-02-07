@@ -20,7 +20,7 @@ export default class MyHelmet extends React.Component {
         let trackTitle = selectedTrack ? ' - ' + selectedTrack.title : '';
 
         return (
-            <Helmet>
+            <Helmet defer={false}>
                 <meta charset="utf-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <title>Loon{trackTitle}</title>

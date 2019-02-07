@@ -3,7 +3,6 @@ import {Redirect, Route, Router, Switch} from 'react-router-dom'
 import {createBrowserHistory} from 'history'
 import 'bulma-extensions/bulma-pageloader/dist/css/bulma-pageloader.min.css'
 
-import Footer from "./Footer.jsx";
 import Header from "./Header.jsx";
 import Player from "./Player.jsx";
 import MyHelmet from "./MyHelmet.jsx";
@@ -62,7 +61,7 @@ export default class App extends React.Component {
             formData.append('lastPlaylistId', this.state.selectedPlaylistId);
             formData.append('lastTrackId', this.state.selectedTrackId);
             fetch('/api/users/' + self.state.user.id + '/saveProgress', {method: 'PUT', body: formData})
-                .then(response => response.json()).then(data => console.log(data));
+                .then(response => response.json());
         });
     }
 
@@ -161,16 +160,16 @@ export default class App extends React.Component {
 
         return (
             <Router history={this.state.history}>
-                <div>
+                 <div style={{display: 'flex', flexDirection: 'column', height: '100vh'}}>
 
                     <MyHelmet theme={theme} tracks={tracks} selectedTrackId={this.state.selectedTrackId}/>
                     <Header isAdmin={isAdmin} playlists={playlists} selectedPlaylistId={selectedPlaylistId}/>
 
-                    <div className={'columns is-gapless'}>
+                    <div className={'columns is-gapless'} style={{margin: '0', flex: '1 1 auto', display: 'flex'}}>
                         <div className="column is-2 is-hidden-touch">
                             <SidePanel isAdmin={isAdmin} playlists={playlists} selectedPlaylistId={selectedPlaylistId}/>
                         </div>
-                        <div className="column">
+                        <div className="column" style={{overflow: 'auto'}}>
                             <Route exact path='/' render={() => <Redirect to='/library' /> } />
                             <Route exact path='/admin/systemSettings' render={() => <SystemSettings onThemeChange={this.handleThemeChange}
                                                                                                     onUpdateTracks={this.reloadTracks}
@@ -201,9 +200,6 @@ export default class App extends React.Component {
                                                                                                 onSelectedTrackIdChange={this.handleSelectedTrackIdChange}
                                                                                                 onUpdatePlaylists={this.reloadPlaylists} />} />
                             </Switch>
-
-                            {/* Prevents the PlaybackControls from covering up the last few tracks. */}
-                            <div style={{height: '220px'}} />
                         </div>
                     </div>
 
@@ -215,7 +211,6 @@ export default class App extends React.Component {
                             onCurrentPlaylistChange={this.handleCurrentPlaylistChange}
                             onSelectedTrackIdChange={this.handleSelectedTrackIdChange} />
 
-                    <Footer serverProcessingTime="123"/>
                 </div>
             </Router>
         );

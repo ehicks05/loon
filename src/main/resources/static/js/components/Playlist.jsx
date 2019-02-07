@@ -146,12 +146,8 @@ export default class Playlist extends React.Component {
         }
         else {
             return (
-                <section className="section is-marginless is-paddingless">
-                    <div className="container">
-
-                        <h1 className="title">Library</h1>
-                        <div id="playlist" className="playlist">
-                            <ul id="list" style={{}}>
+                        <div id="playlist" className="playlist" style={{display: 'flex', flexDirection: 'column'}}>
+                            <ul id="list" style={{flex: '1', flexGrow: '1'}}>
                                 {mediaItems}
                             </ul>
                             {/*<AutoSizer>*/}
@@ -166,8 +162,6 @@ export default class Playlist extends React.Component {
                                 {/*)}*/}
                             {/*</AutoSizer>*/}
                         </div>
-                    </div>
-                </section>
             );
         }
 

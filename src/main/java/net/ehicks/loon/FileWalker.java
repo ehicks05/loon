@@ -17,7 +17,7 @@ import java.util.List;
 class FileWalker implements FileVisitor<Path>
 {
     private static final Logger log = LoggerFactory.getLogger(FileWalker.class);
-    private static final List<String> RECOGNIZED_EXTENSIONS = Arrays.asList("mp3", "flac", "wav", "m4a");
+    private static final List<String> RECOGNIZED_EXTENSIONS = Arrays.asList("mp3", "flac", "wav");
     private List<Path> paths = new ArrayList<>();
 
     @Override

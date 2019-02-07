@@ -64,7 +64,7 @@ public class LibraryHandler
 
     private List<Track> getTracks(int from, int amount)
     {
-        List<Track> library = trackRepo.findAll();
+        List<Track> library = trackRepo.findAllByOrderByArtistAscAlbumAscTitleAsc();
         if (library.size() >= from + amount)
             library = library.subList(from, from + amount);
         return library;

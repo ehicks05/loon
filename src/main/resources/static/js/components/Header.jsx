@@ -31,7 +31,6 @@ export default class Header extends React.Component {
 
 
             let navbarLinks = Array.prototype.slice.call(document.querySelectorAll('#navMenu a'), 0);
-            console.log(navbarLinks);
             navbarLinks.forEach(function ($el) {
                 $el.addEventListener('click', function () {
                     document.querySelector('.navbar-burger').click();

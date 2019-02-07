@@ -42,6 +42,11 @@ export default class Player extends React.Component {
         };
     }
 
+    componentDidMount()
+    {
+        Player.scrollIntoView(this.props.selectedTrackId);
+    }
+
     componentDidUpdate(prevProps, prevState)
     {
         if (prevProps.selectedTrackId !== this.props.selectedTrackId)
@@ -149,23 +154,30 @@ export default class Player extends React.Component {
                 //     Q: 3.0
                 // });
                 console.log('now playing ' + track.title);
+
+                // Start updating the progress of the track.
+                requestAnimationFrame(self.step.bind(self));
             });
 
             this.props.onSelectedTrackIdChange(newTrackId);
 
-            // Start updating the progress of the track.
-            requestAnimationFrame(self.step.bind(self));
 
-            // scroll to the now-playing track (if it isn't already in view)
-            const el = document.getElementById('track' + track.id);
-            if (el && !isScrolledIntoView(el))
-            {
-                location.href = '#track' + track.id;
-                window.scrollBy(0, -50);
-            }
+
+            Player.scrollIntoView(track.id);
         }
 
         this.setState({playerState: newPlayerState});
+    }
+
+    // scroll to the now-playing track (if it isn't already in view)
+    static scrollIntoView(trackId)
+    {
+        const el = document.getElementById('track' + trackId);
+        if (el && !isScrolledIntoView(el))
+        {
+            location.href = '#track' + trackId;
+            window.scrollBy(0, -50);
+        }
     }
 
     handleTrackChange(input) {

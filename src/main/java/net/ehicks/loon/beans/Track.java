@@ -1,7 +1,6 @@
 package net.ehicks.loon.beans;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import net.ehicks.common.Common;
 
 import javax.persistence.*;
@@ -57,7 +56,7 @@ public class Track implements Serializable
     private Long artworkDbFileId;
 
     @OneToMany(mappedBy = "track", cascade = CascadeType.REMOVE)
-    @JsonIgnoreProperties
+    @JsonIgnore
     private Set<PlaylistTrack> playlistTracks = new HashSet<>();
 
     @Override

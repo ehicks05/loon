@@ -16,11 +16,14 @@ export default class MyHelmet extends React.Component {
 
         let themeUrl = 'https://unpkg.com/bulmaswatch/' + theme + '/bulmaswatch.min.css';
 
+        let selectedTrack = this.props.tracks ? this.props.tracks.find(track => track.id === this.props.selectedTrackId) : null;
+        let trackTitle = selectedTrack ? ' - ' + selectedTrack.title : '';
+
         return (
             <Helmet>
                 <meta charset="utf-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
-                <title>Loon</title>
+                <title>Loon{trackTitle}</title>
 
                 <link rel="stylesheet" href={themeUrl} />
 

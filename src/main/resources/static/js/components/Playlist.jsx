@@ -1,6 +1,8 @@
-import React from 'react';
+import React, {lazy, Suspense} from 'react';
 import MediaItem from "./MediaItem.jsx";
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { AutoSizer, CellMeasurer, List } from 'react-virtualized'
+import 'react-virtualized/styles.css'
 
 function parsePlaylistId(component)
 {
@@ -14,6 +16,7 @@ export default class Playlist extends React.Component {
         this.handleCurrentPlaylistChange = this.handleCurrentPlaylistChange.bind(this);
         this.onDragEnd = this.onDragEnd.bind(this);
         this.persistDragAndDrop = this.persistDragAndDrop.bind(this);
+        this.renderMediaItem = this.renderMediaItem.bind(this);
 
         this.state = {playlistId: parsePlaylistId(this)};
     }
@@ -64,6 +67,7 @@ export default class Playlist extends React.Component {
 
     render()
     {
+        const self = this;
         const tracks = this.props.tracks;
         const selectedTrackId = this.props.selectedTrackId;
         const playlists = this.props.playlists;
@@ -98,47 +102,85 @@ export default class Playlist extends React.Component {
         }
         else
         {
-            const sortedTracks = tracks.sort((o1, o2) => {
-                if (o1.artist === o2.artist)
-                    return o1.album > o2.album ? 1 : -1;
-                return o1.artist > o2.artist ? 1 : -1;
-            });
-            mediaItems = sortedTracks.map((track, index) => {
+            mediaItems = tracks.map((track, index) => {
                     return <MediaItem key={track.id} track={track} index={index} selectedTrackId={selectedTrackId} onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={false}/>
                 }
             );
         }
 
-        return (
-            <DragDropContext onDragEnd={this.onDragEnd}>
-                <Droppable droppableId="droppable">
-                    {(provided, snapshot) => (
-                        <div className={'is-marginless is-paddingless'} ref={provided.innerRef}>
-                            {/*<section className={"section"}>*/}
+        if (playlist)
+        {
+            return (
+                <DragDropContext onDragEnd={this.onDragEnd}>
+                    <Droppable droppableId="droppable">
+                        {(provided, snapshot) => (
+                            <div className={'is-marginless is-paddingless'} ref={provided.innerRef}>
+                                {/*<section className={"section"}>*/}
                                 {/*<div className="container">*/}
                                 {/*</div>*/}
-                            {/*</section>*/}
+                                {/*</section>*/}
 
-                            <section className="section">
-                                <div className="container">
-                                    {/*<div className="columns is-multiline is-centered">*/}
+                                <section className="section">
+                                    <div className="container">
+                                        {/*<div className="columns is-multiline is-centered">*/}
                                         {/*<div className="column">*/}
 
-                                    <h1 className="title">{playlist ? playlist.name : 'Library'}</h1>
-                                            <div id="playlist" className="playlist">
-                                                <br />
+                                        <h1 className="title">{playlist ? playlist.name : 'Library'}</h1>
+                                        <div id="playlist" className="playlist">
+                                            <br />
+                                            {/*<Suspense fallback={<p>LOADING!!!</p>}>*/}
                                                 <ul id="list" style={{}}>
                                                     {mediaItems}
                                                 </ul>
+                                            {/*</Suspense>*/}
                                             {/*</div>*/}
-                                        {/*</div>*/}
+                                            {/*</div>*/}
+                                        </div>
                                     </div>
-                                </div>
-                            </section>
-                            {provided.placeholder}
+                                </section>
+                                {provided.placeholder}
+                            </div>
+                        )}
+                    </Droppable>
+                </DragDropContext>);
+        }
+        else {
+            return (
+                <section className="section is-marginless is-paddingless">
+                    <div className="container">
+
+                        <h1 className="title">Library</h1>
+                        <div id="playlist" className="playlist">
+                            <ul id="list" style={{}}>
+                                {mediaItems}
+                            </ul>
+                            {/*<AutoSizer>*/}
+                                {/*{({ height, width }) => (*/}
+                                    {/*<List*/}
+                                        {/*height={height}*/}
+                                        {/*rowHeight={({ index }) => 58}*/}
+                                        {/*rowRenderer={({ index, key, style }) => <div key={key} style={style}>{self.renderMediaItem(index, key, selectedTrackId)}</div>}*/}
+                                        {/*rowCount={this.props.tracks.length}*/}
+                                        {/*width={width}*/}
+                                    {/*/>*/}
+                                {/*)}*/}
+                            {/*</AutoSizer>*/}
                         </div>
-                    )}
-                </Droppable>
-            </DragDropContext>);
+                    </div>
+                </section>
+            );
+        }
+
+    }
+
+    renderMediaItem(index, trackId, selectedTrackId)
+    {
+        trackId = Number(trackId.substring(0, trackId.indexOf('-')));
+        // console.log(trackId);
+        const track = this.props.tracks.find((track) => track.id === trackId);
+        if (!track)
+            return <li>not found</li>;
+        return <MediaItem key={trackId} track={track} index={index} selectedTrackId={selectedTrackId}
+                          onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={false}/>
     }
 }

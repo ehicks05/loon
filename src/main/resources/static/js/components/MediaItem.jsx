@@ -33,9 +33,9 @@ export default class MediaItem extends React.Component {
         const trackId = this.props.track.id;
         const trackIndex = this.props.index;
         const artworkDbFileId = this.props.track.artworkDbFileId;
-        const artist = this.props.track.artist;
-        const trackTitle = this.props.track.title;
-        const album = this.props.track.album;
+        const artist = this.props.track.artist ? this.props.track.artist : 'Missing!';
+        const trackTitle = this.props.track.title ? this.props.track.title : 'Missing!';
+        const album = this.props.track.album ? this.props.track.album : 'Missing!';
         const formattedDuration = this.props.track.duration;
 
         const highlightClass = trackId === this.props.selectedTrackId ? ' playingHighlight' : '';

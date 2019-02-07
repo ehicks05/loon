@@ -132,7 +132,7 @@ export default class App extends React.Component {
         const trackPromise = Promise.resolve(this.reloadTracks());
 
         Promise.all([playlistPromise, trackPromise]).then(() => {
-            this.reloadUser();
+            self.reloadUser();
         });
     }
     
@@ -163,7 +163,7 @@ export default class App extends React.Component {
             <Router history={this.state.history}>
                 <div>
 
-                    <MyHelmet theme={theme}/>
+                    <MyHelmet theme={theme} tracks={tracks} selectedTrackId={this.state.selectedTrackId}/>
                     <Header isAdmin={isAdmin} playlists={playlists} selectedPlaylistId={selectedPlaylistId}/>
 
                     <div className={'columns is-gapless'}>

@@ -1,12 +1,10 @@
 package net.ehicks.loon.handlers.admin;
 
 import com.google.gson.Gson;
-import net.ehicks.loon.repos.LoonSystemRepository;
 import net.ehicks.loon.MusicScanner;
 import net.ehicks.loon.ProgressTracker;
 import net.ehicks.loon.beans.LoonSystem;
-import net.ehicks.loon.repos.PlaylistRepository;
-import net.ehicks.loon.repos.PlaylistTrackRepository;
+import net.ehicks.loon.repos.LoonSystemRepository;
 import net.ehicks.loon.repos.TrackRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,17 +18,13 @@ public class AdminSystemSettingsHandler
     private LoonSystemRepository loonSystemRepo;
     private MusicScanner musicScanner;
     private TrackRepository trackRepo;
-    private PlaylistRepository playlistRepo;
-    private PlaylistTrackRepository playlistTrackRepo;
 
-    public AdminSystemSettingsHandler(LoonSystemRepository loonSystemRepo, MusicScanner musicScanner, TrackRepository trackRepo,
-                                      PlaylistRepository playlistRepo, PlaylistTrackRepository playlistTrackRepo)
+    public AdminSystemSettingsHandler(LoonSystemRepository loonSystemRepo, MusicScanner musicScanner,
+                                      TrackRepository trackRepo)
     {
         this.loonSystemRepo = loonSystemRepo;
         this.musicScanner = musicScanner;
         this.trackRepo = trackRepo;
-        this.playlistRepo = playlistRepo;
-        this.playlistTrackRepo = playlistTrackRepo;
     }
 
     @GetMapping("")
@@ -42,6 +36,11 @@ public class AdminSystemSettingsHandler
     @PutMapping("")
     public LoonSystem modify(LoonSystem loonSystem, @RequestParam boolean rescan, @RequestParam boolean clearLibrary)
     {
+        // if music folder has changed, clear library before re-scanning
+        LoonSystem loonSystemFromDb = loonSystemRepo.findById(1L).orElse(null);
+        if (loonSystemFromDb != null && !loonSystemFromDb.getMusicFolder().equals(loonSystem.getMusicFolder()))
+            clearLibrary = true;
+
         loonSystem.setId(1L);
         loonSystem = loonSystemRepo.save(loonSystem);
 
@@ -68,8 +67,6 @@ public class AdminSystemSettingsHandler
     {
         log.info("Clearing library...");
         trackRepo.deleteAll();
-//        playlistRepo.deleteAll();
-//        playlistTrackRepo.deleteAll();
         log.info("Done clearing library...");
     }
 }

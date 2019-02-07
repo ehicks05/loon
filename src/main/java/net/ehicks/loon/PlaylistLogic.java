@@ -10,9 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,6 +32,13 @@ public class PlaylistLogic
     public void setTrackIds(Playlist playlist, List<Long> newTrackIds)
     {
         List<Long> currentTrackIds = playlist.getPlaylistTracks().stream().map(playlistTrack -> playlistTrack.getTrack().getId()).collect(Collectors.toList());
+        Set<PlaylistTrack> currentPlaylistTracks = playlist.getPlaylistTracks();
+
+        Set<PlaylistTrack> playlistTracksToRemove = new HashSet<>(currentPlaylistTracks);
+        currentPlaylistTracks.forEach(currentPlaylistTrack -> {
+            if (!newTrackIds.contains(currentPlaylistTrack.getTrack().getId()))
+                playlistTracksToRemove.add(currentPlaylistTrack);
+        });
 
         List<Long> trackIdsToRemove = new ArrayList<>(currentTrackIds);
         trackIdsToRemove.removeAll(newTrackIds);
@@ -41,35 +46,55 @@ public class PlaylistLogic
         List<Long> trackIdsToAdd = new ArrayList<>(newTrackIds);
         trackIdsToAdd.removeAll(currentTrackIds);
 
-        trackIdsToRemove.forEach(trackId -> {
-            Track track = trackRepo.findById(trackId).orElse(null);
-            PlaylistTrack playlistTrack = playlist.getPlaylistTracks().stream().filter(playlistTrack1 -> playlistTrack1.getTrack().getId().equals(trackId)).findFirst().orElse(null);
-            if (playlistTrack != null)
-            {
-                playlist.getPlaylistTracks().remove(playlistTrack);
-                if (track != null)
-                    track.getPlaylistTracks().remove(playlistTrack);
-                playlistTrackRepo.delete(playlistTrack);
-            }
-        });
+        if (trackIdsToRemove.size() > 0)
+        {
+            playlist.getPlaylistTracks().removeAll(playlistTracksToRemove);
+//            List<Track> tracks = trackRepo.findAllByIdIn(trackIdsToRemove);
+//            tracks.forEach(track -> track.getPlaylistTracks().remove());
+            playlistTrackRepo.deleteAll(playlistTracksToRemove);
+        }
+//        trackIdsToRemove.forEach(trackId -> {
+//            Track track = trackRepo.findById(trackId).orElse(null);
+//            PlaylistTrack playlistTrack = playlist.getPlaylistTracks().stream()
+//                    .filter(playlistTrack1 -> playlistTrack1.getTrack().getId().equals(trackId))
+//                    .findFirst().orElse(null);
+//            if (playlistTrack != null)
+//            {
+//                playlist.getPlaylistTracks().remove(playlistTrack);
+//                if (track != null)
+//                    track.getPlaylistTracks().remove(playlistTrack);
+//                playlistTrackRepo.delete(playlistTrack);
+//            }
+//        });
 
-        trackIdsToAdd.forEach(trackId -> {
-            Track track = trackRepo.findById(trackId).orElse(null);
-            if (track == null)
-            {
-                log.error("Can't add track:" + trackId + " to " + playlist);
-                return;
-            }
-            
-            PlaylistTrack playlistTrack = new PlaylistTrack();
-            playlistTrack.setPlaylist(playlist);
-            playlistTrack.setTrack(track);
-            playlistTrack.setIndex(getNextAvailableIndex(playlist.getId()));
-            playlistTrack = playlistTrackRepo.save(playlistTrack);
+        if (trackIdsToAdd.size() > 0)
+        {
+            List<Track> tracks = trackRepo.findAllByIdIn(trackIdsToAdd);
 
-            track.getPlaylistTracks().add(playlistTrack);
-            playlist.getPlaylistTracks().add(playlistTrack);
-        });
+            Set<PlaylistTrack> playlistTracksToAdd = new LinkedHashSet<>();
+            trackIdsToAdd.forEach(trackIdToAdd -> {
+                Track trackToAdd = tracks.stream().filter(track -> track.getId().equals(trackIdToAdd)).findFirst().orElse(null);
+                if (trackToAdd == null)
+                {
+                    log.error("Can't add track:" + trackIdToAdd + " to " + playlist);
+                    return;
+                }
+
+                PlaylistTrack playlistTrack = new PlaylistTrack();
+                playlistTrack.setPlaylist(playlist);
+                playlistTrack.setTrack(trackToAdd);
+                playlistTrack.setIndex(getNextAvailableIndex(playlist.getId()));
+                playlistTracksToAdd.add(playlistTrack);
+            });
+
+            if (playlistTracksToAdd.size() > 0)
+            {
+                playlistTrackRepo.saveAll(playlistTracksToAdd);
+
+//            track.getPlaylistTracks().add(playlistTrack);
+                playlist.getPlaylistTracks().addAll(playlistTracksToAdd);
+            }
+        }
 
         consolidateTrackIndexes(playlist.getPlaylistTracks());
     }
@@ -82,12 +107,11 @@ public class PlaylistLogic
         for (PlaylistTrack playlistTrack : playlistTracks)
         {
             if (!playlistTrack.getIndex().equals(nextIndex))
-            {
                 playlistTrack.setIndex(nextIndex);
-                playlistTrackRepo.save(playlistTrack);
-            }
             nextIndex++;
         }
+
+        playlistTrackRepo.saveAll(playlistTracks);
     }
 
     public long getNextAvailableIndex(long playlistId)

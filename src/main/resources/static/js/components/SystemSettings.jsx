@@ -107,15 +107,25 @@ export default class SystemSettings extends React.Component {
         const showProgressBar = scanProgress.status === 'complete' || scanProgress.status === 'incomplete';
 
         const themes = [
-            {value:'default', text:'default'},
+            {value:'default', text:'Default'},
+            {value:'cerulean', text:'Cerulean'},
             {value:'cosmo', text:'Cosmo'},
+            {value:'cyborg', text:'Cyborg'},
             {value:'darkly', text:'Darkly'},
             {value:'flatly', text:'Flatly'},
             {value:'journal', text:'Journal'},
+            {value:'litera', text:'Litera'},
+            {value:'lumen', text:'Lumen'},
             {value:'lux', text:'Lux'},
+            {value:'materia', text:'Materia'},
+            {value:'minty', text:'Minty'},
+            {value:'nuclear', text:'Nuclear'},
             {value:'pulse', text:'Pulse'},
+            {value:'sandstone', text:'Sandstone'},
             {value:'simplex', text:'Simplex'},
             {value:'slate', text:'Slate'},
+            {value:'solar', text:'Solar'},
+            {value:'spacelab', text:'Spacelab'},
             {value:'superhero', text:'Superhero'},
             {value:'united', text:'United'},
             {value:'yeti', text:'Yeti'}

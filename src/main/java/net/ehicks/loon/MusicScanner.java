@@ -55,6 +55,7 @@ public class MusicScanner
 
     public void scan()
     {
+        long start = System.currentTimeMillis();
         java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(Level.WARNING);
 
         try
@@ -62,7 +63,6 @@ public class MusicScanner
             ProgressTracker.progressStatusMap.put("scanProgress", new ProgressTracker.ProgressStatus(0, "incomplete"));
 
             AtomicInteger filesProcessed = new AtomicInteger();
-            AtomicInteger tracksAdded = new AtomicInteger();
             LoonSystem loonSystem = loonSystemRepo.findById(1L).orElse(null);
             if (loonSystem == null)
                 return;
@@ -78,17 +78,28 @@ public class MusicScanner
             Files.walkFileTree(basePath, fileWalker);
             List<Path> paths = fileWalker.getPaths();
 
+            List<Track> tracksToSave = new ArrayList<>();
+
             paths.forEach(path -> {
+                if (trackRepo.findByPath(path.toString()) != null)
+                    return;
+                
                 AudioFile audioFile = getAudioFile(path);
                 if (audioFile == null)
                     return;
 
-                parseAudioFile(audioFile, tracksAdded);
+                Track track = parseAudioFile(audioFile);
+                tracksToSave.add(track);
+
                 int progress = (int) ((filesProcessed.incrementAndGet() * 100) / (double) paths.size());
                 ProgressTracker.progressStatusMap.get("scanProgress").setProgress(progress);
             });
 
-            log.info("Scan complete: Added " + tracksAdded + " tracks.");
+            trackRepo.saveAll(tracksToSave);
+
+            log.info("Scan complete: Added " + tracksToSave.size() + " tracks.");
+            long dur = System.currentTimeMillis() - start;
+            log.info("Took " + dur + "ms (" + (tracksToSave.size() / (((double) dur) / 1000)) + " tracks / sec)");
             ProgressTracker.progressStatusMap.put("scanProgress", new ProgressTracker.ProgressStatus(100, "complete"));
         }
         catch (Exception e)
@@ -99,9 +110,6 @@ public class MusicScanner
 
     private AudioFile getAudioFile(Path path)
     {
-        if (trackRepo.findByPath(path.toString()) != null)
-            return null;
-
         AudioFile audioFile;
         try
         {
@@ -117,7 +125,7 @@ public class MusicScanner
         return audioFile;
     }
 
-    private void parseAudioFile(AudioFile audioFile, AtomicInteger tracksAdded)
+    private Track parseAudioFile(AudioFile audioFile)
     {
         AudioHeader audioHeader = audioFile.getAudioHeader();
         Tag tag = audioFile.getTag();
@@ -149,22 +157,7 @@ public class MusicScanner
 //            saveArtwork(tag, track);
         }
 
-        try
-        {
-            trackRepo.save(track);
-            tracksAdded.getAndIncrement();
-        }
-        catch (Exception e)
-        {
-            log.error("Unable to add " + track.getArtist() + " - " + track.getTitle());
-        }
-
-//        tag.getFirst(FieldKey.COMMENT);
-//        tag.getFirst(FieldKey.YEAR);
-//        tag.getFirst(FieldKey.TRACK);
-//        tag.getFirst(FieldKey.DISC_NO);
-//        tag.getFirst(FieldKey.COMPOSER);
-//        tag.getFirst(FieldKey.ARTIST_SORT);
+        return track;
     }
 
     private void saveArtwork(Tag tag, Track track)

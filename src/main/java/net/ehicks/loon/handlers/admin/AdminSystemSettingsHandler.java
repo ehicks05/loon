@@ -1,6 +1,7 @@
 package net.ehicks.loon.handlers.admin;
 
 import com.google.gson.Gson;
+import net.ehicks.loon.ImageScanner;
 import net.ehicks.loon.MusicScanner;
 import net.ehicks.loon.ProgressTracker;
 import net.ehicks.loon.beans.LoonSystem;
@@ -17,13 +18,15 @@ public class AdminSystemSettingsHandler
     private static final Logger log = LoggerFactory.getLogger(AdminSystemSettingsHandler.class);
     private LoonSystemRepository loonSystemRepo;
     private MusicScanner musicScanner;
+    private ImageScanner imageScanner;
     private TrackRepository trackRepo;
 
     public AdminSystemSettingsHandler(LoonSystemRepository loonSystemRepo, MusicScanner musicScanner,
-                                      TrackRepository trackRepo)
+                                      ImageScanner imageScanner, TrackRepository trackRepo)
     {
         this.loonSystemRepo = loonSystemRepo;
         this.musicScanner = musicScanner;
+        this.imageScanner = imageScanner;
         this.trackRepo = trackRepo;
     }
 
@@ -51,6 +54,13 @@ public class AdminSystemSettingsHandler
             new Thread(musicScanner::scan).start();
 
         return loonSystem;
+    }
+
+    @GetMapping("/imageScan")
+    public String imageScan()
+    {
+        new Thread(imageScanner::scan).start();
+        return "";
     }
 
     @GetMapping("/getScanProgress")

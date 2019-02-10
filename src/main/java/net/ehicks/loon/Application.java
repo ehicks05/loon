@@ -1,6 +1,7 @@
 package net.ehicks.loon;
 
 import org.apache.catalina.Context;
+import org.apache.catalina.webresources.StandardRoot;
 import org.apache.tomcat.util.scan.StandardJarScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +60,13 @@ public class Application
             protected void postProcessContext(Context context)
             {
                 ((StandardJarScanner) context.getJarScanner()).setScanManifest(false);
+
+                final int cacheSize = 128 * 1024;
+                StandardRoot standardRoot = new StandardRoot(context);
+                standardRoot.setCacheMaxSize(cacheSize);
+                context.setResources(standardRoot); // This is what made it work in my case.
+
+                logger.info(String.format("New cache size (KB): %d", context.getResources().getCacheMaxSize()));
             }
         };
     }

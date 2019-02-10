@@ -1,6 +1,8 @@
 package net.ehicks.loon.beans;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.Serializable;
 
 @Entity
@@ -14,6 +16,8 @@ public class LoonSystem implements Serializable
     private String logonMessage = "";
     private String theme = "";
     private String musicFolder = "";
+    private String dataFolder = "";
+    private String lastFmApiKey = "";
     private boolean registrationEnabled = false;
     private String transcodeQuality = "";
 
@@ -90,6 +94,26 @@ public class LoonSystem implements Serializable
     public void setMusicFolder(String musicFolder)
     {
         this.musicFolder = musicFolder;
+    }
+
+    public String getDataFolder()
+    {
+        return dataFolder;
+    }
+
+    public void setDataFolder(String dataFolder)
+    {
+        this.dataFolder = dataFolder;
+    }
+
+    public String getLastFmApiKey()
+    {
+        return lastFmApiKey;
+    }
+
+    public void setLastFmApiKey(String lastFmApiKey)
+    {
+        this.lastFmApiKey = lastFmApiKey;
     }
 
     public boolean isRegistrationEnabled()

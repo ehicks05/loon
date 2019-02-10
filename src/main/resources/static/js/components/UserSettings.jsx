@@ -58,56 +58,40 @@ export default class UserSettings extends React.Component {
         return (
             <div>
                 <section className={"section"}>
-                    <div className="container">
-                        <h1 className="title">Admin</h1>
-                        <h2 className="subtitle">
-                            Users
-                        </h2>
-                    </div>
+                    <h1 className="title">Admin</h1>
+                    <h2 className="subtitle">
+                        Users
+                    </h2>
                 </section>
                 <section className="section">
-                    <div className="container">
-                        <div className="columns is-multiline is-centered">
-                            <div className="column">
-                                <table className="table">
-                                    <thead>
-                                        <tr>
-                                            <th>Username</th>
-                                            <th>Full Name</th>
-                                            <th>Roles</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {usersTable}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                    </div>
+                    <table className="table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Full Name</th>
+                                <th>Roles</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {usersTable}
+                        </tbody>
+                    </table>
                 </section>
 
                 <section className="section">
-                    <div className="container">
-                        <div className="columns is-multiline is-centered">
-                            <div className="column">
-                                <h2 className="subtitle">
-                                    Add User
-                                </h2>
+                    <h2 className="subtitle">
+                        Add User
+                    </h2>
 
-                                <form id="frmAddUser" method="post" action="">
-                                    <TextInput id="username" label="Username" value="" />
-                                    <TextInput id="fullname" label="Full Name" value="" />
-                                    <TextInput id="password" label="Password" value="" />
+                    <form id="frmAddUser" method="post" action="">
+                        <TextInput id="username" label="Username" value="" />
+                        <TextInput id="fullname" label="Full Name" value="" />
+                        <TextInput id="password" label="Password" value="" />
 
-                                    <span className="buttons">
-                                        <input id="saveButton" type="button" value="Save" className="button is-primary" onClick={(e) => this.submitForm()} />
-                                    </span>
-                                </form>
-                            </div>
-                        </div>
-
-                    </div>
+                        <span className="buttons">
+                            <input id="saveButton" type="button" value="Save" className="button is-primary" onClick={(e) => this.submitForm()} />
+                        </span>
+                    </form>
                 </section>
             </div>);
     }

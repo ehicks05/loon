@@ -51,6 +51,7 @@ public class Seeder
         loonSystem.setLogonMessage("Welcome to Loon.");
         loonSystem.setTheme("default");
         loonSystem.setMusicFolder("c:/k/music");
+        loonSystem.setDataFolder("data");
         loonSystem.setRegistrationEnabled(false);
         loonSystem.setTranscodeQuality("default");
         loonSystemRepo.save(loonSystem);

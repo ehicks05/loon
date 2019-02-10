@@ -35,14 +35,15 @@ export default class Playlists extends React.Component {
                     </td>
                     <td className={'has-text-right'}>{playlist.playlistTracks.length}</td>
                     <td>
-                        <Link className={"button is-small"} to={'/playlists/' + playlist.id + '/edit'}>
-                            Edit
-                        </Link>
-                    </td>
-                    <td>
-                        <button className={"button is-small is-danger"} onClick={(e) => this.delete(playlist.id)}>
-                            Delete
-                        </button>
+                        <span className='buttons'>
+                            <Link className={"button is-small"} to={'/playlists/' + playlist.id + '/edit'}>
+                                Edit
+                            </Link>
+
+                            <button className={"button is-small is-danger"} onClick={(e) => this.delete(playlist.id)}>
+                                Delete
+                            </button>
+                        </span>
                     </td>
                 </tr>);
             }
@@ -51,39 +52,26 @@ export default class Playlists extends React.Component {
         return (
             <div>
                 <section className={"section"}>
-                    <div className="container">
-                        <h1 className="title">Playlists</h1>
-                    </div>
+                    <h1 className="title">Playlists</h1>
                 </section>
 
                 <section className="section">
-                    <div className="container">
-                        <div className="columns is-multiline is-centered">
-                            <div className="column">
-
-                                <div>
-                                    <table className={'table is-hoverable is-narrow is-striped'}>
-                                        <tbody>
-                                            <tr>
-                                                <td> </td>
-                                                <td>Name</td>
-                                                <td className={'has-text-right'}>Tracks</td>
-                                                <td> </td>
-                                                <td> </td>
-                                            </tr>
-                                        {
-                                            playlists
-                                        }
-                                        </tbody>
-                                    </table>
-                                    <Link className={"button is-primary"} to={'/playlists/new'}>
-                                        New Playlist
-                                    </Link>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
+                    <table className={'table is-hoverable is-narrow is-striped'}>
+                        <tbody>
+                            <tr>
+                                <td> </td>
+                                <td>Name</td>
+                                <td className={'has-text-right'}>Tracks</td>
+                                <td> </td>
+                            </tr>
+                        {
+                            playlists
+                        }
+                        </tbody>
+                    </table>
+                    <Link className={"button is-primary"} to={'/playlists/new'}>
+                        New Playlist
+                    </Link>
                 </section>
             </div>);
     }

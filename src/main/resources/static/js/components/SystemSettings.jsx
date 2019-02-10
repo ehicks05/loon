@@ -12,11 +12,12 @@ export default class SystemSettings extends React.Component {
         this.handleUpdateTracks = this.handleUpdateTracks.bind(this);
         this.handleUpdatePlaylists = this.handleUpdatePlaylists.bind(this);
         this.getScanProgress = this.getScanProgress.bind(this);
+        this.doImageScan = this.doImageScan.bind(this);
 
-        self.state = {};
-
-        self.state.scanProgress = {progress: 0, status: 'unknown'};
-        // setTimeout(this.getScanProgress, 1000);
+        self.state = {
+            timeoutNumber: 0,
+            scanProgress: {progress: 0, status: 'unknown'}
+        };
     }
 
     componentDidMount()
@@ -29,6 +30,11 @@ export default class SystemSettings extends React.Component {
         this.getScanProgress();
     }
 
+    componentWillUnmount()
+    {
+        clearTimeout(this.state.timeoutNumber);
+    }
+
     getScanProgress()
     {
         let self = this;
@@ -39,10 +45,10 @@ export default class SystemSettings extends React.Component {
             console.log(scanProgress);
             self.setState({scanProgress: scanProgress});
 
-            if (scanProgress.progress !== 100)
+            if (scanProgress.progress !== 100 || scanProgress.status !== 'complete')
             {
-                setTimeout(self.getScanProgress, 1000);
-                self.setState({scanSinceLastTrackUpdate: true})
+                const timeoutNumber = setTimeout(self.getScanProgress, 1000);
+                self.setState({scanSinceLastTrackUpdate: true, timeoutNumber: timeoutNumber})
             }
             else
             {
@@ -94,6 +100,12 @@ export default class SystemSettings extends React.Component {
                 self.handleUpdatePlaylists('clearing library');
             }
         });
+    }
+
+    doImageScan()
+    {
+        fetch('/api/admin/systemSettings/imageScan', {method: 'GET'})
+            .then(response => response.json());
     }
 
     render()
@@ -149,42 +161,40 @@ export default class SystemSettings extends React.Component {
         return (
             <div>
                 <section className={"section"}>
-                    <div className="container">
-                        <h1 className="title">Admin</h1>
-                        <h2 className="subtitle">
-                            Modify System
-                        </h2>
-                    </div>
+                    <h1 className="title">Admin</h1>
+                    <h2 className="subtitle">
+                        Modify System
+                    </h2>
                 </section>
                 <section className="section">
-                    <div className="container">
-                        <div className="columns is-multiline is-centered">
-                            <div className="column">
-                                <form id="frmSystemSettings" method="post" action="">
+                    <form id="frmSystemSettings" method="post" action="">
+                        <TextInput id="instanceName" label="Instance Name" value={systemSettings.instanceName} />
+                        <Select id="theme" label="Theme" items={themes} value={systemSettings.theme} required={true}/>
+                        <TextInput id="musicFolder" label="Music Folder" value={systemSettings.musicFolder} />
+                        <TextInput id="dataFolder" label="Data Folder" value={systemSettings.dataFolder} />
+                        <TextInput id="lastFmApiKey" label="Last.fm API Key" value={systemSettings.lastFmApiKey} size={50} />
+                        <TextInput id="logonMessage" label="Welcome Message" value={systemSettings.logonMessage} size={50} />
+                        <Select id="registrationEnabled" label="Registration Enabled" items={trueFalse} value={systemSettings.registrationEnabled} required={true} />
+                        <Select id="transcodeQuality" label="Transcode Quality" items={transcodeQualityOptions} value={systemSettings.transcodeQuality} required={true} />
 
-                                    <TextInput id="instanceName" label="Instance Name" value={systemSettings.instanceName} />
-                                    <Select id="theme" label="Theme" items={themes} value={systemSettings.theme} required={true}/>
-                                    <TextInput id="musicFolder" label="Music Folder" value={systemSettings.musicFolder} />
-                                    <TextInput id="logonMessage" label="Welcome Message" value={systemSettings.logonMessage} size={50} />
-                                    <Select id="registrationEnabled" label="Registration Enabled" items={trueFalse} value={systemSettings.registrationEnabled} required={true} />
-                                    <Select id="transcodeQuality" label="Transcode Quality" items={transcodeQualityOptions} value={systemSettings.transcodeQuality} required={true} />
+                        <span className="buttons">
+                            <input id="saveSystemButton" type="button" value="Save" className="button is-primary" onClick={(e) => this.submitForm()} />
+                            <input id="saveAndRescanButton" type="button" value="Save and Re-scan" className="button is-success" onClick={(e) => this.submitForm(true, false)} />
+                            <input id="clearLibraryButton" type="button" value="Clear Library" className="button is-danger" onClick={(e) => this.submitForm(false, true)} />
+                        </span>
+                        <span className="buttons">
+                            <input id="imageScanButton" type="button" value="Scan for Images" className="button is-info" onClick={(e) => this.doImageScan()} />
+                        </span>
+                    </form>
 
-                                    <span className="buttons">
-                                        <input id="saveSystemButton" type="button" value="Save" className="button is-primary" onClick={(e) => this.submitForm()} />
-                                        <input id="saveAndRescanButton" type="button" value="Save and Re-scan" className="button is-success" onClick={(e) => this.submitForm(true, false)} />
-                                        <input id="clearLibraryButton" type="button" value="Clear Library" className="button is-danger" onClick={(e) => this.submitForm(false, true)} />
-                                    </span>
-                                </form>
-                            </div>
-                        </div>
+                    {
+                        showProgressBar &&
+                        <progress style={{width: "20em"}} title={scanProgress.progress + '%'} className={progressClass}
+                                  value={scanProgress.progress} max={"100"}>{scanProgress.progress}%</progress>
+                    }
 
-                        {
-                            showProgressBar &&
-                            <progress style={{width: "20em"}} title={scanProgress.progress + '%'} className={progressClass} value={scanProgress.progress} max={"100"}>{scanProgress.progress}%</progress>
-                        }
-
-                    </div>
                 </section>
-            </div>);
+            </div>
+        );
     }
 }

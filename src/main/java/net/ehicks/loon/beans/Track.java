@@ -30,9 +30,9 @@ public class Track implements Serializable
 
     @Column(name = "path", nullable = false)
     @JsonIgnore
-    private String path;
+    private String path = "";
 
-    private String extension;
+    private String extension = "";
 
     @Column(name = "duration", nullable = false)
     private Long duration;
@@ -43,17 +43,20 @@ public class Track implements Serializable
 
     @Column(name = "track_gain", nullable = false)
     @JsonIgnore
-    private String trackGain;
+    private String trackGain = "";
 
     @Column(name = "track_gain_linear", nullable = false)
-    private String trackGainLinear;
+    private String trackGainLinear = "";
 
     @Column(name = "track_peak", nullable = false)
     @JsonIgnore
-    private String trackPeak;
+    private String trackPeak = "";
 
     @Column(name = "artwork_db_file_id")
     private Long artworkDbFileId;
+
+    private String artistImageId = "";
+    private String albumImageId = "";
 
     @OneToMany(mappedBy = "track", cascade = CascadeType.REMOVE)
     @JsonIgnore
@@ -223,6 +226,26 @@ public class Track implements Serializable
     public void setArtworkDbFileId(Long artworkDbFileId)
     {
         this.artworkDbFileId = artworkDbFileId;
+    }
+
+    public String getArtistImageId()
+    {
+        return artistImageId;
+    }
+
+    public void setArtistImageId(String artistImageId)
+    {
+        this.artistImageId = artistImageId;
+    }
+
+    public String getAlbumImageId()
+    {
+        return albumImageId;
+    }
+
+    public void setAlbumImageId(String albumImageId)
+    {
+        this.albumImageId = albumImageId;
     }
 
     public Set<PlaylistTrack> getPlaylistTracks()

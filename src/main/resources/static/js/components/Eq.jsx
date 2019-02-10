@@ -86,27 +86,19 @@ export default class Eq extends React.Component {
         return (
             <div>
                 <section className={"section"}>
-                    <div className="container">
-                        <h1 className="title">Settings</h1>
-                        <h2 className="subtitle">
-                            Equalizer
-                        </h2>
-                    </div>
+                    <h1 className="title">Settings</h1>
+                    <h2 className="subtitle">
+                        Equalizer
+                    </h2>
                 </section>
                 <section className="section">
-                    <div className="container">
-                        <div className="columns is-multiline is-centered">
-                            <div className="column">
-                                <form id="frmEq" method="post" action="">
-                                    {eqTable}
+                    <form id="frmEq" method="post" action="">
+                        {eqTable}
 
-                                    <span className="buttons">
-                                        <input id="saveSystemButton" type="button" value="Save" className="button is-primary" onClick={(e) => this.submitForm()} />
-                                    </span>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+                        <span className="buttons">
+                            <input id="saveSystemButton" type="button" value="Save" className="button is-primary" onClick={(e) => this.submitForm()} />
+                        </span>
+                    </form>
                 </section>
             </div>);
     }

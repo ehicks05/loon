@@ -56,7 +56,13 @@ export default class PlaybackControls extends React.Component {
         const muted = this.props.muted;
         const shuffle = this.props.shuffle;
 
-        return (
+        return (<div>
+                <section className="section" id="level" style={{zIndex: '5', position: 'static'}}>
+                <p className="level-item" style={{marginBottom: '0'}}>
+                    <input name="progress" id="progress" style={{width:'100%', margin: '0'}} className="slider is-fullwidth is-small is-success"
+                           type="range" value={progressPercent} max="100" step={'any'} onChange={this.handleProgressChange}/>
+                </p>
+            </section>
             <section className="section" id="level" style={{zIndex: '5', position: 'static'}}>
                 <nav className="level">
                     <div className="level-left">
@@ -103,29 +109,15 @@ export default class PlaybackControls extends React.Component {
                     </div>
 
                     <div className="level-right" style={{marginTop: '0'}}>
-                        <p className="level-item" style={{marginBottom: '0'}}>
-                            <input name="progress" id="progress" style={{width:'300px'}} className="slider is-fullwidth is-small is-success"
-                                   type="range" value={progressPercent} max="100" step={'any'} onChange={this.handleProgressChange}/>
-                        </p>
+                        <div className="level-item">
 
-                        <div className="level-item is-hidden-mobile">
-
-                            {
-                                shuffle ?
-                                    <a className="button is-small is-success" id="shuffleBtn" onClick={this.handleShuffleChange}>
-                                        <span className="icon">
-                                            <FontAwesomeIcon icon={faRandom} fixedWidth/>
-                                        </span>
-                                    </a>
-                                    :
-                                    <a className="button is-small" id="shuffleBtn" onClick={this.handleShuffleChange}>
-                                        <span className="icon">
-                                            <FontAwesomeIcon icon={faRandom} fixedWidth/>
-                                        </span>
-                                    </a>
-                            }
+                            <a className={"button" + (shuffle ? " is-success" : "")} id="shuffleBtn" onClick={this.handleShuffleChange}>
+                                <span className="icon">
+                                    <FontAwesomeIcon icon={faRandom} fixedWidth/>
+                                </span>
+                            </a>
                             
-                            <a className="button is-small" id="volumeBtn" style={{marginRight:'1em', marginLeft:'3em'}} onClick={this.handleMuteChange}>
+                            <a className="button" id="volumeBtn" style={{marginRight:'1em', marginLeft:'1em'}} onClick={this.handleMuteChange}>
                                 <span className="icon">
                                     <FontAwesomeIcon icon={muted ? faVolumeOff : faVolumeUp} fixedWidth/>
                                 </span>
@@ -135,6 +127,7 @@ export default class PlaybackControls extends React.Component {
                     </div>
                 </nav>
             </section>
+            </div>
         );
     }
 }

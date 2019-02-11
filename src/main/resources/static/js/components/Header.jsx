@@ -42,73 +42,65 @@ export default class Header extends React.Component {
     render()
     {
         const isAdmin = this.props.isAdmin;
-        const selectedPlaylistId = this.props.selectedPlaylistId;
-        const currentPlaylist = selectedPlaylistId === 0 ? '\'The Library\'' : '\'' + this.props.playlists.filter((playlist) => playlist.id === selectedPlaylistId)[0].name + '\'';
 
         return (
-            <nav className="navbar is-primary" role="navigation" aria-label="main navigation">
-                <div className="container">
-                    <div className="navbar-brand">
-                        <div className="navbar-item">
-                            <img src={"/images/loon.png"} style={{height: '28px'}} alt="Loon" />
-                        </div>
-
-                        <a role="button" className="navbar-burger burger" data-target="navMenu">
-                            <span />
-                            <span />
-                            <span />
-                        </a>
+            <nav className="navbar is-transparent is-primary" role="navigation" aria-label="main navigation">
+                <div className="navbar-brand">
+                    <div className="navbar-item">
+                        <img src={"/images/loon.png"} style={{height: '28px'}} alt="Loon" />
                     </div>
 
-                    <div className="navbar-menu" id="navMenu">
-                        <div className="navbar-start">
-                            <NavLink to='/library' activeClassName='is-active' className="navbar-item">Library</NavLink>
-                            <NavLink to='/playlists' activeClassName='is-active' className="navbar-item">Playlists</NavLink>
+                    <a role="button" className="navbar-burger burger" data-target="navMenu">
+                        <span />
+                        <span />
+                        <span />
+                    </a>
+                </div>
 
-                            {
-                                isAdmin &&
-                                <div className={"navbar-item has-dropdown is-hoverable"}>
-                                    <div className="navbar-link">Admin</div>
-                                    <div className="navbar-dropdown">
-                                        <NavLink to={'/admin/systemSettings'} className="navbar-item" activeClassName='is-active'>
-                                            <span className="icon is-medium has-text-info">
-                                                <FontAwesomeIcon icon={faServer}/>
-                                            </span>
-                                            Manage System
-                                        </NavLink>
-                                        <NavLink to={'/admin/users'} className="navbar-item" activeClassName='is-active'>
-                                            <span className="icon is-medium has-text-info">
-                                                <FontAwesomeIcon icon={faUser}/>
-                                            </span>
-                                            Manage Users
-                                        </NavLink>
-                                    </div>
-                                </div>
-                            }
+                <div className="navbar-menu" id="navMenu">
+                    <div className="navbar-start">
+                        <NavLink to='/library' activeClassName='is-active' className="navbar-item">Library</NavLink>
+                        <NavLink to='/playlists' activeClassName='is-active' className="navbar-item">Playlists</NavLink>
 
+                        {
+                            isAdmin &&
                             <div className={"navbar-item has-dropdown is-hoverable"}>
-                                <div className="navbar-link">Settings</div>
-                                <div className="navbar-dropdown">
-                                    <NavLink to={'/settings/eq'} className="navbar-item" activeClassName='is-active'>
-                                            <span className="icon is-medium has-text-info">
-                                                <FontAwesomeIcon icon={faSlidersH} rotation={90}/>
-                                            </span>
-                                        Equalizer
+                                <div className="navbar-link">Admin</div>
+                                <div className="navbar-dropdown is-boxed">
+                                    <NavLink to={'/admin/systemSettings'} className="navbar-item" activeClassName='is-active'>
+                                        <span className="icon is-medium has-text-info">
+                                            <FontAwesomeIcon icon={faServer}/>
+                                        </span>
+                                        Manage System
+                                    </NavLink>
+                                    <NavLink to={'/admin/users'} className="navbar-item" activeClassName='is-active'>
+                                        <span className="icon is-medium has-text-info">
+                                            <FontAwesomeIcon icon={faUser}/>
+                                        </span>
+                                        Manage Users
                                     </NavLink>
                                 </div>
                             </div>
+                        }
 
-                            <div className={"navbar-item"}>
-                                Playing Tracks from {currentPlaylist}
+                        <div className={"navbar-item has-dropdown is-hoverable"}>
+                            <div className="navbar-link">Settings</div>
+                            <div className="navbar-dropdown is-boxed">
+                                <NavLink to={'/settings/eq'} className="navbar-item" activeClassName='is-active'>
+                                        <span className="icon is-medium has-text-info">
+                                            <FontAwesomeIcon icon={faSlidersH} rotation={90}/>
+                                        </span>
+                                    Equalizer
+                                </NavLink>
                             </div>
                         </div>
-                        <div className="navbar-end">
-                            <a href='/logout' className="navbar-item">
-                                <span className="icon is-medium">
-                                    <FontAwesomeIcon icon={faSignOutAlt}/>
-                                </span>
-                            </a>
-                        </div>
+                    </div>
+                    <div className="navbar-end">
+                        <a href='/logout' className="navbar-item">
+                            <span className="icon is-medium">
+                                <FontAwesomeIcon icon={faSignOutAlt}/>
+                            </span>
+                        </a>
                     </div>
                 </div>
             </nav>

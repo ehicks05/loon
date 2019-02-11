@@ -31,7 +31,7 @@ export default class MyHelmet extends React.Component {
                 <link rel="stylesheet" type="text/css" href={basename + "/styles/style.css"} media="screen" />
 
                 <style>
-                    {this.props.theme === 'superhero' || this.props.theme === 'darkly' || this.props.theme === 'slate' ?
+                    {['cyborg', 'darkly', 'nuclear', 'slate', 'superhero',].includes(this.props.theme) ?
                         `#level {background-color: #0c0f29;}`
                         :
                         `#level {background-color: #eee;}`

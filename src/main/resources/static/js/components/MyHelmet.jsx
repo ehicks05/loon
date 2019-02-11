@@ -32,9 +32,9 @@ export default class MyHelmet extends React.Component {
 
                 <style>
                     {['cyborg', 'darkly', 'nuclear', 'slate', 'superhero',].includes(this.props.theme) ?
-                        `#level {background-color: #0c0f29;}`
+                        `.myLevel {background-color: #0c0f29;}`
                         :
-                        `#level {background-color: #eee;}`
+                        `.myLevel {background-color: #eee;}`
                     }
                 </style>
             </Helmet>);

@@ -56,77 +56,83 @@ export default class PlaybackControls extends React.Component {
         const muted = this.props.muted;
         const shuffle = this.props.shuffle;
 
-        return (<div>
-                <section className="section" id="level" style={{zIndex: '5', position: 'static'}}>
-                <p className="level-item" style={{marginBottom: '0'}}>
-                    <input name="progress" id="progress" style={{width:'100%', margin: '0'}} className="slider is-fullwidth is-small is-success"
-                           type="range" value={progressPercent} max="100" step={'any'} onChange={this.handleProgressChange}/>
-                </p>
-            </section>
-            <section className="section" id="level" style={{zIndex: '5', position: 'static'}}>
-                <nav className="level">
-                    <div className="level-left">
-                        <p className="level-item">
-                            <a className="button" id="prevBtn" onClick={(e) => this.handleTrackChange(e, 'prev')}>
-                                <span className="icon">
-                                    <FontAwesomeIcon icon={faStepBackward}/>
-                                </span>
-                            </a>
+        const formattedDuration = PlaybackControls.formatTime(selectedTrack ? selectedTrack.duration : 0);
 
-                            {
-                                (this.props.playerState === 'paused' || this.props.playerState === 'stopped') ?
-                                    <a className="button is-medium" id="playBtn" onClick={(e) => this.handlePlayerStateChange(e, 'playing')}>
-                                        <span className="icon">
-                                            <FontAwesomeIcon icon={faPlay}/>
-                                        </span>
-                                    </a>
-                                    : ''
-                            }
-                            {
-                                this.props.playerState === 'playing' ?
-                                    <a className="button is-medium" id="pauseBtn" onClick={(e) => this.handlePlayerStateChange(e, 'paused')}>
-                                        <span className="icon">
-                                            <FontAwesomeIcon icon={faPause}/>
-                                        </span>
-                                    </a>
-                                    : ''
-                            }
-
-                            <a className="button" id="nextBtn" onClick={(e) => this.handleTrackChange(e, 'next')}>
-                                <span className="icon">
-                                    <FontAwesomeIcon icon={faStepForward}/>
-                                </span>
-                            </a>
+        return (
+            <div>
+                <section className="section myLevel" style={{zIndex: '5', position: 'static'}}>
+                    <nav className="level">
+                        <p className="level-item" style={{marginBottom: '0'}}>
+                            <span id="timer" style={{fontSize: '.875rem', marginRight: '3px'}}>{timeElapsed}</span>
+                            <input name="progress" id="progress" style={{width:'100%', margin: '0'}} className="slider is-fullwidth is-small is-success"
+                                   type="range" value={progressPercent} max="100" step={'any'} onChange={this.handleProgressChange}/>
+                            <span id="duration" style={{fontSize: '.875rem', marginLeft: '3px'}}>{formattedDuration}</span>
                         </p>
-                        <div className="level-item">
-                            <span id="timer">{timeElapsed}</span> /
-                            <span id="duration">{PlaybackControls.formatTime(selectedTrack ? selectedTrack.duration : 0)}</span>
-                            <span style={{width:'10px'}}/>
-                            <span id="track" style={{maxHeight: '70px', overflow: 'auto'}}><b>{selectedTrack ? selectedTrack.title : ""}</b> - <span style={{fontSize: '.875rem'}}>{selectedTrack ? selectedTrack.artist : ""}
-                                <br /> <i>{selectedTrack ? selectedTrack.album : ""}</i></span>
-                            </span>
-                        </div>
-                    </div>
+                    </nav>
+                </section>
+                <section className="section myLevel" style={{zIndex: '5', position: 'static'}}>
+                    <nav className="level">
+                        <div className="level-left">
+                            <p className="level-item">
+                                <a className="button" id="prevBtn" onClick={(e) => this.handleTrackChange(e, 'prev')}>
+                                    <span className="icon">
+                                        <FontAwesomeIcon icon={faStepBackward}/>
+                                    </span>
+                                </a>
 
-                    <div className="level-right" style={{marginTop: '0'}}>
-                        <div className="level-item">
+                                {
+                                    (this.props.playerState === 'paused' || this.props.playerState === 'stopped') ?
+                                        <a className="button is-medium" id="playBtn" onClick={(e) => this.handlePlayerStateChange(e, 'playing')}>
+                                            <span className="icon">
+                                                <FontAwesomeIcon icon={faPlay}/>
+                                            </span>
+                                        </a>
+                                        : ''
+                                }
+                                {
+                                    this.props.playerState === 'playing' ?
+                                        <a className="button is-medium" id="pauseBtn" onClick={(e) => this.handlePlayerStateChange(e, 'paused')}>
+                                            <span className="icon">
+                                                <FontAwesomeIcon icon={faPause}/>
+                                            </span>
+                                        </a>
+                                        : ''
+                                }
 
-                            <a className={"button" + (shuffle ? " is-success" : "")} id="shuffleBtn" onClick={this.handleShuffleChange}>
-                                <span className="icon">
-                                    <FontAwesomeIcon icon={faRandom} fixedWidth/>
+                                <a className="button" id="nextBtn" onClick={(e) => this.handleTrackChange(e, 'next')}>
+                                    <span className="icon">
+                                        <FontAwesomeIcon icon={faStepForward}/>
+                                    </span>
+                                </a>
+                            </p>
+                            <div className="level-item">
+                                <span id="track" style={{maxWidth: '400px', maxHeight: '72px', overflow: 'auto'}}>
+                                    <b>{selectedTrack ? selectedTrack.title : ""}</b>
+                                    <br />
+                                    <span style={{fontSize: '.875rem'}}>{selectedTrack ? selectedTrack.artist : ""} - <i>{selectedTrack ? selectedTrack.album : ""}</i></span>
                                 </span>
-                            </a>
-                            
-                            <a className="button" id="volumeBtn" style={{marginRight:'1em', marginLeft:'1em'}} onClick={this.handleMuteChange}>
-                                <span className="icon">
-                                    <FontAwesomeIcon icon={muted ? faVolumeOff : faVolumeUp} fixedWidth/>
-                                </span>
-                            </a>
-                            <input name="sliderBtn" id="sliderBtn" className="slider is-small is-success" type="range" value={volume} min="-30" max="0" step="1" onChange={this.handleVolumeChange}/>
+                            </div>
                         </div>
-                    </div>
-                </nav>
-            </section>
+
+                        <div className="level-right" style={{marginTop: '4px'}}>
+                            <div className="level-item">
+
+                                <a className={"button" + (shuffle ? " is-success" : "")} id="shuffleBtn" onClick={this.handleShuffleChange}>
+                                    <span className="icon">
+                                        <FontAwesomeIcon icon={faRandom} fixedWidth/>
+                                    </span>
+                                </a>
+
+                                <a className="button" id="volumeBtn" style={{margin:'0 .5em'}} onClick={this.handleMuteChange}>
+                                    <span className="icon">
+                                        <FontAwesomeIcon icon={muted ? faVolumeOff : faVolumeUp} fixedWidth/>
+                                    </span>
+                                </a>
+                                <input name="sliderBtn" id="sliderBtn" className="slider is-small is-success" type="range" value={volume} min="-30" max="0" step="1" onChange={this.handleVolumeChange}/>
+                            </div>
+                        </div>
+                    </nav>
+                </section>
             </div>
         );
     }

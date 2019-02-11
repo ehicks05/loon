@@ -168,7 +168,7 @@ export default class App extends React.Component {
                     <Header isAdmin={isAdmin} playlists={playlists} selectedPlaylistId={selectedPlaylistId}/>
 
                     <div className={'columns is-gapless'} style={{margin: '0', flex: '1 1 auto', display: 'flex'}}>
-                        <div className="column is-2 is-hidden-touch">
+                        <div className="column is-2 is-hidden-touch" style={{overflow: 'auto'}}>
                             <SidePanel isAdmin={isAdmin} playlists={playlists} selectedPlaylistId={selectedPlaylistId}/>
                         </div>
                         <div className="column" style={{overflow: 'auto'}}>

@@ -36,8 +36,8 @@ export default class Player extends React.Component {
             volume: this.props.userState.volume,
             muted: false,
             shuffle: this.props.userState.shuffle,
-            progressPercent: 0,
-            timeElapsed: Player.formatTime(Math.round(0)),
+            timeElapsed: 0,
+            duration: 0,
             firstSoundPlayed: false
         };
     }
@@ -134,6 +134,9 @@ export default class Player extends React.Component {
                     },
                     onplayerror: function (id, msg) {
                         console.log('error code: ' + msg);
+                    },
+                    onplay: function () {
+                        self.setState({duration: self.state.howl.duration()});
                     }
                 })
             }, function () {
@@ -267,20 +270,10 @@ export default class Player extends React.Component {
 
         if (self.state.howl)
         {
-            // Convert the percent into a seek position.
-            // self.state.howl.fade(self.state.howl.volume(), 0, 50);
-            self.state.howl.seek(self.state.howl.duration() * progress);
-            // self.state.howl.fade(0, self.state.howl.volume(), 50);
-
-            this.setState({progress: progress}); // todo: this should probably be delayed or debounced
+            self.state.howl.seek(progress);
+            this.lastAnimationFrame = Date.now() - 1000; // force the progress bar to update
+            self.step();
         }
-    }
-
-    static formatTime(secs) {
-        const minutes = Math.floor(secs / 60) || 0;
-        const seconds = (secs - minutes * 60) || 0;
-
-        return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
     }
 
     /** The step called within requestAnimationFrame to update the playback position. */
@@ -288,15 +281,10 @@ export default class Player extends React.Component {
         let self = this;
 
         let elapsed = Date.now() - this.lastAnimationFrame;
-        if (elapsed > 200) // update 5 times a second
+        if (elapsed > 1000) // update 1 time a second
         {
-            // console.log(elapsed);
-            // Determine our current seek position.
-            let audioCurrentTime = self.state.howl.seek();
-            // console.log(audioCurrentTime);
-            this.setState({timeElapsed: Player.formatTime(Math.round(audioCurrentTime))});
-            if (self.state.howl)
-                this.setState({progressPercent: (((audioCurrentTime / self.state.howl.duration()) * 100) || 0)});
+            let audioCurrentTime = self.state.howl && typeof self.state.howl.seek() === 'number' ? self.state.howl.seek() : 0;
+            this.setState({timeElapsed: audioCurrentTime});
 
             this.lastAnimationFrame = Date.now();
         }
@@ -318,7 +306,7 @@ export default class Player extends React.Component {
                     shuffle={this.state.shuffle}
                     selectedTrack={this.props.tracks.find(track => track.id === this.props.selectedTrackId)}
                     timeElapsed={this.state.timeElapsed}
-                    progressPercent={this.state.progressPercent}
+                    duration={this.state.duration}
 
                     onPlayerStateChange={this.handlePlayerStateChange}
                     onTrackChange={this.handleTrackChange}

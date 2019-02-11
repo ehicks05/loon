@@ -37,7 +37,7 @@ export default class PlaybackControls extends React.Component {
     }
     handleProgressChange(e) {
         console.log('e.target.value: ' + e.target.value);
-        this.props.onProgressChange(e.target.value / 100);
+        this.props.onProgressChange(e.target.value);
     }
 
     static formatTime(secs) {
@@ -49,23 +49,24 @@ export default class PlaybackControls extends React.Component {
 
     render()
     {
-        const progressPercent = this.props.progressPercent;
         const timeElapsed = this.props.timeElapsed;
+        const duration = this.props.duration;
         const selectedTrack = this.props.selectedTrack;
         const volume = this.props.volume;
         const muted = this.props.muted;
         const shuffle = this.props.shuffle;
 
-        const formattedDuration = PlaybackControls.formatTime(selectedTrack ? selectedTrack.duration : 0);
+        const formattedTimeElapsed = PlaybackControls.formatTime(Math.round(timeElapsed));
+        const formattedDuration = PlaybackControls.formatTime(Math.round(duration));
 
         return (
             <div>
                 <section className="section myLevel" style={{zIndex: '5', position: 'static'}}>
                     <nav className="level">
                         <p className="level-item" style={{marginBottom: '0'}}>
-                            <span id="timer" style={{fontSize: '.875rem', marginRight: '3px'}}>{timeElapsed}</span>
+                            <span id="timer" style={{fontSize: '.875rem', marginRight: '3px'}}>{formattedTimeElapsed}</span>
                             <input name="progress" id="progress" style={{width:'100%', margin: '0'}} className="slider is-fullwidth is-small is-success"
-                                   type="range" value={progressPercent} max="100" step={'any'} onChange={this.handleProgressChange}/>
+                                   type="range" value={timeElapsed} max={duration} step={'1'} onChange={this.handleProgressChange}/>
                             <span id="duration" style={{fontSize: '.875rem', marginLeft: '3px'}}>{formattedDuration}</span>
                         </p>
                     </nav>

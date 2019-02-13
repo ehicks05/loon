@@ -1,6 +1,4 @@
 import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars } from "@fortawesome/free-solid-svg-icons";
 
 const getRowStyle = (draggableStyle, isDragging) => ({
     // some basic styles to make the items look a bit nicer
@@ -56,26 +54,16 @@ export default class MediaItem extends React.Component {
             <li className={highlightClass} id={'track' + trackId}
                 ref={innerRef}
                 {...draggableProps}
+                {...dragHandleProps}
                 style={getRowStyle(draggableStyle, isDragging)}
             >
-                <div style={{padding: '5px', verticalAlign: 'middle', display: 'flex', flexDirection: 'horizontal', justifyContent: 'space-between'}}>
+                <div className={'mediaItemDiv'}>
 
-                    {isDraggable &&
-                        <div style={{minWidth: '40px', flex: '.3'}}>
-                            <a className="button is-small" {...dragHandleProps}>
-                                <span className="icon">
-                                    <FontAwesomeIcon icon={faBars}/>
-                                </span>
-                            </a>
-                        </div>
-                    }
-
-                    <div style={{textAlign: 'right', marginRight: '5px', minWidth: '30px', flexBasis: '36px'}}>
+                    <div className={'mediaItemCounter'}>
                         {trackIndex + 1}.
                     </div>
 
-                    <div className={'list-song'} style={{flex: '8'}}
-                         onClick={(e) => this.handleSelectedTrackIdChange(e, trackId)}>
+                    <div className={'list-song'} onClick={(e) => this.handleSelectedTrackIdChange(e, trackId)}>
                         <b>{trackTitle}</b>
                         <br /><span style={{fontSize: '.875rem'}}>{artist} - <i>{album}</i></span>
                     </div>

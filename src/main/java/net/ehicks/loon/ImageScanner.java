@@ -162,9 +162,9 @@ public class ImageScanner
 
                 if (track.getAlbumImageId().isEmpty())
                 {
-                    String escapedArtist = escapeForFileSystem(track.getArtist());
+                    String escapedAlbumArtist = escapeForFileSystem(track.getAlbumArtist());
                     String escapedAlbum = escapeForFileSystem(track.getAlbum());
-                    Path albumPath = artPath.resolve(Paths.get(escapedArtist, escapedAlbum));
+                    Path albumPath = artPath.resolve(Paths.get(escapedAlbumArtist, escapedAlbum));
                     if (albumPath.toFile().exists())
                     {
                         File[] files = albumPath.toFile().listFiles();
@@ -173,7 +173,7 @@ public class ImageScanner
                             File existingArt = Arrays.stream(files).filter(File::isFile).findFirst().orElse(null);
                             if (existingArt != null)
                             {
-                                track.setAlbumImageId(escapedArtist + "/" + escapedAlbum + "/" + existingArt.getName());
+                                track.setAlbumImageId(escapedAlbumArtist + "/" + escapedAlbum + "/" + existingArt.getName());
                                 updated.add(track);
                             }
                         }
@@ -212,13 +212,13 @@ public class ImageScanner
                                 try (InputStream in = new URL(megaLink).openStream())
                                 {
                                     String imageName = megaLink.substring(megaLink.lastIndexOf("/") + 1);
-                                    Path base = Paths.get(artPath.toFile().getCanonicalPath(), escapedArtist, escapedAlbum);
+                                    Path base = Paths.get(artPath.toFile().getCanonicalPath(), escapedAlbumArtist, escapedAlbum);
                                     Files.createDirectories(base);
                                     Path out = base.resolve(imageName);
                                     Files.copy(in, out);
                                     imagesAdded.incrementAndGet();
 
-                                    track.setAlbumImageId(escapedArtist + "/" + escapedAlbum + "/" + imageName);
+                                    track.setAlbumImageId(escapedAlbumArtist + "/" + escapedAlbum + "/" + imageName);
                                     updated.add(track);
                                 }
                             }

@@ -141,6 +141,7 @@ public class MusicScanner
         track.setArtist(tag.getFirst(FieldKey.ARTIST));
         track.setTitle(tag.getFirst(FieldKey.TITLE));
         track.setAlbum(tag.getFirst(FieldKey.ALBUM));
+        track.setAlbumArtist(tag.getFirst(FieldKey.ALBUM_ARTIST));
         track.setTrackGain(tag.getFirst("REPLAYGAIN_TRACK_GAIN"));
         track.setTrackPeak(tag.getFirst("REPLAYGAIN_TRACK_PEAK"));
 
@@ -155,6 +156,22 @@ public class MusicScanner
         if (tag.getArtworkList().size() > 0)
         {
 //            saveArtwork(tag, track);
+        }
+
+        // condense artists like 'Foo feat. Bar' down to hopefully just 'Foo'
+        if (track.getArtist().contains(" feat. "))
+        {
+            String albumArtist = tag.getFirst(FieldKey.ALBUM_ARTIST);
+            String artists = tag.getFirst(FieldKey.ARTISTS);
+
+            String newArtist = "";
+            if (!albumArtist.isBlank() && !albumArtist.contains(" feat. "))
+                newArtist = albumArtist;
+            if (newArtist.isBlank() && !artists.isBlank() && !artists.contains(" feat. "))
+                newArtist = artists;
+            
+            log.info("Replacing " + track.getArtist() + " ...with... " + newArtist);
+            track.setArtist(newArtist);
         }
 
         return track;

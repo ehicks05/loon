@@ -13,8 +13,12 @@ html {overflow-y: auto;}
 section {padding: 10px !important;}
 
 .playingHighlight {color: #1ed176;}
+.playingHighlight:focus {outline:0;}
 
 .playlist {overflow-y: auto; }
-.list-song {cursor: pointer;}
 
 .media+.media {padding-top:.2rem;margin-top:.2rem;}
+
+.mediaItemDiv {padding: 5px; vertical-align: middle; display: flex; flex-direction: row; justify-content: space-between}
+.list-song {cursor: pointer; flex: 8}
+.mediaItemCounter {text-align: right; margin-right: 5px; min-width: 30px; flex-basis: 36px;}

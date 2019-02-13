@@ -97,6 +97,7 @@ export default class Header extends React.Component {
                     </div>
                     <div className="navbar-end">
                         <a href='/logout' className="navbar-item">
+                            <span style={{marginRight: '4px'}}>Sign Out</span>
                             <span className="icon is-medium">
                                 <FontAwesomeIcon icon={faSignOutAlt}/>
                             </span>

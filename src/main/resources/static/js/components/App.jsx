@@ -17,6 +17,7 @@ import SidePanel from "./SidePanel.jsx";
 import UserSettings from "./UserSettings.jsx";
 import Artists from "./Artists.jsx";
 import Albums from "./Albums.jsx";
+import Artist from "./Artist.jsx";
 
 function Loading() {
     return <div>Loading...</div>;
@@ -179,6 +180,7 @@ export default class App extends React.Component {
                             <Route exact path='/admin/users' render={() => <UserSettings />}/>
                             <Route exact path='/settings/eq' render={() => <Eq />}/>
                             <Route exact path='/artists' render={() => <Artists tracks={tracks} />}/>
+                            <Route exact path='/artist/:artist' render={(props) => <Artist {...props} tracks={tracks} />}/>
                             <Route exact path='/albums' render={() => <Albums tracks={tracks} />}/>
 
                             <Route exact path='/library' render={(props) => <Playlist {...props}

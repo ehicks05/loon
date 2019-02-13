@@ -61,7 +61,7 @@ export default class PlaybackControls extends React.Component {
 
         return (
             <div>
-                <section className="section myLevel" style={{zIndex: '5', position: 'static'}}>
+                <div className="section myLevel" style={{zIndex: '5', position: 'static', paddingBottom: '0', paddingTop: '0'}}>
                     <nav className="level">
                         <p className="level-item" style={{marginBottom: '0'}}>
                             <span id="timer" style={{fontSize: '.875rem', marginRight: '3px'}}>{formattedTimeElapsed}</span>
@@ -70,8 +70,8 @@ export default class PlaybackControls extends React.Component {
                             <span id="duration" style={{fontSize: '.875rem', marginLeft: '3px'}}>{formattedDuration}</span>
                         </p>
                     </nav>
-                </section>
-                <section className="section myLevel" style={{zIndex: '5', position: 'static'}}>
+                </div>
+                <div className="section myLevel" style={{zIndex: '5', position: 'static', paddingBottom: '6px', paddingTop: '0'}}>
                     <nav className="level">
                         <div className="level-left">
                             <p className="level-item">
@@ -133,7 +133,7 @@ export default class PlaybackControls extends React.Component {
                             </div>
                         </div>
                     </nav>
-                </section>
+                </div>
             </div>
         );
     }

@@ -1,7 +1,7 @@
 import React from 'react';
 import {Link, NavLink} from "react-router-dom";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faSearch, faServer, faMusic, faUsers, faFolderOpen, faListUl, faHeart, faList} from '@fortawesome/free-solid-svg-icons'
+import {faSearch, faServer, faMusic, faUsers, faFolderOpen, faListUl, faHeart, faList, faCompactDisc, faBoxOpen, faBox} from '@fortawesome/free-solid-svg-icons'
 
 export default class SidePanel extends React.Component {
     componentDidMount()
@@ -36,7 +36,7 @@ export default class SidePanel extends React.Component {
                 </NavLink>
                 <NavLink to={'/library'} className="panel-block" activeClassName="is-active" isActive={() => selectedPlaylistId === 0}>
                     <span className="panel-icon">
-                        <FontAwesomeIcon icon={faServer} aria-hidden="true" />
+                        <FontAwesomeIcon icon={faBox} aria-hidden="true" />
                     </span>
                     Library
                 </NavLink>
@@ -60,7 +60,7 @@ export default class SidePanel extends React.Component {
                 </NavLink>
                 <NavLink to={'/albums'} className="panel-block" activeClassName="is-active">
                     <span className="panel-icon">
-                        <FontAwesomeIcon icon={faFolderOpen} aria-hidden="true" />
+                        <FontAwesomeIcon icon={faCompactDisc} aria-hidden="true" />
                     </span>
                     Albums
                 </NavLink>

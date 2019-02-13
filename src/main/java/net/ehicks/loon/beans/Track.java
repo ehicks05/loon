@@ -28,6 +28,9 @@ public class Track implements Serializable
     @Column(name = "album", nullable = false)
     private String album = "";
 
+    @Column(name = "album_artist", nullable = false)
+    private String albumArtist = "";
+
     @Column(name = "path", nullable = false)
     @JsonIgnore
     private String path = "";
@@ -85,6 +88,7 @@ public class Track implements Serializable
                 ", artist='" + artist + '\'' +
                 ", title='" + title + '\'' +
                 ", album='" + album + '\'' +
+                ", albumArtist='" + albumArtist + '\'' +
                 ", path='" + path + '\'' +
                 ", extension='" + extension + '\'' +
                 ", duration=" + duration +
@@ -146,6 +150,16 @@ public class Track implements Serializable
     public void setAlbum(String album)
     {
         this.album = album;
+    }
+
+    public String getAlbumArtist()
+    {
+        return albumArtist;
+    }
+
+    public void setAlbumArtist(String albumArtist)
+    {
+        this.albumArtist = albumArtist;
     }
 
     public String getPath()

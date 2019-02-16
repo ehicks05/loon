@@ -89,9 +89,14 @@ export default class Player extends React.Component {
                 // Start updating the progress of the track.
                 requestAnimationFrame(self.step.bind(self));  // do this since we're exiting early
 
-                this.setState({playerState: newPlayerState}); // do this since we're exiting early
+                this.setState({playerState: newPlayerState}, function () {
+                    requestAnimationFrame(self.step.bind(self)); // do this since we're exiting early
+                });
+
                 return;
             }
+
+            this.setState({timeElapsed: 0});
 
             if (!newTrackId)
                 newTrackId = this.props.selectedTrackId;
@@ -283,8 +288,8 @@ export default class Player extends React.Component {
         let elapsed = Date.now() - this.lastAnimationFrame;
         if (elapsed > 1000) // update 1 time a second
         {
-            let audioCurrentTime = self.state.howl && typeof self.state.howl.seek() === 'number' ? self.state.howl.seek() : 0;
-            this.setState({timeElapsed: audioCurrentTime});
+            if (typeof self.state.howl.seek() === 'number')
+                this.setState({timeElapsed: self.state.howl.seek()});
 
             this.lastAnimationFrame = Date.now();
         }

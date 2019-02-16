@@ -18,6 +18,8 @@ import UserSettings from "./UserSettings.jsx";
 import Artists from "./Artists.jsx";
 import Albums from "./Albums.jsx";
 import Artist from "./Artist.jsx";
+import Search from "./Search.jsx";
+import SearchTest from "./SearchTest.jsx";
 
 function Loading() {
     return <div>Loading...</div>;
@@ -27,6 +29,12 @@ const LoadablePlaylistBuilder = Loadable({
     loader: () => import("./PlaylistBuilder.jsx"),
     loading: Loading
 });
+
+function poll()
+{
+    fetch('/api/poll', {method: 'GET'})
+        .then(response => response.text()).then(text => console.log("poll result: " + text));
+}
 
 export default class App extends React.Component {
 
@@ -127,6 +135,8 @@ export default class App extends React.Component {
     }
 
     componentDidMount() {
+        const pollIntervalId = setInterval(poll, 60 * 60 * 1000);
+
         const self = this;
         this.reloadTheme();
 
@@ -169,7 +179,7 @@ export default class App extends React.Component {
                     <Header isAdmin={isAdmin} playlists={playlists} selectedPlaylistId={selectedPlaylistId}/>
 
                     <div className={'columns is-gapless'} style={{margin: '0', flex: '1 1 auto', display: 'flex'}}>
-                        <div className="column is-2 is-hidden-touch" style={{overflow: 'auto'}}>
+                        <div className="column is-narrow is-hidden-touch" style={{overflow: 'auto'}}>
                             <SidePanel isAdmin={isAdmin} playlists={playlists} selectedPlaylistId={selectedPlaylistId}/>
                         </div>
                         <div className="column" style={{overflow: 'auto'}}>
@@ -182,13 +192,30 @@ export default class App extends React.Component {
                             <Route exact path='/artists' render={() => <Artists tracks={tracks} />}/>
                             <Route exact path='/artist/:artist' render={(props) => <Artist {...props} tracks={tracks} />}/>
                             <Route exact path='/albums' render={() => <Albums tracks={tracks} />}/>
+                            <Route exact path='/search' render={(props) => <SearchTest {...props}
+                                                                                      tracks={tracks}
+                                                                                      playlists={playlists}
+                                                                                      selectedTrackId={this.state.selectedTrackId}
+                                                                                      onCurrentPlaylistChange={this.handleCurrentPlaylistChange}
+                                                                                      onSelectedTrackIdChange={this.handleSelectedTrackIdChange}
+                                                                                      onUpdatePlaylists={this.reloadPlaylists} />} />
+
 
                             <Route exact path='/library' render={(props) => <Playlist {...props}
                                                                                       tracks={tracks}
                                                                                       playlists={playlists}
                                                                                       selectedTrackId={this.state.selectedTrackId}
                                                                                       onCurrentPlaylistChange={this.handleCurrentPlaylistChange}
-                                                                                      onSelectedTrackIdChange={this.handleSelectedTrackIdChange} />} />
+                                                                                      onSelectedTrackIdChange={this.handleSelectedTrackIdChange}
+                                                                                      onUpdatePlaylists={this.reloadPlaylists} />} />
+
+                            <Route exact path='/favorites' render={(props) => <Playlist {...props}
+                                                                                      tracks={tracks}
+                                                                                      playlists={playlists}
+                                                                                      selectedTrackId={this.state.selectedTrackId}
+                                                                                      onCurrentPlaylistChange={this.handleCurrentPlaylistChange}
+                                                                                      onSelectedTrackIdChange={this.handleSelectedTrackIdChange}
+                                                                                      onUpdatePlaylists={this.reloadPlaylists} />} />
 
                             <Switch>
                                 <Route exact path='/playlists/new' render={(props) => <LoadablePlaylistBuilder {...props} onUpdatePlaylists={this.reloadPlaylists} />} />

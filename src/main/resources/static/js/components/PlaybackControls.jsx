@@ -1,6 +1,6 @@
 import React from 'react';
-import 'bulma-extensions/bulma-slider/dist/js/bulma-slider.min.js'
-import 'bulma-extensions/bulma-slider/dist/css/bulma-slider.min.css'
+import Slider from 'rc-slider/lib/Slider';
+import 'rc-slider/assets/index.css';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faVolumeUp, faVolumeOff, faRandom, faPlay, faPause, faStepForward, faStepBackward } from '@fortawesome/free-solid-svg-icons'
@@ -24,9 +24,9 @@ export default class PlaybackControls extends React.Component {
         console.log('handleTrackChange');
         this.props.onTrackChange(direction);
     }
-    handleVolumeChange(e) {
-        console.log('e.target.value: ' + e.target.value);
-        this.props.onVolumeChange(e.target.value);
+    handleVolumeChange(value) {
+        console.log('value' + value);
+        this.props.onVolumeChange(value);
     }
     handleMuteChange(e) {
         console.log('handleMuteChange');
@@ -35,9 +35,9 @@ export default class PlaybackControls extends React.Component {
     handleShuffleChange(e) {
         this.props.onShuffleChange(e.target.value);
     }
-    handleProgressChange(e) {
-        console.log('e.target.value: ' + e.target.value);
-        this.props.onProgressChange(e.target.value);
+    handleProgressChange(value) {
+        console.log('value: ' + value);
+        this.props.onProgressChange(value);
     }
 
     static formatTime(secs) {
@@ -63,12 +63,15 @@ export default class PlaybackControls extends React.Component {
             <div>
                 <div className="section myLevel" style={{zIndex: '5', position: 'static', paddingBottom: '0', paddingTop: '0'}}>
                     <nav className="level">
-                        <p className="level-item" style={{marginBottom: '0'}}>
-                            <span id="timer" style={{fontSize: '.875rem', marginRight: '3px'}}>{formattedTimeElapsed}</span>
-                            <input name="progress" id="progress" style={{width:'100%', margin: '0'}} className="slider is-fullwidth is-small is-success"
-                                   type="range" value={timeElapsed} max={duration} step={'1'} onChange={this.handleProgressChange}/>
-                            <span id="duration" style={{fontSize: '.875rem', marginLeft: '3px'}}>{formattedDuration}</span>
-                        </p>
+                        <div className="level-item" style={{marginBottom: '0'}}>
+                            <span id="timer" style={{fontSize: '.875rem', marginRight: '8px'}}>{formattedTimeElapsed}</span>
+                            <Slider name="progress" id="progress" style={{width:'100%', margin: '0'}}
+                                    trackStyle={{ backgroundColor: 'hsl(141, 71%, 48%)', height: 3 }}
+                                    railStyle={{backgroundColor: '#ddd'}}
+                                    handleStyle={{borderColor: 'hsl(141, 71%, 48%)'}}
+                                    type="range" value={timeElapsed} max={duration} step={1} onChange={this.handleProgressChange}/>
+                            <span id="duration" style={{fontSize: '.875rem', marginLeft: '8px'}}>{formattedDuration}</span>
+                        </div>
                     </nav>
                 </div>
                 <div className="section myLevel" style={{zIndex: '5', position: 'static', paddingBottom: '6px', paddingTop: '0'}}>
@@ -129,7 +132,12 @@ export default class PlaybackControls extends React.Component {
                                         <FontAwesomeIcon icon={muted ? faVolumeOff : faVolumeUp} fixedWidth/>
                                     </span>
                                 </a>
-                                <input name="sliderBtn" id="sliderBtn" className="slider is-small is-success" type="range" value={volume} min="-30" max="0" step="1" onChange={this.handleVolumeChange}/>
+                                <div style={{width: '128px'}}>
+                                    <Slider trackStyle={{ backgroundColor: 'hsl(141, 71%, 48%)', height: 3 }}
+                                            railStyle={{backgroundColor: '#ddd'}}
+                                            handleStyle={{borderColor: 'hsl(141, 71%, 48%)'}}
+                                            value={volume} min={-30} max={0} step={1} onChange={this.handleVolumeChange} />
+                                </div>
                             </div>
                         </div>
                     </nav>

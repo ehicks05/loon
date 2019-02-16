@@ -1,9 +1,7 @@
 package net.ehicks.loon;
 
-import net.ehicks.loon.beans.DBFile;
 import net.ehicks.loon.beans.LoonSystem;
 import net.ehicks.loon.beans.Track;
-import net.ehicks.loon.repos.DbFileRepository;
 import net.ehicks.loon.repos.LoonSystemRepository;
 import net.ehicks.loon.repos.TrackRepository;
 import org.imgscalr.Scalr;
@@ -35,20 +33,20 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static net.ehicks.loon.CommonUtil.escapeForFileSystem;
+
 @Configuration
 public class MusicScanner
 {
     private static final Logger log = LoggerFactory.getLogger(MusicScanner.class);
 
     private LoonSystemRepository loonSystemRepo;
-    private DbFileRepository dbFileRepo;
     private TrackRepository trackRepo;
     private FileWalker fileWalker;
 
-    public MusicScanner(LoonSystemRepository loonSystemRepo, DbFileRepository dbFileRepo, TrackRepository trackRepo, FileWalker fileWalker)
+    public MusicScanner(LoonSystemRepository loonSystemRepo, TrackRepository trackRepo, FileWalker fileWalker)
     {
         this.loonSystemRepo = loonSystemRepo;
-        this.dbFileRepo = dbFileRepo;
         this.trackRepo = trackRepo;
         this.fileWalker = fileWalker;
     }
@@ -66,6 +64,8 @@ public class MusicScanner
             LoonSystem loonSystem = loonSystemRepo.findById(1L).orElse(null);
             if (loonSystem == null)
                 return;
+
+            Path artPath = Paths.get(loonSystem.getDataFolder(), "art").toAbsolutePath();
 
             Path basePath = Paths.get(loonSystem.getMusicFolder());
             if (!basePath.toFile().exists())
@@ -88,7 +88,7 @@ public class MusicScanner
                 if (audioFile == null)
                     return;
 
-                Track track = parseAudioFile(audioFile);
+                Track track = parseAudioFile(audioFile, artPath);
                 tracksToSave.add(track);
 
                 int progress = (int) ((filesProcessed.incrementAndGet() * 100) / (double) paths.size());
@@ -125,7 +125,7 @@ public class MusicScanner
         return audioFile;
     }
 
-    private Track parseAudioFile(AudioFile audioFile)
+    private Track parseAudioFile(AudioFile audioFile, Path artPath)
     {
         AudioHeader audioHeader = audioFile.getAudioHeader();
         Tag tag = audioFile.getTag();
@@ -155,7 +155,7 @@ public class MusicScanner
 
         if (tag.getArtworkList().size() > 0)
         {
-//            saveArtwork(tag, track);
+            saveArtwork(tag, track, artPath);
         }
 
         // condense artists like 'Foo feat. Bar' down to hopefully just 'Foo'
@@ -177,20 +177,42 @@ public class MusicScanner
         return track;
     }
 
-    private void saveArtwork(Tag tag, Track track)
+    private void saveArtwork(Tag tag, Track track, Path artPath)
     {
-        Artwork artwork = tag.getArtworkList().get(0);
-        DBFile artworkFile = new DBFile(track.getTitle(), artwork.getBinaryData());
-        artworkFile = dbFileRepo.save(artworkFile);
-        track.setArtworkDbFileId(artworkFile.getId());
+        byte[] image = null;
+        Artwork artwork = tag.getFirstArtwork();
+        if (artwork == null)
+            return;
+
+        String ext = "." + artwork.getMimeType().replace("image/", "");
+        byte[] imageData = artwork.getBinaryData();
+
         try
         {
-            byte[] thumbnailData = getThumbnail(new ByteArrayInputStream(artwork.getBinaryData()), artwork.getMimeType());
-            DBFile thumbnail = new DBFile(track.getTitle(), thumbnailData);
-            thumbnail = dbFileRepo.save(thumbnail);
+            image = resize(new ByteArrayInputStream(imageData), artwork.getMimeType(), 300, 300);
+        }
+        catch (Exception e)
+        {
+            log.error(e.getMessage(), e);
+        }
 
-            artworkFile.setThumbnailId(thumbnail.getId());
-            artworkFile = dbFileRepo.save(artworkFile);
+        if (image == null)
+            return;
+
+        try (InputStream in = new ByteArrayInputStream(image))
+        {
+            String escapedAlbumArtist = escapeForFileSystem(track.getAlbumArtist());
+            String escapedAlbum = escapeForFileSystem(track.getAlbum());
+            String imageFileName = escapeForFileSystem(track.getAlbum()) + ext;
+
+            Path base = Paths.get(artPath.toFile().getCanonicalPath(), escapedAlbumArtist, escapedAlbum);
+            Files.createDirectories(base);
+            Path out = base.resolve(imageFileName);
+
+            if (!out.toFile().exists())
+                Files.copy(in, out);
+
+            track.setAlbumImageId(escapedAlbumArtist + "/" + escapedAlbum + "/" + imageFileName);
         }
         catch (Exception e)
         {
@@ -215,11 +237,11 @@ public class MusicScanner
         return "";
     }
 
-    private byte[] getThumbnail(InputStream inputStream, String contentType) throws IOException
+    private byte[] resize(InputStream inputStream, String contentType, int targetWidth, int targetHeight) throws IOException
     {
         BufferedImage srcImage = ImageIO.read(inputStream); // Load image
         Scalr.Mode mode = srcImage.getWidth() > srcImage.getHeight() ? Scalr.Mode.FIT_TO_WIDTH : Scalr.Mode.FIT_TO_HEIGHT;
-        BufferedImage scaledImage = Scalr.resize(srcImage, mode, 128, 128); // Scale image
+        BufferedImage scaledImage = Scalr.resize(srcImage, mode, targetWidth, targetHeight); // Scale image
         String formatName = contentType.replace("image/", "");
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ImageIO.write(scaledImage, formatName, byteArrayOutputStream);

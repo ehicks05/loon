@@ -6,7 +6,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class ReactController
 {
-    @RequestMapping({"/admin", "/library", "/playlists", "/admin/**", "/library/**", "/playlists/**", "/settings/**", "/artists/**", "/albums/**", "/artist/**", "/album/**"})
+    @RequestMapping({
+            "/admin/**",
+            "/albums/**",
+            "/album/**",
+            "/artists/**",
+            "/artist/**",
+            "/favorites/**",
+            "/library/**",
+            "/playlists/**",
+            "/search/**",
+            "/settings/**"
+    })
     public String goReact() {
         return "forward:/";
     }

@@ -1,4 +1,7 @@
 import React from 'react';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faHeart as fasHeart, faAngleDown, faEllipsisH} from '@fortawesome/free-solid-svg-icons'
+import {faHeart as farHeart} from '@fortawesome/free-regular-svg-icons'
 
 const getRowStyle = (draggableStyle, isDragging) => ({
     // some basic styles to make the items look a bit nicer
@@ -19,11 +22,34 @@ export default class MediaItem extends React.Component {
     constructor(props) {
         super(props);
         this.handleSelectedTrackIdChange = this.handleSelectedTrackIdChange.bind(this);
+        this.handleToggleFavorite = this.handleToggleFavorite.bind(this);
+        this.handleHoverTrue = this.handleHoverTrue.bind(this);
+        this.handleHoverFalse = this.handleHoverFalse.bind(this);
+        this.state = {hover: false}
     }
 
     handleSelectedTrackIdChange(e, selectedTrackId)
     {
         this.props.onSelectedTrackIdChange(selectedTrackId);
+    }
+
+    handleToggleFavorite(e, trackId)
+    {
+        fetch('/api/playlists/toggleFavorite?trackId=' + trackId, {method: 'POST'})
+            .then(response => response.text()).then(responseText => {
+            console.log(responseText);
+            this.props.onUpdatePlaylists();
+        });
+    }
+
+    handleHoverTrue()
+    {
+        this.setState({hover: true});
+    }
+
+    handleHoverFalse()
+    {
+        this.setState({hover: true});
     }
 
     render()
@@ -35,6 +61,7 @@ export default class MediaItem extends React.Component {
         const trackTitle = this.props.track.title ? this.props.track.title : 'Missing!';
         const album = this.props.track.album ? this.props.track.album : 'Missing!';
         const formattedDuration = this.props.track.duration;
+        const favorite = this.props.favorite;
 
         const highlightClass = trackId === this.props.selectedTrackId ? ' playingHighlight' : '';
 
@@ -49,29 +76,65 @@ export default class MediaItem extends React.Component {
         const dragHandleProps   = provided ? provided.dragHandleProps : null;
 
         const isDragging = snapshot ? snapshot.isDragging : false;
+        const isHovering = this.state.hover;
+
+        const dropdown = (isHovering && !isDragging) ? (
+            <div className="dropdown is-hoverable is-right">
+                <div className="dropdown-trigger">
+                    <button className="button is-small" aria-haspopup="true" aria-controls="dropdown-menu2">
+                        <span className="icon is-small">
+                            <FontAwesomeIcon icon={faEllipsisH}/>
+                        </span>
+                    </button>
+                </div>
+                <div className="dropdown-menu" id="dropdown-menu2" role="menu">
+                    <div className="dropdown-content">
+                        <a className="dropdown-item">
+                            <p>
+                                Add to favourites
+                                <span style={{cursor: 'pointer'}} className={'icon has-text-success'} onClick={(e) => this.handleToggleFavorite(e, trackId)}>
+                                    <FontAwesomeIcon icon={favorite ? fasHeart : farHeart}/>
+                                </span>
+                            </p>
+                        </a>
+                        <a className="dropdown-item">
+                            <p>Add to queue</p>
+                        </a>
+                        <a href="#" className="dropdown-item">
+                            Add to playlist...
+                        </a>
+                    </div>
+                </div>
+            </div>
+        ) : '';
 
         return (
-            <li className={highlightClass} id={'track' + trackId}
+            <div className={highlightClass} id={'track' + trackId}
                 ref={innerRef}
                 {...draggableProps}
-                {...dragHandleProps}
                 style={getRowStyle(draggableStyle, isDragging)}
             >
-                <div className={'mediaItemDiv'}>
+                <div className={'mediaItemDiv'}
+                     onMouseEnter={this.handleHoverTrue}
+                     onMouseLeave={this.handleHoverFalse}>
 
                     <div className={'mediaItemCounter'}>
                         {trackIndex + 1}.
                     </div>
 
-                    <div className={'list-song'} onClick={(e) => this.handleSelectedTrackIdChange(e, trackId)}>
+                    <div {...dragHandleProps} style={{cursor: 'pointer'}} className={'list-song'} onClick={(e) => this.handleSelectedTrackIdChange(e, trackId)}>
                         <b>{trackTitle}</b>
                         <br /><span style={{fontSize: '.875rem'}}>{artist} - <i>{album}</i></span>
+                    </div>
+
+                    <div className={'mediaItemEllipsis'} style={{marginRight: '8px', flexBasis: '20px'}}>
+                        {dropdown}
                     </div>
 
                     <div style={{flexBasis: '20px'}}>
                         {formatTime(formattedDuration)}
                     </div>
                 </div>
-            </li>);
+            </div>);
     }
 }

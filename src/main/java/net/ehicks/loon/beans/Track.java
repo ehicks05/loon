@@ -58,7 +58,9 @@ public class Track implements Serializable
     @Column(name = "artwork_db_file_id")
     private Long artworkDbFileId;
 
+    @Column(length = 1000)
     private String artistImageId = "";
+    @Column(length = 1000)
     private String albumImageId = "";
 
     @OneToMany(mappedBy = "track", cascade = CascadeType.REMOVE)

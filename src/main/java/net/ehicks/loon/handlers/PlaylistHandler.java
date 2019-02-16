@@ -120,11 +120,22 @@ public class PlaylistHandler
         return playlist;
     }
 
+    @PostMapping("/toggleFavorite")
+    public Playlist add(@AuthenticationPrincipal User user, @RequestParam Long trackId)
+    {
+        Playlist playlist = playlistRepo.findByUserIdAndFavoritesTrue(user.getId());
+
+        if (playlist != null)
+            playlistLogic.addOrRemoveTrack(playlist, trackId);
+
+        return playlist;
+    }
+
     @DeleteMapping("/{playlistId}")
     public ResponseEntity delete(@AuthenticationPrincipal User user, @PathVariable long playlistId)
     {
         Playlist playlist = playlistRepo.findById(playlistId).orElse(null);
-        if (playlist != null)
+        if (playlist != null && !playlist.getFavorites() && !playlist.getQueue())
         {
             playlistLogic.setTrackIds(playlist, new ArrayList<>());
             playlistRepo.delete(playlist);

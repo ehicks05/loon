@@ -6,7 +6,16 @@ import 'react-virtualized/styles.css'
 
 function parsePlaylistId(component)
 {
-    return component.props.match.params.id ? Number(component.props.match.params.id) : 0;
+    let playlistId = 0;
+    if (component.props.match.path === '/playlists/:id')
+        playlistId = component.props.match.params.id ? Number(component.props.match.params.id) : 0;
+    if (component.props.match.path === '/favorites')
+    {
+        const favorites = component.props.playlists.filter(playlist => playlist.favorites);
+        playlistId = favorites && favorites.length > 0 ? favorites[0].id : 0;
+    }
+
+    return playlistId;
 }
 
 export default class Playlist extends React.Component {
@@ -14,6 +23,7 @@ export default class Playlist extends React.Component {
         super(props);
         this.handleSelectedTrackIdChange = this.handleSelectedTrackIdChange.bind(this);
         this.handleCurrentPlaylistChange = this.handleCurrentPlaylistChange.bind(this);
+        this.handleUpdatePlaylists = this.handleUpdatePlaylists.bind(this);
         this.onDragEnd = this.onDragEnd.bind(this);
         this.persistDragAndDrop = this.persistDragAndDrop.bind(this);
         this.renderMediaItem = this.renderMediaItem.bind(this);
@@ -65,12 +75,19 @@ export default class Playlist extends React.Component {
         this.props.onCurrentPlaylistChange(this.state.playlistId, selectedTrackId);
     }
 
+    handleUpdatePlaylists()
+    {
+        this.props.onUpdatePlaylists();
+    }
+
     render()
     {
         const self = this;
         const tracks = this.props.tracks;
         const selectedTrackId = this.props.selectedTrackId;
         const playlists = this.props.playlists;
+        const favoritesPlaylist = playlists.filter(playlist => playlist.favorites)[0];
+        const favoritesIds = favoritesPlaylist.playlistTracks.map(playlistTrack => playlistTrack.track.id);
 
         const routeParamPlaylistId = this.state.playlistId;
 
@@ -93,7 +110,7 @@ export default class Playlist extends React.Component {
                                 provided={provided}
                                 snapshot={snapshot}
                                 key={track.id} track={track} index={playlistTrack.index} selectedTrackId={selectedTrackId}
-                                onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={true}/>
+                                onSelectedTrackIdChange={this.handleSelectedTrackIdChange} onUpdatePlaylists={self.props.onUpdatePlaylists} isDraggable={true} favorite={favoritesIds.includes(track.id)}/>
 
                         )}
                     </Draggable>
@@ -105,25 +122,23 @@ export default class Playlist extends React.Component {
         {
             mediaItems = tracks.map((track, index) => {
                     return <MediaItem key={track.id} track={track} index={index} selectedTrackId={selectedTrackId}
-                                      onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={false}/>
+                                      onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={false} favorite={favoritesIds.includes(track.id)}/>
                 }
             );
         }
 
+        let mediaList;
+
         if (playlist)
         {
-            return (
+            mediaList = (
                 <DragDropContext onDragEnd={this.onDragEnd}>
                     <Droppable droppableId="droppable">
                         {(provided, snapshot) => (
-                            <div className={'is-marginless is-paddingless'} ref={provided.innerRef}>
-
-                                <h1 className="title">{playlist ? playlist.name : 'Library'}</h1>
-                                <div id="playlist" className="playlist" style={{display: 'flex', flexDirection: 'column'}}>
-                                    <ul id="list" style={{flex: '1', flexGrow: '1'}}>
-                                        {mediaItems}
-                                    </ul>
-                                </div>
+                            <div ref={provided.innerRef} style={{display: 'flex', flexDirection: 'column', flex: '1', flexGrow: '1'}}>
+                                <ul id="list" style={{display: 'flex', flexDirection: 'column', flex: '1', flexGrow: '1'}}>
+                                    {mediaItems}
+                                </ul>
                                 {provided.placeholder}
                             </div>
                         )}
@@ -131,29 +146,23 @@ export default class Playlist extends React.Component {
                 </DragDropContext>);
         }
         else {
-            return (
-                <div id="playlist" className="playlist" style={{display: 'flex', flexDirection: 'column'}}>
-                    <ul id="list" style={{flex: '1', flexGrow: '1'}}>
-                        {mediaItems}
-                    </ul>
-                    {/*<AutoSizer>*/}
-                        {/*{({ height, width }) => (*/}
-                            {/*<List*/}
-                                {/*height={height}*/}
-                                {/*rowHeight={({ index }) => 58}*/}
-                                {/*rowRenderer={({ index, key, style }) => <div key={key} style={style}>{self.renderMediaItem(index, key, selectedTrackId)}</div>}*/}
-                                {/*rowCount={this.props.tracks.length}*/}
-                                {/*width={width}*/}
-                            {/*/>*/}
-                        {/*)}*/}
-                    {/*</AutoSizer>*/}
-                </div>
+            mediaList = (
+                <ul id="list" style={{display: 'flex', flexDirection: 'column', flex: '1', flexGrow: '1'}}>
+                    {mediaItems}
+                </ul>
             );
         }
 
+        return (
+            <section className={'section'} style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
+                <h1 className="title">{playlist ? playlist.name : 'Library'}</h1>
+
+                {mediaList}
+            </section>
+        );
     }
 
-    renderMediaItem(index, trackId, selectedTrackId)
+    renderMediaItem(index, trackId, selectedTrackId, favoritesIds)
     {
         trackId = Number(trackId.substring(0, trackId.indexOf('-')));
         // console.log(trackId);
@@ -161,6 +170,6 @@ export default class Playlist extends React.Component {
         if (!track)
             return <li>not found</li>;
         return <MediaItem key={trackId} track={track} index={index} selectedTrackId={selectedTrackId}
-                          onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={false}/>
+                          onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={false} favorite={favoritesIds.includes(track.id)}/>
     }
 }

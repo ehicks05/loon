@@ -14,7 +14,6 @@ public class Seeder
 {
     private static final Logger log = LoggerFactory.getLogger(Seeder.class);
     private UserRepository userRepo;
-    private UserStateRepository userStateRepo;
     private RoleRepository roleRepo;
     private TrackRepository trackRepo;
     private PlaylistRepository playlistRepo;
@@ -22,13 +21,13 @@ public class Seeder
     private PasswordEncoder passwordEncoder;
     private LoonSystemRepository loonSystemRepo;
     private PlaylistLogic playlistLogic;
+    private UserLogic userLogic;
 
-    public Seeder(UserRepository userRepo, UserStateRepository userStateRepo, RoleRepository roleRepo, TrackRepository trackRepo, PlaylistRepository playlistRepo,
+    public Seeder(UserRepository userRepo, RoleRepository roleRepo, TrackRepository trackRepo, PlaylistRepository playlistRepo,
                   PlaylistTrackRepository playlistTrackRepo, PasswordEncoder passwordEncoder, LoonSystemRepository loonSystemRepo,
-                  PlaylistLogic playlistLogic)
+                  PlaylistLogic playlistLogic, UserLogic userLogic)
     {
         this.userRepo = userRepo;
-        this.userStateRepo = userStateRepo;
         this.roleRepo = roleRepo;
         this.trackRepo = trackRepo;
         this.playlistRepo = playlistRepo;
@@ -36,6 +35,7 @@ public class Seeder
         this.passwordEncoder = passwordEncoder;
         this.loonSystemRepo = loonSystemRepo;
         this.playlistLogic = playlistLogic;
+        this.userLogic = userLogic;
     }
 
     public void createLoonSystem()
@@ -51,7 +51,7 @@ public class Seeder
         loonSystem.setLogonMessage("Welcome to Loon.");
         loonSystem.setTheme("default");
         loonSystem.setMusicFolder("c:/k/music");
-        loonSystem.setDataFolder("data");
+        loonSystem.setDataFolder("static");
         loonSystem.setRegistrationEnabled(false);
         loonSystem.setTranscodeQuality("default");
         loonSystemRepo.save(loonSystem);
@@ -74,12 +74,12 @@ public class Seeder
         if (userRepo.count() > 0)
             return;
 
-        List<List<String>> users = Arrays.asList(
+        List<List<String>> defaultUsers = Arrays.asList(
                 Arrays.asList("admin@test.com", "password", "Admin"),
                 Arrays.asList("user@test.com", "password", "User")
         );
 
-        users.forEach((userData) -> {
+        defaultUsers.forEach((userData) -> {
             RegistrationForm registrationForm = new RegistrationForm(userData.get(0), userData.get(1), userData.get(2));
             Set<Role> roles = new HashSet<>(Set.of(roleRepo.findByRole("ROLE_USER")));
             if (userData.get(0).contains("admin"))
@@ -89,12 +89,12 @@ public class Seeder
 
             UserState userState = new UserState();
             userState.setUser(user);
-//            userState.setLastPlaylistId(0L);
-//            userState.setLastTrackId(1L);
 
             user.setUserState(userState);
 
-            userRepo.save(user);
+            user = userRepo.save(user);
+
+            userLogic.createDefaultPlaylists(user);
         });
     }
 

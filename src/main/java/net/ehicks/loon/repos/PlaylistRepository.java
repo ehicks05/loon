@@ -8,4 +8,6 @@ import java.util.List;
 public interface PlaylistRepository extends JpaRepository<Playlist, Long>
 {
     List<Playlist> findByUserId(Long userId);
+    Playlist findByUserIdAndFavoritesTrue(Long userId);
+    Playlist findByUserIdAndQueueTrue(Long userId);
 }

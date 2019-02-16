@@ -3,7 +3,6 @@ package net.ehicks.loon;
 import net.ehicks.loon.beans.Playlist;
 import net.ehicks.loon.beans.PlaylistTrack;
 import net.ehicks.loon.beans.Track;
-import net.ehicks.loon.repos.PlaylistRepository;
 import net.ehicks.loon.repos.PlaylistTrackRepository;
 import net.ehicks.loon.repos.TrackRepository;
 import org.slf4j.Logger;
@@ -19,16 +18,46 @@ public class PlaylistLogic
     private static final Logger log = LoggerFactory.getLogger(PlaylistLogic.class);
 
     private PlaylistTrackRepository playlistTrackRepo;
-    private PlaylistRepository playlistRepo;
     private TrackRepository trackRepo;
 
-    public PlaylistLogic(PlaylistTrackRepository playlistTrackRepo, PlaylistRepository playlistRepo, TrackRepository trackRepo)
+    public PlaylistLogic(PlaylistTrackRepository playlistTrackRepo, TrackRepository trackRepo)
     {
         this.playlistTrackRepo = playlistTrackRepo;
-        this.playlistRepo = playlistRepo;
         this.trackRepo = trackRepo;
     }
 
+    // just add or remove a single track from a playlist
+    public void addOrRemoveTrack(Playlist playlist, Long trackId)
+    {
+        PlaylistTrack playlistTrack = playlistTrackRepo.findByPlaylistIdAndTrackId(playlist.getId(), trackId);
+        if (playlistTrack == null)
+        {
+            Track track = trackRepo.findById(trackId).orElse(null);
+            if (track == null)
+            {
+                log.error("Can't add track:" + trackId + " to " + playlist);
+                return;
+            }
+
+            playlistTrack = new PlaylistTrack();
+            playlistTrack.setPlaylist(playlist);
+            playlistTrack.setTrack(track);
+            playlistTrack.setIndex(getNextAvailableIndex(playlist.getId()));
+
+            playlistTrackRepo.save(playlistTrack);
+
+            playlist.getPlaylistTracks().add(playlistTrack);
+        }
+        else
+        {
+            playlist.getPlaylistTracks().remove(playlistTrack);
+            playlistTrackRepo.delete(playlistTrack);
+        }
+
+        consolidateTrackIndexes(playlist.getPlaylistTracks());
+    }
+
+    // replaces current tracks with newTrackIds
     public void setTrackIds(Playlist playlist, List<Long> newTrackIds)
     {
         List<Long> currentTrackIds = playlist.getPlaylistTracks().stream().map(playlistTrack -> playlistTrack.getTrack().getId()).collect(Collectors.toList());
@@ -49,23 +78,8 @@ public class PlaylistLogic
         if (trackIdsToRemove.size() > 0)
         {
             playlist.getPlaylistTracks().removeAll(playlistTracksToRemove);
-//            List<Track> tracks = trackRepo.findAllByIdIn(trackIdsToRemove);
-//            tracks.forEach(track -> track.getPlaylistTracks().remove());
             playlistTrackRepo.deleteAll(playlistTracksToRemove);
         }
-//        trackIdsToRemove.forEach(trackId -> {
-//            Track track = trackRepo.findById(trackId).orElse(null);
-//            PlaylistTrack playlistTrack = playlist.getPlaylistTracks().stream()
-//                    .filter(playlistTrack1 -> playlistTrack1.getTrack().getId().equals(trackId))
-//                    .findFirst().orElse(null);
-//            if (playlistTrack != null)
-//            {
-//                playlist.getPlaylistTracks().remove(playlistTrack);
-//                if (track != null)
-//                    track.getPlaylistTracks().remove(playlistTrack);
-//                playlistTrackRepo.delete(playlistTrack);
-//            }
-//        });
 
         if (trackIdsToAdd.size() > 0)
         {
@@ -91,7 +105,6 @@ public class PlaylistLogic
             {
                 playlistTrackRepo.saveAll(playlistTracksToAdd);
 
-//            track.getPlaylistTracks().add(playlistTrack);
                 playlist.getPlaylistTracks().addAll(playlistTracksToAdd);
             }
         }

@@ -23,7 +23,9 @@ export default class Playlists extends React.Component {
 
     render()
     {
-        const playlists = this.props.playlists.map((playlist, index) => {
+        const playlists = this.props.playlists
+            .filter(playlist => !playlist.favorites && !playlist.queue)
+            .map((playlist, index) => {
                 const highlightClass = playlist.id === this.props.selectedPlaylistId ? ' playingHighlight' : '';
 
                 return (<tr key={playlist.id} className={highlightClass}>

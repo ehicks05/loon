@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static net.ehicks.loon.CommonUtil.escapeForFileSystem;
+
 @Configuration
 public class ImageScanner
 {
@@ -67,24 +69,14 @@ public class ImageScanner
             Path artPath = Paths.get(loonSystem.getDataFolder(), "art").toAbsolutePath();
             if (!artPath.toFile().exists())
             {
-                try
-                {
-                    Files.createDirectories(artPath);
-                }
-                catch (Exception e)
-                {
-                    log.info(e.getMessage(), e);
-                    return;
-                }
+                log.error("artwork path does not exist");
+                return;
             }
 
             ProgressTracker.progressStatusMap.put(PROGRESS_KEY, new ProgressTracker.ProgressStatus(0, "incomplete"));
 
-            RestTemplate restTemplate = restTemplate();
-            ObjectMapper objectMapper = objectMapper();
             AtomicInteger tracksProcessed = new AtomicInteger();
             AtomicInteger imagesAdded = new AtomicInteger();
-
 
             List<Track> tracks = trackRepo.findAll();
             tracks.removeIf(track -> track.getArtist().isEmpty() || track.getAlbum().isEmpty());
@@ -114,34 +106,13 @@ public class ImageScanner
                     {
                         try
                         {
-                            String url = "http://ws.audioscrobbler.com/2.0/?method={method}&artist={artist}&api_key={api_key}&format={format}";
-                            String method = "artist.getinfo";
-                            String artist = track.getArtist();
-                            String apiKey = loonSystem.getLastFmApiKey();
-                            String format = "json";
-                            String artistJson = restTemplate.getForObject(url, String.class, method, artist, apiKey, format);
+                            String imageUrl = getImageUrl(loonSystem.getLastFmApiKey(), track.getArtist(), null);
 
-                            String megaLink = "";
-
-                            try
+                            if (imageUrl != null && !imageUrl.isEmpty())
                             {
-                                JsonNode imageLinks = objectMapper.readTree(artistJson).get("artist").get("image");
-                                for (JsonNode imageLink : imageLinks)
+                                try (InputStream in = new URL(imageUrl).openStream())
                                 {
-                                    if (imageLink.get("size").textValue().equals("mega"))
-                                        megaLink = imageLink.get("#text").textValue();
-                                }
-                            }
-                            catch (Exception e)
-                            {
-                                log.error("Unable to parse response for artist: " + artist);
-                            }
-
-                            if (megaLink != null && !megaLink.isEmpty())
-                            {
-                                try (InputStream in = new URL(megaLink).openStream())
-                                {
-                                    String imageName = megaLink.substring(megaLink.lastIndexOf("/") + 1);
+                                    String imageName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
                                     Path base = Paths.get(artPath.toFile().getCanonicalPath(), escapedArtist);
                                     Files.createDirectories(base);
                                     Path out = base.resolve(imageName);
@@ -183,35 +154,13 @@ public class ImageScanner
                     {
                         try
                         {
-                            String url = "http://ws.audioscrobbler.com/2.0/?method={method}&artist={artist}&album={album}&api_key={api_key}&format={format}";
-                            String method = "album.getinfo";
-                            String artist = track.getArtist();
-                            String album = track.getAlbum();
-                            String apiKey = loonSystem.getLastFmApiKey();
-                            String format = "json";
-                            String albumJson = restTemplate.getForObject(url, String.class, method, artist, album, apiKey, format);
+                            String imageUrl = getImageUrl(loonSystem.getLastFmApiKey(), track.getArtist(), track.getAlbum());
 
-                            String megaLink = "";
-
-                            try
+                            if (imageUrl != null && !imageUrl.isEmpty())
                             {
-                                JsonNode imageLinks = objectMapper.readTree(albumJson).get("album").get("image");
-                                for (JsonNode imageLink : imageLinks)
+                                try (InputStream in = new URL(imageUrl).openStream())
                                 {
-                                    if (imageLink.get("size").textValue().equals("mega"))
-                                        megaLink = imageLink.get("#text").textValue();
-                                }
-                            }
-                            catch (Exception e)
-                            {
-                                log.error("Unable to parse response for album: " + artist + " - " + album);
-                            }
-
-                            if (megaLink != null && !megaLink.isEmpty())
-                            {
-                                try (InputStream in = new URL(megaLink).openStream())
-                                {
-                                    String imageName = megaLink.substring(megaLink.lastIndexOf("/") + 1);
+                                    String imageName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
                                     Path base = Paths.get(artPath.toFile().getCanonicalPath(), escapedAlbumArtist, escapedAlbum);
                                     Files.createDirectories(base);
                                     Path out = base.resolve(imageName);
@@ -252,14 +201,47 @@ public class ImageScanner
         }
     }
 
-    private String escapeForFileSystem(String input)
+    /** Get image url from last.fm api. Pass in null for the album to get artist art */
+    private String getImageUrl(String lastFmApiKey, String artist, String album)
     {
-        String escaped = input.replaceAll("[\\?\":/<>|*\\\\]", "-");
-        escaped = escaped.replaceAll("[\\\\?\"\\]\\[]", "");
+        RestTemplate restTemplate = restTemplate();
+        ObjectMapper objectMapper = objectMapper();
 
-        while (escaped.endsWith("."))
-            escaped = escaped.substring(0, escaped.length() - 1);
+        String url;
+        String method;
+        String jsonResponse;
 
-        return escaped;
+        if (album == null)
+        {
+            url = "http://ws.audioscrobbler.com/2.0/?method={method}&artist={artist}&api_key={api_key}&format={format}";
+            method = "artist.getinfo";
+            jsonResponse = restTemplate.getForObject(url, String.class, method, artist, lastFmApiKey, "json");
+        }
+        else
+        {
+            url = "http://ws.audioscrobbler.com/2.0/?method={method}&artist={artist}&album={album}&api_key={api_key}&format={format}";
+            method = "album.getinfo";
+            jsonResponse = restTemplate.getForObject(url, String.class, method, artist, album, lastFmApiKey, "json");
+        }
+
+        String imageUrl = "";
+
+        try
+        {
+            JsonNode imageLinks = album == null ?
+                    objectMapper.readTree(jsonResponse).get("album").get("image") :
+                    objectMapper.readTree(jsonResponse).get("artist").get("image");
+
+            for (JsonNode imageLink : imageLinks)
+            {
+                if (imageLink.get("size").textValue().equals("mega"))
+                    imageUrl = imageLink.get("#text").textValue();
+            }
+        }
+        catch (Exception e)
+        {
+            log.error("Unable to parse response for: " + artist + " - " + (album == null ? "null album" : album));
+        }
+        return imageUrl;
     }
 }

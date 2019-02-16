@@ -18,7 +18,22 @@ public class PlaylistTrack implements Serializable
 
     @Id
     @ManyToOne
-    @JsonIgnoreProperties("playlistTracks")
+    @JsonIgnoreProperties({
+            "artist"
+            , "title"
+            , "album"
+            , "albumArtist"
+            , "path"
+            , "extension"
+            , "duration"
+            , "size"
+            , "trackGain"
+            , "trackGainLinear"
+            , "trackPeak"
+            , "artworkDbFileId"
+            , "artistImageId"
+            , "albumImageId",
+            "playlistTracks"})
     @JoinColumn(name = "track_id", referencedColumnName = "id")
     private Track track;
 

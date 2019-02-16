@@ -13,7 +13,9 @@ export default class SidePanel extends React.Component {
     {
         const selectedPlaylistId = this.props.selectedPlaylistId;
 
-        const playlists = this.props.playlists.map((playlist) => {
+        const playlists = this.props.playlists
+            .filter(playlist => !playlist.favorites && !playlist.queue)
+            .map((playlist) => {
             return (
                 <NavLink key={playlist.id} to={'/playlists/' + playlist.id} className={'panel-block'}
                          activeClassName={'is-active'}
@@ -27,7 +29,7 @@ export default class SidePanel extends React.Component {
         });
 
         return (
-            <nav className={'panel'} style={{}}>
+            <nav className={'panel'} style={{maxWidth: '250px'}}>
                 <NavLink to={'/search'} className="panel-block" activeClassName="is-active">
                     <span className="panel-icon">
                         <FontAwesomeIcon icon={faSearch} aria-hidden="true" />
@@ -40,7 +42,7 @@ export default class SidePanel extends React.Component {
                     </span>
                     Library
                 </NavLink>
-                <NavLink to={'/favourites'} className="panel-block" activeClassName="is-active">
+                <NavLink to={'/favorites'} className="panel-block" activeClassName="is-active">
                     <span className="panel-icon">
                         <FontAwesomeIcon icon={faHeart} aria-hidden="true" />
                     </span>

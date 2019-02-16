@@ -26,6 +26,9 @@ public class Playlist implements Serializable
     @JsonIgnoreProperties("playlist")
     private Set<PlaylistTrack> playlistTracks = new HashSet<>();
 
+    private Boolean favorites = false;
+    private Boolean queue = false;
+
     @Override
     public boolean equals(Object o)
     {
@@ -89,5 +92,25 @@ public class Playlist implements Serializable
     public void setPlaylistTracks(Set<PlaylistTrack> playlistTracks)
     {
         this.playlistTracks = playlistTracks;
+    }
+
+    public Boolean getFavorites()
+    {
+        return favorites;
+    }
+
+    public void setFavorites(Boolean favorites)
+    {
+        this.favorites = favorites;
+    }
+
+    public Boolean getQueue()
+    {
+        return queue;
+    }
+
+    public void setQueue(Boolean queue)
+    {
+        this.queue = queue;
     }
 }

@@ -16,9 +16,11 @@ export default class Select extends React.Component {
         const required = this.props.required;
         const items = this.props.items;
 
+        const labelClass = isHorizontal ? 'field-label is-normal' : 'field-label';
+
         return (
             <div className={"field " + isHorizontal}>
-                <div className="field-label">
+                <div className={labelClass}>
                     <label className="label">{label}</label>
                 </div>
                 <div className="field-body">

@@ -20,6 +20,7 @@ import Albums from "./Albums.jsx";
 import Artist from "./Artist.jsx";
 import Search from "./Search.jsx";
 import SearchTest from "./SearchTest.jsx";
+import Album from "./Album.jsx";
 
 function Loading() {
     return <div>Loading...</div>;
@@ -179,7 +180,7 @@ export default class App extends React.Component {
                     <Header isAdmin={isAdmin} playlists={playlists} selectedPlaylistId={selectedPlaylistId}/>
 
                     <div className={'columns is-gapless'} style={{margin: '0', flex: '1 1 auto', display: 'flex'}}>
-                        <div className="column is-narrow is-hidden-touch" style={{overflow: 'auto'}}>
+                        <div className="column is-narrow is-hidden-touch" style={{overflow: 'auto', borderRight: '1px solid #f4f4f4'}}>
                             <SidePanel isAdmin={isAdmin} playlists={playlists} selectedPlaylistId={selectedPlaylistId}/>
                         </div>
                         <div className="column" style={{overflow: 'auto'}}>
@@ -191,6 +192,12 @@ export default class App extends React.Component {
                             <Route exact path='/settings/eq' render={() => <Eq />}/>
                             <Route exact path='/artists' render={() => <Artists tracks={tracks} />}/>
                             <Route exact path='/artist/:artist' render={(props) => <Artist {...props} tracks={tracks} />}/>
+                            <Route exact path='/artist/:artist/album/:album' render={(props) => <Album {...props} tracks={tracks}
+                                                                                                       playlists={playlists}
+                                                                                                       selectedTrackId={this.state.selectedTrackId}
+                                                                                                       onCurrentPlaylistChange={this.handleCurrentPlaylistChange}
+                                                                                                       onSelectedTrackIdChange={this.handleSelectedTrackIdChange}
+                                                                                                       onUpdatePlaylists={this.reloadPlaylists} />} />
                             <Route exact path='/albums' render={() => <Albums tracks={tracks} />}/>
                             <Route exact path='/search' render={(props) => <SearchTest {...props}
                                                                                       tracks={tracks}

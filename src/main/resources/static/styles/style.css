@@ -25,3 +25,6 @@ section {padding: 10px !important;}
 .mediaItemDiv:hover .mediaItemEllipsis{visibility: visible;}
 .list-song {cursor: pointer; flex: 8}
 .mediaItemCounter {text-align: right; margin-right: 5px; min-width: 30px; flex-basis: 36px;}
+
+.panel-block, .panel-block:first-child {border: none; border-left: 6px solid white;}
+.panel-block:hover {border-left-color: #3273dc;}

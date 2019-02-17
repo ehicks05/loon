@@ -16,6 +16,7 @@ export default class Albums extends React.Component {
     render()
     {
         const tracks = this.props.tracks;
+        const hideTitle = this.props.hideTitle;
 
         let albums = [...new Set(tracks.map(track => {return JSON.stringify({artist: track.albumArtist, album: track.album, albumImageId: track.albumImageId})}))];
         albums = albums.map(album => JSON.parse(album));
@@ -34,7 +35,7 @@ export default class Albums extends React.Component {
 
         return (
             <div>
-                <div className="title" style={{padding: '.25rem'}}>{albums.length} Albums:</div>
+                {!hideTitle && <div className="title" style={{padding: '.25rem'}}>{albums.length} Albums:</div>}
                 <div id="playlist" className="playlist" style={{display: 'flex', flexDirection: 'column'}}>
                     <div style={{padding: '.25rem', flex: '1', flexGrow: '1'}}>
                         <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(' + width + 'px, 1fr))', gridGap: '.5em'}}>

@@ -23,7 +23,7 @@ export default class Artist extends React.Component {
                 <div className="title" style={{padding: '.25rem'}}>{this.state.artist}</div>
                 <div className="subtitle" style={{padding: '.25rem'}}>Albums</div>
 
-                <Albums tracks={artistTracks}/>
+                <Albums tracks={artistTracks} hideTitle={true}/>
 
             </div>
         );

@@ -24,9 +24,6 @@ export default class MediaItem extends React.Component {
         this.handleSelectedTrackIdChange = this.handleSelectedTrackIdChange.bind(this);
         this.handleToggleFavorite = this.handleToggleFavorite.bind(this);
         this.handleToggleQueue = this.handleToggleQueue.bind(this);
-        this.handleHoverTrue = this.handleHoverTrue.bind(this);
-        this.handleHoverFalse = this.handleHoverFalse.bind(this);
-        this.state = {hover: false}
     }
 
     handleSelectedTrackIdChange(e, selectedTrackId)
@@ -50,16 +47,6 @@ export default class MediaItem extends React.Component {
             console.log(responseText);
             this.props.onUpdatePlaylists();
         });
-    }
-
-    handleHoverTrue()
-    {
-        this.setState({hover: true});
-    }
-
-    handleHoverFalse()
-    {
-        this.setState({hover: true});
     }
 
     render()
@@ -87,12 +74,44 @@ export default class MediaItem extends React.Component {
         const dragHandleProps   = provided ? provided.dragHandleProps : null;
 
         const isDragging = snapshot ? snapshot.isDragging : false;
-        const isHovering = this.state.hover;
 
-        const dropdown = (isHovering && !isDragging) ? (
-            <div className="dropdown is-hoverable is-right">
+        const playlistOptions = this.props.playlists
+            .filter(playlist => !playlist.favorites && !playlist.queue)
+            .map(playlist =>
+            <option key={playlist.id} value={playlist.id} title={playlist.name}>
+                {playlist.name.length > 15 ? playlist.name.substring(0, 15) : playlist.name}
+            </option>
+        );
+        
+        const playlistPickerForm = (
+            <form>
+                <div className="field has-addons">
+                    <div className="control">
+                        <a className="button is-static is-small">
+                            Add To:
+                        </a>
+                    </div>
+                    <div className="control">
+                        <span className="select is-small">
+                            <select>
+                                {playlistOptions}
+                            </select>
+                        </span>
+                    </div>
+                    <div className="control">
+                        <a className="button is-small is-primary">
+                            Ok
+                        </a>
+                    </div>
+                </div>
+            </form>
+        );
+
+        const dropdown = !isDragging ? (
+            <div className="dropdown is-right" id={'mediaItem' + trackId + 'DropDown'}>
                 <div className="dropdown-trigger">
-                    <button className="button is-small" aria-haspopup="true" aria-controls="dropdown-menu2">
+                    <button className="button is-small" aria-haspopup="true" aria-controls="dropdown-menu2"
+                            onClick={(e) => document.getElementById('mediaItem' + trackId + 'DropDown').classList.toggle('is-active')}>
                         <span className="icon is-small">
                             <FontAwesomeIcon icon={faEllipsisH}/>
                         </span>
@@ -116,12 +135,9 @@ export default class MediaItem extends React.Component {
                                 {queue ? 'Remove from ' : 'Add to '} queue
                             </p>
                         </a>
-                        <a href="#" className="dropdown-item">
-                            <span className={'icon has-text-grey'}>
-                                <FontAwesomeIcon icon={faListOl}/>
-                            </span>
-                            Add to playlist...
-                        </a>
+                        <div className="dropdown-item">
+                            {playlistPickerForm}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -133,10 +149,7 @@ export default class MediaItem extends React.Component {
                 {...draggableProps}
                 style={getRowStyle(draggableStyle, isDragging)}
             >
-                <div className={'mediaItemDiv'}
-                     onMouseEnter={this.handleHoverTrue}
-                     onMouseLeave={this.handleHoverFalse}>
-
+                <div className={'mediaItemDiv'}>
                     <div className={'mediaItemCounter'}>
                         {trackNumber}
                     </div>

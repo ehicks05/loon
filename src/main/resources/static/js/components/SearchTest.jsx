@@ -19,6 +19,9 @@ export default class SearchTest extends React.Component {
 
         const favoritesPlaylist = this.props.playlists.filter(playlist => playlist.favorites)[0];
         this.favoritesIds = favoritesPlaylist.playlistTracks.map(playlistTrack => playlistTrack.track.id);
+        const queuePlaylist = this.props.playlists.filter(playlist => playlist.queue)[0];
+        this.queueIds = queuePlaylist.playlistTracks.map(playlistTrack => playlistTrack.track.id);
+        this.playlists = this.props.playlists;
     }
 
     handleSelectedTrackIdChange(selectedTrackId)
@@ -69,7 +72,10 @@ export default class SearchTest extends React.Component {
 
                 <div style={style}>
                     <MediaItem key={key} track={track} style={style} trackNumber={index + 1} selectedTrackId={this.selectedTrackId}
-                               onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={false} favorite={this.favoritesIds.includes(track.id)} />
+                               onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={false}
+                               favorite={this.favoritesIds.includes(track.id)} queue={this.queueIds.includes(track.id)}
+                               playlists={this.playlists}
+                    />
                 </div>
 
             </CellMeasurer>

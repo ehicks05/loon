@@ -58,7 +58,7 @@ export default class Album extends React.Component {
                 return <MediaItem key={track.id} track={track} selectedTrackId={selectedTrackId}
                                   onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={false}
                                   favorite={favoritesIds.includes(track.id)} queue={queueIds.includes(track.id)}
-                                  trackNumber={track.discNumber + '.' + track.trackNumber}
+                                  trackNumber={track.discNumber + '.' + track.trackNumber} playlists={playlists}
                 />
             }
         );

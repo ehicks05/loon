@@ -121,7 +121,7 @@ export default class Playlist extends React.Component {
                                 key={track.id} track={track} trackNumber={playlistTrack.index + 1} selectedTrackId={selectedTrackId}
                                 onSelectedTrackIdChange={this.handleSelectedTrackIdChange} onUpdatePlaylists={self.props.onUpdatePlaylists} isDraggable={true}
                                 favorite={favoritesIds.includes(track.id)}
-                                queue={queueIds.includes(track.id)}
+                                queue={queueIds.includes(track.id)} playlists={playlists}
                                 />
 
                         )}
@@ -136,7 +136,7 @@ export default class Playlist extends React.Component {
                     return <MediaItem key={track.id} track={track} trackNumber={index + 1} selectedTrackId={selectedTrackId}
                                       onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={false}
                                       favorite={favoritesIds.includes(track.id)}
-                                      queue={queueIds.includes(track.id)}
+                                      queue={queueIds.includes(track.id)} playlists={playlists}
                     />
                 }
             );
@@ -177,7 +177,7 @@ export default class Playlist extends React.Component {
         );
     }
 
-    renderMediaItem(index, trackId, selectedTrackId, favoritesIds)
+    renderMediaItem(index, trackId, selectedTrackId, favoritesIds, queueIds, playlists)
     {
         trackId = Number(trackId.substring(0, trackId.indexOf('-')));
         // console.log(trackId);
@@ -185,6 +185,9 @@ export default class Playlist extends React.Component {
         if (!track)
             return <li>not found</li>;
         return <MediaItem key={trackId} track={track} trackNumber={index + 1} selectedTrackId={selectedTrackId}
-                          onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={false} favorite={favoritesIds.includes(track.id)}/>
+                          onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={false}
+                          favorite={favoritesIds.includes(track.id)} queue={queueIds.includes(track.id)}
+                          playlists={playlists}
+        />
     }
 }

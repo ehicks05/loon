@@ -1,6 +1,6 @@
 import React from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faHeart as fasHeart, faAngleDown, faEllipsisH} from '@fortawesome/free-solid-svg-icons'
+import {faHeart as fasHeart, faList, faListOl, faEllipsisH} from '@fortawesome/free-solid-svg-icons'
 import {faHeart as farHeart} from '@fortawesome/free-regular-svg-icons'
 
 const getRowStyle = (draggableStyle, isDragging) => ({
@@ -23,6 +23,7 @@ export default class MediaItem extends React.Component {
         super(props);
         this.handleSelectedTrackIdChange = this.handleSelectedTrackIdChange.bind(this);
         this.handleToggleFavorite = this.handleToggleFavorite.bind(this);
+        this.handleToggleQueue = this.handleToggleQueue.bind(this);
         this.handleHoverTrue = this.handleHoverTrue.bind(this);
         this.handleHoverFalse = this.handleHoverFalse.bind(this);
         this.state = {hover: false}
@@ -36,6 +37,15 @@ export default class MediaItem extends React.Component {
     handleToggleFavorite(e, trackId)
     {
         fetch('/api/playlists/toggleFavorite?trackId=' + trackId, {method: 'POST'})
+            .then(response => response.text()).then(responseText => {
+            console.log(responseText);
+            this.props.onUpdatePlaylists();
+        });
+    }
+
+    handleToggleQueue(e, trackId)
+    {
+        fetch('/api/playlists/toggleQueue?trackId=' + trackId, {method: 'POST'})
             .then(response => response.text()).then(responseText => {
             console.log(responseText);
             this.props.onUpdatePlaylists();
@@ -62,6 +72,7 @@ export default class MediaItem extends React.Component {
         const album = this.props.track.album ? this.props.track.album : 'Missing!';
         const formattedDuration = this.props.track.duration;
         const favorite = this.props.favorite;
+        const queue = this.props.queue;
 
         const highlightClass = trackId === this.props.selectedTrackId ? ' playingHighlight' : '';
 
@@ -89,18 +100,26 @@ export default class MediaItem extends React.Component {
                 </div>
                 <div className="dropdown-menu" id="dropdown-menu2" role="menu">
                     <div className="dropdown-content">
-                        <a className="dropdown-item">
+                        <a className="dropdown-item" onClick={(e) => this.handleToggleFavorite(e, trackId)}>
                             <p>
-                                Add to favourites
-                                <span style={{cursor: 'pointer'}} className={'icon has-text-success'} onClick={(e) => this.handleToggleFavorite(e, trackId)}>
+                                <span className={'icon has-text-success'}>
                                     <FontAwesomeIcon icon={favorite ? fasHeart : farHeart}/>
                                 </span>
+                                {favorite ? 'Remove from ' : 'Add to '} favourites
                             </p>
                         </a>
-                        <a className="dropdown-item">
-                            <p>Add to queue</p>
+                        <a className="dropdown-item" onClick={(e) => this.handleToggleQueue(e, trackId)}>
+                            <p>
+                                <span className={'icon ' + (queue ? 'has-text-success' : 'has-text-grey')}>
+                                    <FontAwesomeIcon icon={faList}/>
+                                </span>
+                                {queue ? 'Remove from ' : 'Add to '} queue
+                            </p>
                         </a>
                         <a href="#" className="dropdown-item">
+                            <span className={'icon has-text-grey'}>
+                                <FontAwesomeIcon icon={faListOl}/>
+                            </span>
                             Add to playlist...
                         </a>
                     </div>

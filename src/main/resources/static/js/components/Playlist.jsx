@@ -14,6 +14,11 @@ function parsePlaylistId(component)
         const favorites = component.props.playlists.filter(playlist => playlist.favorites);
         playlistId = favorites && favorites.length > 0 ? favorites[0].id : 0;
     }
+    if (component.props.match.path === '/queue')
+    {
+        const queue = component.props.playlists.filter(playlist => playlist.queue);
+        playlistId = queue && queue.length > 0 ? queue[0].id : 0;
+    }
 
     return playlistId;
 }
@@ -86,8 +91,12 @@ export default class Playlist extends React.Component {
         const tracks = this.props.tracks;
         const selectedTrackId = this.props.selectedTrackId;
         const playlists = this.props.playlists;
+
         const favoritesPlaylist = playlists.filter(playlist => playlist.favorites)[0];
         const favoritesIds = favoritesPlaylist.playlistTracks.map(playlistTrack => playlistTrack.track.id);
+
+        const queuePlaylist = playlists.filter(playlist => playlist.queue)[0];
+        const queueIds = queuePlaylist.playlistTracks.map(playlistTrack => playlistTrack.track.id);
 
         const routeParamPlaylistId = this.state.playlistId;
 
@@ -110,7 +119,10 @@ export default class Playlist extends React.Component {
                                 provided={provided}
                                 snapshot={snapshot}
                                 key={track.id} track={track} index={playlistTrack.index} selectedTrackId={selectedTrackId}
-                                onSelectedTrackIdChange={this.handleSelectedTrackIdChange} onUpdatePlaylists={self.props.onUpdatePlaylists} isDraggable={true} favorite={favoritesIds.includes(track.id)}/>
+                                onSelectedTrackIdChange={this.handleSelectedTrackIdChange} onUpdatePlaylists={self.props.onUpdatePlaylists} isDraggable={true}
+                                favorite={favoritesIds.includes(track.id)}
+                                queue={queueIds.includes(track.id)}
+                                />
 
                         )}
                     </Draggable>
@@ -122,7 +134,10 @@ export default class Playlist extends React.Component {
         {
             mediaItems = tracks.map((track, index) => {
                     return <MediaItem key={track.id} track={track} index={index} selectedTrackId={selectedTrackId}
-                                      onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={false} favorite={favoritesIds.includes(track.id)}/>
+                                      onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={false}
+                                      favorite={favoritesIds.includes(track.id)}
+                                      queue={queueIds.includes(track.id)}
+                    />
                 }
             );
         }

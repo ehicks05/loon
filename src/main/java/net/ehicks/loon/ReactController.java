@@ -15,6 +15,7 @@ public class ReactController
             "/favorites/**",
             "/library/**",
             "/playlists/**",
+            "/queue/**",
             "/search/**",
             "/settings/**"
     })

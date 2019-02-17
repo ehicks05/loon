@@ -121,9 +121,20 @@ public class PlaylistHandler
     }
 
     @PostMapping("/toggleFavorite")
-    public Playlist add(@AuthenticationPrincipal User user, @RequestParam Long trackId)
+    public Playlist toggleFavorite(@AuthenticationPrincipal User user, @RequestParam Long trackId)
     {
         Playlist playlist = playlistRepo.findByUserIdAndFavoritesTrue(user.getId());
+
+        if (playlist != null)
+            playlistLogic.addOrRemoveTrack(playlist, trackId);
+
+        return playlist;
+    }
+
+    @PostMapping("/toggleQueue")
+    public Playlist toggleQueue(@AuthenticationPrincipal User user, @RequestParam Long trackId)
+    {
+        Playlist playlist = playlistRepo.findByUserIdAndQueueTrue(user.getId());
 
         if (playlist != null)
             playlistLogic.addOrRemoveTrack(playlist, trackId);

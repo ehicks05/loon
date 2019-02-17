@@ -11,8 +11,9 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.15",
+    "@fortawesome/free-brands-svg-icons": "^5.7.2",
     "@fortawesome/free-regular-svg-icons": "^5.7.2",
-    "@fortawesome/free-solid-svg-icons": "^5.7.1",
+    "@fortawesome/free-solid-svg-icons": "^5.7.2",
     "@fortawesome/react-fontawesome": "^0.1.4",
     "bulma": "^0.7.4",
     "bulma-extensions": "^4.1.0",
@@ -21,10 +22,10 @@
     "jquery": "^3.3.1",
     "lodash.debounce": "^4.0.8",
     "rc-slider": "^8.6.5",
-    "react": "^16.8.1",
+    "react": "^16.8.2",
     "react-beautiful-dnd": "^10.0.4",
     "react-checkbox-tree": "^1.5.1",
-    "react-dom": "^16.8.1",
+    "react-dom": "^16.8.2",
     "react-helmet": "^5.2.0",
     "react-loadable": "^5.5.0",
     "react-rangeslider": "^2.2.0",
@@ -43,7 +44,7 @@
     "path": "^0.12.7",
     "style-loader": "^0.23.1",
     "url-loader": "^1.1.2",
-    "webpack": "^4.29.3",
+    "webpack": "^4.29.4",
     "webpack-bundle-analyzer": "^3.0.4",
     "webpack-cli": "^3.2.3"
   }

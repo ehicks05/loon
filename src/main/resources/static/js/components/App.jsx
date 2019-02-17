@@ -217,6 +217,14 @@ export default class App extends React.Component {
                                                                                       onSelectedTrackIdChange={this.handleSelectedTrackIdChange}
                                                                                       onUpdatePlaylists={this.reloadPlaylists} />} />
 
+                            <Route exact path='/queue' render={(props) => <Playlist {...props}
+                                                                                        tracks={tracks}
+                                                                                        playlists={playlists}
+                                                                                        selectedTrackId={this.state.selectedTrackId}
+                                                                                        onCurrentPlaylistChange={this.handleCurrentPlaylistChange}
+                                                                                        onSelectedTrackIdChange={this.handleSelectedTrackIdChange}
+                                                                                        onUpdatePlaylists={this.reloadPlaylists} />} />
+
                             <Switch>
                                 <Route exact path='/playlists/new' render={(props) => <LoadablePlaylistBuilder {...props} onUpdatePlaylists={this.reloadPlaylists} />} />
                                 <Route exact path='/playlists/:id/edit' render={(props) => <LoadablePlaylistBuilder {...props} onUpdatePlaylists={this.reloadPlaylists}/>} />

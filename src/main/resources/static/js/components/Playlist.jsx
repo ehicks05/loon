@@ -118,7 +118,7 @@ export default class Playlist extends React.Component {
                             <MediaItem
                                 provided={provided}
                                 snapshot={snapshot}
-                                key={track.id} track={track} index={playlistTrack.index} selectedTrackId={selectedTrackId}
+                                key={track.id} track={track} trackNumber={playlistTrack.index + 1} selectedTrackId={selectedTrackId}
                                 onSelectedTrackIdChange={this.handleSelectedTrackIdChange} onUpdatePlaylists={self.props.onUpdatePlaylists} isDraggable={true}
                                 favorite={favoritesIds.includes(track.id)}
                                 queue={queueIds.includes(track.id)}
@@ -133,7 +133,7 @@ export default class Playlist extends React.Component {
         else
         {
             mediaItems = tracks.map((track, index) => {
-                    return <MediaItem key={track.id} track={track} index={index} selectedTrackId={selectedTrackId}
+                    return <MediaItem key={track.id} track={track} trackNumber={index + 1} selectedTrackId={selectedTrackId}
                                       onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={false}
                                       favorite={favoritesIds.includes(track.id)}
                                       queue={queueIds.includes(track.id)}
@@ -184,7 +184,7 @@ export default class Playlist extends React.Component {
         const track = this.props.tracks.find((track) => track.id === trackId);
         if (!track)
             return <li>not found</li>;
-        return <MediaItem key={trackId} track={track} index={index} selectedTrackId={selectedTrackId}
+        return <MediaItem key={trackId} track={track} trackNumber={index + 1} selectedTrackId={selectedTrackId}
                           onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={false} favorite={favoritesIds.includes(track.id)}/>
     }
 }

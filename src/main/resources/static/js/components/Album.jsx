@@ -39,14 +39,26 @@ export default class Album extends React.Component {
         const queuePlaylist = playlists.filter(playlist => playlist.queue)[0];
         const queueIds = queuePlaylist.playlistTracks.map(playlistTrack => playlistTrack.track.id);
 
-        const albumTracks = this.props.tracks.filter(track => track.albumArtist === this.state.artist && track.album === this.state.album);
+        const albumTracks = this.props.tracks
+            .filter(track => track.albumArtist === this.state.artist && track.album === this.state.album)
+            .sort((o1, o2) => {
+                if (o1.discNumber === o2.discNumber)
+                {
+                    if (o1.trackNumber < o2.trackNumber) return -1;
+                    if (o1.trackNumber > o2.trackNumber) return 1;
+                    return 0;
+                }
+                if (o1.discNumber < o2.discNumber) return -1;
+                if (o1.discNumber > o2.discNumber) return 1;
+            });
 
         const width = 150;
 
         const mediaItems = albumTracks.map((track, index) => {
-                return <MediaItem key={track.id} track={track} index={index} selectedTrackId={selectedTrackId}
+                return <MediaItem key={track.id} track={track} selectedTrackId={selectedTrackId}
                                   onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={false}
                                   favorite={favoritesIds.includes(track.id)} queue={queueIds.includes(track.id)}
+                                  trackNumber={track.discNumber + '.' + track.trackNumber}
                 />
             }
         );

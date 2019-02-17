@@ -44,6 +44,9 @@ public class Track implements Serializable
     @JsonIgnore
     private Long size;
 
+    private Integer trackNumber;
+    private Integer discNumber;
+
     @Column(name = "track_gain", nullable = false)
     @JsonIgnore
     private String trackGain = "";
@@ -202,6 +205,26 @@ public class Track implements Serializable
     public void setSize(Long size)
     {
         this.size = size;
+    }
+
+    public Integer getTrackNumber()
+    {
+        return trackNumber;
+    }
+
+    public void setTrackNumber(Integer trackNumber)
+    {
+        this.trackNumber = trackNumber;
+    }
+
+    public Integer getDiscNumber()
+    {
+        return discNumber;
+    }
+
+    public void setDiscNumber(Integer discNumber)
+    {
+        this.discNumber = discNumber;
     }
 
     public String getTrackGain()

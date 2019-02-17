@@ -47,7 +47,7 @@ export default class Search extends React.Component {
 
 
         const mediaItems = tracks.map((track, index) => {
-                return <MediaItem key={track.id} track={track} index={index} selectedTrackId={selectedTrackId}
+                return <MediaItem key={track.id} trackNumber={index + 1} index={index} selectedTrackId={selectedTrackId}
                                   onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={false} favorite={favoritesIds.includes(track.id)}
                                   onUpdatePlaylists={this.props.onUpdatePlaylists}/>
             }

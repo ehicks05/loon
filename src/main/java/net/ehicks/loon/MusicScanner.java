@@ -158,6 +158,11 @@ public class MusicScanner
             saveArtwork(tag, track, artPath);
         }
 
+        int trackNumber = !tag.getFirst(FieldKey.TRACK).isEmpty() ? Integer.valueOf(tag.getFirst(FieldKey.TRACK)) : 1;
+        track.setTrackNumber(trackNumber);
+        int discNumber = !tag.getFirst(FieldKey.DISC_NO).isEmpty() ? Integer.valueOf(tag.getFirst(FieldKey.DISC_NO)) : 1;
+        track.setDiscNumber(discNumber);
+
         // condense artists like 'Foo feat. Bar' down to hopefully just 'Foo'
         if (track.getArtist().contains(" feat. "))
         {

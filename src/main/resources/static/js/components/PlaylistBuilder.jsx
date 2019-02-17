@@ -99,49 +99,42 @@ export default class PlaylistBuilder extends React.Component {
         return (
             <div>
                 <section className={"section"}>
-                    <div className="container">
                         <h1 className="title">Playlist Builder</h1>
                         <h2 className="subtitle">{this.state.playlist ? this.state.playlist.name : 'New Playlist'}</h2>
-                    </div>
                 </section>
 
                 <section className="section">
-                    <div className="container">
-                        <div className="columns is-multiline is-centered">
-                            <div className="column">
-                                <TextInput
-                                    id={"name"}
-                                    label={"Name"}
-                                    value={this.state.playlist ? this.state.playlist.name : 'New Playlist'}
-                                    required={true}
-                                />
+                    <TextInput
+                        id={"name"}
+                        label={"Name"}
+                        value={this.state.playlist ? this.state.playlist.name : 'New Playlist'}
+                        required={true}
+                        size={50}
+                    />
 
-                                <CheckboxTree
-                                    nodes={this.state.treeData}
-                                    checked={this.state.checked}
-                                    expanded={this.state.expanded}
-                                    onCheck={this.onCheck}
-                                    onExpand={this.onExpand}
-                                    icons={{
-                                        check: <FontAwesomeIcon className='rct-icon rct-icon-check' icon={faCheckSquare} />,
-                                        uncheck: <FontAwesomeIcon className='rct-icon rct-icon-uncheck' icon={faSquare} />,
-                                        halfCheck: <FontAwesomeIcon className='rct-icon rct-icon-half-check' icon={faCheckSquare} />,
-                                        expandClose: <FontAwesomeIcon className='rct-icon rct-icon-expand-close' icon={faChevronRight} />,
-                                        expandOpen: <FontAwesomeIcon className='rct-icon rct-icon-expand-open' icon={faChevronDown} />,
-                                        expandAll: <FontAwesomeIcon className='rct-icon rct-icon-expand-all' icon={faPlusSquare} />,
-                                        collapseAll: <FontAwesomeIcon className='rct-icon rct-icon-collapse-all' icon={faMinusSquare} />,
-                                        parentClose: <FontAwesomeIcon className='rct-icon rct-icon-parent-close' icon={faFolder} />,
-                                        parentOpen: <FontAwesomeIcon className='rct-icon rct-icon-parent-open' icon={faFolderOpen} />,
-                                        leaf: <FontAwesomeIcon className='rct-icon rct-icon-leaf-close' icon={faFile} />
-                                    }}
-                                />
+                    <CheckboxTree
+                        nodes={this.state.treeData}
+                        checked={this.state.checked}
+                        expanded={this.state.expanded}
+                        onCheck={this.onCheck}
+                        onExpand={this.onExpand}
+                        icons={{
+                            check: <FontAwesomeIcon className='rct-icon rct-icon-check' icon={faCheckSquare} />,
+                            uncheck: <FontAwesomeIcon className='rct-icon rct-icon-uncheck' icon={faSquare} />,
+                            halfCheck: <FontAwesomeIcon className='rct-icon rct-icon-half-check' icon={faCheckSquare} />,
+                            expandClose: <FontAwesomeIcon className='rct-icon rct-icon-expand-close' icon={faChevronRight} />,
+                            expandOpen: <FontAwesomeIcon className='rct-icon rct-icon-expand-open' icon={faChevronDown} />,
+                            expandAll: <FontAwesomeIcon className='rct-icon rct-icon-expand-all' icon={faPlusSquare} />,
+                            collapseAll: <FontAwesomeIcon className='rct-icon rct-icon-collapse-all' icon={faMinusSquare} />,
+                            parentClose: <FontAwesomeIcon className='rct-icon rct-icon-parent-close' icon={faFolder} />,
+                            parentOpen: <FontAwesomeIcon className='rct-icon rct-icon-parent-open' icon={faFolderOpen} />,
+                            leaf: <FontAwesomeIcon className='rct-icon rct-icon-leaf-close' icon={faFile} />
+                        }}
+                    />
 
-                                <button className={"button is-primary"} onClick={this.save}>
-                                    Save
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <button className={"button is-primary"} onClick={this.save}>
+                        Save
+                    </button>
                 </section>
             </div>);
     }

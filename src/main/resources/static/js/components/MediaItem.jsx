@@ -65,7 +65,7 @@ export default class MediaItem extends React.Component {
     render()
     {
         const trackId = this.props.track.id;
-        const trackIndex = this.props.index;
+        const trackNumber = this.props.trackNumber;
         const artworkDbFileId = this.props.track.artworkDbFileId;
         const artist = this.props.track.artist ? this.props.track.artist : 'Missing!';
         const trackTitle = this.props.track.title ? this.props.track.title : 'Missing!';
@@ -138,7 +138,7 @@ export default class MediaItem extends React.Component {
                      onMouseLeave={this.handleHoverFalse}>
 
                     <div className={'mediaItemCounter'}>
-                        {trackIndex + 1}.
+                        {trackNumber}
                     </div>
 
                     <div {...dragHandleProps} style={{cursor: 'pointer'}} className={'list-song'} onClick={(e) => this.handleSelectedTrackIdChange(e, trackId)}>

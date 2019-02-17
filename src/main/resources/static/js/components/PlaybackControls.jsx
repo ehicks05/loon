@@ -115,9 +115,10 @@ export default class PlaybackControls extends React.Component {
                             </p>
                             <div className="level-item">
                                 <span id="track" style={{maxWidth: '400px', maxHeight: '72px', overflow: 'auto'}}>
-                                    <b>{selectedTrack ? selectedTrack.title : ""}</b>
+                                    <b>{selectedTrack ? selectedTrack.title : "title"}</b>
                                     <br />
-                                    <span style={{fontSize: '.875rem'}}>{selectedTrack ? selectedTrack.artist : ""} - <i>{selectedTrack ? selectedTrack.album : ""}</i></span>
+                                    <span style={{fontSize: '.875rem'}}>{selectedTrack ? selectedTrack.artist : "artist"}
+                                        - <i>{selectedTrack ? selectedTrack.album : "album"}</i></span>
                                 </span>
                             </div>
                         </div>

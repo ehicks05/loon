@@ -68,7 +68,7 @@ export default class SearchTest extends React.Component {
                 rowIndex={index}>
 
                 <div style={style}>
-                    <MediaItem key={key} track={track} style={style} index={index} selectedTrackId={this.selectedTrackId}
+                    <MediaItem key={key} track={track} style={style} trackNumber={index + 1} selectedTrackId={this.selectedTrackId}
                                onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={false} favorite={this.favoritesIds.includes(track.id)} />
                 </div>
 

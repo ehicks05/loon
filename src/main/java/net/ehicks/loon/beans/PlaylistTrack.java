@@ -27,6 +27,8 @@ public class PlaylistTrack implements Serializable
             , "extension"
             , "duration"
             , "size"
+            , "trackNumber"
+            , "discNumber"
             , "trackGain"
             , "trackGainLinear"
             , "trackPeak"

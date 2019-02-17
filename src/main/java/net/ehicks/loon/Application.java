@@ -15,6 +15,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
+import org.springframework.web.filter.ShallowEtagHeaderFilter;
+
+import javax.servlet.Filter;
 
 @SpringBootApplication
 @EnableScheduling
@@ -69,6 +72,11 @@ public class Application
                 logger.info(String.format("New cache size (KB): %d", context.getResources().getCacheMaxSize()));
             }
         };
+    }
+
+    @Bean
+    public Filter shallowEtagHeaderFilter() {
+        return new ShallowEtagHeaderFilter();
     }
 
     @Bean

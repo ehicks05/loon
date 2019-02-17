@@ -10,7 +10,7 @@ export default class Album extends React.Component {
 
         const artist = this.props.match.params.artist;
         const album = this.props.match.params.album;
-        this.state = {artist: artist, album: album};
+        this.state = {playlistId: 0, artist: artist, album: album};
     }
 
     handleCurrentPlaylistChange(newPlaylist)

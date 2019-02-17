@@ -54,10 +54,6 @@ export default class App extends React.Component {
         const basename = '/';
         const history = createBrowserHistory({ basename });
         self.state = {history: history};
-
-        self.state.user = {};
-        self.state.themeLoaded = false;
-        self.state.dataLoaded = false;
     }
 
     handleCurrentPlaylistChange(selectedPlaylistId, selectedTrackId)
@@ -99,32 +95,29 @@ export default class App extends React.Component {
     reloadUser()
     {
         const self = this;
-        return fetch('/api/users/whoami', {method: 'GET'})
-            .then(response => response.json()).then(myUserId => {
-                fetch('/api/users/' + myUserId, {method: 'GET'})
-                    .then(response => response.json()).then(data => {
+        return fetch('/api/users/current', {method: 'GET'})
+            .then(response => response.json()).then(data => {
 
-                    let lastPlaylistId = data.userState.lastPlaylistId;
-                    let lastTrackId = data.userState.lastTrackId;
+                let lastPlaylistId = data.userState.lastPlaylistId;
+                let lastTrackId = data.userState.lastTrackId;
 
-                    // sanitize selected playlist / track
-                    if (!self.state.playlists.some(p => p.id === lastPlaylistId))
-                        lastPlaylistId = 0;
-                    if (!self.state.tracks.some(p => p.id === lastTrackId))
-                    {
-                        if (self.state.tracks[0])
-                            lastTrackId = self.state.tracks[0].id;
-                        else
-                            console.log('app:reloadUser: no tracks found?');
-                    }
+                // sanitize selected playlist / track
+                if (!self.state.playlists.some(p => p.id === lastPlaylistId))
+                    lastPlaylistId = 0;
+                if (!self.state.tracks.some(p => p.id === lastTrackId))
+                {
+                    if (self.state.tracks[0])
+                        lastTrackId = self.state.tracks[0].id;
+                    else
+                        console.log('app.reloadUser(): no tracks found?');
+                }
 
-                    self.setState({
-                        user: data,
-                        selectedPlaylistId: lastPlaylistId,
-                        selectedTrackId: lastTrackId,
-                        dataLoaded: true
-                    })
-                });
+                self.setState({
+                    user: data,
+                    selectedPlaylistId: lastPlaylistId,
+                    selectedTrackId: lastTrackId,
+                    dataLoaded: true
+                })
             });
     }
 
@@ -132,30 +125,28 @@ export default class App extends React.Component {
     {
         const self = this;
         return fetch('/api/systemSettings/theme', {method: 'GET'})
-            .then(response => response.text()).then(data => self.setState({theme: data, themeLoaded: true}));
+            .then(response => response.text()).then(data => self.setState({theme: data}));
     }
 
     componentDidMount() {
-        const pollIntervalId = setInterval(poll, 60 * 60 * 1000);
+        const pollIntervalId = setInterval(poll, 60 * 60 * 1000); // once an hour
 
-        const self = this;
         this.reloadTheme();
-
-        const playlistPromise = Promise.resolve(this.reloadPlaylists());
-        const trackPromise = Promise.resolve(this.reloadTracks());
-
-        Promise.all([playlistPromise, trackPromise]).then(() => {
-            self.reloadUser();
-        });
+        this.reloadPlaylists();
+        this.reloadTracks();
     }
-    
+
+    componentDidUpdate(prevProps, prevState, snapshot)
+    {
+        const self = this;
+        if (this.state.theme && this.state.playlists && this.state.tracks && !this.state.user)
+        {
+            self.reloadUser();
+        }
+    }
+
     render() {
         const theme = this.state.theme;
-        const tracks = this.state.tracks;
-        const playlists = this.state.playlists;
-        const selectedPlaylistId = this.state.selectedPlaylistId;
-        const isAdmin = this.state.user.admin;
-
         if (!theme)
         {
             return (<div>Loading...</div>)
@@ -171,6 +162,11 @@ export default class App extends React.Component {
                 </div>
             );
         }
+
+        const tracks = this.state.tracks;
+        const playlists = this.state.playlists;
+        const selectedPlaylistId = this.state.selectedPlaylistId;
+        const isAdmin = this.state.user.admin;
 
         return (
             <Router history={this.state.history}>

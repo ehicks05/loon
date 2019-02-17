@@ -25,17 +25,9 @@ public class UserHandler
         this.passwordEncoder = passwordEncoder;
     }
 
-    @GetMapping("/whoami")
-    public Long whoAmI(@AuthenticationPrincipal User user)
+    @GetMapping("/current")
+    public User getCurrentUser(@AuthenticationPrincipal User user)
     {
-        return user.getId();
-    }
-
-    @GetMapping("/{id}")
-    public User form(@AuthenticationPrincipal User user, @PathVariable Long id)
-    {
-        if (!user.getId().equals(id))
-            return null;
         return user;
     }
 

@@ -142,6 +142,17 @@ public class PlaylistHandler
         return playlist;
     }
 
+    @PostMapping("/{playlistId}")
+    public Playlist toggleQueue(@AuthenticationPrincipal User user, @PathVariable Long playlistId, @RequestParam String action, @RequestParam Long trackId)
+    {
+        Playlist playlist = playlistRepo.findById(playlistId).orElse(null);
+
+        if (playlist != null)
+            playlistLogic.addOrRemoveTrack(playlist, trackId);
+
+        return playlist;
+    }
+
     @DeleteMapping("/{playlistId}")
     public ResponseEntity delete(@AuthenticationPrincipal User user, @PathVariable long playlistId)
     {

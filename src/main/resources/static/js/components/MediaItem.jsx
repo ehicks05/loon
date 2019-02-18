@@ -24,6 +24,9 @@ export default class MediaItem extends React.Component {
         this.handleSelectedTrackIdChange = this.handleSelectedTrackIdChange.bind(this);
         this.handleToggleFavorite = this.handleToggleFavorite.bind(this);
         this.handleToggleQueue = this.handleToggleQueue.bind(this);
+        this.toggleDropdown = this.toggleDropdown.bind(this);
+        this.addTrackToPlaylist = this.addTrackToPlaylist.bind(this);
+        this.removeTrackFromPlaylist = this.removeTrackFromPlaylist.bind(this);
     }
 
     handleSelectedTrackIdChange(e, selectedTrackId)
@@ -43,6 +46,33 @@ export default class MediaItem extends React.Component {
     handleToggleQueue(e, trackId)
     {
         fetch('/api/playlists/toggleQueue?trackId=' + trackId, {method: 'POST'})
+            .then(response => response.text()).then(responseText => {
+            console.log(responseText);
+            this.props.onUpdatePlaylists();
+        });
+    }
+
+    toggleDropdown()
+    {
+        const el = document.getElementById('mediaItem' + this.props.track.id + 'DropDown');
+        el.classList.toggle('is-active');
+        el.classList.toggle('is-visible-important');
+    }
+
+    addTrackToPlaylist(trackId)
+    {
+        const playlistId = document.getElementById('mediaItem' + trackId + 'AddToPlaylistSelect').value;
+        fetch('/api/playlists/' + playlistId + '/?action=add&trackId=' + trackId, {method: 'POST'})
+            .then(response => response.text()).then(responseText => {
+            console.log(responseText);
+            this.props.onUpdatePlaylists();
+        });
+    }
+
+    removeTrackFromPlaylist(trackId)
+    {
+        const playlistId = document.getElementById('mediaItem' + trackId + 'removeFromPlaylistSelect').value;
+        fetch('/api/playlists/' + playlistId + '/?action=remove&trackId=' + trackId, {method: 'POST'})
             .then(response => response.text()).then(responseText => {
             console.log(responseText);
             this.props.onUpdatePlaylists();
@@ -75,15 +105,25 @@ export default class MediaItem extends React.Component {
 
         const isDragging = snapshot ? snapshot.isDragging : false;
 
-        const playlistOptions = this.props.playlists
+        const addToPlaylistOptions = this.props.playlists
             .filter(playlist => !playlist.favorites && !playlist.queue)
+            .filter(playlist => !playlist.playlistTracks.map(playlistTrack => playlistTrack.track.id).includes(trackId))
+            .map(playlist =>
+            <option key={playlist.id} value={playlist.id} title={playlist.name}>
+                {playlist.name.length > 15 ? playlist.name.substring(0, 15) : playlist.name}
+            </option>
+        );
+
+        const removeFromPlaylistOptions = this.props.playlists
+            .filter(playlist => !playlist.favorites && !playlist.queue)
+            .filter(playlist => playlist.playlistTracks.map(playlistTrack => playlistTrack.track.id).includes(trackId))
             .map(playlist =>
             <option key={playlist.id} value={playlist.id} title={playlist.name}>
                 {playlist.name.length > 15 ? playlist.name.substring(0, 15) : playlist.name}
             </option>
         );
         
-        const playlistPickerForm = (
+        const addToPlaylistPickerForm = (
             <form>
                 <div className="field has-addons">
                     <div className="control">
@@ -93,13 +133,37 @@ export default class MediaItem extends React.Component {
                     </div>
                     <div className="control">
                         <span className="select is-small">
-                            <select>
-                                {playlistOptions}
+                            <select id={'mediaItem' + trackId + 'AddToPlaylistSelect'}>
+                                {addToPlaylistOptions}
                             </select>
                         </span>
                     </div>
                     <div className="control">
-                        <a className="button is-small is-primary">
+                        <a className="button is-small is-primary" onClick={(e) => this.addTrackToPlaylist(trackId)}>
+                            Ok
+                        </a>
+                    </div>
+                </div>
+            </form>
+        );
+
+        const removeFromPlaylistPickerForm = (
+            <form>
+                <div className="field has-addons">
+                    <div className="control">
+                        <a className="button is-static is-small">
+                            Remove From:
+                        </a>
+                    </div>
+                    <div className="control">
+                        <span className="select is-small">
+                            <select id={'mediaItem' + trackId + 'removeFromPlaylistSelect'}>
+                                {removeFromPlaylistOptions}
+                            </select>
+                        </span>
+                    </div>
+                    <div className="control">
+                        <a className="button is-small is-primary" onClick={(e) => this.removeTrackFromPlaylist(trackId)}>
                             Ok
                         </a>
                     </div>
@@ -111,7 +175,7 @@ export default class MediaItem extends React.Component {
             <div className="dropdown is-right" id={'mediaItem' + trackId + 'DropDown'}>
                 <div className="dropdown-trigger">
                     <button className="button is-small" aria-haspopup="true" aria-controls="dropdown-menu2"
-                            onClick={(e) => document.getElementById('mediaItem' + trackId + 'DropDown').classList.toggle('is-active')}>
+                            onClick={this.toggleDropdown}>
                         <span className="icon is-small">
                             <FontAwesomeIcon icon={faEllipsisH}/>
                         </span>
@@ -136,7 +200,10 @@ export default class MediaItem extends React.Component {
                             </p>
                         </a>
                         <div className="dropdown-item">
-                            {playlistPickerForm}
+                            {addToPlaylistPickerForm}
+                        </div>
+                        <div className="dropdown-item">
+                            {removeFromPlaylistPickerForm}
                         </div>
                     </div>
                 </div>

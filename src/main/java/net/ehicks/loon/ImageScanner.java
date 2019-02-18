@@ -229,8 +229,8 @@ public class ImageScanner
         try
         {
             JsonNode imageLinks = album == null ?
-                    objectMapper.readTree(jsonResponse).get("album").get("image") :
-                    objectMapper.readTree(jsonResponse).get("artist").get("image");
+                    objectMapper.readTree(jsonResponse).get("artist").get("image") :
+                    objectMapper.readTree(jsonResponse).get("album").get("image");
 
             for (JsonNode imageLink : imageLinks)
             {

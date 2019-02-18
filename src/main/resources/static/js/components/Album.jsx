@@ -59,6 +59,7 @@ export default class Album extends React.Component {
                                   onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={false}
                                   favorite={favoritesIds.includes(track.id)} queue={queueIds.includes(track.id)}
                                   trackNumber={track.discNumber + '.' + track.trackNumber} playlists={playlists}
+                                  onUpdatePlaylists={this.props.onUpdatePlaylists}
                 />
             }
         );

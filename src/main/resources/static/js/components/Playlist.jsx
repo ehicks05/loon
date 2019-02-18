@@ -135,7 +135,7 @@ export default class Playlist extends React.Component {
             mediaItems = tracks.map((track, index) => {
                     return <MediaItem key={track.id} track={track} trackNumber={index + 1} selectedTrackId={selectedTrackId}
                                       onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={false}
-                                      favorite={favoritesIds.includes(track.id)}
+                                      favorite={favoritesIds.includes(track.id)} onUpdatePlaylists={this.props.onUpdatePlaylists}
                                       queue={queueIds.includes(track.id)} playlists={playlists}
                     />
                 }

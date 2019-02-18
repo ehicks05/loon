@@ -21,8 +21,11 @@ section {padding: 10px !important;}
 
 .mediaItemDiv {padding: 5px; vertical-align: middle; display: flex; flex-direction: row; justify-content: space-between; transition: all .2s ease}
 .mediaItemDiv:hover {background-color: #f5f5f5;}
-.mediaItemDiv       .mediaItemEllipsis{visibility: hidden;}
-.mediaItemDiv:hover .mediaItemEllipsis{visibility: visible;}
+
+.mediaItemDiv       .mediaItemEllipsis .dropdown{visibility: hidden;}
+.mediaItemDiv:hover .mediaItemEllipsis .dropdown{visibility: visible;}
+.is-visible-important {visibility: visible !important;}
+
 .list-song {cursor: pointer; flex: 8}
 .mediaItemCounter {text-align: right; margin-right: 5px; min-width: 30px; flex-basis: 36px;}
 

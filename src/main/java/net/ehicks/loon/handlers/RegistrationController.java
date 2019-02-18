@@ -1,5 +1,7 @@
-package net.ehicks.loon;
+package net.ehicks.loon.handlers;
 
+import net.ehicks.loon.RegistrationForm;
+import net.ehicks.loon.UserLogic;
 import net.ehicks.loon.beans.LoonSystem;
 import net.ehicks.loon.beans.Role;
 import net.ehicks.loon.beans.User;

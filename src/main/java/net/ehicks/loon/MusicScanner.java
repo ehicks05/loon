@@ -18,10 +18,7 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -184,32 +181,49 @@ public class MusicScanner
 
     private void saveArtwork(Tag tag, Track track, Path artPath)
     {
-        byte[] image = null;
         Artwork artwork = tag.getFirstArtwork();
         if (artwork == null)
             return;
 
         String ext = "." + artwork.getMimeType().replace("image/", "");
-        byte[] imageData = artwork.getBinaryData();
+
+        String escapedAlbumArtist = escapeForFileSystem(track.getAlbumArtist());
+        String escapedAlbum = escapeForFileSystem(track.getAlbum());
+        String imageFileName = escapeForFileSystem(track.getAlbum()) + ext;
 
         try
         {
-            image = resize(new ByteArrayInputStream(imageData), artwork.getMimeType(), 300, 300);
+            File artFile = Paths.get(artPath.toFile().getCanonicalPath(), escapedAlbumArtist, escapedAlbum, imageFileName).toFile();
+            if (artFile.exists())
+            {
+                track.setAlbumImageId(escapedAlbumArtist + "/" + escapedAlbum + "/" + imageFileName);
+                return;
+            }
         }
         catch (Exception e)
         {
             log.error(e.getMessage(), e);
+            return;
         }
 
-        if (image == null)
+        byte[] imageData = artwork.getBinaryData();
+        byte[] resizedImageData;
+
+        try
+        {
+            resizedImageData = resize(new ByteArrayInputStream(imageData), artwork.getMimeType(), 300, 300);
+        }
+        catch (Exception e)
+        {
+            log.error(e.getMessage(), e);
+            return;
+        }
+
+        if (resizedImageData == null)
             return;
 
-        try (InputStream in = new ByteArrayInputStream(image))
+        try (InputStream in = new ByteArrayInputStream(resizedImageData))
         {
-            String escapedAlbumArtist = escapeForFileSystem(track.getAlbumArtist());
-            String escapedAlbum = escapeForFileSystem(track.getAlbum());
-            String imageFileName = escapeForFileSystem(track.getAlbum()) + ext;
-
             Path base = Paths.get(artPath.toFile().getCanonicalPath(), escapedAlbumArtist, escapedAlbum);
             Files.createDirectories(base);
             Path out = base.resolve(imageFileName);

@@ -1,4 +1,4 @@
-package net.ehicks.loon;
+package net.ehicks.loon.handlers;
 
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;

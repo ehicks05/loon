@@ -1,4 +1,4 @@
-package net.ehicks.loon;
+package net.ehicks.loon.handlers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

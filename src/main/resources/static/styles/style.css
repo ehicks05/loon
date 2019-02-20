@@ -12,7 +12,7 @@ html {overflow-y: auto;}
 
 section {padding: 10px !important;}
 
-.playingHighlight {color: #1ed176;}
+.playingHighlight {color: #23d160;}
 .playingHighlight:focus {outline:0;}
 
 .playlist {overflow-y: auto; }

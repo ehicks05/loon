@@ -31,7 +31,6 @@ export default class Playlist extends React.Component {
         this.handleUpdatePlaylists = this.handleUpdatePlaylists.bind(this);
         this.onDragEnd = this.onDragEnd.bind(this);
         this.persistDragAndDrop = this.persistDragAndDrop.bind(this);
-        this.renderMediaItem = this.renderMediaItem.bind(this);
 
         this.state = {playlistId: parsePlaylistId(this)};
     }
@@ -175,19 +174,5 @@ export default class Playlist extends React.Component {
                 {mediaList}
             </section>
         );
-    }
-
-    renderMediaItem(index, trackId, selectedTrackId, favoritesIds, queueIds, playlists)
-    {
-        trackId = Number(trackId.substring(0, trackId.indexOf('-')));
-        // console.log(trackId);
-        const track = this.props.tracks.find((track) => track.id === trackId);
-        if (!track)
-            return <li>not found</li>;
-        return <MediaItem key={trackId} track={track} trackNumber={index + 1} selectedTrackId={selectedTrackId}
-                          onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={false}
-                          favorite={favoritesIds.includes(track.id)} queue={queueIds.includes(track.id)}
-                          playlists={playlists}
-        />
     }
 }

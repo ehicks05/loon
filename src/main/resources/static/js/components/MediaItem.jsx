@@ -22,8 +22,7 @@ export default class MediaItem extends React.Component {
     constructor(props) {
         super(props);
         this.handleSelectedTrackIdChange = this.handleSelectedTrackIdChange.bind(this);
-        this.handleToggleFavorite = this.handleToggleFavorite.bind(this);
-        this.handleToggleQueue = this.handleToggleQueue.bind(this);
+        this.handleToggleTrackInPlaylist = this.handleToggleTrackInPlaylist.bind(this);
         this.toggleDropdown = this.toggleDropdown.bind(this);
         this.addTrackToPlaylist = this.addTrackToPlaylist.bind(this);
         this.removeTrackFromPlaylist = this.removeTrackFromPlaylist.bind(this);
@@ -34,24 +33,6 @@ export default class MediaItem extends React.Component {
         this.props.onSelectedTrackIdChange(selectedTrackId);
     }
 
-    handleToggleFavorite(e, trackId)
-    {
-        fetch('/api/playlists/toggleFavorite?trackId=' + trackId, {method: 'POST'})
-            .then(response => response.text()).then(responseText => {
-            console.log(responseText);
-            this.props.onUpdatePlaylists();
-        });
-    }
-
-    handleToggleQueue(e, trackId)
-    {
-        fetch('/api/playlists/toggleQueue?trackId=' + trackId, {method: 'POST'})
-            .then(response => response.text()).then(responseText => {
-            console.log(responseText);
-            this.props.onUpdatePlaylists();
-        });
-    }
-
     toggleDropdown()
     {
         const el = document.getElementById('mediaItem' + this.props.track.id + 'DropDown');
@@ -59,9 +40,8 @@ export default class MediaItem extends React.Component {
         el.classList.toggle('is-visible-important');
     }
 
-    addTrackToPlaylist(trackId)
+    handleToggleTrackInPlaylist(playlistId, trackId)
     {
-        const playlistId = document.getElementById('mediaItem' + trackId + 'AddToPlaylistSelect').value;
         fetch('/api/playlists/' + playlistId + '/?action=add&trackId=' + trackId, {method: 'POST'})
             .then(response => response.text()).then(responseText => {
             console.log(responseText);
@@ -69,21 +49,22 @@ export default class MediaItem extends React.Component {
         });
     }
 
+    addTrackToPlaylist(trackId)
+    {
+        const playlistId = document.getElementById('mediaItem' + trackId + 'AddToPlaylistSelect').value;
+        this.handleToggleTrackInPlaylist(playlistId, trackId);
+    }
+
     removeTrackFromPlaylist(trackId)
     {
         const playlistId = document.getElementById('mediaItem' + trackId + 'removeFromPlaylistSelect').value;
-        fetch('/api/playlists/' + playlistId + '/?action=remove&trackId=' + trackId, {method: 'POST'})
-            .then(response => response.text()).then(responseText => {
-            console.log(responseText);
-            this.props.onUpdatePlaylists();
-        });
+        this.handleToggleTrackInPlaylist(playlistId, trackId);
     }
 
     render()
     {
         const trackId = this.props.track.id;
         const trackNumber = this.props.trackNumber;
-        const artworkDbFileId = this.props.track.artworkDbFileId;
         const artist = this.props.track.artist ? this.props.track.artist : 'Missing!';
         const trackTitle = this.props.track.title ? this.props.track.title : 'Missing!';
         const album = this.props.track.album ? this.props.track.album : 'Missing!';
@@ -91,9 +72,10 @@ export default class MediaItem extends React.Component {
         const favorite = this.props.favorite;
         const queue = this.props.queue;
 
-        const highlightClass = trackId === this.props.selectedTrackId ? ' playingHighlight' : '';
+        const queuePlaylistId = this.props.playlists.find(playlist => playlist.queue).id;
+        const favoritesPlaylistId = this.props.playlists.find(playlist => playlist.favorites).id;
 
-        const isDraggable = this.props.isDraggable;
+        const highlightClass = trackId === this.props.selectedTrackId ? ' playingHighlight' : '';
 
         const provided = this.props.provided;
         const snapshot = this.props.snapshot;
@@ -183,7 +165,7 @@ export default class MediaItem extends React.Component {
                 </div>
                 <div className="dropdown-menu" id="dropdown-menu2" role="menu">
                     <div className="dropdown-content">
-                        <a className="dropdown-item" onClick={(e) => this.handleToggleFavorite(e, trackId)}>
+                        <a className="dropdown-item" onClick={(e) => this.handleToggleTrackInPlaylist(favoritesPlaylistId, trackId)}>
                             <p>
                                 <span className={'icon has-text-success'}>
                                     <FontAwesomeIcon icon={favorite ? fasHeart : farHeart}/>
@@ -191,7 +173,7 @@ export default class MediaItem extends React.Component {
                                 {favorite ? 'Remove from ' : 'Add to '} favourites
                             </p>
                         </a>
-                        <a className="dropdown-item" onClick={(e) => this.handleToggleQueue(e, trackId)}>
+                        <a className="dropdown-item" onClick={(e) => this.handleToggleTrackInPlaylist(queuePlaylistId, trackId)}>
                             <p>
                                 <span className={'icon ' + (queue ? 'has-text-success' : 'has-text-grey')}>
                                     <FontAwesomeIcon icon={faList}/>

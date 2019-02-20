@@ -19,7 +19,8 @@ export default class SidePanel extends React.Component {
             return (
                 <NavLink key={playlist.id} to={'/playlists/' + playlist.id} className={'panel-block'}
                          activeClassName={'is-active'}
-                         isActive={() => playlist.id === selectedPlaylistId}>
+                         // isActive={() => playlist.id === selectedPlaylistId}
+                >
                     <span className="panel-icon">
                         <FontAwesomeIcon icon={faMusic} aria-hidden="true"/>
                     </span>
@@ -66,7 +67,7 @@ export default class SidePanel extends React.Component {
                     </span>
                     Albums
                 </NavLink>
-                <NavLink to={'/playlists'} className="panel-block" activeClassName="is-active">
+                <NavLink to={'/playlists'} className="panel-block" activeClassName="is-active" exact={true}>
                     <span className="panel-icon">
                         <FontAwesomeIcon icon={faListUl} aria-hidden="true" />
                     </span>

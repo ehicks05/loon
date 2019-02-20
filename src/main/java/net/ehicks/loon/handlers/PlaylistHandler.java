@@ -1,18 +1,13 @@
 package net.ehicks.loon.handlers;
 
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializer;
 import net.ehicks.loon.LibraryLogic;
 import net.ehicks.loon.PlaylistLogic;
-import net.ehicks.loon.PlaylistSerializer;
 import net.ehicks.loon.beans.Playlist;
 import net.ehicks.loon.beans.PlaylistTrack;
 import net.ehicks.loon.beans.Track;
 import net.ehicks.loon.beans.User;
 import net.ehicks.loon.repos.PlaylistRepository;
 import net.ehicks.loon.repos.PlaylistTrackRepository;
-import net.ehicks.loon.repos.TrackRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,45 +23,17 @@ import java.util.stream.Collectors;
 public class PlaylistHandler
 {
     private PlaylistRepository playlistRepo;
-    private TrackRepository trackRepo;
     private PlaylistTrackRepository playlistTrackRepo;
     private LibraryLogic libraryLogic;
     private PlaylistLogic playlistLogic;
-    private PlaylistSerializer playlistSerializer;
 
-    public PlaylistHandler(PlaylistRepository playlistRepo, TrackRepository trackRepo, PlaylistTrackRepository playlistTrackRepo,
-                           LibraryLogic libraryLogic, PlaylistLogic playlistLogic, PlaylistSerializer playlistSerializer)
+    public PlaylistHandler(PlaylistRepository playlistRepo, PlaylistTrackRepository playlistTrackRepo,
+                           LibraryLogic libraryLogic, PlaylistLogic playlistLogic)
     {
         this.playlistRepo = playlistRepo;
-        this.trackRepo = trackRepo;
         this.playlistTrackRepo = playlistTrackRepo;
         this.libraryLogic = libraryLogic;
         this.playlistLogic = playlistLogic;
-        this.playlistSerializer = playlistSerializer;
-    }
-
-    @GetMapping("/form")
-    public String form(@AuthenticationPrincipal User user)
-    {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-
-        JsonSerializer<Playlist> playlistSerializer = (src, typeOfSrc, context) -> {
-
-            long size = playlistTrackRepo.findByPlaylistIdOrderByIndex(src.getId()).size();
-
-            JsonObject jsonPlaylist = new JsonObject();
-
-            jsonPlaylist.addProperty("id", src.getId());
-            jsonPlaylist.addProperty("userId", src.getUserId());
-            jsonPlaylist.addProperty("name", src.getName());
-            jsonPlaylist.addProperty("size", size);
-
-            return jsonPlaylist;
-        };
-
-        gsonBuilder.registerTypeAdapter(Playlist.class, playlistSerializer);
-
-        return gsonBuilder.create().toJson(playlistRepo.findByUserId(user.getId()));
     }
 
     @GetMapping("/getPlaylists")
@@ -120,34 +87,12 @@ public class PlaylistHandler
         return playlist;
     }
 
-    @PostMapping("/toggleFavorite")
-    public Playlist toggleFavorite(@AuthenticationPrincipal User user, @RequestParam Long trackId)
-    {
-        Playlist playlist = playlistRepo.findByUserIdAndFavoritesTrue(user.getId());
-
-        if (playlist != null)
-            playlistLogic.addOrRemoveTrack(playlist, trackId);
-
-        return playlist;
-    }
-
-    @PostMapping("/toggleQueue")
-    public Playlist toggleQueue(@AuthenticationPrincipal User user, @RequestParam Long trackId)
-    {
-        Playlist playlist = playlistRepo.findByUserIdAndQueueTrue(user.getId());
-
-        if (playlist != null)
-            playlistLogic.addOrRemoveTrack(playlist, trackId);
-
-        return playlist;
-    }
-
     @PostMapping("/{playlistId}")
-    public Playlist toggleQueue(@AuthenticationPrincipal User user, @PathVariable Long playlistId, @RequestParam String action, @RequestParam Long trackId)
+    public Playlist togglePlaylistTrack(@AuthenticationPrincipal User user, @PathVariable Long playlistId, @RequestParam Long trackId)
     {
         Playlist playlist = playlistRepo.findById(playlistId).orElse(null);
 
-        if (playlist != null)
+        if (playlist != null && playlist.getUserId().equals(user.getId()))
             playlistLogic.addOrRemoveTrack(playlist, trackId);
 
         return playlist;
@@ -157,7 +102,7 @@ public class PlaylistHandler
     public ResponseEntity delete(@AuthenticationPrincipal User user, @PathVariable long playlistId)
     {
         Playlist playlist = playlistRepo.findById(playlistId).orElse(null);
-        if (playlist != null && !playlist.getFavorites() && !playlist.getQueue())
+        if (playlist != null && playlist.getUserId().equals(user.getId()) && !playlist.getFavorites() && !playlist.getQueue())
         {
             playlistLogic.setTrackIds(playlist, new ArrayList<>());
             playlistRepo.delete(playlist);

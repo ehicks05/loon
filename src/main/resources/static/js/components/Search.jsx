@@ -9,6 +9,7 @@ export default class Search extends React.Component {
     constructor(props) {
         super(props);
         this.handleSelectedTrackIdChange = this.handleSelectedTrackIdChange.bind(this);
+        this.setListRef = this.setListRef.bind(this);
         this.renderRow = this.renderRow.bind(this);
         this.handleSearchKeyChange = this.handleSearchKeyChange.bind(this);
         this.emitChangeDebounced = debounce(this.emitChange, 250);
@@ -39,7 +40,12 @@ export default class Search extends React.Component {
                     track.albumArtist.toLowerCase().includes(key) ||
                     track.album.toLowerCase().includes(key);
             }) : this.props.tracks;
-            this.setState({searchResults: tracks})
+            this.setState({searchResults: tracks});
+            
+            this.cache.clearAll();
+            // this.listRef.recomputeRowHeights();
+            // this.listRef.forceUpdateGrid();
+            // this.listRef.measureAllRows();
         }
     }
 
@@ -72,6 +78,7 @@ export default class Search extends React.Component {
                         {
                             ({ width, height }) => {
                                 return <List
+                                    ref={this.setListRef}
                                     width={width}
                                     height={height}
                                     deferredMeasurementCache={this.cache}
@@ -109,5 +116,9 @@ export default class Search extends React.Component {
 
             </CellMeasurer>
         );
+    }
+
+    setListRef(ref) {
+        this.listRef = ref;
     }
 }

@@ -37,12 +37,14 @@ export default class SidePanel extends React.Component {
                     </span>
                     Search
                 </NavLink>
-                <NavLink to={'/library'} className="panel-block" activeClassName="is-active" isActive={() => selectedPlaylistId === 0}>
-                    <span className="panel-icon">
-                        <FontAwesomeIcon icon={faBox} aria-hidden="true" />
-                    </span>
-                    Library
-                </NavLink>
+                {/*<NavLink to={'/library'} className="panel-block" activeClassName="is-active"*/}
+                         {/*// isActive={() => selectedPlaylistId === 0}*/}
+                {/*>*/}
+                    {/*<span className="panel-icon">*/}
+                        {/*<FontAwesomeIcon icon={faBox} aria-hidden="true" />*/}
+                    {/*</span>*/}
+                    {/*Library*/}
+                {/*</NavLink>*/}
                 <NavLink to={'/favorites'} className="panel-block" activeClassName="is-active">
                     <span className="panel-icon">
                         <FontAwesomeIcon icon={faHeart} aria-hidden="true" />

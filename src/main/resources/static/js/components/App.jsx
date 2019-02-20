@@ -19,7 +19,6 @@ import Artists from "./Artists.jsx";
 import Albums from "./Albums.jsx";
 import Artist from "./Artist.jsx";
 import Search from "./Search.jsx";
-import SearchTest from "./SearchTest.jsx";
 import Album from "./Album.jsx";
 
 function Loading() {
@@ -195,16 +194,7 @@ export default class App extends React.Component {
                                                                                                        onSelectedTrackIdChange={this.handleSelectedTrackIdChange}
                                                                                                        onUpdatePlaylists={this.reloadPlaylists} />} />
                             <Route exact path='/albums' render={() => <Albums tracks={tracks} />}/>
-                            <Route exact path='/search' render={(props) => <SearchTest {...props}
-                                                                                      tracks={tracks}
-                                                                                      playlists={playlists}
-                                                                                      selectedTrackId={this.state.selectedTrackId}
-                                                                                      onCurrentPlaylistChange={this.handleCurrentPlaylistChange}
-                                                                                      onSelectedTrackIdChange={this.handleSelectedTrackIdChange}
-                                                                                      onUpdatePlaylists={this.reloadPlaylists} />} />
-
-
-                            <Route exact path='/library' render={(props) => <Playlist {...props}
+                            <Route exact path='/search' render={(props) => <Search {...props}
                                                                                       tracks={tracks}
                                                                                       playlists={playlists}
                                                                                       selectedTrackId={this.state.selectedTrackId}

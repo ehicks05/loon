@@ -15,6 +15,7 @@ export default class TextInput extends React.Component {
         const value = this.props.value;
         const required = this.props.required ? 'required' : '';
         const size = this.props.size ? this.props.size : 20;
+        const autoComplete = this.props.autoComplete ? this.props.autoComplete : '';
         let isHorizontal = true;
         if (this.props.horizontal === false)
             isHorizontal = false;
@@ -58,6 +59,7 @@ export default class TextInput extends React.Component {
                        required={required}
                        onChange={onChange}
                        autoFocus={autofocus}
+                       autoComplete={autoComplete}
                 />
                 {leftIconEl}
             </div>);

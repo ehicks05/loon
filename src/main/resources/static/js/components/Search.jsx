@@ -1,19 +1,46 @@
 import React from 'react';
 import MediaItem from "./MediaItem.jsx";
-import debounce from "lodash.debounce"
+import {AutoSizer, CellMeasurer, CellMeasurerCache, List} from 'react-virtualized'
+import debounce from "lodash.debounce";
 import TextInput from "./TextInput.jsx";
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faSearch} from '@fortawesome/free-solid-svg-icons'
-
+import {faSearch} from "@fortawesome/free-solid-svg-icons";
 
 export default class Search extends React.Component {
     constructor(props) {
         super(props);
         this.handleSelectedTrackIdChange = this.handleSelectedTrackIdChange.bind(this);
+        this.renderRow = this.renderRow.bind(this);
         this.handleSearchKeyChange = this.handleSearchKeyChange.bind(this);
         this.emitChangeDebounced = debounce(this.emitChange, 250);
 
-        this.state = {searchKey: '', activeSearchKey: ''};
+        this.state = {searchResults: this.props.tracks, searchKey: '', loweredSearchKey: ''};
+        this.cache = new CellMeasurerCache({fixedWidth: true, defaultHeight: 58});
+
+        const favoritesPlaylist = this.props.playlists.filter(playlist => playlist.favorites)[0];
+        this.favoritesIds = favoritesPlaylist.playlistTracks.map(playlistTrack => playlistTrack.track.id);
+        const queuePlaylist = this.props.playlists.filter(playlist => playlist.queue)[0];
+        this.queueIds = queuePlaylist.playlistTracks.map(playlistTrack => playlistTrack.track.id);
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.playlists !== prevProps.playlists)
+        {
+            const favoritesPlaylist = this.props.playlists.filter(playlist => playlist.favorites)[0];
+            this.favoritesIds = favoritesPlaylist.playlistTracks.map(playlistTrack => playlistTrack.track.id);
+            const queuePlaylist = this.props.playlists.filter(playlist => playlist.queue)[0];
+            this.queueIds = queuePlaylist.playlistTracks.map(playlistTrack => playlistTrack.track.id);
+        }
+        if (this.state.loweredSearchKey !== prevState.loweredSearchKey)
+        {
+            const key = this.state.loweredSearchKey;
+            const tracks = key.length > 0 ? this.props.tracks.filter(track => {
+                return track.title.toLowerCase().includes(key) ||
+                    track.artist.toLowerCase().includes(key) ||
+                    track.albumArtist.toLowerCase().includes(key) ||
+                    track.album.toLowerCase().includes(key);
+            }) : this.props.tracks;
+            this.setState({searchResults: tracks})
+        }
     }
 
     handleSearchKeyChange(e)
@@ -23,45 +50,64 @@ export default class Search extends React.Component {
     }
 
     emitChange(value) {
-        this.setState({activeSearchKey: value});
+        this.setState({loweredSearchKey: value.toLowerCase()});
     }
 
     handleSelectedTrackIdChange(selectedTrackId)
     {
-        this.props.onCurrentPlaylistChange(this.state.playlistId, selectedTrackId);
+        this.props.onCurrentPlaylistChange(0, selectedTrackId);
     }
 
     render()
     {
-        const searchKey = this.state.activeSearchKey.toLowerCase();
-        const tracks = searchKey.length > 0 ? this.props.tracks.filter(track => {
-            return track.title.toLowerCase().includes(searchKey) ||
-                track.artist.toLowerCase().includes(searchKey) ||
-                track.albumArtist.toLowerCase().includes(searchKey) ||
-                track.album.toLowerCase().includes(searchKey);
-        }) : [];
-        const selectedTrackId = this.props.selectedTrackId;
-        const playlists = this.props.playlists;
-        const favoritesPlaylist = playlists.filter(playlist => playlist.favorites)[0];
-        const favoritesIds = favoritesPlaylist.playlistTracks.map(playlistTrack => playlistTrack.track.id);
-
-
-        const mediaItems = tracks.map((track, index) => {
-                return <MediaItem key={track.id} trackNumber={index + 1} index={index} selectedTrackId={selectedTrackId}
-                                  onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={false} favorite={favoritesIds.includes(track.id)}
-                                  onUpdatePlaylists={this.props.onUpdatePlaylists} playlists={playlists} />
-            }
-        );
+        const scrollToIndex = this.state.searchResults.indexOf(this.state.searchResults.find(track => track.id === this.props.selectedTrackId));
 
         return (
-            <div>
-                <form><TextInput autofocus={true} id={'searchInput'} label={'Search'} leftIcon={faSearch} value={this.state.searchKey} onChange={this.handleSearchKeyChange} horizontal={false} hideLabel={true}/></form>
-                <div id="playlist" className="playlist" style={{display: 'flex', flexDirection: 'column'}}>
-                    <ul id="list" style={{flex: '1', flexGrow: '1'}}>
-                        {mediaItems}
-                    </ul>
+            <section className={'section'} style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
+                <form><TextInput autofocus={true} id={'searchInput'} label={'Search'} leftIcon={faSearch} value={this.state.searchKey}
+                                 onChange={this.handleSearchKeyChange} horizontal={false} hideLabel={true} autoComplete='off' /></form>
+
+                <div id="list" style={{display: 'flex', flexDirection: 'column', flex: '1', flexGrow: '1'}}>
+                    <AutoSizer style={{outline:0}}>
+                        {
+                            ({ width, height }) => {
+                                return <List
+                                    width={width}
+                                    height={height}
+                                    deferredMeasurementCache={this.cache}
+                                    rowHeight={this.cache.rowHeight}
+                                    rowRenderer={this.renderRow}
+                                    rowCount={this.state.searchResults.length}
+                                    scrollToIndex={scrollToIndex}
+                                    estimatedRowSize={58}
+                                    overscanRowCount={3} />
+                            }
+                        }
+                    </AutoSizer>
                 </div>
-            </div>
+            </section>
+        );
+    }
+
+    renderRow({ index, key, style, parent }) {
+        const track = this.state.searchResults[index];
+        return (
+            <CellMeasurer
+                key={key}
+                cache={this.cache}
+                parent={parent}
+                columnIndex={0}
+                rowIndex={index}>
+
+                <div style={style}>
+                    <MediaItem key={key} track={track} style={style} trackNumber={index + 1} selectedTrackId={this.props.selectedTrackId}
+                               onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={false}
+                               favorite={this.favoritesIds.includes(track.id)} queue={this.queueIds.includes(track.id)}
+                               playlists={this.props.playlists}
+                    />
+                </div>
+
+            </CellMeasurer>
         );
     }
 }

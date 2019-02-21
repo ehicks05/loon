@@ -10,9 +10,8 @@ import SystemSettings from "./SystemSettings.jsx";
 import Playlist from "./Playlist.jsx";
 import Playlists from "./Playlists.jsx";
 import Eq from "./Eq.jsx";
-// import PlaylistBuilder from "./PlaylistBuilder.jsx";
+import PlaylistBuilder from "./PlaylistBuilder.jsx";
 
-import Loadable from "react-loadable";
 import SidePanel from "./SidePanel.jsx";
 import UserSettings from "./UserSettings.jsx";
 import Artists from "./Artists.jsx";
@@ -20,15 +19,6 @@ import Albums from "./Albums.jsx";
 import Artist from "./Artist.jsx";
 import Search from "./Search.jsx";
 import Album from "./Album.jsx";
-
-function Loading() {
-    return <div>Loading...</div>;
-}
-
-const LoadablePlaylistBuilder = Loadable({
-    loader: () => import("./PlaylistBuilder.jsx"),
-    loading: Loading
-});
 
 function poll()
 {
@@ -219,8 +209,8 @@ export default class App extends React.Component {
                                                                                         onUpdatePlaylists={this.reloadPlaylists} />} />
 
                             <Switch>
-                                <Route exact path='/playlists/new' render={(props) => <LoadablePlaylistBuilder {...props} onUpdatePlaylists={this.reloadPlaylists} />} />
-                                <Route exact path='/playlists/:id/edit' render={(props) => <LoadablePlaylistBuilder {...props} onUpdatePlaylists={this.reloadPlaylists}/>} />
+                                <Route exact path='/playlists/new' render={(props) => <PlaylistBuilder {...props} onUpdatePlaylists={this.reloadPlaylists} />} />
+                                <Route exact path='/playlists/:id/edit' render={(props) => <PlaylistBuilder {...props} onUpdatePlaylists={this.reloadPlaylists}/>} />
 
                                 <Route exact path='/playlists' render={() => <Playlists
                                     selectedPlaylistId={this.state.selectedPlaylistId}

@@ -1,7 +1,5 @@
 import React from 'react';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faHeart as fasHeart, faList, faListOl, faEllipsisH} from '@fortawesome/free-solid-svg-icons'
-import {faHeart as farHeart} from '@fortawesome/free-regular-svg-icons'
+import ActionMenu from "./ActionMenu.jsx";
 
 const getRowStyle = (draggableStyle, isDragging) => ({
     // some basic styles to make the items look a bit nicer
@@ -14,7 +12,6 @@ const getRowStyle = (draggableStyle, isDragging) => ({
 function formatTime(secs) {
     const minutes = Math.floor(secs / 60) || 0;
     const seconds = (secs - minutes * 60) || 0;
-
     return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
 }
 
@@ -22,10 +19,7 @@ export default class MediaItem extends React.Component {
     constructor(props) {
         super(props);
         this.handleSelectedTrackIdChange = this.handleSelectedTrackIdChange.bind(this);
-        this.handleToggleTrackInPlaylist = this.handleToggleTrackInPlaylist.bind(this);
         this.toggleDropdown = this.toggleDropdown.bind(this);
-        this.addTrackToPlaylist = this.addTrackToPlaylist.bind(this);
-        this.removeTrackFromPlaylist = this.removeTrackFromPlaylist.bind(this);
     }
 
     handleSelectedTrackIdChange(e, selectedTrackId)
@@ -40,27 +34,6 @@ export default class MediaItem extends React.Component {
         el.classList.toggle('is-visible-important');
     }
 
-    handleToggleTrackInPlaylist(playlistId, trackId)
-    {
-        fetch('/api/playlists/' + playlistId + '/?action=add&trackId=' + trackId, {method: 'POST'})
-            .then(response => response.text()).then(responseText => {
-            console.log(responseText);
-            this.props.onUpdatePlaylists();
-        });
-    }
-
-    addTrackToPlaylist(trackId)
-    {
-        const playlistId = document.getElementById('mediaItem' + trackId + 'AddToPlaylistSelect').value;
-        this.handleToggleTrackInPlaylist(playlistId, trackId);
-    }
-
-    removeTrackFromPlaylist(trackId)
-    {
-        const playlistId = document.getElementById('mediaItem' + trackId + 'removeFromPlaylistSelect').value;
-        this.handleToggleTrackInPlaylist(playlistId, trackId);
-    }
-
     render()
     {
         const trackId = this.props.track.id;
@@ -71,9 +44,6 @@ export default class MediaItem extends React.Component {
         const formattedDuration = this.props.track.duration;
         const favorite = this.props.favorite;
         const queue = this.props.queue;
-
-        const queuePlaylistId = this.props.playlists.find(playlist => playlist.queue).id;
-        const favoritesPlaylistId = this.props.playlists.find(playlist => playlist.favorites).id;
 
         const highlightClass = trackId === this.props.selectedTrackId ? ' playingHighlight' : '';
 
@@ -86,111 +56,6 @@ export default class MediaItem extends React.Component {
         const dragHandleProps   = provided ? provided.dragHandleProps : null;
 
         const isDragging = snapshot ? snapshot.isDragging : false;
-
-        const addToPlaylistOptions = this.props.playlists
-            .filter(playlist => !playlist.favorites && !playlist.queue)
-            .filter(playlist => !playlist.playlistTracks.map(playlistTrack => playlistTrack.track.id).includes(trackId))
-            .map(playlist =>
-            <option key={playlist.id} value={playlist.id} title={playlist.name}>
-                {playlist.name.length > 15 ? playlist.name.substring(0, 15) : playlist.name}
-            </option>
-        );
-
-        const removeFromPlaylistOptions = this.props.playlists
-            .filter(playlist => !playlist.favorites && !playlist.queue)
-            .filter(playlist => playlist.playlistTracks.map(playlistTrack => playlistTrack.track.id).includes(trackId))
-            .map(playlist =>
-            <option key={playlist.id} value={playlist.id} title={playlist.name}>
-                {playlist.name.length > 15 ? playlist.name.substring(0, 15) : playlist.name}
-            </option>
-        );
-        
-        const addToPlaylistPickerForm = (
-            <form>
-                <div className="field has-addons">
-                    <div className="control">
-                        <a className="button is-static is-small">
-                            Add To:
-                        </a>
-                    </div>
-                    <div className="control">
-                        <span className="select is-small">
-                            <select id={'mediaItem' + trackId + 'AddToPlaylistSelect'}>
-                                {addToPlaylistOptions}
-                            </select>
-                        </span>
-                    </div>
-                    <div className="control">
-                        <a className="button is-small is-primary" onClick={(e) => this.addTrackToPlaylist(trackId)}>
-                            Ok
-                        </a>
-                    </div>
-                </div>
-            </form>
-        );
-
-        const removeFromPlaylistPickerForm = (
-            <form>
-                <div className="field has-addons">
-                    <div className="control">
-                        <a className="button is-static is-small">
-                            Remove From:
-                        </a>
-                    </div>
-                    <div className="control">
-                        <span className="select is-small">
-                            <select id={'mediaItem' + trackId + 'removeFromPlaylistSelect'}>
-                                {removeFromPlaylistOptions}
-                            </select>
-                        </span>
-                    </div>
-                    <div className="control">
-                        <a className="button is-small is-primary" onClick={(e) => this.removeTrackFromPlaylist(trackId)}>
-                            Ok
-                        </a>
-                    </div>
-                </div>
-            </form>
-        );
-
-        const dropdown = !isDragging ? (
-            <div className="dropdown is-right" id={'mediaItem' + trackId + 'DropDown'}>
-                <div className="dropdown-trigger">
-                    <button className="button is-small" aria-haspopup="true" aria-controls="dropdown-menu2"
-                            onClick={this.toggleDropdown}>
-                        <span className="icon is-small">
-                            <FontAwesomeIcon icon={faEllipsisH}/>
-                        </span>
-                    </button>
-                </div>
-                <div className="dropdown-menu" id="dropdown-menu2" role="menu">
-                    <div className="dropdown-content">
-                        <a className="dropdown-item" onClick={(e) => this.handleToggleTrackInPlaylist(favoritesPlaylistId, trackId)}>
-                            <p>
-                                <span className={'icon has-text-success'}>
-                                    <FontAwesomeIcon icon={favorite ? fasHeart : farHeart}/>
-                                </span>
-                                {favorite ? 'Remove from ' : 'Add to '} favourites
-                            </p>
-                        </a>
-                        <a className="dropdown-item" onClick={(e) => this.handleToggleTrackInPlaylist(queuePlaylistId, trackId)}>
-                            <p>
-                                <span className={'icon ' + (queue ? 'has-text-success' : 'has-text-grey')}>
-                                    <FontAwesomeIcon icon={faList}/>
-                                </span>
-                                {queue ? 'Remove from ' : 'Add to '} queue
-                            </p>
-                        </a>
-                        <div className="dropdown-item">
-                            {addToPlaylistPickerForm}
-                        </div>
-                        <div className="dropdown-item">
-                            {removeFromPlaylistPickerForm}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        ) : '';
 
         return (
             <div className={highlightClass} id={'track' + trackId}
@@ -209,7 +74,10 @@ export default class MediaItem extends React.Component {
                     </div>
 
                     <div className={'mediaItemEllipsis'} style={{marginRight: '8px', flexBasis: '20px'}}>
-                        {dropdown}
+                        {!isDragging &&
+                            <ActionMenu onUpdatePlaylist={this.props.onUpdatePlaylists} track={this.props.track}
+                                    favorite={favorite} queue={queue} playlists={this.props.playlists}/>
+                        }
                     </div>
 
                     <div style={{flexBasis: '20px'}}>

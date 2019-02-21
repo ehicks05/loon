@@ -87,6 +87,17 @@ public class PlaylistHandler
         return playlist;
     }
 
+    @PutMapping("/setTracks")
+    public Playlist setTracks(@AuthenticationPrincipal User user, @RequestParam long playlistId, @RequestParam List<Long> trackIds)
+    {
+        Playlist playlist = playlistRepo.findById(playlistId).orElse(null);
+
+        if (playlist != null && playlist.getUserId().equals(user.getId()))
+            playlistLogic.setTrackIds(playlist, trackIds);
+
+        return playlist;
+    }
+
     @PostMapping("/{playlistId}")
     public Playlist togglePlaylistTrack(@AuthenticationPrincipal User user, @PathVariable Long playlistId, @RequestParam Long trackId)
     {

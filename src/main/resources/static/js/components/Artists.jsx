@@ -1,21 +1,17 @@
 import React from 'react';
 import {Link} from "react-router-dom";
+import {inject, observer} from "mobx-react";
 
+@inject('store')
+@observer
 export default class Artists extends React.Component {
     constructor(props) {
         super(props);
-        
-        this.state = {};
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot)
-    {
-
     }
 
     render()
     {
-        const tracks = this.props.tracks;
+        const tracks = this.props.store.appState.tracks;
 
         const artists = [...new Set(tracks.map(track => {return JSON.stringify({artist: track.artist, artistImageId: track.artistImageId})}))];
 

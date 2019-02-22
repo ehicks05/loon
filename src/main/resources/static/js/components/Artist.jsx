@@ -1,26 +1,27 @@
 import React from 'react';
 import {Link} from "react-router-dom";
 import Albums from "./Albums.jsx";
+import {inject, observer} from "mobx-react";
 
+@inject('store')
+@observer
 export default class Artist extends React.Component {
     constructor(props) {
         super(props);
-
-        const artist = this.props.match.params.artist;
-        this.state = {artist: artist};
     }
 
     render()
     {
-        const tracks = this.props.tracks;
+        const artist = this.props.match.params.artist;
+        const tracks = this.props.store.appState.tracks;
 
-        const artistTracks = tracks.filter(track => track.artist === this.state.artist);
+        const artistTracks = tracks.filter(track => track.artist === artist);
 
         const width = 150;
 
         return (
             <div>
-                <div className="title" style={{padding: '.25rem'}}>{this.state.artist}</div>
+                <div className="title" style={{padding: '.25rem'}}>{artist}</div>
                 <div className="subtitle" style={{padding: '.25rem'}}>Albums</div>
 
                 <Albums tracks={artistTracks} hideTitle={true}/>

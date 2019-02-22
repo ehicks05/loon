@@ -1,5 +1,6 @@
 import React from 'react';
 import ActionMenu from "./ActionMenu.jsx";
+import {inject, observer} from "mobx-react";
 
 const getRowStyle = (draggableStyle, isDragging) => ({
     // some basic styles to make the items look a bit nicer
@@ -15,16 +16,30 @@ function formatTime(secs) {
     return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
 }
 
+@inject('store')
+@observer
 export default class MediaItem extends React.Component {
     constructor(props) {
         super(props);
-        this.handleSelectedTrackIdChange = this.handleSelectedTrackIdChange.bind(this);
         this.toggleDropdown = this.toggleDropdown.bind(this);
+        this.handleHoverTrue = this.handleHoverTrue.bind(this);
+        this.handleHoverFalse = this.handleHoverFalse.bind(this);
+        this.state = {hover: false}
     }
 
-    handleSelectedTrackIdChange(e, selectedTrackId)
+    handleHoverTrue()
     {
-        this.props.onSelectedTrackIdChange(selectedTrackId);
+        this.setState({hover: true});
+    }
+
+    handleHoverFalse()
+    {
+        this.setState({hover: true});
+    }
+
+    handleSelectedTrackIdChange(e, selectedPlaylistId, selectedTrackId)
+    {
+        this.props.store.uiState.handleSelectedPlaylistIdChange(selectedPlaylistId, selectedTrackId);
     }
 
     toggleDropdown()
@@ -36,16 +51,15 @@ export default class MediaItem extends React.Component {
 
     render()
     {
+        const playlistId = this.props.playlistId;
         const trackId = this.props.track.id;
         const trackNumber = this.props.trackNumber;
         const artist = this.props.track.artist ? this.props.track.artist : 'Missing!';
         const trackTitle = this.props.track.title ? this.props.track.title : 'Missing!';
         const album = this.props.track.album ? this.props.track.album : 'Missing!';
         const formattedDuration = this.props.track.duration;
-        const favorite = this.props.favorite;
-        const queue = this.props.queue;
 
-        const highlightClass = trackId === this.props.selectedTrackId ? ' playingHighlight' : '';
+        const highlightClass = trackId === this.props.store.uiState.selectedTrackId ? ' playingHighlight' : '';
 
         const provided = this.props.provided;
         const snapshot = this.props.snapshot;
@@ -56,6 +70,10 @@ export default class MediaItem extends React.Component {
         const dragHandleProps   = provided ? provided.dragHandleProps : null;
 
         const isDragging = snapshot ? snapshot.isDragging : false;
+        const isDropdownActive = this.props.store.uiState.selectedContextMenuTrackId === trackId;
+        const isHovering = this.state.hover;
+
+        const showActionMenu = !isDragging && (isHovering || isDropdownActive);
 
         return (
             <div className={highlightClass} id={'track' + trackId}
@@ -63,20 +81,20 @@ export default class MediaItem extends React.Component {
                 {...draggableProps}
                 style={getRowStyle(draggableStyle, isDragging)}
             >
-                <div className={'mediaItemDiv'}>
+                <div className={'mediaItemDiv'} onMouseEnter={this.handleHoverTrue}
+                     onMouseLeave={this.handleHoverFalse}>
                     <div className={'mediaItemCounter'}>
                         {trackNumber}
                     </div>
 
-                    <div {...dragHandleProps} style={{cursor: 'pointer'}} className={'list-song'} onClick={(e) => this.handleSelectedTrackIdChange(e, trackId)}>
+                    <div {...dragHandleProps} style={{cursor: 'pointer'}} className={'list-song'} onClick={(e) => this.handleSelectedTrackIdChange(e, playlistId, trackId)}>
                         <b>{trackTitle}</b>
                         <br /><span style={{fontSize: '.875rem'}}>{artist} - <i>{album}</i></span>
                     </div>
 
                     <div className={'mediaItemEllipsis'} style={{marginRight: '8px', flexBasis: '20px'}}>
-                        {!isDragging &&
-                            <ActionMenu onUpdatePlaylist={this.props.onUpdatePlaylists} track={this.props.track}
-                                    favorite={favorite} queue={queue} playlists={this.props.playlists}/>
+                        {showActionMenu &&
+                            <ActionMenu track={this.props.track} />
                         }
                     </div>
 

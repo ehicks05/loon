@@ -1,8 +1,11 @@
 import React from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faHeart as fasHeart, faList, faEllipsisH} from '@fortawesome/free-solid-svg-icons'
+import {faHeart as fasHeart, faList, faEllipsisH, faPlus, faMinus} from '@fortawesome/free-solid-svg-icons'
 import {faHeart as farHeart} from '@fortawesome/free-regular-svg-icons'
+import {inject, observer} from "mobx-react";
 
+@inject('store')
+@observer
 export default class ActionMenu extends React.Component {
     constructor(props) {
         super(props);
@@ -14,9 +17,10 @@ export default class ActionMenu extends React.Component {
 
     toggleDropdown()
     {
-        const el = document.getElementById('mediaItem' + this.props.track.id + 'DropDown');
-        el.classList.toggle('is-active');
-        el.classList.toggle('is-visible-important');
+        if (this.props.store.uiState.selectedContextMenuTrackId === this.props.track.id)
+            this.props.store.uiState.selectedContextMenuTrackId = 0;
+        else
+            this.props.store.uiState.selectedContextMenuTrackId = this.props.track.id;
     }
 
     handleToggleTrackInPlaylist(playlistId, trackId)
@@ -24,7 +28,7 @@ export default class ActionMenu extends React.Component {
         fetch('/api/playlists/' + playlistId + '/?action=add&trackId=' + trackId, {method: 'POST'})
             .then(response => response.text()).then(responseText => {
             console.log(responseText);
-            this.props.onUpdatePlaylists();
+            this.props.store.appState.loadPlaylists();
         });
     }
 
@@ -43,27 +47,33 @@ export default class ActionMenu extends React.Component {
     render()
     {
         const trackId = this.props.track.id;
-        const favorite = this.props.favorite;
-        const queue = this.props.queue;
+        const playlists = this.props.store.appState.playlists;
 
-        const queuePlaylistId = this.props.playlists.find(playlist => playlist.queue).id;
-        const favoritesPlaylistId = this.props.playlists.find(playlist => playlist.favorites).id;
+        const favoritesPlaylist = playlists.find(playlist => playlist.favorites);
+        const favoritesIds = favoritesPlaylist.playlistTracks.map(playlistTrack => playlistTrack.track.id);
+        const isFavorite = favoritesIds.includes(trackId);
 
-        const addToPlaylistOptions = this.props.playlists
+        const queuePlaylist = playlists.find(playlist => playlist.queue);
+        const queueIds = queuePlaylist.playlistTracks.map(playlistTrack => playlistTrack.track.id);
+        const isQueued = queueIds.includes(trackId);
+
+        const isDropdownActive = this.props.store.uiState.selectedContextMenuTrackId === trackId;
+
+        const addToPlaylistOptions = playlists
             .filter(playlist => !playlist.favorites && !playlist.queue)
             .filter(playlist => !playlist.playlistTracks.map(playlistTrack => playlistTrack.track.id).includes(trackId))
             .map(playlist =>
                 <option key={playlist.id} value={playlist.id} title={playlist.name}>
-                    {playlist.name.length > 15 ? playlist.name.substring(0, 15) : playlist.name}
+                    {playlist.name.length > 24 ? playlist.name.substring(0, 24) : playlist.name}
                 </option>
             );
 
-        const removeFromPlaylistOptions = this.props.playlists
+        const removeFromPlaylistOptions = playlists
             .filter(playlist => !playlist.favorites && !playlist.queue)
             .filter(playlist => playlist.playlistTracks.map(playlistTrack => playlistTrack.track.id).includes(trackId))
             .map(playlist =>
                 <option key={playlist.id} value={playlist.id} title={playlist.name}>
-                    {playlist.name.length > 15 ? playlist.name.substring(0, 15) : playlist.name}
+                    {playlist.name.length > 24 ? playlist.name.substring(0, 24) : playlist.name}
                 </option>
             );
 
@@ -72,11 +82,13 @@ export default class ActionMenu extends React.Component {
                 <div className="field has-addons">
                     <div className="control">
                         <a className="button is-static is-small">
-                            Add To:
+                            <span className="icon is-small">
+                                <FontAwesomeIcon icon={faPlus}/>
+                            </span>
                         </a>
                     </div>
-                    <div className="control">
-                        <span className="select is-small">
+                    <div className="control is-expanded">
+                        <span className="select is-small is-fullwidth">
                             <select id={'mediaItem' + trackId + 'AddToPlaylistSelect'}>
                                 {addToPlaylistOptions}
                             </select>
@@ -96,11 +108,13 @@ export default class ActionMenu extends React.Component {
                 <div className="field has-addons">
                     <div className="control">
                         <a className="button is-static is-small">
-                            Remove From:
+                            <span className="icon is-small">
+                                <FontAwesomeIcon icon={faMinus}/>
+                            </span>
                         </a>
                     </div>
-                    <div className="control">
-                        <span className="select is-small">
+                    <div className="control is-expanded">
+                        <span className="select is-small is-fullwidth">
                             <select id={'mediaItem' + trackId + 'removeFromPlaylistSelect'}>
                                 {removeFromPlaylistOptions}
                             </select>
@@ -116,7 +130,7 @@ export default class ActionMenu extends React.Component {
         );
 
         return (
-            <div className="dropdown is-right" id={'mediaItem' + trackId + 'DropDown'}>
+            <div className={"dropdown is-right" + (isDropdownActive ? ' is-active is-visible-important' : '')} id={'mediaItem' + trackId + 'DropDown'}>
                 <div className="dropdown-trigger">
                     <button className="button is-small" aria-haspopup="true" aria-controls="dropdown-menu2"
                             onClick={this.toggleDropdown}>
@@ -127,20 +141,20 @@ export default class ActionMenu extends React.Component {
                 </div>
                 <div className="dropdown-menu" id="dropdown-menu2" role="menu">
                     <div className="dropdown-content">
-                        <a className="dropdown-item" onClick={(e) => this.handleToggleTrackInPlaylist(favoritesPlaylistId, trackId)}>
+                        <a className="dropdown-item" onClick={(e) => this.handleToggleTrackInPlaylist(favoritesPlaylist.id, trackId)}>
                             <p>
                                 <span className={'icon has-text-success'}>
-                                    <FontAwesomeIcon icon={favorite ? fasHeart : farHeart}/>
+                                    <FontAwesomeIcon icon={isFavorite ? fasHeart : farHeart}/>
                                 </span>
-                                {favorite ? 'Remove from ' : 'Add to '} favourites
+                                {isFavorite ? 'Remove from ' : 'Add to '} favorites
                             </p>
                         </a>
-                        <a className="dropdown-item" onClick={(e) => this.handleToggleTrackInPlaylist(queuePlaylistId, trackId)}>
+                        <a className="dropdown-item" onClick={(e) => this.handleToggleTrackInPlaylist(queuePlaylist.id, trackId)}>
                             <p>
-                                <span className={'icon ' + (queue ? 'has-text-success' : 'has-text-grey')}>
+                                <span className={'icon ' + (isQueued ? 'has-text-success' : 'has-text-grey')}>
                                     <FontAwesomeIcon icon={faList}/>
                                 </span>
-                                {queue ? 'Remove from ' : 'Add to '} queue
+                                {isQueued ? 'Remove from ' : 'Add to '} queue
                             </p>
                         </a>
                         <div className="dropdown-item">

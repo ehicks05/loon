@@ -36,6 +36,7 @@ import static net.ehicks.loon.CommonUtil.escapeForFileSystem;
 public class MusicScanner
 {
     private static final Logger log = LoggerFactory.getLogger(MusicScanner.class);
+    private static final String PROGRESS_KEY = "musicFileScan";
 
     private LoonSystemRepository loonSystemRepo;
     private TrackRepository trackRepo;
@@ -55,7 +56,7 @@ public class MusicScanner
 
         try
         {
-            ProgressTracker.progressStatusMap.put("scanProgress", new ProgressTracker.ProgressStatus(0, "incomplete"));
+            ProgressTracker.progressStatusMap.put(PROGRESS_KEY, new ProgressTracker.ProgressStatus(0, "incomplete"));
 
             AtomicInteger filesProcessed = new AtomicInteger();
             LoonSystem loonSystem = loonSystemRepo.findById(1L).orElse(null);
@@ -89,7 +90,7 @@ public class MusicScanner
                 tracksToSave.add(track);
 
                 int progress = (int) ((filesProcessed.incrementAndGet() * 100) / (double) paths.size());
-                ProgressTracker.progressStatusMap.get("scanProgress").setProgress(progress);
+                ProgressTracker.progressStatusMap.get(PROGRESS_KEY).setProgress(progress);
             });
 
             trackRepo.saveAll(tracksToSave);
@@ -97,7 +98,7 @@ public class MusicScanner
             log.info("Scan complete: Added " + tracksToSave.size() + " tracks.");
             long dur = System.currentTimeMillis() - start;
             log.info("Took " + dur + "ms (" + (tracksToSave.size() / (((double) dur) / 1000)) + " tracks / sec)");
-            ProgressTracker.progressStatusMap.put("scanProgress", new ProgressTracker.ProgressStatus(100, "complete"));
+            ProgressTracker.progressStatusMap.put(PROGRESS_KEY, new ProgressTracker.ProgressStatus(100, "complete"));
         }
         catch (Exception e)
         {

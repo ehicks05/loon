@@ -1,6 +1,5 @@
 import React from 'react';
 import TextInput from "./TextInput.jsx";
-import Select from "./Select.jsx";
 
 export default class UserSettings extends React.Component {
     constructor(props) {
@@ -36,7 +35,7 @@ export default class UserSettings extends React.Component {
             .then(response => response.json())
             .then(data => {
                 console.log(data);
-                this.reloadUsers();
+                self.reloadUsers();
             });
     }
 

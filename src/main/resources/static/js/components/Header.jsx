@@ -2,10 +2,13 @@ import React from 'react';
 import {NavLink} from "react-router-dom";
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faServer, faUser, faSignOutAlt, faSlidersH } from '@fortawesome/free-solid-svg-icons'
+import {faServer, faUser, faSignOutAlt, faSlidersH, faMusic} from '@fortawesome/free-solid-svg-icons'
+import {inject, observer} from "mobx-react";
 
 library.add(faServer, faUser, faSignOutAlt);
 
+@inject('store')
+@observer
 export default class Header extends React.Component {
     componentDidMount() {
         // Get all "navbar-burger" elements
@@ -29,7 +32,6 @@ export default class Header extends React.Component {
                 });
             });
 
-
             let navbarLinks = Array.prototype.slice.call(document.querySelectorAll('#navMenu a'), 0);
             navbarLinks.forEach(function ($el) {
                 $el.addEventListener('click', function () {
@@ -41,13 +43,26 @@ export default class Header extends React.Component {
 
     render()
     {
-        const isAdmin = this.props.isAdmin;
+        const isAdmin = this.props.store.uiState.user.admin;
+
+        const playlists = this.props.store.appState.playlists
+            .filter(playlist => !playlist.favorites && !playlist.queue)
+            .map((playlist) => {
+                return (
+                    <NavLink key={playlist.id} to={'/playlists/' + playlist.id} className={'navbar-item'} activeClassName={'is-active'}>
+                        <span className="panel-icon">
+                            <FontAwesomeIcon icon={faMusic} aria-hidden="true"/>
+                        </span>
+                        {playlist.name}
+                    </NavLink>
+                )
+            });
 
         return (
-            <nav className="navbar is-transparent is-primary" role="navigation" aria-label="main navigation">
+            <nav className={"navbar " + (this.props.store.uiState.isDarkTheme ? ' is-dark ': ' is-success ')} role="navigation" aria-label="main navigation">
                 <div className="navbar-brand">
                     <div className="navbar-item">
-                        <img src={"/images/loon.png"} style={{height: '28px'}} alt="Loon" />
+                        <img id='headerLogo' src={"/images/loon.png"} style={{height: '28px'}} alt="Loon" />
                     </div>
 
                     <a role="button" className="navbar-burger burger" data-target="navMenu">
@@ -60,21 +75,28 @@ export default class Header extends React.Component {
                 <div className="navbar-menu" id="navMenu">
                     <div className="navbar-start">
                         <NavLink to='/search' activeClassName='is-active' className="navbar-item">Search</NavLink>
-                        <NavLink to='/playlists' activeClassName='is-active' className="navbar-item">Playlists</NavLink>
+                        <div className={"navbar-item has-dropdown is-hoverable"}>
+                            <NavLink to='/playlists' activeClassName='is-active' className="navbar-link">
+                                Playlists
+                            </NavLink>
+                            <div className="navbar-dropdown">
+                                {playlists}
+                            </div>
+                        </div>
 
                         {
                             isAdmin &&
                             <div className={"navbar-item has-dropdown is-hoverable"}>
                                 <div className="navbar-link">Admin</div>
-                                <div className="navbar-dropdown is-boxed">
+                                <div className="navbar-dropdown">
                                     <NavLink to={'/admin/systemSettings'} className="navbar-item" activeClassName='is-active'>
-                                        <span className="icon is-medium has-text-info">
+                                        <span className="panel-icon">
                                             <FontAwesomeIcon icon={faServer}/>
                                         </span>
                                         Manage System
                                     </NavLink>
                                     <NavLink to={'/admin/users'} className="navbar-item" activeClassName='is-active'>
-                                        <span className="icon is-medium has-text-info">
+                                        <span className="panel-icon">
                                             <FontAwesomeIcon icon={faUser}/>
                                         </span>
                                         Manage Users
@@ -85,9 +107,9 @@ export default class Header extends React.Component {
 
                         <div className={"navbar-item has-dropdown is-hoverable"}>
                             <div className="navbar-link">Settings</div>
-                            <div className="navbar-dropdown is-boxed">
+                            <div className="navbar-dropdown">
                                 <NavLink to={'/settings/eq'} className="navbar-item" activeClassName='is-active'>
-                                        <span className="icon is-medium has-text-info">
+                                        <span className="panel-icon">
                                             <FontAwesomeIcon icon={faSlidersH} rotation={90}/>
                                         </span>
                                     Equalizer

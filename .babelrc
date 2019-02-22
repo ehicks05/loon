@@ -1,6 +1,6 @@
 {
   "presets":[
-    "@babel/env", "@babel/react"
+    "@babel/env", "@babel/react", "mobx"
   ],
   "plugins": ["@babel/plugin-proposal-object-rest-spread", "@babel/plugin-syntax-dynamic-import"]
 }

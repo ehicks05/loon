@@ -1,6 +1,9 @@
 import React from 'react';
 import {Link} from "react-router-dom";
+import {inject, observer} from "mobx-react";
 
+@inject('store')
+@observer
 export default class Playlists extends React.Component {
     constructor(props) {
         super(props);
@@ -12,21 +15,20 @@ export default class Playlists extends React.Component {
         const self = this;
         if (window.confirm("Do you really want to delete this playlist?"))
         {
-            return fetch('/api/playlists/' + playlistId, {
-                method: 'delete'
-            }).then(data => {
+            return fetch('/api/playlists/' + playlistId, {method: 'delete'})
+                .then(data => {
                 console.log(data);
-                self.props.onUpdatePlaylists();
+                self.props.store.appState.loadPlaylists();
             });
         }
     }
 
     render()
     {
-        const playlists = this.props.playlists
+        const playlists = this.props.store.appState.playlists
             .filter(playlist => !playlist.favorites && !playlist.queue)
             .map((playlist, index) => {
-                const highlightClass = playlist.id === this.props.selectedPlaylistId ? ' playingHighlight' : '';
+                const highlightClass = playlist.id === this.props.store.uiState.selectedPlaylistId ? ' playingHighlight' : '';
 
                 return (<tr key={playlist.id} className={highlightClass}>
                     <td> {index + 1} </td>

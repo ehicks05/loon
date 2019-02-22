@@ -21,6 +21,7 @@ public class UserState implements Serializable
     private Long lastPlaylistId = 0L;
     private Long lastTrackId = 1L;
     private boolean shuffle = false;
+    private Boolean muted = false;
     private Double volume = 0D;
 
     @Override
@@ -92,6 +93,16 @@ public class UserState implements Serializable
     public void setShuffle(boolean shuffle)
     {
         this.shuffle = shuffle;
+    }
+
+    public Boolean isMuted()
+    {
+        return muted;
+    }
+
+    public void setMuted(Boolean muted)
+    {
+        this.muted = muted;
     }
 
     public Double getVolume()

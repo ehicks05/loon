@@ -1,7 +1,11 @@
 package net.ehicks.loon.handlers;
 
+import net.ehicks.loon.beans.PlaylistTrack;
+import net.ehicks.loon.beans.Track;
 import net.ehicks.loon.beans.User;
 import net.ehicks.loon.beans.UserState;
+import net.ehicks.loon.repos.PlaylistTrackRepository;
+import net.ehicks.loon.repos.TrackRepository;
 import net.ehicks.loon.repos.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,16 +22,38 @@ public class UserHandler
     private static final Logger log = LoggerFactory.getLogger(UserHandler.class);
     private UserRepository userRepo;
     private PasswordEncoder passwordEncoder;
+    private TrackRepository trackRepo;
+    private PlaylistTrackRepository playlistTrackRepo;
 
-    public UserHandler(UserRepository userRepo, PasswordEncoder passwordEncoder)
+    public UserHandler(UserRepository userRepo, PasswordEncoder passwordEncoder, TrackRepository trackRepo,
+                       PlaylistTrackRepository playlistTrackRepo)
     {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
+        this.trackRepo = trackRepo;
+        this.playlistTrackRepo = playlistTrackRepo;
     }
 
     @GetMapping("/current")
     public User getCurrentUser(@AuthenticationPrincipal User user)
     {
+        // check that the user's last played track still exists
+        Track track = trackRepo.findById(user.getUserState().getLastTrackId()).orElse(null);
+
+        boolean playlistTrackMissing = false;
+        if (user.getUserState().getLastPlaylistId() != 0)
+        {
+            PlaylistTrack playlistTrack = playlistTrackRepo.findByPlaylistIdAndTrackId(user.getUserState().getLastPlaylistId(), user.getUserState().getLastTrackId());
+            playlistTrackMissing = playlistTrack == null;
+        }
+
+        if (track == null || playlistTrackMissing)
+        {
+            user.getUserState().setLastPlaylistId(0L);
+            user.getUserState().setLastTrackId(trackRepo.findAll().get(0).getId());
+            userRepo.save(user);
+        }
+
         return user;
     }
 
@@ -46,7 +72,8 @@ public class UserHandler
     }
     
     @PutMapping("/{id}")
-    public User modify(@AuthenticationPrincipal User user, @PathVariable Long id, @RequestParam Optional<Double> volume, @RequestParam Optional<Boolean> shuffle)
+    public User modify(@AuthenticationPrincipal User user, @PathVariable Long id, @RequestParam Optional<Double> volume,
+                       @RequestParam Optional<Boolean> shuffle, @RequestParam Optional<Boolean> muted)
     {
         if (!user.getId().equals(id))
             return null;
@@ -55,6 +82,8 @@ public class UserHandler
             user.getUserState().setVolume(volume.get());
         if (shuffle.isPresent())
             user.getUserState().setShuffle(shuffle.get());
+        if (muted.isPresent())
+            user.getUserState().setMuted(muted.get());
 
         user = userRepo.save(user);
         return user;

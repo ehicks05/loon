@@ -8,7 +8,10 @@ import {faSquare} from '@fortawesome/free-regular-svg-icons'
 import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 import TextInput from "./TextInput.jsx";
+import {inject, observer} from "mobx-react";
 
+@inject('store')
+@observer
 export default class PlaylistBuilder extends React.Component {
     constructor(props) {
         super(props);
@@ -18,7 +21,7 @@ export default class PlaylistBuilder extends React.Component {
 
         const self = this;
 
-        self.state = {toPlaylists: false};
+        self.state = {redirectToPlaylists: false};
         let url = '/api/playlists/getLibraryTrackPaths';
 
         let xhr = new XMLHttpRequest();
@@ -65,7 +68,6 @@ export default class PlaylistBuilder extends React.Component {
     save()
     {
         const self = this;
-        const url = '/api/playlists/addOrModify';
 
         const formData = new FormData();
         formData.append("action", this.state.playlist ? 'modify' : 'add');
@@ -73,13 +75,11 @@ export default class PlaylistBuilder extends React.Component {
         formData.append("name", document.getElementById('name').value);
         formData.append("trackIds", this.state.checked.toString());
 
-        fetch(url, {
-            method: 'POST',
-            body: formData
-        }).then(response => response.json()).then(data => {
+        fetch('/api/playlists/addOrModify', {method: 'POST',body: formData})
+            .then(response => response.json()).then(data => {
             // todo: receive playlist and set state?
-            self.props.onUpdatePlaylists();
-            self.setState({toPlaylists: true});
+            self.props.store.appState.loadPlaylists();
+            self.setState({redirectToPlaylists: true});
         });
     }
 
@@ -93,7 +93,7 @@ export default class PlaylistBuilder extends React.Component {
 
     render()
     {
-        if (this.state.toPlaylists)
+        if (this.state.redirectToPlaylists)
             return <Redirect to={'/playlists'} />;
 
         return (

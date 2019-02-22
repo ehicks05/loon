@@ -30,19 +30,10 @@ public class LibraryHandler
         this.roleRepo = roleRepo;
     }
 
-    @GetMapping("/ajaxGetInitialTracks")
-    public List<Track> ajaxGetInitialTracks()
+    @GetMapping("")
+    public List<Track> getTracks()
     {
-        int from = 0;
-        int amount = 10000;
-        return getTracks(from, amount);
-    }
-
-    @GetMapping("/ajaxGetMoreTracks")
-    public String ajaxGetMoreTracks(@RequestParam Integer from, @RequestParam Integer amount)
-    {
-        // todo
-        return "";
+        return trackRepo.findAllByOrderByArtistAscAlbumAscTitleAsc();
     }
 
     @GetMapping("/ajaxGetImage")
@@ -60,18 +51,5 @@ public class LibraryHandler
     {
         Role adminRole = roleRepo.findByRole("ROLE_ADMIN");
         return user.getAuthorities().contains(adminRole);
-    }
-
-    private List<Track> getTracks(int from, int amount)
-    {
-        List<Track> library = trackRepo.findAllByOrderByArtistAscAlbumAscTitleAsc();
-        if (library.size() >= from + amount)
-            library = library.subList(from, from + amount);
-        return library;
-    }
-
-    private boolean isHaveMore(int n)
-    {
-        return trackRepo.count() > n;
     }
 }

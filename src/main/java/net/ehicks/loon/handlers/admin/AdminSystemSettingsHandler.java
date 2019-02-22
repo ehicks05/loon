@@ -1,6 +1,5 @@
 package net.ehicks.loon.handlers.admin;
 
-import com.google.gson.Gson;
 import net.ehicks.loon.ImageScanner;
 import net.ehicks.loon.MusicScanner;
 import net.ehicks.loon.ProgressTracker;
@@ -63,14 +62,14 @@ public class AdminSystemSettingsHandler
         return "";
     }
 
-    @GetMapping("/getScanProgress")
-    public String getScanProgress()
+    @GetMapping("/getScanProgress/{key}")
+    public ProgressTracker.ProgressStatus getScanProgress(@PathVariable String key)
     {
-        ProgressTracker.ProgressStatus progressStatus = ProgressTracker.progressStatusMap.get("scanProgress");
+        ProgressTracker.ProgressStatus progressStatus = ProgressTracker.progressStatusMap.get(key);
         if (progressStatus == null)
-            progressStatus = new ProgressTracker.ProgressStatus(0, "unknown");
+            progressStatus = new ProgressTracker.ProgressStatus(0, "n/a");
 
-        return new Gson().toJson(progressStatus);
+        return progressStatus;
     }
 
     private void clearLibrary()

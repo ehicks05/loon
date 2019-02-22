@@ -1,21 +1,17 @@
 import React from 'react';
 import {Link} from "react-router-dom";
+import {inject, observer} from "mobx-react";
 
+@inject('store')
+@observer
 export default class Albums extends React.Component {
     constructor(props) {
         super(props);
-
-        this.state = {};
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot)
-    {
-
     }
 
     render()
     {
-        const tracks = this.props.tracks;
+        const tracks = this.props.store.appState.tracks;
         const hideTitle = this.props.hideTitle;
 
         let albums = [...new Set(tracks.map(track => {return JSON.stringify({artist: track.albumArtist, album: track.album, albumImageId: track.albumImageId})}))];
@@ -53,6 +49,9 @@ function AlbumCard(props)
     const width = 150;
     const imageUrl = props.album.albumImageId ? '/art/' + props.album.albumImageId
         : 'https://via.placeholder.com/' + width + 'x' + width + '.png?text=' + width + 'x' + width;
+
+    const displayArtist = props.album.artist.length > 15 ? props.album.artist.substring(0, 32) : props.album.artist;
+    const displayAlbum = props.album.album.length > 15 ? props.album.album.substring(0, 32) : props.album.album;
     return (
         <div className="card">
             <div className="card-image">
@@ -62,7 +61,9 @@ function AlbumCard(props)
             </div>
             <div className="card-content" style={{padding: '.75rem'}}>
                 <div className="content">
-                    <Link to={'/artist/' + props.album.artist + '/album/' + props.album.album}>{props.album.artist + ' - ' + props.album.album}</Link>
+                    <Link to={'/artist/' + props.album.artist + '/album/' + props.album.album}>
+                        <span title={props.album.artist + ' - ' + props.album.album}>{displayArtist + ' - ' + displayAlbum}</span>
+                    </Link>
                 </div>
             </div>
         </div>

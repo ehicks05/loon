@@ -1,6 +1,7 @@
 import React from 'react';
 import PlaybackControls from "./PlaybackControls.jsx";
 import {Howl, Howler} from 'howler';
+import {inject, observer} from "mobx-react";
 
 function isScrolledIntoView(el) {
     var rect = el.getBoundingClientRect();
@@ -14,6 +15,8 @@ function isScrolledIntoView(el) {
     return isVisible;
 }
 
+@inject('store')
+@observer
 export default class Player extends React.Component {
 
     constructor(props) {
@@ -21,9 +24,6 @@ export default class Player extends React.Component {
 
         this.handlePlayerStateChange = this.handlePlayerStateChange.bind(this);
         this.handleTrackChange = this.handleTrackChange.bind(this);
-        this.handleVolumeChange = this.handleVolumeChange.bind(this);
-        this.handleMuteChange = this.handleMuteChange.bind(this);
-        this.handleShuffleChange = this.handleShuffleChange.bind(this);
         this.handleProgressChange = this.handleProgressChange.bind(this);
 
         this.lastAnimationFrame = Date.now();
@@ -32,10 +32,6 @@ export default class Player extends React.Component {
         this.state = {
             howl: null,
             playerState: 'stopped',
-            pausedAt: 0,
-            volume: this.props.userState.volume,
-            muted: false,
-            shuffle: this.props.userState.shuffle,
             timeElapsed: 0,
             duration: 0,
             firstSoundPlayed: false
@@ -53,27 +49,22 @@ export default class Player extends React.Component {
         {
             this.handlePlayerStateChange('playing', this.props.selectedTrackId);
         }
-        if (this.state.volume !== prevState.volume)
+
+        if (prevProps.volume !== this.props.volume)
         {
-            const formData = new FormData();
-            formData.append('volume', this.state.volume);
-            fetch('/api/users/' + this.props.userState.id, {method: 'PUT', body: formData}).then(response => response.json()).then(data => {
-                console.log(data);
-            });
+            Howler.volume(Player.scaleVolume(this.props.volume));
         }
-        if (this.state.shuffle !== prevState.shuffle)
+        if (prevProps.muted !== this.props.muted)
         {
-            const formData = new FormData();
-            formData.append('shuffle', this.state.shuffle);
-            fetch('/api/users/' + this.props.userState.id, {method: 'PUT', body: formData}).then(response => response.json()).then(data => {
-                console.log(data);
-            });
+            if (this.state.howl)
+                this.state.howl.mute(this.props.muted);
         }
     }
 
     handlePlayerStateChange(newPlayerState, newTrackId) {
         console.log('in Player.handlePlayerStateChange(' + newPlayerState + ', ' + newTrackId + ')');
         const self = this;
+        const userState = this.props.store.uiState.user.userState;
 
         if (newPlayerState === 'paused')
         {
@@ -101,7 +92,7 @@ export default class Player extends React.Component {
             if (!newTrackId)
                 newTrackId = this.props.selectedTrackId;
 
-            let track = this.props.tracks.find(track => track.id === newTrackId);
+            let track = this.props.store.appState.tracks.find(track => track.id === newTrackId);
 
             if (!track)
             {
@@ -129,7 +120,7 @@ export default class Player extends React.Component {
                     html5: true,
                     format: [track.extension],
                     volume: track.trackGainLinear > 1 ? 1 : track.trackGainLinear,
-                    mute: this.state.muted,
+                    mute: userState.muted,
                     // pool: 0,
                     onend: function () {
                         self.handleTrackChange('next');
@@ -148,7 +139,7 @@ export default class Player extends React.Component {
                 self.state.howl.play();
                 if (!self.state.firstSoundPlayed)
                 {
-                    Howler.volume(Player.scaleVolume(this.props.userState.volume));
+                    Howler.volume(Player.scaleVolume(userState.volume));
                     self.setState({firstSoundPlayed: true});
                 }
                 // self.state.howl.addFilter({
@@ -167,9 +158,7 @@ export default class Player extends React.Component {
                 requestAnimationFrame(self.step.bind(self));
             });
 
-            this.props.onSelectedTrackIdChange(newTrackId);
-
-
+            this.props.store.uiState.handleSelectedTrackIdChange(newTrackId);
 
             Player.scrollIntoView(track.id);
         }
@@ -190,10 +179,10 @@ export default class Player extends React.Component {
 
     handleTrackChange(input) {
         console.log('handleTrackChange');
-        const self = this;
+        const userState = this.props.store.uiState.user.userState;
 
         let currentPlaylistTrackIds = [];
-        const currentPlaylist = this.props.playlists.find(playlist => playlist.id === this.props.selectedPlaylistId);
+        const currentPlaylist = this.props.store.appState.playlists.find(playlist => playlist.id === this.props.store.uiState.selectedPlaylistId);
         if (currentPlaylist)
         {
             currentPlaylistTrackIds = currentPlaylist.playlistTracks.map((playlistTrack) => {
@@ -201,11 +190,11 @@ export default class Player extends React.Component {
             });
         }
         else
-            currentPlaylistTrackIds = this.props.tracks.map(track => track.id);
+            currentPlaylistTrackIds = this.props.store.appState.tracks.map(track => track.id);
 
         let newTrackId = -1;
 
-        if (this.state.shuffle)
+        if (userState.shuffle)
         {
             let newPlaylistTrackIndex = Math.floor (Math.random() * currentPlaylistTrackIds.length);
             newTrackId = currentPlaylistTrackIds[newPlaylistTrackIndex];
@@ -235,8 +224,7 @@ export default class Player extends React.Component {
         if (newTrackId === -1)
             newTrackId = input;
 
-        // self.handlePlayerStateChange('playing', newTrackId);
-        this.props.onSelectedTrackIdChange(newTrackId);
+        this.props.store.uiState.handleSelectedTrackIdChange(newTrackId);
     }
 
     static scaleVolume(dB)
@@ -249,25 +237,6 @@ export default class Player extends React.Component {
             level = 0;
 
         return level;
-    }
-
-    handleVolumeChange(volume) {
-        let self = this;
-
-        // todo: fade
-        Howler.volume(Player.scaleVolume(volume));
-        self.setState({volume: volume});
-    }
-
-    handleMuteChange(muted) {
-        this.setState({muted: !this.state.muted}, () => {
-            if (this.state.howl)
-                this.state.howl.mute(this.state.muted);
-        });
-    }
-
-    handleShuffleChange(shuffle) {
-        this.setState({shuffle: !this.state.shuffle});
     }
 
     handleProgressChange(progress) {
@@ -306,18 +275,12 @@ export default class Player extends React.Component {
             <div>
                 <PlaybackControls
                     playerState={this.state.playerState}
-                    volume={this.state.volume}
-                    muted={this.state.muted}
-                    shuffle={this.state.shuffle}
-                    selectedTrack={this.props.tracks.find(track => track.id === this.props.selectedTrackId)}
+                    selectedTrack={this.props.store.uiState.selectedTrack}
                     timeElapsed={this.state.timeElapsed}
                     duration={this.state.duration}
 
                     onPlayerStateChange={this.handlePlayerStateChange}
                     onTrackChange={this.handleTrackChange}
-                    onVolumeChange={this.handleVolumeChange}
-                    onMuteChange={this.handleMuteChange}
-                    onShuffleChange={this.handleShuffleChange}
                     onProgressChange={this.handleProgressChange}
                 />
             </div>);

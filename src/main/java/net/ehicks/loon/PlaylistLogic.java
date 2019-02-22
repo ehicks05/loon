@@ -63,7 +63,7 @@ public class PlaylistLogic
         List<Long> currentTrackIds = playlist.getPlaylistTracks().stream().map(playlistTrack -> playlistTrack.getTrack().getId()).collect(Collectors.toList());
         Set<PlaylistTrack> currentPlaylistTracks = playlist.getPlaylistTracks();
 
-        Set<PlaylistTrack> playlistTracksToRemove = new HashSet<>(currentPlaylistTracks);
+        Set<PlaylistTrack> playlistTracksToRemove = new HashSet<>();
         currentPlaylistTracks.forEach(currentPlaylistTrack -> {
             if (!newTrackIds.contains(currentPlaylistTrack.getTrack().getId()))
                 playlistTracksToRemove.add(currentPlaylistTrack);

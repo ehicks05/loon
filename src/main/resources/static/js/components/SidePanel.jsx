@@ -1,19 +1,15 @@
 import React from 'react';
-import {Link, NavLink} from "react-router-dom";
+import {NavLink} from "react-router-dom";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faSearch, faServer, faMusic, faUsers, faFolderOpen, faListUl, faHeart, faList, faCompactDisc, faBoxOpen, faBox} from '@fortawesome/free-solid-svg-icons'
+import {faSearch, faMusic, faUsers, faFolderOpen, faHeart, faList, faCompactDisc} from '@fortawesome/free-solid-svg-icons'
+import {inject, observer} from "mobx-react";
 
+@inject('store')
+@observer
 export default class SidePanel extends React.Component {
-    componentDidMount()
-    {
-
-    }
-
     render()
     {
-        const selectedPlaylistId = this.props.selectedPlaylistId;
-
-        const playlists = this.props.playlists
+        const playlists = this.props.store.appState.playlists
             .filter(playlist => !playlist.favorites && !playlist.queue)
             .map((playlist) => {
             return (
@@ -37,14 +33,6 @@ export default class SidePanel extends React.Component {
                     </span>
                     Search
                 </NavLink>
-                {/*<NavLink to={'/library'} className="panel-block" activeClassName="is-active"*/}
-                         {/*// isActive={() => selectedPlaylistId === 0}*/}
-                {/*>*/}
-                    {/*<span className="panel-icon">*/}
-                        {/*<FontAwesomeIcon icon={faBox} aria-hidden="true" />*/}
-                    {/*</span>*/}
-                    {/*Library*/}
-                {/*</NavLink>*/}
                 <NavLink to={'/favorites'} className="panel-block" activeClassName="is-active">
                     <span className="panel-icon">
                         <FontAwesomeIcon icon={faHeart} aria-hidden="true" />
@@ -71,7 +59,7 @@ export default class SidePanel extends React.Component {
                 </NavLink>
                 <NavLink to={'/playlists'} className="panel-block" activeClassName="is-active" exact={true}>
                     <span className="panel-icon">
-                        <FontAwesomeIcon icon={faListUl} aria-hidden="true" />
+                        <FontAwesomeIcon icon={faFolderOpen} aria-hidden="true" />
                     </span>
                     Playlists
                 </NavLink>

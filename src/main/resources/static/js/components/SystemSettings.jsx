@@ -1,14 +1,16 @@
 import React from 'react';
 import TextInput from "./TextInput.jsx";
 import Select from "./Select.jsx";
+import {inject, observer} from "mobx-react";
 
+@inject('store')
+@observer
 export default class SystemSettings extends React.Component {
     constructor(props) {
         super(props);
         let self = this;
 
         this.submitForm = this.submitForm.bind(this);
-        this.handleThemeChange = this.handleThemeChange.bind(this);
         this.handleUpdateTracks = this.handleUpdateTracks.bind(this);
         this.handleUpdatePlaylists = this.handleUpdatePlaylists.bind(this);
         this.getScanProgress = this.getScanProgress.bind(this);
@@ -16,16 +18,15 @@ export default class SystemSettings extends React.Component {
 
         self.state = {
             timeoutNumber: 0,
-            scanProgress: {progress: 0, status: 'unknown'}
+            scanProgress: {progress: 0, status: 'n/a'}
         };
     }
 
     componentDidMount()
     {
         let self = this;
-        fetch('/api/admin/systemSettings', {
-            method: 'GET'
-        }).then(response => response.json()).then(data => self.setState({settings: data}));
+        fetch('/api/admin/systemSettings', {method: 'GET'})
+            .then(response => response.json()).then(data => self.setState({settings: data}));
 
         this.getScanProgress();
     }
@@ -39,43 +40,38 @@ export default class SystemSettings extends React.Component {
     {
         let self = this;
 
-        fetch('/api/admin/systemSettings/getScanProgress', {
-            method: 'GET'
-        }).then(response => response.json()).then(scanProgress => {
+        fetch('/api/admin/systemSettings/getScanProgress/musicFileScan', {method: 'GET'})
+            .then(response => response.json()).then(scanProgress => {
+
             console.log(scanProgress);
             self.setState({scanProgress: scanProgress});
 
-            if (scanProgress.progress !== 100 || scanProgress.status !== 'complete')
+            if (scanProgress.status === 'incomplete')
             {
                 const timeoutNumber = setTimeout(self.getScanProgress, 1000);
-                self.setState({scanSinceLastTrackUpdate: true, timeoutNumber: timeoutNumber})
+                self.setState({reloadLibraryWhenScanFinishes: true, timeoutNumber: timeoutNumber})
             }
-            else
+            if (scanProgress.status === 'complete')
             {
-                if (self.state.scanSinceLastTrackUpdate)
+                if (self.state.reloadLibraryWhenScanFinishes)
                 {
                     self.handleUpdateTracks('scanning library');
-                    self.setState({scanSinceLastTrackUpdate: false})
+                    self.setState({reloadLibraryWhenScanFinishes: false})
                 }
             }
         });
     }
 
-    handleThemeChange(newTheme)
-    {
-        this.props.onThemeChange(newTheme);
-    }
-
     handleUpdateTracks(action)
     {
         console.log('Finished ' + action + ', updating track listing.');
-        this.props.onUpdateTracks();
+        this.props.store.appState.loadTracks();
     }
 
     handleUpdatePlaylists(action)
     {
         console.log('Finished ' + action + ', updating playlist listing.');
-        this.props.onUpdatePlaylists();
+        this.props.store.appState.loadPlaylists();
     }
 
     submitForm(rescan, clearLibrary)
@@ -90,7 +86,7 @@ export default class SystemSettings extends React.Component {
             method: 'PUT',
             body: formData
         }).then(response => response.json()).then(data => {
-            self.handleThemeChange(data.theme);
+            self.props.store.uiState.loadTheme();
             console.log(data);
             if (rescan)
                 self.getScanProgress();
@@ -99,6 +95,7 @@ export default class SystemSettings extends React.Component {
                 self.handleUpdateTracks('clearing library');
                 self.handleUpdatePlaylists('clearing library');
             }
+            location.reload(true);
         });
     }
 
@@ -181,19 +178,22 @@ export default class SystemSettings extends React.Component {
                             <input id="saveSystemButton" type="button" value="Save" className="button is-primary" onClick={(e) => this.submitForm()} />
                             <input id="saveAndRescanButton" type="button" value="Save and Re-scan" className="button is-success" onClick={(e) => this.submitForm(true, false)} />
                             <input id="clearLibraryButton" type="button" value="Clear Library" className="button is-danger" onClick={(e) => this.submitForm(false, true)} />
-                        </span>
-                        <span className="buttons">
                             <input id="imageScanButton" type="button" value="Scan for Images" className="button is-info" onClick={(e) => this.doImageScan()} />
                         </span>
                     </form>
-
-                    {
-                        showProgressBar &&
-                        <progress style={{width: "20em"}} title={scanProgress.progress + '%'} className={progressClass}
-                                  value={scanProgress.progress} max={"100"}>{scanProgress.progress}%</progress>
-                    }
-
                 </section>
+
+                {
+                    showProgressBar &&
+                    <section className="section">
+                        <div>
+                            Music Scan Progress:
+                            <progress style={{width: "20em"}} title={scanProgress.progress + '%'} className={progressClass}
+                                      value={scanProgress.progress} max={"100"}>{scanProgress.progress}%</progress>
+                        </div>
+                    </section>
+                }
+
             </div>
         );
     }

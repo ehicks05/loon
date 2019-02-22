@@ -1,6 +1,9 @@
 import React from 'react';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {inject, observer} from "mobx-react";
 
+@inject('store')
+@observer
 export default class TextInput extends React.Component {
     constructor(props) {
         super(props);
@@ -10,7 +13,6 @@ export default class TextInput extends React.Component {
     {
         const label = this.props.label;
         const hideLabel = this.props.hideLabel;
-        const isStatic = this.props.isStatic ? 'is-static' : '';
         const id = this.props.id;
         const value = this.props.value;
         const required = this.props.required ? 'required' : '';
@@ -33,6 +35,10 @@ export default class TextInput extends React.Component {
         let controlClass = 'control';
         controlClass += leftIcon ? ' has-icons-left' : '';
 
+        let inputClass = 'input ';
+        inputClass += this.props.isStatic ? ' is-static ' : '';
+        inputClass += this.props.inputClass;
+
         const labelEl = !hideLabel ? (isHorizontal ? (
             <div className={labelClass}>
                 <label className="label">{label}</label>
@@ -49,7 +55,7 @@ export default class TextInput extends React.Component {
 
         const controlEl = (
             <div className={controlClass}>
-                <input className={"input " + isStatic}
+                <input className={inputClass}
                        type="text"
                        size={size}
                        placeholder={label}

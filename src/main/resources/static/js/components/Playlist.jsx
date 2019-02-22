@@ -3,6 +3,7 @@ import MediaItem from "./MediaItem.jsx";
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { AutoSizer, CellMeasurer, List } from 'react-virtualized'
 import 'react-virtualized/styles.css'
+import {inject, observer} from "mobx-react";
 
 function parsePlaylistId(component)
 {
@@ -11,28 +12,32 @@ function parsePlaylistId(component)
         playlistId = component.props.match.params.id ? Number(component.props.match.params.id) : 0;
     if (component.props.match.path === '/favorites')
     {
-        const favorites = component.props.playlists.filter(playlist => playlist.favorites);
+        const favorites = component.props.store.appState.playlists.filter(playlist => playlist.favorites);
         playlistId = favorites && favorites.length > 0 ? favorites[0].id : 0;
     }
     if (component.props.match.path === '/queue')
     {
-        const queue = component.props.playlists.filter(playlist => playlist.queue);
+        const queue = component.props.store.appState.playlists.filter(playlist => playlist.queue);
         playlistId = queue && queue.length > 0 ? queue[0].id : 0;
     }
 
     return playlistId;
 }
 
+@inject('store')
+@observer
 export default class Playlist extends React.Component {
     constructor(props) {
         super(props);
-        this.handleSelectedTrackIdChange = this.handleSelectedTrackIdChange.bind(this);
-        this.handleCurrentPlaylistChange = this.handleCurrentPlaylistChange.bind(this);
-        this.handleUpdatePlaylists = this.handleUpdatePlaylists.bind(this);
         this.onDragEnd = this.onDragEnd.bind(this);
         this.persistDragAndDrop = this.persistDragAndDrop.bind(this);
 
         this.state = {playlistId: parsePlaylistId(this)};
+    }
+
+    componentWillUnmount()
+    {
+        this.props.store.uiState.selectedContextMenuTrackId = 0;
     }
 
     componentDidUpdate(prevProps, prevState, snapshot)
@@ -60,7 +65,7 @@ export default class Playlist extends React.Component {
         xhr.open('POST', '/api/playlists/dragAndDrop?' + params, false);
         xhr.onload = function() {
             if (xhr.status === 200) {
-                self.props.onUpdatePlaylists();
+                self.props.store.appState.loadPlaylists();
             }
             else {
                 console.log('Request failed.  Returned status of ' + xhr.status);
@@ -69,33 +74,10 @@ export default class Playlist extends React.Component {
         xhr.send();
     }
 
-    handleCurrentPlaylistChange(newPlaylist)
-    {
-        this.props.onCurrentPlaylistChange(this.state.playlistId);
-    }
-
-    handleSelectedTrackIdChange(selectedTrackId)
-    {
-        this.props.onCurrentPlaylistChange(this.state.playlistId, selectedTrackId);
-    }
-
-    handleUpdatePlaylists()
-    {
-        this.props.onUpdatePlaylists();
-    }
-
     render()
     {
-        const self = this;
-        const tracks = this.props.tracks;
-        const selectedTrackId = this.props.selectedTrackId;
-        const playlists = this.props.playlists;
-
-        const favoritesPlaylist = playlists.filter(playlist => playlist.favorites)[0];
-        const favoritesIds = favoritesPlaylist.playlistTracks.map(playlistTrack => playlistTrack.track.id);
-
-        const queuePlaylist = playlists.filter(playlist => playlist.queue)[0];
-        const queueIds = queuePlaylist.playlistTracks.map(playlistTrack => playlistTrack.track.id);
+        const tracks = this.props.store.appState.tracks;
+        const playlists = this.props.store.appState.playlists;
 
         const routeParamPlaylistId = this.state.playlistId;
 
@@ -114,13 +96,8 @@ export default class Playlist extends React.Component {
                         index={index}
                     >
                         {(provided, snapshot) => (
-                            <MediaItem
-                                provided={provided}
-                                snapshot={snapshot}
-                                key={track.id} track={track} trackNumber={playlistTrack.index + 1} selectedTrackId={selectedTrackId}
-                                onSelectedTrackIdChange={this.handleSelectedTrackIdChange} onUpdatePlaylists={self.props.onUpdatePlaylists} isDraggable={true}
-                                favorite={favoritesIds.includes(track.id)}
-                                queue={queueIds.includes(track.id)} playlists={playlists}
+                            <MediaItem provided={provided} snapshot={snapshot} key={track.id} playlistId={routeParamPlaylistId}
+                                       track={track} trackNumber={playlistTrack.index + 1}
                                 />
 
                         )}
@@ -131,14 +108,7 @@ export default class Playlist extends React.Component {
         }
         else
         {
-            mediaItems = tracks.map((track, index) => {
-                    return <MediaItem key={track.id} track={track} trackNumber={index + 1} selectedTrackId={selectedTrackId}
-                                      onSelectedTrackIdChange={this.handleSelectedTrackIdChange} isDraggable={false}
-                                      favorite={favoritesIds.includes(track.id)} onUpdatePlaylists={this.props.onUpdatePlaylists}
-                                      queue={queueIds.includes(track.id)} playlists={playlists}
-                    />
-                }
-            );
+            mediaItems = tracks.map((track, index) => <MediaItem key={track.id} playlistId={routeParamPlaylistId} track={track} trackNumber={index + 1} />);
         }
 
         let mediaList;

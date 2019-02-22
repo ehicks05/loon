@@ -5,9 +5,12 @@ import 'rc-slider/assets/index.css';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faVolumeUp, faVolumeOff, faRandom, faPlay, faPause, faStepForward, faStepBackward } from '@fortawesome/free-solid-svg-icons'
+import {inject, observer} from "mobx-react";
 
 const SliderWithTooltip = createSliderWithTooltip(Slider);
 
+@inject('store')
+@observer
 export default class PlaybackControls extends React.Component {
     constructor(props) {
         super(props);
@@ -28,15 +31,13 @@ export default class PlaybackControls extends React.Component {
         this.props.onTrackChange(direction);
     }
     handleVolumeChange(value) {
-        console.log('value' + value);
-        this.props.onVolumeChange(value);
+        this.props.store.uiState.updateVolume(value);
     }
     handleMuteChange(e) {
-        console.log('handleMuteChange');
-        this.props.onMuteChange(e.target.value);
+        this.props.store.uiState.updateMuted(e.target.value);
     }
     handleShuffleChange(e) {
-        this.props.onShuffleChange(e.target.value);
+        this.props.store.uiState.updateShuffle(e.target.value);
     }
     handleProgressChange(value) {
         console.log('value: ' + value);
@@ -52,12 +53,14 @@ export default class PlaybackControls extends React.Component {
 
     render()
     {
+        const userState = this.props.store.uiState.user.userState;
+        const volume = userState.volume;
+        const muted = userState.muted;
+        const shuffle = userState.shuffle;
+
         const timeElapsed = this.props.timeElapsed;
         const duration = this.props.duration;
         const selectedTrack = this.props.selectedTrack;
-        const volume = this.props.volume;
-        const muted = this.props.muted;
-        const shuffle = this.props.shuffle;
 
         const formattedTimeElapsed = PlaybackControls.formatTime(Math.round(timeElapsed));
         const formattedDuration = PlaybackControls.formatTime(Math.round(duration));
@@ -69,7 +72,7 @@ export default class PlaybackControls extends React.Component {
                         <div className="level-item" style={{marginBottom: '0'}}>
                             <span id="timer" style={{fontSize: '.875rem', marginRight: '8px'}}>{formattedTimeElapsed}</span>
                             <SliderWithTooltip name="progress" id="progress" style={{width:'100%', margin: '0'}}
-                                    trackStyle={{ backgroundColor: 'hsl(141, 71%, 48%)', height: 3 }}
+                                    trackStyle={{ backgroundColor: 'hsl(141, 71%, 48%)', height: 4 }}
                                     railStyle={{backgroundColor: '#ddd'}}
                                     handleStyle={{borderColor: 'hsl(141, 71%, 48%)'}}
                                     tipFormatter={PlaybackControls.formatTime}
@@ -139,7 +142,7 @@ export default class PlaybackControls extends React.Component {
                                     </span>
                                 </a>
                                 <div style={{width: '128px'}}>
-                                    <SliderWithTooltip trackStyle={{ backgroundColor: 'hsl(141, 71%, 48%)', height: 3 }}
+                                    <SliderWithTooltip trackStyle={{ backgroundColor: 'hsl(141, 71%, 48%)', height: 4 }}
                                             railStyle={{backgroundColor: '#ddd'}}
                                             handleStyle={{borderColor: 'hsl(141, 71%, 48%)'}}
                                             value={volume} min={-30} max={0} step={1}

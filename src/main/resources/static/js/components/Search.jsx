@@ -75,14 +75,15 @@ export default class Search extends React.Component {
         const selectedTrackId = this.props.store.uiState.selectedTrackId;
         const scrollToIndex = this.state.searchResults.indexOf(this.state.searchResults.find(track => track.id === selectedTrackId));
         const inputClass = this.props.store.uiState.isDarkTheme ? ' has-text-light has-background-dark' : '';
-        const tracks = this.props.store.appState.tracks;
 
         return (
-            <section className={'section'} style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
-                <form><TextInput autofocus={true} id={'searchInput'} label={'Search'} leftIcon={faSearch} value={this.state.searchKey}
-                                 onChange={this.handleSearchKeyChange} horizontal={false} hideLabel={true} autoComplete='off' inputClass={inputClass} /></form>
+            <div style={{display: 'flex', flexDirection: 'column', height: '100%', flex: '1'}}>
+                <section className={'section'} style={{display: 'flex', flexDirection: 'column'}}>
+                    <form><TextInput autofocus={true} id={'searchInput'} label={'Search'} leftIcon={faSearch} value={this.state.searchKey}
+                                     onChange={this.handleSearchKeyChange} horizontal={false} hideLabel={true} autoComplete='off' inputClass={inputClass} /></form>
+                </section>
 
-                <div id="list" style={{display: 'flex', flexDirection: 'column', flex: '1', flexGrow: '1'}}>
+                <div id="list" style={{display: 'flex', flexDirection: 'column', height: '100%', flex: '1', flexGrow: '1'}}>
                     <AutoSizer style={{outline:0}}>
                         {
                             ({ width, height }) => {
@@ -101,7 +102,7 @@ export default class Search extends React.Component {
                         }
                     </AutoSizer>
                 </div>
-            </section>
+            </div>
         );
     }
 

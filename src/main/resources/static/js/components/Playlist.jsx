@@ -138,11 +138,14 @@ export default class Playlist extends React.Component {
         }
 
         return (
-            <section className={'section'} style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
-                <h1 className="title">{playlist ? playlist.name : 'Library'}</h1>
+            <div>
+
+                <section className={'section'} style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
+                    <h1 className="title">{playlist ? playlist.name : 'Library'}</h1>
+                </section>
 
                 {mediaList}
-            </section>
+            </div>
         );
     }
 }

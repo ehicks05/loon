@@ -38,14 +38,16 @@ export default class Album extends React.Component {
         );
 
         return (
-            <section className={'section'} style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
-                <div className="title" style={{padding: '.25rem'}}>{artist + ' - ' + album}</div>
-                <div className="subtitle" style={{padding: '.25rem'}}>Tracks</div>
+            <div style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
+                <section className={'section'} style={{display: 'flex', flexDirection: 'column'}}>
+                    <div className="title" style={{padding: '.25rem'}}>{artist + ' - ' + album}</div>
+                    <div className="subtitle" style={{padding: '.25rem'}}>Tracks</div>
+                </section>
 
                 <ul id="list" style={{display: 'flex', flexDirection: 'column', flex: '1', flexGrow: '1'}}>
                     {mediaItems}
                 </ul>
-            </section>
+            </div>
         );
     }
 }

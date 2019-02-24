@@ -12,15 +12,15 @@ Be able to stream your entire music library from your browser. Use it from deskt
 * Make playlists
 * Mark songs as your favorites!
 * Drag and drop re-ordering for playlists
+* Equalizer
 * Replaygain tag support (mostly)
 * Transcode to various mp3 bitrates (mostly works, saves output to temp dir for now)
-* Equalizer (work-in-progress)
 * Spring Boot Admin support (experimental)
 * Prometheus support (experimental)
 
 ### Known Issues
-* Howler.js seems to support either streaming OR using web audio api filters. This will have to be resolved for
-  streaming and equalization to work at the same time.
+* ~~Howler.js seems to support either streaming OR using web audio api filters. This will have to be resolved for
+  streaming and equalization to work at the same time.~~
 * React-beautiful-dnd doesn't yet support react-virtualized. Until then we either have drag and drop, or snappy 
   lists of songs.
 * The JAVE library, used for transcoding, isn't being utilized. It seems to require outputting to a file. This

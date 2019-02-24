@@ -1,11 +1,8 @@
 import React from 'react';
 import {NavLink} from "react-router-dom";
-import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faServer, faUser, faSignOutAlt, faSlidersH, faMusic} from '@fortawesome/free-solid-svg-icons'
 import {inject, observer} from "mobx-react";
-
-library.add(faServer, faUser, faSignOutAlt);
 
 @inject('store')
 @observer

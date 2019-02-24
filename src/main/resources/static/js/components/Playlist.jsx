@@ -1,8 +1,6 @@
 import React from 'react';
 import MediaItem from "./MediaItem.jsx";
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { AutoSizer, CellMeasurer, List } from 'react-virtualized'
-import 'react-virtualized/styles.css'
 import {inject, observer} from "mobx-react";
 
 function parsePlaylistId(component)

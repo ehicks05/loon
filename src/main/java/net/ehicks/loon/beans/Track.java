@@ -58,9 +58,6 @@ public class Track implements Serializable
     @JsonIgnore
     private String trackPeak = "";
 
-    @Column(name = "artwork_db_file_id")
-    private Long artworkDbFileId;
-
     @Column(length = 1000)
     private String artistImageId = "";
     @Column(length = 1000)
@@ -101,7 +98,6 @@ public class Track implements Serializable
                 ", trackGain='" + trackGain + '\'' +
                 ", trackGainLinear='" + trackGainLinear + '\'' +
                 ", trackPeak='" + trackPeak + '\'' +
-                ", artworkDbFileId=" + artworkDbFileId +
                 '}';
     }
 
@@ -255,16 +251,6 @@ public class Track implements Serializable
     public void setTrackPeak(String trackPeak)
     {
         this.trackPeak = trackPeak;
-    }
-
-    public Long getArtworkDbFileId()
-    {
-        return artworkDbFileId;
-    }
-
-    public void setArtworkDbFileId(Long artworkDbFileId)
-    {
-        this.artworkDbFileId = artworkDbFileId;
     }
 
     public String getArtistImageId()

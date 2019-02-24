@@ -84,6 +84,17 @@ export default class PlaybackControls extends React.Component {
                 <div className="section myLevel" style={{zIndex: '5', position: 'static', padding: '6px', paddingTop: '0'}}>
                     <nav className="level">
                         <div className="level-left">
+                            <div className="level-item">
+                                <span id="track" style={{maxWidth: '400px', maxHeight: '72px', overflow: 'auto'}}>
+                                    <b>{selectedTrack ? selectedTrack.title : "title"}</b>
+                                    <br />
+                                    <span style={{fontSize: '.875rem'}}>
+                                        {selectedTrack ? selectedTrack.artist : "artist"} - <i>{selectedTrack ? selectedTrack.album : "album"}</i>
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                        <div className="level-right" style={{marginTop: '4px', marginRight: '6px'}}>
                             <p className="level-item">
                                 <a className="button" id="prevBtn" onClick={(e) => this.handleTrackChange(e, 'prev')}>
                                     <span className="icon">
@@ -115,22 +126,8 @@ export default class PlaybackControls extends React.Component {
                                         <FontAwesomeIcon icon={faStepForward}/>
                                     </span>
                                 </a>
-                            </p>
-                            <div className="level-item">
-                                <span id="track" style={{maxWidth: '400px', maxHeight: '72px', overflow: 'auto'}}>
-                                    <b>{selectedTrack ? selectedTrack.title : "title"}</b>
-                                    <br />
-                                    <span style={{fontSize: '.875rem'}}>
-                                        {selectedTrack ? selectedTrack.artist : "artist"} - <i>{selectedTrack ? selectedTrack.album : "album"}</i>
-                                    </span>
-                                </span>
-                            </div>
-                        </div>
 
-                        <div className="level-right" style={{marginTop: '4px', marginRight: '6px'}}>
-                            <div className="level-item">
-
-                                <a className={"button is-small" + (shuffle ? " is-success" : "")} id="shuffleBtn" onClick={this.handleShuffleChange}>
+                                <a className={"button is-small" + (shuffle ? " is-success" : "")} style={{marginLeft: '1.5em'}} id="shuffleBtn" onClick={this.handleShuffleChange}>
                                     <span className="icon">
                                         <FontAwesomeIcon icon={faRandom} fixedWidth/>
                                     </span>
@@ -141,15 +138,15 @@ export default class PlaybackControls extends React.Component {
                                         <FontAwesomeIcon icon={muted ? faVolumeOff : faVolumeUp} fixedWidth/>
                                     </span>
                                 </a>
-                                <div style={{width: '128px'}}>
+                                <div style={{width: '120px'}}>
                                     <SliderWithTooltip trackStyle={{ backgroundColor: 'hsl(141, 71%, 48%)', height: 4 }}
-                                            railStyle={{backgroundColor: '#ddd'}}
-                                            handleStyle={{borderColor: 'hsl(141, 71%, 48%)'}}
-                                            value={volume} min={-30} max={0} step={1}
-                                            tipFormatter={v => `${v}dB`}
-                                            onChange={this.handleVolumeChange} />
+                                                       railStyle={{backgroundColor: '#ddd'}}
+                                                       handleStyle={{borderColor: 'hsl(141, 71%, 48%)'}}
+                                                       value={volume} min={-30} max={0} step={1}
+                                                       tipFormatter={v => `${v}dB`}
+                                                       onChange={this.handleVolumeChange} />
                                 </div>
-                            </div>
+                            </p>
                         </div>
                     </nav>
                 </div>

@@ -34,11 +34,15 @@ export default class MyHelmet extends React.Component {
                          .panel-block {border-left-color: #282f2f;}
                          #headerLogo {filter: invert(100%);}
                          .mediaItemDiv:hover {background-color: #282f2f;}
+                         .mediaItemDiv a {color:#aaa}
+                         .mediaItemDiv a:hover {color:#ccc}
                         `
                         :
                         `.myLevel {background-color: #f4f4f4;}
                          #left-column {background-color: #f4f4f4;}
                          .mediaItemDiv:hover {background-color: #f4f4f4;}
+                         .mediaItemDiv a {color:#666}
+                         .mediaItemDiv a:hover {color:#888}
                         `
                     }
                 </style>

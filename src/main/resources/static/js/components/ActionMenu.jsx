@@ -64,7 +64,7 @@ export default class ActionMenu extends React.Component {
             .filter(playlist => !playlist.playlistTracks.map(playlistTrack => playlistTrack.track.id).includes(trackId))
             .map(playlist =>
                 <option key={playlist.id} value={playlist.id} title={playlist.name}>
-                    {playlist.name.length > 24 ? playlist.name.substring(0, 24) : playlist.name}
+                    {playlist.name.length > 28 ? playlist.name.substring(0, 28) : playlist.name}
                 </option>
             );
 
@@ -73,7 +73,7 @@ export default class ActionMenu extends React.Component {
             .filter(playlist => playlist.playlistTracks.map(playlistTrack => playlistTrack.track.id).includes(trackId))
             .map(playlist =>
                 <option key={playlist.id} value={playlist.id} title={playlist.name}>
-                    {playlist.name.length > 24 ? playlist.name.substring(0, 24) : playlist.name}
+                    {playlist.name.length > 28 ? playlist.name.substring(0, 28) : playlist.name}
                 </option>
             );
 
@@ -114,7 +114,7 @@ export default class ActionMenu extends React.Component {
                         </a>
                     </div>
                     <div className="control is-expanded">
-                        <span className="select is-small is-fullwidth">
+                        <span className="select is-small is-fullwidth" style={{minWidth: '15em'}}>
                             <select id={'mediaItem' + trackId + 'removeFromPlaylistSelect'}>
                                 {removeFromPlaylistOptions}
                             </select>

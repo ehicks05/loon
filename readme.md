@@ -19,8 +19,6 @@ Be able to stream your entire music library from your browser. Use it from deskt
 * Prometheus support (experimental)
 
 ### Known Issues
-* ~~Howler.js seems to support either streaming OR using web audio api filters. This will have to be resolved for
-  streaming and equalization to work at the same time.~~
 * React-beautiful-dnd doesn't yet support react-virtualized. Until then we either have drag and drop, or snappy 
   lists of songs.
 * The JAVE library, used for transcoding, isn't being utilized. It seems to require outputting to a file. This
@@ -33,6 +31,7 @@ Be able to stream your entire music library from your browser. Use it from deskt
 * Windows (linux is a work-in-progress)
 * Postgresql
 * Gradle
+* Music collection cleanly tagged with artist, album, albumartist, title, and embedded artwork.
 
 #### Installing
 1. Clone project

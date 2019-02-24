@@ -28,15 +28,6 @@ export class AppState {
             .then(response => response.json()).then(data => this.tracks = data);
     }
 
-    @action
-    handleSetQueueTracks(trackIds) {
-        const formData = new FormData();
-        formData.append('playlistId', this.state.playlists.find(playlist => playlist.queue).id);
-        formData.append('trackIds', trackIds);
-        fetch('/api/playlists/setTracks', {method: 'PUT', body: formData})
-            .then(this.reloadPlaylists);
-    }
-
     @computed get completedTodosCount() {
         return this.todos.filter(
             todo => todo.completed === true

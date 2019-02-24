@@ -19,50 +19,24 @@ export default class PlaylistBuilder extends React.Component {
         this.onExpand = this.onExpand.bind(this);
         this.save = this.save.bind(this);
 
-        const self = this;
-
-        self.state = {redirectToPlaylists: false};
-        let url = '/api/playlists/getLibraryTrackPaths';
-
-        let xhr = new XMLHttpRequest();
-        xhr.open('GET', url, false);
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                self.state.treeData = JSON.parse(this.responseText);
-            }
-            else {
-                console.log('Request failed.  Returned status of ' + xhr.status);
-            }
+        this.state = {redirectToPlaylists: false,
+            checked: [],
+            expanded: ['0', '-1', '-2']
         };
-        xhr.send();
+    }
 
-        let playlistId = this.props.match.params.id ? this.props.match.params.id : 0;
-        playlistId = Number(playlistId);
+    componentDidMount()
+    {
+        const self = this;
+        fetch('/api/playlists/getLibraryTrackPaths', {method: 'GET'})
+            .then(response => response.json()).then(json => self.setState({treeData: json}));
 
+        let playlistId = this.props.match.params.id ? Number(this.props.match.params.id) : 0;
         if (playlistId)
         {
-            url = '/api/playlists/getPlaylist?playlistId=' + playlistId;
-
-            xhr = new XMLHttpRequest();
-            xhr.open('GET', url, false);
-            xhr.onload = function() {
-                if (xhr.status === 200) {
-                    self.state.playlist = JSON.parse(this.responseText);
-                }
-                else {
-                    console.log('Request failed.  Returned status of ' + xhr.status);
-                }
-            };
-            xhr.send();
+            const playlist = this.props.store.appState.playlists.find(playlist => playlist.id === playlistId);
+            this.setState({playlist: playlist, checked: playlist.playlistTracks.map(playlistTrack => playlistTrack.track.id)});
         }
-
-        this.state.checked = [];
-        this.state.expanded = [];
-        if (this.state.playlist)
-        {
-            this.state.checked = this.state.playlist.playlistTracks.map(playlistTrack => playlistTrack.track.id);
-        }
-        this.state.expanded = ['0', '-1', '-2'];
     }
 
     save()
@@ -77,7 +51,6 @@ export default class PlaylistBuilder extends React.Component {
 
         fetch('/api/playlists/addOrModify', {method: 'POST',body: formData})
             .then(response => response.json()).then(data => {
-            // todo: receive playlist and set state?
             self.props.store.appState.loadPlaylists();
             self.setState({redirectToPlaylists: true});
         });
@@ -93,6 +66,8 @@ export default class PlaylistBuilder extends React.Component {
 
     render()
     {
+        if (!this.state.treeData)
+            return <div>Loading...</div>;
         if (this.state.redirectToPlaylists)
             return <Redirect to={'/playlists'} />;
 

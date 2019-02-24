@@ -63,12 +63,12 @@ export class UiState {
     @action
     loadUser()
     {
+        const self = this;
         return fetch('/api/users/current', {method: 'GET'})
             .then(response => response.json()).then(data => {
-
-                this.user = data;
-                this.selectedPlaylistId = data.userState.lastPlaylistId;
-                this.selectedTrackId = data.userState.lastTrackId;
+                self.user = data;
+                self.selectedPlaylistId = data.userState.lastPlaylistId;
+                self.selectedTrackId = data.userState.lastTrackId;
             });
     }
 
@@ -77,19 +77,26 @@ export class UiState {
     {
         this.selectedPlaylistId = selectedPlaylistId;
         this.selectedTrackId = selectedTrackId;
+        const formData = new FormData();
+        formData.append('lastPlaylistId', this.selectedPlaylistId);
+        formData.append('lastTrackId', this.selectedTrackId);
+        fetch('/api/users/' + this.user.id + '/saveProgress', {method: 'PUT', body: formData})
+            .then(response => response.json())
+        ;
     }
 
     @action
     handleSelectedTrackIdChange(selectedTrackId)
     {
         this.selectedTrackId = selectedTrackId;
-
+        const self = this;
         const formData = new FormData();
         formData.append('lastPlaylistId', this.selectedPlaylistId);
         formData.append('lastTrackId', this.selectedTrackId);
         fetch('/api/users/' + this.user.id + '/saveProgress', {method: 'PUT', body: formData})
             .then(response => response.json())
-            .then(this.loadUser);
+            // .then(self.loadUser())
+        ;
     }
 
     @action
@@ -119,6 +126,19 @@ export class UiState {
         const formData = new FormData();
         formData.append('shuffle', shuffle);
         fetch('/api/users/' + this.user.id, {method: 'PUT', body: formData})
+            .then(response => response.json()).then(data => {console.log(data);});
+    }
+
+    @action
+    updateEq(eqNum, field, value) {
+        const prop = 'eq' + eqNum + field;
+        this.user.userState[prop] = value;
+
+        const formData = new FormData();
+        formData.append('eqNum', eqNum);
+        formData.append('field', field);
+        formData.append('value', value);
+        fetch('/api/users/' + this.user.id + '/eq', {method: 'PUT', body: formData})
             .then(response => response.json()).then(data => {console.log(data);});
     }
 

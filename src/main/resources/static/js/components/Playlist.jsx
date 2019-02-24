@@ -35,6 +35,11 @@ export default class Playlist extends React.Component {
         this.state = {playlistId: parsePlaylistId(this)};
     }
 
+    componentDidMount()
+    {
+        this.setState({playlistId: parsePlaylistId(this)});
+    }
+
     componentWillUnmount()
     {
         this.props.store.uiState.selectedContextMenuTrackId = 0;

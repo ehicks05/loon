@@ -26,7 +26,7 @@ section {padding: 10px !important;}
 .mediaItemDiv:hover .mediaItemEllipsis .dropdown{visibility: visible;}
 .is-visible-important {visibility: visible !important;}
 
-.list-song {cursor: pointer; flex: 8}
+.list-song {flex: 8}
 .mediaItemCounter {text-align: right; margin-right: 5px; min-width: 30px; flex-basis: 36px;}
 
 .panel-block {border: none; border-left: 6px solid white;}

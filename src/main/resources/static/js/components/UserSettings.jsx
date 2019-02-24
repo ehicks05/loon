@@ -63,7 +63,7 @@ export default class UserSettings extends React.Component {
                     </h2>
                 </section>
                 <section className="section">
-                    <table className="table">
+                    <table className="table" style={{display: 'block',overflowX: 'auto'}}>
                         <thead>
                             <tr>
                                 <th>Username</th>

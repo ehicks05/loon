@@ -1,6 +1,7 @@
 import React from 'react';
 import ActionMenu from "./ActionMenu.jsx";
 import {inject, observer} from "mobx-react";
+import {Link} from "react-router-dom";
 
 const getRowStyle = (draggableStyle, isDragging) => ({
     // some basic styles to make the items look a bit nicer
@@ -39,6 +40,7 @@ export default class MediaItem extends React.Component {
 
     handleSelectedTrackIdChange(e, selectedPlaylistId, selectedTrackId)
     {
+        console.log('handleSelectedPlaylistIdChange' + selectedPlaylistId + '...' + selectedTrackId);
         this.props.store.uiState.handleSelectedPlaylistIdChange(selectedPlaylistId, selectedTrackId);
     }
 
@@ -87,9 +89,9 @@ export default class MediaItem extends React.Component {
                         {trackNumber}
                     </div>
 
-                    <div {...dragHandleProps} style={{cursor: 'pointer'}} className={'list-song'} onClick={(e) => this.handleSelectedTrackIdChange(e, playlistId, trackId)}>
-                        <b>{trackTitle}</b>
-                        <br /><span style={{fontSize: '.875rem'}}>{artist} - <i>{album}</i></span>
+                    <div {...dragHandleProps} className={'list-song'}>
+                        <b style={{cursor: 'pointer'}} onClick={(e) => this.handleSelectedTrackIdChange(e, playlistId, trackId)}>{trackTitle}</b>
+                        <br /><span style={{fontSize: '.875rem'}}><Link to={'/artist/' + artist}>{artist}</Link> - <Link to={'/artist/' + artist + '/album/' + album}><i>{album}</i></Link></span>
                     </div>
 
                     <div className={'mediaItemEllipsis'} style={{marginRight: '8px', flexBasis: '20px'}}>

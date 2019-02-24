@@ -1,18 +1,14 @@
 import React from 'react';
 import PlaybackControls from "./PlaybackControls.jsx";
-import {Howl, Howler} from 'howler';
 import {inject, observer} from "mobx-react";
 
 function isScrolledIntoView(el) {
-    var rect = el.getBoundingClientRect();
-    var elemTop = rect.top;
-    var elemBottom = rect.bottom;
+    const rect = el.getBoundingClientRect();
+    const elemTop = rect.top;
+    const elemBottom = rect.bottom;
 
-    // Only completely visible elements return true:
-    // var isVisible = (elemTop >= 0) && (elemBottom <= window.innerHeight);
     // Partially visible elements return true:
-    var isVisible = elemTop < window.innerHeight && elemBottom >= 0;
-    return isVisible;
+    return elemTop < window.innerHeight && elemBottom >= 0;
 }
 
 @inject('store')
@@ -27,14 +23,63 @@ export default class Player extends React.Component {
         this.handleProgressChange = this.handleProgressChange.bind(this);
 
         this.lastAnimationFrame = Date.now();
-        Howler.autoSuspend = false;
+
+        this.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); // todo: do we still need the webkit one?
+
+        this.audio = new Audio();
+        this.audio.controls = false;
+        this.audio.autoplay = false;
+        const self = this;
+        this.audio.onended = function () {
+            self.handleTrackChange('next');
+        };
+        this.audio.ondurationchange = function () {
+            self.setState({duration: self.audio.duration});
+        };
+        this.audio.onerror = function () {
+            console.log(self.audio.error);
+        };
+
+        document.body.appendChild(this.audio);
+
+        this.trackGainNode = this.audioCtx.createGain();
+        // this.trackGainNode.connect(this.audioCtx.destination);
+
+        this.gainNode = this.audioCtx.createGain();
+        this.gainNode.gain.value = Player.scaleVolume(this.props.store.uiState.user.userState.volume);
+        this.gainNode.connect(this.trackGainNode);
+
+        const userState = this.props.store.uiState.user.userState;
+        this.band1 = this.audioCtx.createBiquadFilter();
+        this.band1.type = "lowshelf";
+        this.band1.frequency.value = userState.eq1Frequency;
+        this.band1.gain.value = userState.eq1Gain;
+        this.band2 = this.audioCtx.createBiquadFilter();
+        this.band2.type = "peaking";
+        this.band2.frequency.value = userState.eq2Frequency;
+        this.band2.gain.value = userState.eq2Gain;
+        this.band3 = this.audioCtx.createBiquadFilter();
+        this.band3.type = "peaking";
+        this.band3.frequency.value = userState.eq3Frequency;
+        this.band3.gain.value = userState.eq3Gain;
+        this.band4 = this.audioCtx.createBiquadFilter();
+        this.band4.type = "highshelf";
+        this.band4.frequency.value = userState.eq4Frequency;
+        this.band4.gain.value = userState.eq4Gain;
+
+        this.trackGainNode.connect(this.band1);
+        this.band1.connect(this.band2);
+        this.band2.connect(this.band3);
+        this.band3.connect(this.band4);
+        this.band4.connect(this.audioCtx.destination);
+
+        this.audioBufferSourceNode = this.audioCtx.createMediaElementSource(this.audio);
+        this.audioBufferSourceNode.connect(this.gainNode);
 
         this.state = {
-            howl: null,
             playerState: 'stopped',
             timeElapsed: 0,
-            duration: 0,
-            firstSoundPlayed: false
+            duration: 0
         };
     }
 
@@ -52,30 +97,51 @@ export default class Player extends React.Component {
 
         if (prevProps.volume !== this.props.volume)
         {
-            Howler.volume(Player.scaleVolume(this.props.volume));
+            this.gainNode.gain.value = Player.scaleVolume(this.props.volume);
         }
         if (prevProps.muted !== this.props.muted)
         {
-            if (this.state.howl)
-                this.state.howl.mute(this.props.muted);
+            if (this.audio)
+                this.audio.muted = this.props.muted;
+        }
+        if (prevProps.eq1Freq !== this.props.eq1Freq || prevProps.eq1Gain !== this.props.eq1Gain)
+        {
+            this.band1.frequency.value = this.props.eq1Freq;
+            this.band1.gain.value = this.props.eq1Gain;
+        }
+        if (prevProps.eq2Freq !== this.props.eq2Freq || prevProps.eq2Gain !== this.props.eq2Gain)
+        {
+            this.band2.frequency.value = this.props.eq2Freq;
+            this.band2.gain.value = this.props.eq2Gain;
+        }
+        if (prevProps.eq3Freq !== this.props.eq3Freq || prevProps.eq3Gain !== this.props.eq3Gain)
+        {
+            this.band3.frequency.value = this.props.eq3Freq;
+            this.band3.gain.value = this.props.eq3Gain;
+        }
+        if (prevProps.eq4Freq !== this.props.eq4Freq || prevProps.eq4Gain !== this.props.eq4Gain)
+        {
+            this.band4.frequency.value = this.props.eq4Freq;
+            this.band4.gain.value = this.props.eq4Gain;
         }
     }
 
     handlePlayerStateChange(newPlayerState, newTrackId) {
         console.log('in Player.handlePlayerStateChange(' + newPlayerState + ', ' + newTrackId + ')');
         const self = this;
-        const userState = this.props.store.uiState.user.userState;
 
         if (newPlayerState === 'paused')
         {
-            self.state.howl.pause();
+            this.audioCtx.suspend();
         }
         if (newPlayerState === 'playing')
         {
-            if (!newTrackId && self.state.howl && !self.state.howl.playing())
+            if (!newTrackId && self.audio && self.audioCtx.state === 'suspended')
             {
                 // we need to resume
-                self.state.howl.play();
+                console.log('resuming from pause?');
+                this.audio.play();
+                this.audioCtx.resume();
 
                 // Start updating the progress of the track.
                 requestAnimationFrame(self.step.bind(self));  // do this since we're exiting early
@@ -93,72 +159,32 @@ export default class Player extends React.Component {
                 newTrackId = this.props.selectedTrackId;
 
             let track = this.props.store.appState.tracks.find(track => track.id === newTrackId);
-
             if (!track)
             {
                 console.log('no track found...');
                 return;
             }
 
-            if (self.state.howl && self.state.howl.playing())
+            if (self.audio && self.audioCtx.state === 'running')
             {
-                if (self.state.howl._src === '/media?id=' + track.id)
+                if (self.audio.src === '/media?id=' + track.id)
                 {
                     // we need to pause
-                    self.state.howl.pause();
+                    this.audioCtx.suspend();
                     this.setState({playerState: 'paused'}); // do this since we're exiting early
                     return;
                 }
             }
-            
-            if (self.state.howl)
-                self.state.howl.unload();
 
-            self.setState({
-                howl: new Howl({
-                    src: '/media?id=' + track.id,
-                    html5: true,
-                    format: [track.extension],
-                    volume: track.trackGainLinear > 1 ? 1 : track.trackGainLinear,
-                    mute: userState.muted,
-                    // pool: 0,
-                    onend: function () {
-                        self.handleTrackChange('next');
-                    },
-                    onloaderror: function (id, msg) {
-                        console.log('error code: ' + msg);
-                    },
-                    onplayerror: function (id, msg) {
-                        console.log('error code: ' + msg);
-                    },
-                    onplay: function () {
-                        self.setState({duration: self.state.howl.duration()});
-                    }
-                })
-            }, function () {
-                self.state.howl.play();
-                if (!self.state.firstSoundPlayed)
-                {
-                    Howler.volume(Player.scaleVolume(userState.volume));
-                    self.setState({firstSoundPlayed: true});
-                }
-                // self.state.howl.addFilter({
-                //     filterType: 'highpass',
-                //     frequency: 400.0,
-                //     Q: 3.0
-                // });
-                // self.state.howl.addFilter({
-                //     filterType: 'lowpass',
-                //     frequency: 2000.0,
-                //     Q: 3.0
-                // });
-                console.log('now playing ' + track.title);
+            self.audio.volume = 0;
+            self.audio.src = '/media?id=' + track.id;
+            self.trackGainNode.gain.value = track.trackGainLinear;
 
-                // Start updating the progress of the track.
-                requestAnimationFrame(self.step.bind(self));
-            });
-
-            this.props.store.uiState.handleSelectedTrackIdChange(newTrackId);
+            const playPromise = self.audio.play();
+            if (playPromise !== null) {
+                playPromise.then(() => { self.audio.volume = 1; requestAnimationFrame(self.step.bind(self)); })
+                    .catch(() => { self.audio.play(); })
+            }
 
             Player.scrollIntoView(track.id);
         }
@@ -242,9 +268,9 @@ export default class Player extends React.Component {
     handleProgressChange(progress) {
         let self = this;
 
-        if (self.state.howl)
+        if (self.audio)
         {
-            self.state.howl.seek(progress);
+            self.audio.currentTime = progress;
             this.lastAnimationFrame = Date.now() - 1000; // force the progress bar to update
             self.step();
         }
@@ -257,8 +283,8 @@ export default class Player extends React.Component {
         let elapsed = Date.now() - this.lastAnimationFrame;
         if (elapsed > 1000) // update 1 time a second
         {
-            if (typeof self.state.howl.seek() === 'number')
-                this.setState({timeElapsed: self.state.howl.seek()});
+            if (typeof self.audio.currentTime === 'number')
+                this.setState({timeElapsed: self.audio.currentTime});
 
             this.lastAnimationFrame = Date.now();
         }

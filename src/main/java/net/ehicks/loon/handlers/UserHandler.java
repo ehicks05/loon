@@ -103,4 +103,30 @@ public class UserHandler
 
         return user;
     }
+
+    @PutMapping("/{id}/eq")
+    public User changeEq(@AuthenticationPrincipal User user, @PathVariable Long id, @RequestParam Integer eqNum,
+                         @RequestParam String field, @RequestParam Integer value)
+    {
+        if (!user.getId().equals(id))
+            return null;
+
+        if (field.equals("Frequency"))
+        {
+            if (eqNum.equals(1)) user.getUserState().setEq1Frequency(value);
+            if (eqNum.equals(2)) user.getUserState().setEq2Frequency(value);
+            if (eqNum.equals(3)) user.getUserState().setEq3Frequency(value);
+            if (eqNum.equals(4)) user.getUserState().setEq4Frequency(value);
+        }
+        if (field.equals("Gain"))
+        {
+            if (eqNum.equals(1)) user.getUserState().setEq1Gain(value);
+            if (eqNum.equals(2)) user.getUserState().setEq2Gain(value);
+            if (eqNum.equals(3)) user.getUserState().setEq3Gain(value);
+            if (eqNum.equals(4)) user.getUserState().setEq4Gain(value);
+        }
+
+        userRepo.save(user);
+        return user;
+    }
 }

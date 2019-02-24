@@ -24,6 +24,16 @@ public class UserState implements Serializable
     private Boolean muted = false;
     private Double volume = 0D;
 
+    @Column()
+    private Integer eq1Frequency = 200;
+    private Integer eq1Gain = 0;
+    private Integer eq2Frequency = 1_000;
+    private Integer eq2Gain = 0;
+    private Integer eq3Frequency = 4_000;
+    private Integer eq3Gain = 0;
+    private Integer eq4Frequency = 10_000;
+    private Integer eq4Gain = 0;
+
     @Override
     public boolean equals(Object obj)
     {
@@ -113,5 +123,90 @@ public class UserState implements Serializable
     public void setVolume(Double volume)
     {
         this.volume = volume;
+    }
+
+    public Boolean getMuted()
+    {
+        return muted;
+    }
+
+    public Integer getEq1Frequency()
+    {
+        return eq1Frequency;
+    }
+
+    public void setEq1Frequency(Integer eq1Frequency)
+    {
+        this.eq1Frequency = eq1Frequency;
+    }
+
+    public Integer getEq1Gain()
+    {
+        return eq1Gain;
+    }
+
+    public void setEq1Gain(Integer eq1Gain)
+    {
+        this.eq1Gain = eq1Gain;
+    }
+
+    public Integer getEq2Frequency()
+    {
+        return eq2Frequency;
+    }
+
+    public void setEq2Frequency(Integer eq2Frequency)
+    {
+        this.eq2Frequency = eq2Frequency;
+    }
+
+    public Integer getEq2Gain()
+    {
+        return eq2Gain;
+    }
+
+    public void setEq2Gain(Integer eq2Gain)
+    {
+        this.eq2Gain = eq2Gain;
+    }
+
+    public Integer getEq3Frequency()
+    {
+        return eq3Frequency;
+    }
+
+    public void setEq3Frequency(Integer eq3Frequency)
+    {
+        this.eq3Frequency = eq3Frequency;
+    }
+
+    public Integer getEq3Gain()
+    {
+        return eq3Gain;
+    }
+
+    public void setEq3Gain(Integer eq3Gain)
+    {
+        this.eq3Gain = eq3Gain;
+    }
+
+    public Integer getEq4Frequency()
+    {
+        return eq4Frequency;
+    }
+
+    public void setEq4Frequency(Integer eq4Frequency)
+    {
+        this.eq4Frequency = eq4Frequency;
+    }
+
+    public Integer getEq4Gain()
+    {
+        return eq4Gain;
+    }
+
+    public void setEq4Gain(Integer eq4Gain)
+    {
+        this.eq4Gain = eq4Gain;
     }
 }

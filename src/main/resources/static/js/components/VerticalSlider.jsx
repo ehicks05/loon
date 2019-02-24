@@ -1,40 +1,38 @@
 import React, { Component } from 'react'
-import Slider from 'react-rangeslider'
+import Slider, {createSliderWithTooltip} from 'rc-slider';
+import 'rc-slider/assets/index.css';
+
+const SliderWithTooltip = createSliderWithTooltip(Slider);
+
+const marks = {
+    '-12' : '-12',
+    '0' : '0',
+    '12' : '12'
+};
 
 class VerticalSlider extends Component {
     constructor (props) {
         super(props);
-        this.handleChange = this.handleChange.bind(this);
-
-        this.state = {
-            value: this.props.value
-        }
     }
 
-    handleChange (value)
-    {
-        this.setState({
-            value: value
-        })
-    };
-
     render () {
-        const { value } = this.state;
+        // const { value } = this.state;
         return (
-            <div className='slider orientation-reversed'>
-                <div className='slider-group'>
-                    <div className='slider-vertical'>
-                        <Slider
-                            min={-12}
-                            max={12}
-                            value={value}
-                            format={value => value + ' dB'}
-                            orientation='vertical'
-                            onChange={this.handleChange}
-                        />
-                        <div className='value'>{value + ' dB'}</div>
-                    </div>
-                </div>
+            <div className='slider-vertical' style={{height: '200px', margin: '8px 0'}}>
+                <SliderWithTooltip
+                    style={{margin: 'auto'}}
+                    vertical
+                    marks={marks}
+                    min={-12}
+                    max={12}
+                    defaultValue={this.props.value}
+                    onChange={(value) => this.props.onChange(value, this.props.name)}
+                    tipFormatter={v => `${v}dB`}
+                    tipProps={{placement: 'right'}}
+                    trackStyle={{ backgroundColor: 'hsl(141, 71%, 48%)', height: 4 }}
+                    railStyle={{backgroundColor: '#ddd'}}
+                    handleStyle={{borderColor: 'hsl(141, 71%, 48%)'}}
+                />
             </div>
         )
     }

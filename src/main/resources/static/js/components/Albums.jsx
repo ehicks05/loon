@@ -11,7 +11,10 @@ export default class Albums extends React.Component {
 
     render()
     {
-        const tracks = this.props.store.appState.tracks;
+        let tracks = this.props.store.appState.tracks;
+        if (this.props.tracks)
+            tracks = this.props.tracks;
+
         const hideTitle = this.props.hideTitle;
 
         let albums = [...new Set(tracks.map(track => {return JSON.stringify({artist: track.albumArtist, album: track.album, albumImageId: track.albumImageId})}))];

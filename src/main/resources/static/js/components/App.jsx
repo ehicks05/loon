@@ -61,12 +61,12 @@ export default class App extends React.Component {
 
         return (
             <Router history={this.state.history}>
-                 <div style={{display: 'flex', flexDirection: 'column', height: '100vh'}}>
+                 <div style={{display: 'flex', flexDirection: 'column', height: this.props.store.uiState.windowDimensions.height}}>
                     <MyHelmet />
                     <Header />
 
                     <div className={'columns is-gapless'} style={{margin: '0', flex: '1 1 auto', display: 'flex'}}>
-                        <div id='left-column' className={"column is-narrow is-hidden-touch" + (store.uiState.isDarkTheme ? ' is-dark ' : '')} style={{overflow: 'auto'}}>
+                        <div id='left-column' className={"column is-narrow is-hidden-touch" + (store.uiState.isDarkTheme ? ' is-dark ' : '')} style={{overflowY: 'auto'}}>
                             <SidePanel />
                         </div>
                         <div className="column" style={{overflow: 'auto'}}>
@@ -95,6 +95,14 @@ export default class App extends React.Component {
                     <Player muted={store.uiState.user.userState.muted}
                             volume={store.uiState.user.userState.volume}
                             selectedTrackId={store.uiState.selectedTrackId}
+                            eq1Freq={store.uiState.user.userState.eq1Frequency}
+                            eq1Gain={store.uiState.user.userState.eq1Gain}
+                            eq2Freq={store.uiState.user.userState.eq2Frequency}
+                            eq2Gain={store.uiState.user.userState.eq2Gain}
+                            eq3Freq={store.uiState.user.userState.eq3Frequency}
+                            eq3Gain={store.uiState.user.userState.eq3Gain}
+                            eq4Freq={store.uiState.user.userState.eq4Frequency}
+                            eq4Gain={store.uiState.user.userState.eq4Gain}
                     />
                 </div>
             </Router>

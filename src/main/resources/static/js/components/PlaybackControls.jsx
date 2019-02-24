@@ -34,10 +34,10 @@ export default class PlaybackControls extends React.Component {
         this.props.store.uiState.updateVolume(value);
     }
     handleMuteChange(e) {
-        this.props.store.uiState.updateMuted(e.target.value);
+        this.props.store.uiState.updateMuted(!this.props.store.uiState.user.userState.muted);
     }
     handleShuffleChange(e) {
-        this.props.store.uiState.updateShuffle(e.target.value);
+        this.props.store.uiState.updateShuffle(!this.props.store.uiState.user.userState.shuffle);
     }
     handleProgressChange(value) {
         console.log('value: ' + value);

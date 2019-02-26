@@ -29,13 +29,16 @@ export default class MyHelmet extends React.Component {
 
                 <style>
                     {uiState.isDarkTheme ?
-                        `.myLevel {background-color: #282f2f;}
+                        `.myLevel {background-color: #282f2f; color: #ddd}
                          #left-column {background-color: #282f2f;}
                          .panel-block {border-left-color: #282f2f;}
                          #headerLogo {filter: invert(100%);}
                          .mediaItemDiv:hover {background-color: #282f2f;}
+
                          .mediaItemDiv a {color:#aaa}
                          .mediaItemDiv a:hover {color:#ccc}
+                         .dropdown a {color:#aaa}
+                         .dropdown a:hover {color:#ccc}
                         `
                         :
                         `.myLevel {background-color: #f4f4f4;}
@@ -43,6 +46,8 @@ export default class MyHelmet extends React.Component {
                          .mediaItemDiv:hover {background-color: #f4f4f4;}
                          .mediaItemDiv a {color:#666}
                          .mediaItemDiv a:hover {color:#888}
+                         .dropdown a {color:#666}
+                         .dropdown a:hover {color:#888}
                         `
                     }
                 </style>

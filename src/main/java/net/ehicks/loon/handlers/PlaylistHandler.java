@@ -42,10 +42,14 @@ public class PlaylistHandler
         return playlistRepo.findByUserId(user.getId());
     }
 
-    @GetMapping("/getPlaylist")
-    public Playlist getPlaylist(@RequestParam long playlistId)
+    @GetMapping("/{playlistId}")
+    public Playlist getPlaylist(@AuthenticationPrincipal User user, @PathVariable Long playlistId)
     {
-        return playlistRepo.findById(playlistId).orElse(null);
+        Playlist playlist = playlistRepo.findById(playlistId).orElse(null);
+        if (playlist == null || !playlist.getUserId().equals(user.getId()))
+            return null;
+
+        return playlist;
     }
 
     @GetMapping("/getLibraryTrackPaths")
@@ -55,9 +59,12 @@ public class PlaylistHandler
     }
 
     @GetMapping("/ajaxGetInitialTracks")
-    public List<Track> ajaxGetInitialTracks(@RequestParam long playlistId)
+    public List<Track> ajaxGetInitialTracks(@AuthenticationPrincipal User user, @RequestParam long playlistId)
     {
         Playlist playlist = playlistRepo.findById(playlistId).orElse(null);
+        if (playlist == null || !playlist.getUserId().equals(user.getId()))
+            return null;
+
         return playlist.getPlaylistTracks().stream().map(PlaylistTrack::getTrack).collect(Collectors.toList());
     }
 
@@ -66,6 +73,8 @@ public class PlaylistHandler
                       @RequestParam String name, @RequestParam List<Long> trackIds)
     {
         Playlist playlist = playlistRepo.findById(playlistId).orElse(null);
+        if (playlist != null && !playlist.getUserId().equals(user.getId()))
+            return null;
 
         if (playlist == null && action.equals("add") && name != null)
         {
@@ -99,12 +108,13 @@ public class PlaylistHandler
     }
 
     @PostMapping("/{playlistId}")
-    public Playlist togglePlaylistTrack(@AuthenticationPrincipal User user, @PathVariable Long playlistId, @RequestParam Long trackId)
+    public Playlist togglePlaylistTracks(@AuthenticationPrincipal User user, @PathVariable Long playlistId,
+                                        @RequestParam List<Long> trackIds, @RequestParam String mode)
     {
         Playlist playlist = playlistRepo.findById(playlistId).orElse(null);
 
         if (playlist != null && playlist.getUserId().equals(user.getId()))
-            playlistLogic.addOrRemoveTrack(playlist, trackId);
+            playlistLogic.addOrRemoveTracks(playlist, trackIds, mode);
 
         return playlist;
     }

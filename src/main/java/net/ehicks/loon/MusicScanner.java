@@ -1,10 +1,10 @@
 package net.ehicks.loon;
 
+import net.coobird.thumbnailator.Thumbnails;
 import net.ehicks.loon.beans.LoonSystem;
 import net.ehicks.loon.beans.Track;
 import net.ehicks.loon.repos.LoonSystemRepository;
 import net.ehicks.loon.repos.TrackRepository;
-import org.imgscalr.Scalr;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
@@ -16,8 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -192,6 +190,36 @@ public class MusicScanner
         String escapedAlbum = escapeForFileSystem(track.getAlbum());
         String imageFileName = escapeForFileSystem(track.getAlbum()) + ext;
 
+        // look for a 'folder.jpg' in the track's directory
+        Path trackPath = Paths.get(track.getPath());
+        Path trackFolderPath = trackPath.getRoot().resolve(trackPath.subpath(0, trackPath.getNameCount() - 1));
+        if (trackFolderPath.toFile().exists() && trackFolderPath.toFile().isDirectory())
+        {
+            File[] files = trackFolderPath.toFile().listFiles();
+            for (File file : files)
+            {
+                if (file.isFile() && file.getName().toLowerCase().startsWith("folder"))
+                {
+                    try (InputStream in = new BufferedInputStream(new FileInputStream(file)))
+                    {
+                        Path base = Paths.get(artPath.toFile().getCanonicalPath(), escapedAlbumArtist, escapedAlbum);
+                        Files.createDirectories(base);
+                        Path out = base.resolve(file.getName());
+
+                        if (!out.toFile().exists())
+                            Files.copy(in, out);
+
+                        track.setAlbumImageId(escapedAlbumArtist + "/" + escapedAlbum + "/" + file.getName());
+                        return;
+                    }
+                    catch (Exception e)
+                    {
+                        log.error(e.getMessage(), e);
+                    }
+                }
+            }
+        }
+
         try
         {
             File artFile = Paths.get(artPath.toFile().getCanonicalPath(), escapedAlbumArtist, escapedAlbum, imageFileName).toFile();
@@ -259,12 +287,8 @@ public class MusicScanner
 
     private byte[] resize(InputStream inputStream, String contentType, int targetWidth, int targetHeight) throws IOException
     {
-        BufferedImage srcImage = ImageIO.read(inputStream); // Load image
-        Scalr.Mode mode = srcImage.getWidth() > srcImage.getHeight() ? Scalr.Mode.FIT_TO_WIDTH : Scalr.Mode.FIT_TO_HEIGHT;
-        BufferedImage scaledImage = Scalr.resize(srcImage, mode, targetWidth, targetHeight); // Scale image
-        String formatName = contentType.replace("image/", "");
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ImageIO.write(scaledImage, formatName, byteArrayOutputStream);
-        return byteArrayOutputStream.toByteArray();
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        Thumbnails.of(inputStream).size(targetWidth, targetHeight).toOutputStream(os);
+        return os.toByteArray();
     }
 }

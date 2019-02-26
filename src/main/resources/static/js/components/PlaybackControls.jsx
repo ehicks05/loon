@@ -65,9 +65,12 @@ export default class PlaybackControls extends React.Component {
         const formattedTimeElapsed = PlaybackControls.formatTime(Math.round(timeElapsed));
         const formattedDuration = PlaybackControls.formatTime(Math.round(duration));
 
+        const windowWidth = this.props.store.uiState.windowDimensions.width;
+        const textWidth = windowWidth > 768 ? (windowWidth - 350) + 'px' : '100%';
+
         return (
             <div>
-                <div className="section myLevel" style={{zIndex: '5', position: 'static', padding: '0 6px'}}>
+                <div className="section myLevel" style={{zIndex: '5', position: 'static', padding: '2px 6px 0 6px'}}>
                     <nav className="level">
                         <div className="level-item" style={{marginBottom: '0'}}>
                             <span id="timer" style={{fontSize: '.875rem', marginRight: '8px'}}>{formattedTimeElapsed}</span>
@@ -85,7 +88,7 @@ export default class PlaybackControls extends React.Component {
                     <nav className="level">
                         <div className="level-left">
                             <div className="level-item">
-                                <span id="track" style={{maxWidth: '400px', maxHeight: '72px', overflow: 'auto'}}>
+                                <span id="track" style={{maxWidth: textWidth, maxHeight: '72px', overflow: 'auto'}}>
                                     <b>{selectedTrack ? selectedTrack.title : "title"}</b>
                                     <br />
                                     <span style={{fontSize: '.875rem'}}>
@@ -95,7 +98,7 @@ export default class PlaybackControls extends React.Component {
                             </div>
                         </div>
                         <div className="level-right" style={{marginTop: '4px', marginRight: '6px'}}>
-                            <p className="level-item">
+                            <div className="level-item">
                                 <a className="button" id="prevBtn" onClick={(e) => this.handleTrackChange(e, 'prev')}>
                                     <span className="icon">
                                         <FontAwesomeIcon icon={faStepBackward}/>
@@ -146,7 +149,7 @@ export default class PlaybackControls extends React.Component {
                                                        tipFormatter={v => `${v}dB`}
                                                        onChange={this.handleVolumeChange} />
                                 </div>
-                            </p>
+                            </div>
                         </div>
                     </nav>
                 </div>

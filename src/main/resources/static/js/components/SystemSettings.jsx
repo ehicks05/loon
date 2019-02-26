@@ -95,7 +95,6 @@ export default class SystemSettings extends React.Component {
                 self.handleUpdateTracks('clearing library');
                 self.handleUpdatePlaylists('clearing library');
             }
-            location.reload(true);
         });
     }
 

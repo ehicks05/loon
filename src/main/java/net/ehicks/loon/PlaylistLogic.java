@@ -26,33 +26,41 @@ public class PlaylistLogic
         this.trackRepo = trackRepo;
     }
 
-    // just add or remove a single track from a playlist
-    public void addOrRemoveTrack(Playlist playlist, Long trackId)
+    // add or remove tracks from a playlist
+    public void addOrRemoveTracks(Playlist playlist, List<Long> trackIds, String action)
     {
-        PlaylistTrack playlistTrack = playlistTrackRepo.findByPlaylistIdAndTrackId(playlist.getId(), trackId);
-        if (playlistTrack == null)
-        {
-            Track track = trackRepo.findById(trackId).orElse(null);
-            if (track == null)
+        List<PlaylistTrack> tracksToPersist = new ArrayList<>();
+
+        trackIds.forEach(trackId -> {
+            PlaylistTrack playlistTrack = playlistTrackRepo.findByPlaylistIdAndTrackId(playlist.getId(), trackId);
+            if (action.equals("add") && playlistTrack == null)
             {
-                log.error("Can't add track:" + trackId + " to " + playlist);
-                return;
+                Track track = trackRepo.findById(trackId).orElse(null);
+                if (track == null)
+                {
+                    log.error("Can't add track:" + trackId + " to " + playlist);
+                    return;
+                }
+
+                playlistTrack = new PlaylistTrack();
+                playlistTrack.setPlaylist(playlist);
+                playlistTrack.setTrack(track);
+                playlistTrack.setIndex(getNextAvailableIndex(playlist.getId()));
+                tracksToPersist.add(playlistTrack);
+
+                playlist.getPlaylistTracks().add(playlistTrack);
             }
+            if (action.equals("remove") && playlistTrack != null)
+            {
+                playlist.getPlaylistTracks().remove(playlistTrack);
+                tracksToPersist.add(playlistTrack);
+            }
+        });
 
-            playlistTrack = new PlaylistTrack();
-            playlistTrack.setPlaylist(playlist);
-            playlistTrack.setTrack(track);
-            playlistTrack.setIndex(getNextAvailableIndex(playlist.getId()));
-
-            playlistTrackRepo.save(playlistTrack);
-
-            playlist.getPlaylistTracks().add(playlistTrack);
-        }
-        else
-        {
-            playlist.getPlaylistTracks().remove(playlistTrack);
-            playlistTrackRepo.delete(playlistTrack);
-        }
+        if (action.equals("add"))
+            playlistTrackRepo.saveAll(tracksToPersist);
+        if (action.equals("remove"))
+            playlistTrackRepo.deleteAll(tracksToPersist);
 
         consolidateTrackIndexes(playlist.getPlaylistTracks());
     }

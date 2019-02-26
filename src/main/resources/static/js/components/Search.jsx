@@ -38,7 +38,7 @@ export default class Search extends React.Component {
     componentWillUnmount()
     {
         this.disposer();
-        this.props.store.uiState.selectedContextMenuTrackId = 0;
+        this.props.store.uiState.selectedContextMenuId = '';
     }
 
     componentDidUpdate(prevProps, prevState) {

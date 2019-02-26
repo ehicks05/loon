@@ -22,7 +22,6 @@ function formatTime(secs) {
 export default class MediaItem extends React.Component {
     constructor(props) {
         super(props);
-        this.toggleDropdown = this.toggleDropdown.bind(this);
         this.handleHoverTrue = this.handleHoverTrue.bind(this);
         this.handleHoverFalse = this.handleHoverFalse.bind(this);
         this.state = {hover: false}
@@ -35,20 +34,13 @@ export default class MediaItem extends React.Component {
 
     handleHoverFalse()
     {
-        this.setState({hover: true});
+        this.setState({hover: false});
     }
 
     handleSelectedTrackIdChange(e, selectedPlaylistId, selectedTrackId)
     {
         console.log('handleSelectedPlaylistIdChange' + selectedPlaylistId + '...' + selectedTrackId);
         this.props.store.uiState.handleSelectedPlaylistIdChange(selectedPlaylistId, selectedTrackId);
-    }
-
-    toggleDropdown()
-    {
-        const el = document.getElementById('mediaItem' + this.props.track.id + 'DropDown');
-        el.classList.toggle('is-active');
-        el.classList.toggle('is-visible-important');
     }
 
     render()
@@ -71,8 +63,9 @@ export default class MediaItem extends React.Component {
         const draggableProps    = provided ? provided.draggableProps : null;
         const dragHandleProps   = provided ? provided.dragHandleProps : null;
 
+        const contextMenuId = 'trackId=' + trackId;
+        const isDropdownActive = this.props.store.uiState.selectedContextMenuId === contextMenuId;
         const isDragging = snapshot ? snapshot.isDragging : false;
-        const isDropdownActive = this.props.store.uiState.selectedContextMenuTrackId === trackId;
         const isHovering = this.state.hover;
 
         const showActionMenu = !isDragging && (isHovering || isDropdownActive);
@@ -91,12 +84,12 @@ export default class MediaItem extends React.Component {
 
                     <div {...dragHandleProps} className={'list-song'}>
                         <b style={{cursor: 'pointer'}} onClick={(e) => this.handleSelectedTrackIdChange(e, playlistId, trackId)}>{trackTitle}</b>
-                        <br /><span style={{fontSize: '.875rem'}}><Link to={'/artist/' + artist}>{artist}</Link> - <Link to={'/artist/' + artist + '/album/' + album}><i>{album}</i></Link></span>
+                        <br /><span style={{fontSize: '.875rem'}}><Link to={'/artist/' + artist}>{artist}</Link> - <Link to={'/artist/' + this.props.track.albumArtist + '/album/' + album}><i>{album}</i></Link></span>
                     </div>
 
                     <div className={'mediaItemEllipsis'} style={{marginRight: '8px', flexBasis: '20px'}}>
                         {showActionMenu &&
-                            <ActionMenu track={this.props.track} />
+                            <ActionMenu tracks={[this.props.track]} contextMenuId={contextMenuId} />
                         }
                     </div>
 

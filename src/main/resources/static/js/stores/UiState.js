@@ -6,7 +6,7 @@ export class UiState {
     @observable user;
     @observable selectedPlaylistId;
     @observable selectedTrackId;
-    @observable selectedContextMenuTrackId;
+    @observable selectedContextMenuId;
     @observable pendingRequestCount = 0;
 
     // .struct makes sure observer won't be signaled unless the

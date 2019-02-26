@@ -18,7 +18,17 @@ export class AppState {
     loadPlaylists()
     {
         return fetch('/api/playlists/getPlaylists', {method: 'GET'})
-            .then(response => response.json()).then(data => this.playlists = data);
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(playlist => {
+                    playlist.playlistTracks.sort((o1, o2) => {
+                        if (o1.index === o2.index) return 0;
+                        if (o1.index < o2.index) return -1;
+                        if (o1.index > o2.index) return 1;
+                    })
+                });
+                this.playlists = data;
+            });
     }
 
     @action

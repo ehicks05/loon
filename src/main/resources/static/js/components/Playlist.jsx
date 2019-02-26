@@ -40,7 +40,7 @@ export default class Playlist extends React.Component {
 
     componentWillUnmount()
     {
-        this.props.store.uiState.selectedContextMenuTrackId = 0;
+        this.props.store.uiState.selectedContextMenuId = '';
     }
 
     componentDidUpdate(prevProps, prevState, snapshot)
@@ -89,8 +89,7 @@ export default class Playlist extends React.Component {
 
         if (playlist)
         {
-            const playlistTracks = playlist.playlistTracks.sort((o1, o2) => o1.index - o2.index);
-            mediaItems = playlistTracks.map((playlistTrack, index) => {
+            mediaItems = playlist.playlistTracks.map((playlistTrack, index) => {
                     const track = tracks.find(track => track.id === playlistTrack.track.id);
                     return (
                     <Draggable

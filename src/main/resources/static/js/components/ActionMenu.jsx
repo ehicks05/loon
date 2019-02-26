@@ -9,71 +9,82 @@ import {inject, observer} from "mobx-react";
 export default class ActionMenu extends React.Component {
     constructor(props) {
         super(props);
-        this.handleToggleTrackInPlaylist = this.handleToggleTrackInPlaylist.bind(this);
+        this.handleToggleTracksInPlaylist = this.handleToggleTracksInPlaylist.bind(this);
         this.toggleDropdown = this.toggleDropdown.bind(this);
-        this.addTrackToPlaylist = this.addTrackToPlaylist.bind(this);
-        this.removeTrackFromPlaylist = this.removeTrackFromPlaylist.bind(this);
+        this.addTracksToPlaylist = this.addTracksToPlaylist.bind(this);
+        this.removeTracksFromPlaylist = this.removeTracksFromPlaylist.bind(this);
     }
 
     toggleDropdown()
     {
-        if (this.props.store.uiState.selectedContextMenuTrackId === this.props.track.id)
-            this.props.store.uiState.selectedContextMenuTrackId = 0;
+        if (this.props.store.uiState.selectedContextMenuId === this.props.contextMenuId)
+            this.props.store.uiState.selectedContextMenuId = '';
         else
-            this.props.store.uiState.selectedContextMenuTrackId = this.props.track.id;
+            this.props.store.uiState.selectedContextMenuId = this.props.contextMenuId;
     }
 
-    handleToggleTrackInPlaylist(playlistId, trackId)
+    handleToggleTracksInPlaylist(playlistId, trackIds, action)
     {
-        fetch('/api/playlists/' + playlistId + '/?action=add&trackId=' + trackId, {method: 'POST'})
+        const formData = new FormData();
+        formData.append("trackIds", trackIds);
+        formData.append("mode", action);
+        fetch('/api/playlists/' + playlistId, {method: 'POST', body: formData})
             .then(response => response.text()).then(responseText => {
             console.log(responseText);
             this.props.store.appState.loadPlaylists();
         });
     }
 
-    addTrackToPlaylist(trackId)
+    addTracksToPlaylist(trackIds)
     {
-        const playlistId = document.getElementById('mediaItem' + trackId + 'AddToPlaylistSelect').value;
-        this.handleToggleTrackInPlaylist(playlistId, trackId);
+        const playlistId = document.getElementById('mediaItem' + this.props.contextMenuId + 'AddToPlaylistSelect').value;
+        this.handleToggleTracksInPlaylist(playlistId, trackIds, 'add');
     }
 
-    removeTrackFromPlaylist(trackId)
+    removeTracksFromPlaylist(trackIds)
     {
-        const playlistId = document.getElementById('mediaItem' + trackId + 'removeFromPlaylistSelect').value;
-        this.handleToggleTrackInPlaylist(playlistId, trackId);
+        const playlistId = document.getElementById('mediaItem' + this.props.contextMenuId + 'removeFromPlaylistSelect').value;
+        this.handleToggleTracksInPlaylist(playlistId, trackIds, 'remove');
     }
 
     render()
     {
-        const trackId = this.props.track.id;
+        const tracks = this.props.tracks;
+        const trackIds = tracks.map(track => track.id);
         const playlists = this.props.store.appState.playlists;
 
         const favoritesPlaylist = playlists.find(playlist => playlist.favorites);
         const favoritesIds = favoritesPlaylist.playlistTracks.map(playlistTrack => playlistTrack.track.id);
-        const isFavorite = favoritesIds.includes(trackId);
+        const isFavorite = trackIds.every(trackId => favoritesIds.includes(trackId));
 
         const queuePlaylist = playlists.find(playlist => playlist.queue);
         const queueIds = queuePlaylist.playlistTracks.map(playlistTrack => playlistTrack.track.id);
-        const isQueued = queueIds.includes(trackId);
+        const isQueued = trackIds.every(trackId => queueIds.includes(trackId));
 
-        const isDropdownActive = this.props.store.uiState.selectedContextMenuTrackId === trackId;
+        const contextMenuId = this.props.contextMenuId;
+        const isDropdownActive = this.props.store.uiState.selectedContextMenuId === contextMenuId;
 
         const addToPlaylistOptions = playlists
             .filter(playlist => !playlist.favorites && !playlist.queue)
-            .filter(playlist => !playlist.playlistTracks.map(playlistTrack => playlistTrack.track.id).includes(trackId))
+            .filter(playlist => {
+                const playlistTrackIds = playlist.playlistTracks.map(playlistTrack => playlistTrack.track.id);
+                return !trackIds.every(trackId => playlistTrackIds.includes(trackId));
+            })
             .map(playlist =>
                 <option key={playlist.id} value={playlist.id} title={playlist.name}>
-                    {playlist.name.length > 28 ? playlist.name.substring(0, 28) : playlist.name}
+                    {playlist.name.length > 24 ? playlist.name.substring(0, 24) : playlist.name}
                 </option>
             );
 
         const removeFromPlaylistOptions = playlists
             .filter(playlist => !playlist.favorites && !playlist.queue)
-            .filter(playlist => playlist.playlistTracks.map(playlistTrack => playlistTrack.track.id).includes(trackId))
+            .filter(playlist => {
+                const playlistTrackIds = playlist.playlistTracks.map(playlistTrack => playlistTrack.track.id);
+                return trackIds.every(trackId => playlistTrackIds.includes(trackId));
+            })
             .map(playlist =>
                 <option key={playlist.id} value={playlist.id} title={playlist.name}>
-                    {playlist.name.length > 28 ? playlist.name.substring(0, 28) : playlist.name}
+                    {playlist.name.length > 24 ? playlist.name.substring(0, 24) : playlist.name}
                 </option>
             );
 
@@ -89,13 +100,13 @@ export default class ActionMenu extends React.Component {
                     </div>
                     <div className="control is-expanded">
                         <span className="select is-small is-fullwidth">
-                            <select id={'mediaItem' + trackId + 'AddToPlaylistSelect'}>
+                            <select id={'mediaItem' + contextMenuId + 'AddToPlaylistSelect'}>
                                 {addToPlaylistOptions}
                             </select>
                         </span>
                     </div>
                     <div className="control">
-                        <a className="button is-small is-primary" onClick={(e) => this.addTrackToPlaylist(trackId)}>
+                        <a className="button is-small is-primary" onClick={(e) => this.addTracksToPlaylist(trackIds)}>
                             Ok
                         </a>
                     </div>
@@ -114,14 +125,14 @@ export default class ActionMenu extends React.Component {
                         </a>
                     </div>
                     <div className="control is-expanded">
-                        <span className="select is-small is-fullwidth" style={{minWidth: '15em'}}>
-                            <select id={'mediaItem' + trackId + 'removeFromPlaylistSelect'}>
+                        <span className="select is-small is-fullwidth" style={{minWidth: '8em'}}>
+                            <select id={'mediaItem' + contextMenuId + 'removeFromPlaylistSelect'}>
                                 {removeFromPlaylistOptions}
                             </select>
                         </span>
                     </div>
                     <div className="control">
-                        <a className="button is-small is-primary" onClick={(e) => this.removeTrackFromPlaylist(trackId)}>
+                        <a className="button is-small is-primary" onClick={(e) => this.removeTracksFromPlaylist(trackIds)}>
                             Ok
                         </a>
                     </div>
@@ -129,10 +140,14 @@ export default class ActionMenu extends React.Component {
             </form>
         );
 
+        const button = document.getElementById(contextMenuId + 'Button');
+        const left = button ? button.getBoundingClientRect().left : 0;
+        const isRightAligned = (left > this.props.store.uiState.windowDimensions.width / 2) ? 'is-right' : '';
+
         return (
-            <div className={"dropdown is-right" + (isDropdownActive ? ' is-active is-visible-important' : '')} id={'mediaItem' + trackId + 'DropDown'}>
+            <div className={"dropdown " + isRightAligned + (isDropdownActive ? ' is-active is-visible-important' : '')} style={this.props.style}>
                 <div className="dropdown-trigger">
-                    <button className="button is-small" aria-haspopup="true" aria-controls="dropdown-menu2"
+                    <button className="button is-small" aria-haspopup="true" id={contextMenuId + 'Button'}
                             onClick={this.toggleDropdown}>
                         <span className="icon is-small">
                             <FontAwesomeIcon icon={faEllipsisH}/>
@@ -141,7 +156,7 @@ export default class ActionMenu extends React.Component {
                 </div>
                 <div className="dropdown-menu" id="dropdown-menu2" role="menu">
                     <div className="dropdown-content">
-                        <a className="dropdown-item" onClick={(e) => this.handleToggleTrackInPlaylist(favoritesPlaylist.id, trackId)}>
+                        <a className="dropdown-item" onClick={(e) => this.handleToggleTracksInPlaylist(favoritesPlaylist.id, trackIds, isFavorite ? 'remove' : 'add')}>
                             <p>
                                 <span className={'icon has-text-success'}>
                                     <FontAwesomeIcon icon={isFavorite ? fasHeart : farHeart}/>
@@ -149,7 +164,7 @@ export default class ActionMenu extends React.Component {
                                 {isFavorite ? 'Remove from ' : 'Add to '} favorites
                             </p>
                         </a>
-                        <a className="dropdown-item" onClick={(e) => this.handleToggleTrackInPlaylist(queuePlaylist.id, trackId)}>
+                        <a className="dropdown-item" onClick={(e) => this.handleToggleTracksInPlaylist(queuePlaylist.id, trackIds, isQueued ? 'remove' : 'add')}>
                             <p>
                                 <span className={'icon ' + (isQueued ? 'has-text-success' : 'has-text-grey')}>
                                     <FontAwesomeIcon icon={faList}/>

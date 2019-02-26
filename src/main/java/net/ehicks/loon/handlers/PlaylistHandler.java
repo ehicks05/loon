@@ -90,7 +90,7 @@ public class PlaylistHandler
             playlist = playlistRepo.save(playlist);
 
             // playlist must have an ID at this point
-            playlistLogic.setTrackIds(playlist, trackIds);
+            playlistLogic.updatePlaylistTracks(playlist, trackIds, "add", true);
         }
 
         return playlist;
@@ -102,7 +102,7 @@ public class PlaylistHandler
         Playlist playlist = playlistRepo.findById(playlistId).orElse(null);
 
         if (playlist != null && playlist.getUserId().equals(user.getId()))
-            playlistLogic.setTrackIds(playlist, trackIds);
+            playlistLogic.updatePlaylistTracks(playlist, trackIds, "add", true);
 
         return playlist;
     }
@@ -114,7 +114,7 @@ public class PlaylistHandler
         Playlist playlist = playlistRepo.findById(playlistId).orElse(null);
 
         if (playlist != null && playlist.getUserId().equals(user.getId()))
-            playlistLogic.addOrRemoveTracks(playlist, trackIds, mode);
+            playlistLogic.updatePlaylistTracks(playlist, trackIds, mode, false);
 
         return playlist;
     }
@@ -125,7 +125,7 @@ public class PlaylistHandler
         Playlist playlist = playlistRepo.findById(playlistId).orElse(null);
         if (playlist != null && playlist.getUserId().equals(user.getId()) && !playlist.getFavorites() && !playlist.getQueue())
         {
-            playlistLogic.setTrackIds(playlist, new ArrayList<>());
+            playlistLogic.updatePlaylistTracks(playlist, new ArrayList<>(), "", true);
             playlistRepo.delete(playlist);
         }
 

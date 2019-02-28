@@ -2,6 +2,7 @@ import React from 'react';
 import {Link} from "react-router-dom";
 import {inject, observer} from "mobx-react";
 import 'lazysizes';
+import 'lazysizes/plugins/attrchange/ls.attrchange';
 import ActionMenu from "./ActionMenu.jsx";
 
 @inject('store')
@@ -22,14 +23,19 @@ export default class Artists extends React.Component {
             return <ArtistCard key={artist.artistName} artist={artist} />
         });
 
-        const width = 150;
+        const windowWidth = this.props.store.uiState.windowDimensions.width;
+        const gridItemWidth = windowWidth <= 768 ? 150 :
+            windowWidth < 1024 ? 175 :
+                windowWidth < 1216 ? 200 :
+                    windowWidth < 1408 ? 225 :
+                        250;
 
         return (
             <div>
                 <div className="title" style={{padding: '.5rem'}}>{artists.length} Artists:</div>
                 <div id="playlist" className="playlist" style={{display: 'flex', flexDirection: 'column'}}>
                     <div style={{padding: '.5rem', flex: '1', flexGrow: '1'}}>
-                        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(' + width + 'px, 1fr))', gridGap: '.5em'}}>
+                        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(' + gridItemWidth + 'px, 1fr))', gridGap: '.5em'}}>
                             {artistItems}
                         </div>
                     </div>
@@ -62,9 +68,8 @@ export class ArtistCard extends React.Component
 
     render()
     {
-        const width = 150;
         const artist = this.props.artist;
-        const placeholder = 'https://via.placeholder.com/' + width + 'x' + width + '.png?text=' + width + 'x' + width;
+        const placeholder = 'https://via.placeholder.com/300x300.png?text=placeholder';
         const imageUrl = artist.artistImageId ? '/art/' + artist.artistImageId : placeholder;
 
         const contextMenuId = 'artist=' + artist.artistName;

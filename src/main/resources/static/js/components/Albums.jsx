@@ -2,6 +2,7 @@ import React from 'react';
 import {Link} from "react-router-dom";
 import {inject, observer} from "mobx-react";
 import 'lazysizes';
+import 'lazysizes/plugins/attrchange/ls.attrchange';
 import ActionMenu from "./ActionMenu.jsx";
 
 @inject('store')
@@ -32,14 +33,19 @@ export default class Albums extends React.Component {
             return <AlbumCard key={album.albumArtist + '-' + album.album} album={album} />
         });
 
-        const width = 150;
+        const windowWidth = this.props.store.uiState.windowDimensions.width;
+        const gridItemWidth = windowWidth <= 768 ? 150 :
+            windowWidth < 1024 ? 175 :
+                windowWidth < 1216 ? 200 :
+                    windowWidth < 1408 ? 225 :
+                        250;
 
         return (
             <div>
                 {!hideTitle && <div className="title" style={{padding: '.5rem'}}>{albums.length} Albums:</div>}
                 <div id="playlist" className="playlist" style={{display: 'flex', flexDirection: 'column'}}>
                     <div style={{padding: '.5rem', flex: '1', flexGrow: '1'}}>
-                        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(' + width + 'px, 1fr))', gridGap: '.5em'}}>
+                        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(' + gridItemWidth + 'px, 1fr))', gridGap: '.5em'}}>
                             {albumItems}
                         </div>
                     </div>
@@ -72,9 +78,8 @@ export class AlbumCard extends React.Component
 
     render()
     {
-        const width = 150;
         const album = this.props.album;
-        const placeholder = 'https://via.placeholder.com/' + width + 'x' + width + '.png?text=' + width + 'x' + width;
+        const placeholder = 'https://via.placeholder.com/600x600.png?text=' + album.albumArtist + ' - ' + album.album;
         const imageUrl = album.albumImageId ? '/art/' + album.albumImageId : placeholder;
 
         const contextMenuId = 'artist=' + album.albumArtist + ',album=' + album.album;
@@ -100,8 +105,12 @@ export class AlbumCard extends React.Component
                 </div>
                 <div className="card-content" style={{padding: '.75rem'}}>
                     <div className="content">
+                        <Link to={'/artist/' + album.albumArtist}>
+                            <span title={album.albumArtist}>{displayArtist}</span>
+                        </Link>
+                        &nbsp;-&nbsp;
                         <Link to={'/artist/' + album.albumArtist + '/album/' + album.album}>
-                            <span title={album.albumArtist + ' - ' + album.album}>{displayArtist + ' - ' + displayAlbum}</span>
+                            <span title={album.albumArtist + ' - ' + album.album}>{displayAlbum}</span>
                         </Link>
                     </div>
                 </div>

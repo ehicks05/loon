@@ -69,7 +69,7 @@ export default class App extends React.Component {
                         <div id='left-column' className={"column is-narrow is-hidden-touch" + (store.uiState.isDarkTheme ? ' is-dark ' : '')} style={{overflowY: 'auto'}}>
                             <SidePanel />
                         </div>
-                        <div className="column" style={{overflow: 'auto'}}>
+                        <div className="column" style={{overflowY: 'auto', overflowX: 'hidden'}}>
                             <Route exact path='/'                               render={() => <Redirect to='/search' /> } />
                             <Route exact path='/admin/systemSettings'           render={() => <SystemSettings />}/>
                             <Route exact path='/admin/users'                    render={() => <UserSettings />}/>

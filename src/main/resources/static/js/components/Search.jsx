@@ -77,7 +77,7 @@ export default class Search extends React.Component {
         const inputClass = this.props.store.uiState.isDarkTheme ? ' has-text-light has-background-dark' : '';
 
         return (
-            <div style={{display: 'flex', flexDirection: 'column', height: '100%', flex: '1'}}>
+            <div style={{display: 'flex', flexDirection: 'column', height: '100%', flex: '1', overflow: 'hidden'}}>
                 <section className={'section'} style={{display: 'flex', flexDirection: 'column'}}>
                     <form><TextInput autofocus={true} id={'searchInput'} label={'Search'} leftIcon={faSearch} value={this.state.searchKey}
                                      onChange={this.handleSearchKeyChange} horizontal={false} hideLabel={true} autoComplete='off' inputClass={inputClass} /></form>

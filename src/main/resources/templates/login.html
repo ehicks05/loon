@@ -54,7 +54,7 @@
                 <article id="welcomeMessage" class="message is-primary">
                     <div class="message-header">
                         <p>Welcome Message</p>
-                        <button class="delete" aria-label="delete" onclick="$('#welcomeMessage').addClass('is-hidden')"></button>
+                        <button class="delete" aria-label="delete" onclick="document.getElementById('welcomeMessage').classList.toggle('is-hidden')"> </button>
                     </div>
                     <div class="message-body" th:utext="${loonSystem.logonMessage}">
                         

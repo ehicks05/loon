@@ -39,6 +39,10 @@ export default class MyHelmet extends React.Component {
                          .mediaItemDiv a:hover {color:#ccc}
                          .dropdown a {color:#aaa}
                          .dropdown a:hover {color:#ccc}
+                         .card a {color:#aaa}
+                         .card a:hover {color:#ccc}
+                         .myLevel a {color:#aaa}
+                         .myLevel a:hover {color:#ccc}
                         `
                         :
                         `.myLevel {background-color: #f4f4f4;}
@@ -48,6 +52,10 @@ export default class MyHelmet extends React.Component {
                          .mediaItemDiv a:hover {color:#888}
                          .dropdown a {color:#666}
                          .dropdown a:hover {color:#888}
+                         .card a {color:#666}
+                         .card a:hover {color:#888}
+                         .myLevel a {color:#666}
+                         .myLevel a:hover {color:#888}
                         `
                     }
                 </style>

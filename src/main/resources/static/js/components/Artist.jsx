@@ -1,5 +1,4 @@
 import React from 'react';
-import {Link} from "react-router-dom";
 import Albums from "./Albums.jsx";
 import {inject, observer} from "mobx-react";
 
@@ -16,8 +15,6 @@ export default class Artist extends React.Component {
         const tracks = this.props.store.appState.tracks;
 
         const artistTracks = tracks.filter(track => track.artist === artist);
-
-        const width = 150;
 
         return (
             <div>

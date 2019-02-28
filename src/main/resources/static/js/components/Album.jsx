@@ -1,6 +1,9 @@
 import React from 'react';
 import MediaItem from "./MediaItem.jsx";
 import {inject, observer} from "mobx-react";
+import 'lazysizes';
+import 'lazysizes/plugins/attrchange/ls.attrchange';
+import {AlbumCard} from "./Albums.jsx";
 
 @inject('store')
 @observer
@@ -29,7 +32,8 @@ export default class Album extends React.Component {
                 if (o1.discNumber > o2.discNumber) return 1;
             });
 
-        const width = 150;
+        const windowWidth = this.props.store.uiState.windowDimensions.width;
+        const maxWidth = windowWidth > 768 ? '100%' : '500px';
 
         const mediaItems = albumTracks.map((track, index) => {
                 return <MediaItem key={track.id} playlistId={0} track={track}
@@ -38,16 +42,20 @@ export default class Album extends React.Component {
         );
 
         return (
-            <div style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
-                <section className={'section'} style={{display: 'flex', flexDirection: 'column'}}>
-                    <div className="title" style={{padding: '.25rem'}}>{artist + ' - ' + album}</div>
-                    <div className="subtitle" style={{padding: '.25rem'}}>Tracks</div>
-                </section>
-
-                <ul id="list" style={{display: 'flex', flexDirection: 'column', flex: '1', flexGrow: '1'}}>
-                    {mediaItems}
-                </ul>
-            </div>
+            <section className={'section'}>
+                <div className="columns">
+                    <div className="column is-one-third">
+                        <div style={{maxWidth: maxWidth, margin: 'auto'}}>
+                            <AlbumCard album={{albumArtist: albumTracks[0].albumArtist, album: albumTracks[0].album, albumImageId: albumTracks[0].albumImageId}} />
+                        </div>
+                    </div>
+                    <div className="column">
+                        <ul id="list" style={{display: 'flex', flexDirection: 'column', flex: '1', flexGrow: '1'}}>
+                            {mediaItems}
+                        </ul>
+                    </div>
+                </div>
+            </section>
         );
     }
 }

@@ -6,6 +6,7 @@ import 'rc-slider/assets/index.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faVolumeUp, faVolumeOff, faRandom, faPlay, faPause, faStepForward, faStepBackward } from '@fortawesome/free-solid-svg-icons'
 import {inject, observer} from "mobx-react";
+import {Link} from "react-router-dom";
 
 const SliderWithTooltip = createSliderWithTooltip(Slider);
 
@@ -61,6 +62,10 @@ export default class PlaybackControls extends React.Component {
         const timeElapsed = this.props.timeElapsed;
         const duration = this.props.duration;
         const selectedTrack = this.props.selectedTrack;
+        const artist = selectedTrack ? selectedTrack.artist : '';
+        const albumArtist = selectedTrack ? selectedTrack.albumArtist : '';
+        const album = selectedTrack ? selectedTrack.album : '';
+        const title = selectedTrack ? selectedTrack.title : '';
 
         const formattedTimeElapsed = PlaybackControls.formatTime(Math.round(timeElapsed));
         const formattedDuration = PlaybackControls.formatTime(Math.round(duration));
@@ -89,10 +94,12 @@ export default class PlaybackControls extends React.Component {
                         <div className="level-left">
                             <div className="level-item">
                                 <span id="track" style={{maxWidth: textWidth, maxHeight: '72px', overflow: 'auto'}}>
-                                    <b>{selectedTrack ? selectedTrack.title : "title"}</b>
+                                    <b>{title}</b>
                                     <br />
                                     <span style={{fontSize: '.875rem'}}>
-                                        {selectedTrack ? selectedTrack.artist : "artist"} - <i>{selectedTrack ? selectedTrack.album : "album"}</i>
+                                        <Link to={'/artist/' + artist}>{artist}</Link>
+                                        &nbsp;-&nbsp;
+                                        <Link to={'/artist/' + albumArtist + '/album/' + album}><i>{album}</i></Link>
                                     </span>
                                 </span>
                             </div>

@@ -67,7 +67,13 @@ export default class App extends React.Component {
 
                     <div className={'columns is-gapless'} style={{margin: '0', flex: '1 1 auto', display: 'flex'}}>
                         <div id='left-column' className={"column is-narrow is-hidden-touch" + (store.uiState.isDarkTheme ? ' is-dark ' : '')} style={{overflowY: 'auto'}}>
-                            <SidePanel />
+                            <div style={{height: '99%', display: 'flex', flexDirection: 'column'}}>
+                                <div style={{}}><SidePanel /></div>
+                                <div style={{flex: '1 1 auto'}}> </div>
+                                <div style={{height: '100px'}}>
+                                    <canvas id='spectrumCanvas' height={100} width={150}> </canvas>
+                                </div>
+                            </div>
                         </div>
                         <div className="column" style={{overflowY: 'auto', overflowX: 'hidden'}}>
                             <Route exact path='/'                               render={() => <Redirect to='/search' /> } />

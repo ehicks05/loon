@@ -79,7 +79,7 @@ export default class Search extends React.Component {
         return (
             <div style={{display: 'flex', flexDirection: 'column', height: '100%', flex: '1', overflow: 'hidden'}}>
                 <section className={'section'} style={{display: 'flex', flexDirection: 'column'}}>
-                    <form><TextInput autofocus={true} id={'searchInput'} label={'Search'} leftIcon={faSearch} value={this.state.searchKey}
+                    <form><TextInput id={'searchInput'} label={'Search'} leftIcon={faSearch} value={this.state.searchKey}
                                      onChange={this.handleSearchKeyChange} horizontal={false} hideLabel={true} autoComplete='off' inputClass={inputClass} /></form>
                 </section>
 

@@ -21,6 +21,8 @@ export default class Player extends React.Component {
         this.handlePlayerStateChange = this.handlePlayerStateChange.bind(this);
         this.handleTrackChange = this.handleTrackChange.bind(this);
         this.handleProgressChange = this.handleProgressChange.bind(this);
+        this.renderSpectrumFrame = this.renderSpectrumFrame.bind(this);
+        this.getMergedFrequencyBins = this.getMergedFrequencyBins.bind(this);
 
         this.lastAnimationFrame = Date.now();
 
@@ -67,11 +69,16 @@ export default class Player extends React.Component {
         this.band4.frequency.value = userState.eq4Frequency;
         this.band4.gain.value = userState.eq4Gain;
 
+        this.analyser = this.audioCtx.createAnalyser();
+        this.analyser.fftSize = 2048;
+
         this.trackGainNode.connect(this.band1);
         this.band1.connect(this.band2);
         this.band2.connect(this.band3);
         this.band3.connect(this.band4);
-        this.band4.connect(this.audioCtx.destination);
+        this.band4.connect(this.analyser);
+
+        this.analyser.connect(this.audioCtx.destination);
 
         this.audioBufferSourceNode = this.audioCtx.createMediaElementSource(this.audio);
         this.audioBufferSourceNode.connect(this.gainNode);
@@ -187,9 +194,115 @@ export default class Player extends React.Component {
             }
 
             Player.scrollIntoView(track.id);
+
+            this.renderSpectrumFrame();
         }
 
         this.setState({playerState: newPlayerState});
+    }
+
+    getFrequencyTiltAdjustment(binStartingFreq) {
+        let temp = binStartingFreq;
+        if (temp === 0) temp = 20;
+
+        let isAbove = temp >= 1000;
+        let octavesFrom1000 = 0;
+        while (true)
+        {
+            if (isAbove)
+            {
+                temp /= 2;
+                if (temp < 1000)
+                    break;
+            }
+            if (!isAbove)
+            {
+                temp *= 2;
+                if (temp > 1000)
+                    break;
+            }
+            octavesFrom1000++;
+        }
+
+        let dBAdjustment = (isAbove ? 1 : -1) * octavesFrom1000 * 1.5;
+        let linearAdjustment = Math.pow(10, (dBAdjustment / 20));
+        return linearAdjustment;
+    }
+
+    getMergedFrequencyBins() {
+        const dataArray = new Uint8Array(this.analyser.frequencyBinCount);
+        const binWidth = this.audioCtx.sampleRate / this.analyser.frequencyBinCount;
+        this.analyser.getByteFrequencyData(dataArray);
+
+        const mergedData = [];
+        let i = 0;
+        let size = 1;
+        while (true)
+        {
+            let bins = Math.floor(size);
+
+            let linearAdjustment = this.getFrequencyTiltAdjustment(i * binWidth);
+
+            if (i === dataArray.length || i * binWidth > 22000)
+                break;
+
+            if (i + bins > dataArray.length)
+                bins = dataArray.length - i;
+
+            let slice = dataArray.slice(i, i + bins);
+            let average = (array) => array.reduce((o1, o2) => o1 + o2) / array.length;
+            const avg = average(slice);
+
+            mergedData.push(avg * linearAdjustment);
+
+            i += bins;
+            size *= 1.3;
+        }
+
+        return mergedData;
+    }
+
+    renderSpectrumFrame() {
+        requestAnimationFrame(this.renderSpectrumFrame);
+
+        const canvas = document.getElementById("spectrumCanvas");
+        if (!canvas)
+            return;
+
+        const ctx = canvas.getContext("2d");
+
+        // Make it visually fill the positioned parent
+        canvas.style.width ='100%';
+        canvas.style.height='100%';
+        // ...then set the internal size to match
+        canvas.width  = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+
+        const WIDTH = canvas.width;
+        const HEIGHT = canvas.height;
+
+        const mergedData = this.getMergedFrequencyBins();
+        const bufferLength = mergedData.length;
+
+        // ctx.fillStyle = "#000";
+        // ctx.fillRect(0, 0, WIDTH, HEIGHT);
+        let x = 0;
+        const barWidth = (WIDTH / bufferLength) - 1;
+
+        for (let i = 0; i < bufferLength; i++) {
+            const barHeight = mergedData[i] / (255 / HEIGHT);
+
+            const red = (barHeight / HEIGHT) * 255;
+
+            const r = red + (25 * (i/bufferLength));
+            const g = 250 * (i/bufferLength);
+            const b = 50;
+
+            ctx.fillStyle = "rgb(" + r + "," + g + "," + b + ")";
+            ctx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
+
+            x += barWidth + 1;
+        }
     }
 
     // scroll to the now-playing track (if it isn't already in view)

@@ -16,6 +16,7 @@ public class LoonSystem implements Serializable
     private String logonMessage = "";
     private String theme = "";
     private String musicFolder = "";
+    private String transcodeFolder = "";
     private String dataFolder = "";
     private String lastFmApiKey = "";
     private boolean registrationEnabled = false;
@@ -94,6 +95,16 @@ public class LoonSystem implements Serializable
     public void setMusicFolder(String musicFolder)
     {
         this.musicFolder = musicFolder;
+    }
+
+    public String getTranscodeFolder()
+    {
+        return transcodeFolder;
+    }
+
+    public void setTranscodeFolder(String transcodeFolder)
+    {
+        this.transcodeFolder = transcodeFolder;
     }
 
     public String getDataFolder()

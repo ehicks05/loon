@@ -143,15 +143,13 @@ export default class SystemSettings extends React.Component {
 
         const transcodeQualityOptions = [
             {value:'default', text:'Default (Don\'t Transcode)'},
-            {value:'9', text:'9'},
-            {value:'8', text:'8'},
-            {value:'7', text:'7'},
-            {value:'6', text:'6'},
-            {value:'5', text:'5'},
-            {value:'4', text:'4'},
-            {value:'3', text:'3'},
+            {value:'0', text:'0 (best)'},
+            {value:'1', text:'1'},
             {value:'2', text:'2'},
-            {value:'1', text:'1'}
+            {value:'3', text:'3'},
+            {value:'4', text:'4'},
+            {value:'5', text:'5'},
+            {value:'6', text:'6'}
         ];
 
         return (
@@ -167,6 +165,7 @@ export default class SystemSettings extends React.Component {
                         <TextInput id="instanceName" label="Instance Name" value={systemSettings.instanceName} />
                         <Select id="theme" label="Theme" items={themes} value={systemSettings.theme} required={true}/>
                         <TextInput id="musicFolder" label="Music Folder" value={systemSettings.musicFolder} />
+                        <TextInput id="transcodeFolder" label="Transcode Folder" value={systemSettings.transcodeFolder} />
                         <TextInput id="dataFolder" label="Data Folder" value={systemSettings.dataFolder} />
                         <TextInput id="lastFmApiKey" label="Last.fm API Key" value={systemSettings.lastFmApiKey} size={50} />
                         <TextInput id="logonMessage" label="Welcome Message" value={systemSettings.logonMessage} size={50} />

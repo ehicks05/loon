@@ -79,7 +79,7 @@ export class AlbumCard extends React.Component
     render()
     {
         const album = this.props.album;
-        const placeholder = 'https://via.placeholder.com/600x600.png?text=' + album.albumArtist + ' - ' + album.album;
+        const placeholder = 'https://via.placeholder.com/600x600.png?text=placeholder';
         const imageUrl = album.albumImageId ? '/art/' + album.albumImageId : placeholder;
 
         const contextMenuId = 'artist=' + album.albumArtist + ',album=' + album.album;

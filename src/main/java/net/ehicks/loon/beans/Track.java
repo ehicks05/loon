@@ -58,6 +58,9 @@ public class Track implements Serializable
     @JsonIgnore
     private String trackPeak = "";
 
+    @JsonIgnore
+    private String musicBrainzTrackId = "";
+
     @Column(length = 1000)
     private String artistImageId = "";
     @Column(length = 1000)
@@ -251,6 +254,16 @@ public class Track implements Serializable
     public void setTrackPeak(String trackPeak)
     {
         this.trackPeak = trackPeak;
+    }
+
+    public String getMusicBrainzTrackId()
+    {
+        return musicBrainzTrackId;
+    }
+
+    public void setMusicBrainzTrackId(String musicBrainzTrackId)
+    {
+        this.musicBrainzTrackId = musicBrainzTrackId;
     }
 
     public String getArtistImageId()

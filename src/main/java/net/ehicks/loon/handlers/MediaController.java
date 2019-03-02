@@ -41,31 +41,39 @@ public class MediaController
     {
         LoonSystem loonSystem = loonSystemRepo.findById(1L).orElse(null);
         Track track = trackRepo.findById(id).orElse(null);
-        if (track != null)
+        if (track == null)
+            return;
+
+        try
         {
-            try
+            Path output;
+
+            if (!loonSystem.getTranscodeQuality().equals("default"))
             {
-                Path output;
+                Path transcodedFile = Paths.get(loonSystem.getTranscodeFolder())
+                        .resolve(loonSystem.getTranscodeQuality())
+                        .resolve(track.getMusicBrainzTrackId() + ".mp3");
 
-                if (!loonSystem.getTranscodeQuality().equals("default"))
-                    output = transcoder.transcode(track, Integer.valueOf(loonSystem.getTranscodeQuality()));
-                else
-                    output = Paths.get(track.getPath());
+                if (!transcodedFile.toFile().exists())
+                    transcoder.transcode(track, Integer.valueOf(loonSystem.getTranscodeQuality()));
+                output = transcodedFile;
+            }
+            else
+                output = Paths.get(track.getPath());
 
-                MultipartFileSender.fromPath(output)
-                        .with(request)
-                        .with(response)
-                        .serveResource();
+            MultipartFileSender.fromPath(output)
+                    .with(request)
+                    .with(response)
+                    .serveResource();
 
-                // todo: ran into a range off-by-one error with this. would like to eventually remove MultipartFileSender.
+            // todo: ran into a range off-by-one error with this. would like to eventually remove MultipartFileSender.
 //                request.setAttribute(MyResourceHttpRequestHandler.ATTR_FILE, new File(track.getPath()));
 //                handler.handleRequest(request, response);
 
-            }
-            catch (Exception e)
-            {
-                log.error(e.getMessage());
-            }
+        }
+        catch (Exception e)
+        {
+            log.error(e.getMessage());
         }
     }
 }

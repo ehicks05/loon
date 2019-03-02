@@ -159,6 +159,13 @@ public class MusicScanner
         int discNumber = !tag.getFirst(FieldKey.DISC_NO).isEmpty() ? Integer.valueOf(tag.getFirst(FieldKey.DISC_NO)) : 1;
         track.setDiscNumber(discNumber);
 
+        track.setMusicBrainzTrackId(tag.getFirst(FieldKey.MUSICBRAINZ_TRACK_ID));
+        if (track.getMusicBrainzTrackId().isEmpty())
+        {
+            log.warn(track.getArtist() + " - " + track.getTitle() + ": no musicBrainzTrackId");
+            track.setMusicBrainzTrackId(track.getArtist() + " - " + track.getAlbum() + " - " + track.getTitle());
+        }
+
         // condense artists like 'Foo feat. Bar' down to hopefully just 'Foo'
         if (track.getArtist().contains(" feat. "))
         {

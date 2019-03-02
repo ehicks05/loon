@@ -10,6 +10,8 @@ import org.springframework.context.annotation.Configuration;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 public class Startup
@@ -39,22 +41,28 @@ public class Startup
 
         LoonSystem loonSystem = loonSystemRepo.findById(1L).orElse(null);
 
-        createArtworkFolder(loonSystem);
+        createSystemFolders(loonSystem);
     }
 
-    private void createArtworkFolder(LoonSystem loonSystem)
+    private void createSystemFolders(LoonSystem loonSystem)
     {
-        Path artPath = Paths.get(loonSystem.getDataFolder(), "art").toAbsolutePath();
-        if (!artPath.toFile().exists())
-        {
-            try
+        List<Path> paths = Arrays.asList(
+                Paths.get(loonSystem.getDataFolder(), "art").toAbsolutePath(),
+                Paths.get(loonSystem.getTranscodeFolder()).toAbsolutePath()
+        );
+
+        paths.forEach(path -> {
+            if (!path.toFile().exists())
             {
-                Files.createDirectories(artPath);
+                try
+                {
+                    Files.createDirectories(path);
+                }
+                catch (Exception e)
+                {
+                    log.info(e.getMessage(), e);
+                }
             }
-            catch (Exception e)
-            {
-                log.info(e.getMessage(), e);
-            }
-        }
+        });
     }
 }

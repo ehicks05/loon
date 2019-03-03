@@ -106,7 +106,7 @@ export default class ActionMenu extends React.Component {
                         </span>
                     </div>
                     <div className="control">
-                        <a className="button is-small is-primary" onClick={(e) => this.addTracksToPlaylist(trackIds)}>
+                        <a className="button is-small is-primary" onClick={(e) => this.addTracksToPlaylist(trackIds)} disabled={!addToPlaylistOptions.length}>
                             Ok
                         </a>
                     </div>
@@ -132,7 +132,7 @@ export default class ActionMenu extends React.Component {
                         </span>
                     </div>
                     <div className="control">
-                        <a className="button is-small is-primary" onClick={(e) => this.removeTracksFromPlaylist(trackIds)}>
+                        <a className="button is-small is-primary" onClick={(e) => this.removeTracksFromPlaylist(trackIds)} disabled={!removeFromPlaylistOptions.length}>
                             Ok
                         </a>
                     </div>

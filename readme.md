@@ -13,25 +13,26 @@ Be able to stream your entire music library from your browser. Use it from deskt
 * Mark songs as your favorites!
 * Drag and drop re-ordering for playlists
 * Equalizer
-* Replaygain tag support (mostly)
-* Transcode to various mp3 bitrates (mostly works, saves output to temp dir for now)
+* Replaygain tag support
+* Transcode to various mp3 quality levels
 * Spring Boot Admin support (experimental)
 * Prometheus support (experimental)
 
 ### Known Issues
 * React-beautiful-dnd doesn't yet support react-virtualized. Until then we either have drag and drop, or snappy 
   lists of songs.
-* The JAVE library, used for transcoding, isn't being utilized. It seems to require outputting to a file. This
-  implies we have to wait for a song to finish transcoding, which could take a while, which makes the client wait.
-  If this could generate a stream maybe we could avoid the wait?
+* The JAVE library, used for transcoding, outputs to a file. This requires waiting for a song to finish transcoding, 
+  which can take several seconds. If this could generate a stream maybe we could avoid the wait?
 
 ### Getting Started
 
 #### Prerequisites
-* Windows (linux is a work-in-progress)
+* Windows (linux is untested)
 * Postgresql
 * Gradle
-* Music collection cleanly tagged with artist, album, albumartist, title, and embedded artwork.
+* Music collection:
+  * Cleanly tagged with artist, album, albumartist, title, musicBrainzTrackId, replaygain
+  * Album art embedded in the files or in the same folder and named folder.jpg
 
 #### Installing
 1. Clone project

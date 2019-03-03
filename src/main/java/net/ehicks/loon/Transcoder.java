@@ -11,6 +11,8 @@ import ws.schild.jave.Encoder;
 import ws.schild.jave.EncodingAttributes;
 import ws.schild.jave.MultimediaObject;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -37,7 +39,10 @@ public class Transcoder
                     .resolve(String.valueOf(quality))
                     .resolve(sourceTrack.getMusicBrainzTrackId() + ".mp3");
 
+            long start = System.currentTimeMillis();
             new Encoder().encode(new MultimediaObject(source.toFile()), target.toFile(), getEncodingAttributes(quality));
+
+            logPerformance(sourceTrack, quality, target, start);
 
             return target;
         }
@@ -49,13 +54,19 @@ public class Transcoder
         return null;
     }
 
+    private void logPerformance(Track sourceTrack, int quality, Path target, long start)
+    {
+        BigDecimal duration = new BigDecimal(System.currentTimeMillis() - start).divide(new BigDecimal(1000), 2, RoundingMode.HALF_UP);
+        BigDecimal multi = new BigDecimal(sourceTrack.getDuration()).divide(duration, 2, RoundingMode.HALF_UP);
+        BigDecimal sizeMulti = new BigDecimal(target.toFile().length()).divide(new BigDecimal(sourceTrack.getSize()), 2, RoundingMode.HALF_UP);
+        log.info("Transcode to q" + quality + " took " + duration + " seconds. Speed: " + multi + "x. Size:" + sizeMulti + "x");
+    }
+
     private EncodingAttributes getEncodingAttributes(int quality)
     {
         //Audio Attributes
         AudioAttributes audio = new AudioAttributes();
         audio.setCodec("libmp3lame");
-        audio.setChannels(2);
-        audio.setSamplingRate(44100); // todo: if we get rid of this will it use the source's sampling rate?
         audio.setQuality(quality);
 
         //Encoding attributes

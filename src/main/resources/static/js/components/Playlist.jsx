@@ -32,6 +32,7 @@ export default class Playlist extends React.Component {
         this.onDragEnd = this.onDragEnd.bind(this);
         this.persistDragAndDrop = this.persistDragAndDrop.bind(this);
         this.saveAsPlaylist = this.saveAsPlaylist.bind(this);
+        this.clearPlaylist = this.clearPlaylist.bind(this);
         this.toggleSaveAsPlaylistForm = this.toggleSaveAsPlaylistForm.bind(this);
 
         this.state = {playlistId: parsePlaylistId(this), redirectTo: null};
@@ -93,6 +94,20 @@ export default class Playlist extends React.Component {
             .then(response => response.json()).then(data => {
             self.props.store.appState.loadPlaylists();
             self.setState({redirectTo: '/playlists/' + data.id});
+        });
+    }
+    
+    clearPlaylist() {
+        const self = this;
+
+        const formData = new FormData();
+        formData.append("mode", '');
+        formData.append("replaceExisting", true);
+        formData.append("trackIds", []);
+
+        fetch('/api/playlists/' + this.state.playlistId, {method: 'POST', body: formData})
+            .then(response => response.json()).then(data => {
+            self.props.store.appState.loadPlaylists();
         });
     }
 
@@ -173,10 +188,12 @@ export default class Playlist extends React.Component {
         let actions = '';
         if (playlist && playlist.queue)
         {
+            const disabled = playlist.playlistTracks.length === 0;
             actions =
                 <div>
                     <span className="buttons">
-                        <button className="button is-success" onClick={this.toggleSaveAsPlaylistForm}>Save as Playlist</button>
+                        <button className="button is-success" disabled={disabled} onClick={this.toggleSaveAsPlaylistForm}>Save as Playlist</button>
+                        <button className="button is-danger"  disabled={disabled} onClick={this.clearPlaylist}>Clear</button>
 
                         <form id="saveAsPlaylistForm" className="is-invisible">
                             <div className="field has-addons">

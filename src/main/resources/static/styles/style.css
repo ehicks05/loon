@@ -1,8 +1,4 @@
 html {overflow-y: auto;}
-.alignright {text-align: right}
-.nowrap {white-space: nowrap;}
-
-.overflowTableContainer {overflow-x: auto; padding: 1rem;}
 
 #level {
     position: fixed;
@@ -19,8 +15,8 @@ section {padding: 10px !important;}
 
 .media+.media {padding-top:.2rem;margin-top:.2rem;}
 
-.mediaItemDiv {padding: 5px; vertical-align: middle; display: flex; flex-direction: row; justify-content: space-between; transition: all .2s ease}
-/*.mediaItemDiv:hover {background-color: #f5f5f5;}*/ /* causes unreadability when using a dark theme */
+.mediaItemDiv {padding: 5px; vertical-align: middle; display: flex; flex-direction: row; justify-content: space-between;
+    transition: all .2s ease}
 
 .mediaItemDiv       .mediaItemEllipsis .dropdown{visibility: hidden;}
 .mediaItemDiv:hover .mediaItemEllipsis .dropdown{visibility: visible;}
@@ -38,22 +34,24 @@ section {padding: 10px !important;}
 }
 
 /* SCROLLBAR */
-/* width */
 ::-webkit-scrollbar {
     width: 8px;
 }
 
 /* Track */
-::-webkit-scrollbar-track {
-    background: #f1f1f1;
+::-webkit-scrollbar-track-piece:start {
+    background: transparent url('images/backgrounds/scrollbar.png') repeat-y !important;
+}
+
+::-webkit-scrollbar-track-piece:end {
+    background: transparent url('images/backgrounds/scrollbar.png') repeat-y !important;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    background: #aaa;
+    background: #777;
 }
 
-/* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-    background: #777;
+    background: #888;
 }

@@ -224,7 +224,7 @@ export default class Player extends React.Component {
             octavesFrom1000++;
         }
 
-        let dBAdjustment = (isAbove ? 1 : -1) * octavesFrom1000 * 1.5;
+        let dBAdjustment = (isAbove ? 1 : -1) * octavesFrom1000 * 1.1;
         let linearAdjustment = Math.pow(10, (dBAdjustment / 20));
         return linearAdjustment;
     }

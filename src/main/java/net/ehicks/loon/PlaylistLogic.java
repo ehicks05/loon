@@ -40,7 +40,7 @@ public class PlaylistLogic
         {
             List<PlaylistTrack> playlistTracksNotInInput = playlist.getPlaylistTracks()
                     .stream()
-                    .filter(playlistTrack -> trackIds.contains(playlistTrack.getTrack().getId()))
+                    .filter(playlistTrack -> !trackIds.contains(playlistTrack.getTrack().getId()))
                     .collect(Collectors.toList());
 
             playlist.getPlaylistTracks().removeAll(playlistTracksNotInInput);

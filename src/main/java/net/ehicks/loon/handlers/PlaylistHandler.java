@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -96,25 +97,15 @@ public class PlaylistHandler
         return playlist;
     }
 
-    @PutMapping("/setTracks")
-    public Playlist setTracks(@AuthenticationPrincipal User user, @RequestParam long playlistId, @RequestParam List<Long> trackIds)
-    {
-        Playlist playlist = playlistRepo.findById(playlistId).orElse(null);
-
-        if (playlist != null && playlist.getUserId().equals(user.getId()))
-            playlistLogic.updatePlaylistTracks(playlist, trackIds, "add", true);
-
-        return playlist;
-    }
-
     @PostMapping("/{playlistId}")
     public Playlist togglePlaylistTracks(@AuthenticationPrincipal User user, @PathVariable Long playlistId,
-                                        @RequestParam List<Long> trackIds, @RequestParam String mode)
+                                         @RequestParam List<Long> trackIds, @RequestParam String mode,
+                                         @RequestParam Optional<Boolean> replaceExisting)
     {
         Playlist playlist = playlistRepo.findById(playlistId).orElse(null);
 
         if (playlist != null && playlist.getUserId().equals(user.getId()))
-            playlistLogic.updatePlaylistTracks(playlist, trackIds, mode, false);
+            playlistLogic.updatePlaylistTracks(playlist, trackIds, mode, replaceExisting.orElse(false));
 
         return playlist;
     }

@@ -1,6 +1,6 @@
 import React from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faHeart as fasHeart, faList, faEllipsisH, faPlus, faMinus} from '@fortawesome/free-solid-svg-icons'
+import {faHeart as fasHeart, faList, faEllipsisH, faPlus, faMinus, faSync} from '@fortawesome/free-solid-svg-icons'
 import {faHeart as farHeart} from '@fortawesome/free-regular-svg-icons'
 import {inject, observer} from "mobx-react";
 
@@ -23,11 +23,12 @@ export default class ActionMenu extends React.Component {
             this.props.store.uiState.selectedContextMenuId = this.props.contextMenuId;
     }
 
-    handleToggleTracksInPlaylist(playlistId, trackIds, action)
+    handleToggleTracksInPlaylist(playlistId, trackIds, action, replaceExisting)
     {
         const formData = new FormData();
         formData.append("trackIds", trackIds);
         formData.append("mode", action);
+        formData.append("replaceExisting", replaceExisting ? replaceExisting : false);
         fetch('/api/playlists/' + playlistId, {method: 'POST', body: formData})
             .then(response => response.text()).then(responseText => {
             console.log(responseText);
@@ -60,6 +61,7 @@ export default class ActionMenu extends React.Component {
         const queuePlaylist = playlists.find(playlist => playlist.queue);
         const queueIds = queuePlaylist.playlistTracks.map(playlistTrack => playlistTrack.track.id);
         const isQueued = trackIds.every(trackId => queueIds.includes(trackId));
+        const equalsQueue = isQueued && (trackIds.length === queueIds.length);
 
         const contextMenuId = this.props.contextMenuId;
         const isDropdownActive = this.props.store.uiState.selectedContextMenuId === contextMenuId;
@@ -161,7 +163,7 @@ export default class ActionMenu extends React.Component {
                                 <span className={'icon has-text-success'}>
                                     <FontAwesomeIcon icon={isFavorite ? fasHeart : farHeart}/>
                                 </span>
-                                {isFavorite ? 'Remove from ' : 'Add to '} favorites
+                                {isFavorite ? 'Remove from ' : 'Add to '} Favorites
                             </p>
                         </a>
                         <a className="dropdown-item" onClick={(e) => this.handleToggleTracksInPlaylist(queuePlaylist.id, trackIds, isQueued ? 'remove' : 'add')}>
@@ -169,7 +171,16 @@ export default class ActionMenu extends React.Component {
                                 <span className={'icon ' + (isQueued ? 'has-text-success' : 'has-text-grey')}>
                                     <FontAwesomeIcon icon={faList}/>
                                 </span>
-                                {isQueued ? 'Remove from ' : 'Add to '} queue
+                                {isQueued ? 'Remove from ' : 'Add to '} Queue
+                            </p>
+                        </a>
+                        <a className="dropdown-item" onClick={(e) => this.handleToggleTracksInPlaylist(queuePlaylist.id, trackIds, 'add', true)}
+                                disabled={equalsQueue}>
+                            <p>
+                                <span className={'icon ' + (equalsQueue ? 'has-text-success' : 'has-text-grey')}>
+                                    <FontAwesomeIcon icon={faSync}/>
+                                </span>
+                                Replace Queue
                             </p>
                         </a>
                         <div className="dropdown-item">

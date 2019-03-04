@@ -1,12 +1,15 @@
 package net.ehicks.loon.beans;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "playlists")
@@ -50,6 +53,14 @@ public class Playlist implements Serializable
         return "Playlist{" +
                 "id=" + id +
                 '}';
+    }
+
+    @JsonIgnore
+    public List<Long> getTrackIds()
+    {
+        return getPlaylistTracks().stream()
+                .map(playlistTrack -> playlistTrack.getTrack().getId())
+                .collect(Collectors.toList());
     }
 
     // -------- Getters / Setters ----------

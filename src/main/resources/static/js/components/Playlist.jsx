@@ -2,6 +2,8 @@ import React from 'react';
 import MediaItem from "./MediaItem.jsx";
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import {inject, observer} from "mobx-react";
+import TextInput from "./TextInput.jsx";
+import {Redirect} from "react-router-dom";
 
 function parsePlaylistId(component)
 {
@@ -29,8 +31,10 @@ export default class Playlist extends React.Component {
         super(props);
         this.onDragEnd = this.onDragEnd.bind(this);
         this.persistDragAndDrop = this.persistDragAndDrop.bind(this);
+        this.saveAsPlaylist = this.saveAsPlaylist.bind(this);
+        this.toggleSaveAsPlaylistForm = this.toggleSaveAsPlaylistForm.bind(this);
 
-        this.state = {playlistId: parsePlaylistId(this)};
+        this.state = {playlistId: parsePlaylistId(this), redirectTo: null};
     }
 
     componentDidMount()
@@ -77,8 +81,32 @@ export default class Playlist extends React.Component {
         xhr.send();
     }
 
+    saveAsPlaylist() {
+        const self = this;
+        const queueId = this.props.store.appState.playlists.find(playlist => playlist.queue).id;
+
+        const formData = new FormData();
+        formData.append("fromPlaylistId", queueId);
+        formData.append("name", document.getElementById('playlistName').value);
+
+        fetch('/api/playlists/copyFrom', {method: 'POST', body: formData})
+            .then(response => response.json()).then(data => {
+            self.props.store.appState.loadPlaylists();
+            self.setState({redirectTo: '/playlists/' + data.id});
+        });
+    }
+
+    toggleSaveAsPlaylistForm() {
+        const el = document.getElementById('saveAsPlaylistForm');
+        if (el)
+            el.classList.toggle('is-invisible');
+    }
+
     render()
     {
+        if (this.state.redirectTo)
+            return <Redirect to={this.state.redirectTo} />;
+
         const tracks = this.props.store.appState.tracks;
         const playlists = this.props.store.appState.playlists;
 
@@ -86,6 +114,9 @@ export default class Playlist extends React.Component {
 
         let mediaItems;
         const playlist = playlists.find(playlist => playlist.id === routeParamPlaylistId);
+
+        if (routeParamPlaylistId && !playlist)
+            return <div>Loading...</div>;
 
         if (playlist)
         {
@@ -139,11 +170,39 @@ export default class Playlist extends React.Component {
             );
         }
 
+        let actions = '';
+        if (playlist && playlist.queue)
+        {
+            actions =
+                <div>
+                    <span className="buttons">
+                        <button className="button is-success" onClick={this.toggleSaveAsPlaylistForm}>Save as Playlist</button>
+
+                        <form id="saveAsPlaylistForm" className="is-invisible">
+                            <div className="field has-addons">
+                                <div className="control">
+                                    <span>
+                                        <TextInput label="Name" id="playlistName" hideLabel={true}/>
+                                    </span>
+                                </div>
+                                <div className="control">
+                                    <a className="button is-primary" onClick={this.saveAsPlaylist}>
+                                        Ok
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </span>
+                </div>
+        }
+
+        const title = playlist ? playlist.name : 'Library';
         return (
             <div>
 
                 <section className={'section'} style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
-                    <h1 className="title">{playlist ? playlist.name : 'Library'}</h1>
+                    <h1 className="title">{title}</h1>
+                    {actions}
                 </section>
 
                 {mediaList}

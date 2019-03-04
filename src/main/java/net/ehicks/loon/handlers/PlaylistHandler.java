@@ -69,6 +69,27 @@ public class PlaylistHandler
         return playlist.getPlaylistTracks().stream().map(PlaylistTrack::getTrack).collect(Collectors.toList());
     }
 
+    @PostMapping("/copyFrom")
+    public Playlist copyFrom(@AuthenticationPrincipal User user, @RequestParam long fromPlaylistId, @RequestParam String name)
+    {
+        Playlist fromPlaylist = playlistRepo.findById(fromPlaylistId).orElse(null);
+        if (fromPlaylist == null || name == null || name.isEmpty())
+            return null;
+
+        if (!fromPlaylist.getUserId().equals(user.getId()))
+            return null;
+
+        Playlist toPlaylist = new Playlist();
+        toPlaylist.setUserId(user.getId());
+        toPlaylist.setName(name);
+        toPlaylist = playlistRepo.save(toPlaylist);
+
+        // playlist must have an ID at this point
+        playlistLogic.updatePlaylistTracks(toPlaylist, fromPlaylist.getTrackIds(), "add", true);
+
+        return toPlaylist;
+    }
+
     @PostMapping("/addOrModify")
     public Playlist add(@AuthenticationPrincipal User user, @RequestParam long playlistId, @RequestParam String action,
                       @RequestParam String name, @RequestParam List<Long> trackIds)

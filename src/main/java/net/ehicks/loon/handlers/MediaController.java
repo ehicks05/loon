@@ -1,6 +1,5 @@
 package net.ehicks.loon.handlers;
 
-import net.ehicks.loon.MultipartFileSender;
 import net.ehicks.loon.Transcoder;
 import net.ehicks.loon.beans.LoonSystem;
 import net.ehicks.loon.beans.Track;
@@ -61,15 +60,8 @@ public class MediaController
             else
                 output = Paths.get(track.getPath());
 
-            MultipartFileSender.fromPath(output)
-                    .with(request)
-                    .with(response)
-                    .serveResource();
-
-            // todo: ran into a range off-by-one error with this. would like to eventually remove MultipartFileSender.
-//                request.setAttribute(MyResourceHttpRequestHandler.ATTR_FILE, new File(track.getPath()));
-//                handler.handleRequest(request, response);
-
+            request.setAttribute(MyResourceHttpRequestHandler.ATTR_FILE, output.toFile());
+            handler.handleRequest(request, response);
         }
         catch (Exception e)
         {

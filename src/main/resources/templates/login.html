@@ -61,31 +61,10 @@
                     </div>
                 </article>
 
-                <!--<c:if test="${!empty sessionScope['signUpResultMessage']}">-->
-                    <!--<article id="signUpResultMessage" class="message ${sessionScope['signUpResultClass']}">-->
-                        <!--<div class="message-header">-->
-                            <!--<p>Sign Up Result</p>-->
-                            <!--<button class="delete" aria-label="delete" onclick="$('#signUpResultMessage').addClass('is-hidden')"></button>-->
-                        <!--</div>-->
-                        <!--<div class="message-body">-->
-                            <!--${sessionScope['signUpResultMessage']}-->
-                            <!--<c:if test="${sessionScope['signUpResultClass'] eq 'is-success'}">-->
-                                <!--<i class="fas fa-trophy has-text-warning" ></i>-->
-                                <!--<i class="fas fa-star has-text-warning" ></i>-->
-                            <!--</c:if>-->
-                        <!--</div>-->
-                    <!--</article>-->
-
-                    <!--<c:remove var="signUpResultMessage" scope="session"/>-->
-                    <!--<c:remove var="signUpResultClass" scope="session"/>-->
-                <!--</c:if>-->
-
                 <p class="has-text-grey" th:if="${loonSystem.registrationEnabled}">
+                    &nbsp;&centerdot;&nbsp;
                     <a th:href="@{/register}" id="signUpButton">Sign Up</a>
-                    <!--&nbsp;&centerdot;&nbsp;-->
-                    <!--<a href="">Forgot Password</a> -->
-                    <!--&nbsp;&centerdot;&nbsp;-->
-                    <!--<a href="">Need Help?</a>-->
+                    &nbsp;&centerdot;&nbsp;
                 </p>
             </div>
         </div>

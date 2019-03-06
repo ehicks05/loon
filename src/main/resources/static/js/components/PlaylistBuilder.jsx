@@ -2,8 +2,8 @@ import React from 'react';
 import {Redirect} from 'react-router-dom'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faCheckSquare,faChevronRight,faChevronDown,faPlusSquare,faMinusSquare,faFolder,faFolderOpen,faFile} from '@fortawesome/free-solid-svg-icons'
-import {faSquare} from '@fortawesome/free-regular-svg-icons'
+import {faChevronRight,faChevronDown} from '@fortawesome/free-solid-svg-icons'
+import {faCheckSquare, faPlusSquare, faMinusSquare, faSquare, faFolder, faFolderOpen, faFile} from '@fortawesome/free-regular-svg-icons'
 
 import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
@@ -28,7 +28,7 @@ export default class PlaylistBuilder extends React.Component {
     componentDidMount()
     {
         const self = this;
-        fetch('/api/playlists/getLibraryTrackPaths', {method: 'GET'})
+        fetch('/api/library/getLibraryTrackPaths', {method: 'GET'})
             .then(response => response.json()).then(json => self.setState({treeData: json}));
 
         let playlistId = this.props.match.params.id ? Number(this.props.match.params.id) : 0;

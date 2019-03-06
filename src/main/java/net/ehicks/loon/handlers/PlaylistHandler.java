@@ -1,6 +1,5 @@
 package net.ehicks.loon.handlers;
 
-import net.ehicks.loon.LibraryLogic;
 import net.ehicks.loon.PlaylistLogic;
 import net.ehicks.loon.beans.Playlist;
 import net.ehicks.loon.beans.PlaylistTrack;
@@ -25,15 +24,13 @@ public class PlaylistHandler
 {
     private PlaylistRepository playlistRepo;
     private PlaylistTrackRepository playlistTrackRepo;
-    private LibraryLogic libraryLogic;
     private PlaylistLogic playlistLogic;
 
     public PlaylistHandler(PlaylistRepository playlistRepo, PlaylistTrackRepository playlistTrackRepo,
-                           LibraryLogic libraryLogic, PlaylistLogic playlistLogic)
+                           PlaylistLogic playlistLogic)
     {
         this.playlistRepo = playlistRepo;
         this.playlistTrackRepo = playlistTrackRepo;
-        this.libraryLogic = libraryLogic;
         this.playlistLogic = playlistLogic;
     }
 
@@ -51,12 +48,6 @@ public class PlaylistHandler
             return null;
 
         return playlist;
-    }
-
-    @GetMapping("/getLibraryTrackPaths")
-    public String getLibraryTrackPaths()
-    {
-        return libraryLogic.getLibraryPathsJson();
     }
 
     @GetMapping("/ajaxGetInitialTracks")

@@ -2,6 +2,7 @@ package net.ehicks.loon.handlers.admin;
 
 import net.ehicks.loon.RegistrationForm;
 import net.ehicks.loon.SessionManager;
+import net.ehicks.loon.UserLogic;
 import net.ehicks.loon.beans.Role;
 import net.ehicks.loon.beans.User;
 import net.ehicks.loon.beans.UserState;
@@ -9,6 +10,7 @@ import net.ehicks.loon.repos.RoleRepository;
 import net.ehicks.loon.repos.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +19,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/admin/users")
@@ -27,28 +30,33 @@ public class AdminUserHandler
     private RoleRepository roleRepo;
     private PasswordEncoder passwordEncoder;
     private SessionManager sessionManager;
+    private UserLogic userLogic;
 
     public AdminUserHandler(UserRepository userRepo, RoleRepository roleRepo, PasswordEncoder passwordEncoder,
-                            SessionManager sessionManager)
+                            SessionManager sessionManager, UserLogic userLogic)
     {
         this.userRepo = userRepo;
         this.roleRepo = roleRepo;
         this.passwordEncoder = passwordEncoder;
         this.sessionManager = sessionManager;
+        this.userLogic = userLogic;
     }
 
     @GetMapping("")
     public List<User> list()
     {
-        return userRepo.findAll();
+        return userRepo.findAllByOrderById();
     }
 
     @DeleteMapping("/{id}")
-    public String delete(@PathVariable Long id)
+    public String delete(@AuthenticationPrincipal User user, @PathVariable Long id)
     {
-        User user = userRepo.findById(id).orElse(null);
-        if (user != null)
-            userRepo.delete(user);
+        User userToDelete = userRepo.findById(id).orElse(null);
+
+        if (userToDelete == null || user.getId().equals(id))
+            return "";
+        
+        userRepo.delete(userToDelete);
 
         return "";
     }
@@ -60,9 +68,10 @@ public class AdminUserHandler
     }
 
     @PostMapping("")
-    public User modify(RegistrationForm registrationForm)
+    public User create(RegistrationForm registrationForm)
     {
         Set<Role> roles = new HashSet<>(Arrays.asList(roleRepo.findByRole("ROLE_USER")));
+
         User user = registrationForm.toUser(passwordEncoder, roles);
         UserState userState = new UserState();
         user.setUserState(userState);
@@ -70,32 +79,38 @@ public class AdminUserHandler
 
         user = userRepo.save(user);
 
+        userLogic.createDefaultPlaylists(user);
+
         return user;
     }
 
     @PutMapping("/{id}")
-    public User modify(@PathVariable Long id, @RequestParam String newUsername, @RequestParam String fullName)
+    public User modify(@PathVariable Long id, @RequestParam String username, @RequestParam String password,
+                       @RequestParam String fullName, @RequestParam List<String> roles)
     {
         User user = userRepo.findById(id).orElse(null);
-        user.setUsername(newUsername);
-        user.setFullName(fullName);
-        user = userRepo.save(user);
+        if (user == null)
+            return null;
 
-        return user;
-    }
+        if (!username.isBlank())
+            user.setUsername(username);
 
-    @GetMapping("/{id}/changePassword")
-    public User changePassword(@PathVariable Long id, @RequestParam String password)
-    {
-        User user = userRepo.findById(id).orElse(null);
-
-        if (!password.isEmpty())
-        {
+        if (!password.isBlank())
             user.setPassword(passwordEncoder.encode(password));
-            userRepo.save(user);
+
+        if (!fullName.isBlank())
+            user.setFullName(fullName);
+
+        if (!roles.isEmpty())
+        {
+            Set<Role> newRoles = roles.stream()
+                    .map(role -> roleRepo.findByRole(role))
+                    .collect(Collectors.toSet());
+
+            user.setRoles(newRoles);
         }
 
-        return user;
+        return userRepo.save(user);
     }
 
     @GetMapping("/activeSessions")

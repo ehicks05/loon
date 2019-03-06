@@ -15,6 +15,8 @@ export default class Select extends React.Component {
         const blankLabel = this.props.blankLabel;
         const required = this.props.required;
         const items = this.props.items;
+        const multiple = this.props.multiple;
+        const size = this.props.size ? this.props.size : null;
 
         if (!required)
             items.splice(0, 0, {value: '', text: blankLabel});
@@ -32,8 +34,8 @@ export default class Select extends React.Component {
 
         let select =
             <div className="control">
-                <div className="select">
-                    <select id={id} name={id} defaultValue={value}>
+                <div className={"select " + (multiple ? 'is-multiple' : '')}>
+                    <select id={id} name={id} defaultValue={value} multiple={multiple} size={size} style={{overflow: 'auto'}}>
                         {options}
                     </select>
                 </div>

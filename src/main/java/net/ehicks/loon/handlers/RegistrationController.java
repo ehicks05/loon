@@ -5,6 +5,7 @@ import net.ehicks.loon.UserLogic;
 import net.ehicks.loon.beans.LoonSystem;
 import net.ehicks.loon.beans.Role;
 import net.ehicks.loon.beans.User;
+import net.ehicks.loon.beans.UserState;
 import net.ehicks.loon.repos.LoonSystemRepository;
 import net.ehicks.loon.repos.RoleRepository;
 import net.ehicks.loon.repos.UserRepository;
@@ -54,7 +55,12 @@ public class RegistrationController
         Set<Role> roles = new HashSet<>(Arrays.asList(roleRepo.findByRole("ROLE_USER")));
         if (loonSystemRepo.findById(1L).orElse(null).isRegistrationEnabled())
         {
-            User user = userRepo.save(form.toUser(passwordEncoder, roles));
+            User user = form.toUser(passwordEncoder, roles);
+            UserState userState = new UserState();
+            user.setUserState(userState);
+            userState.setUser(user);
+
+            user = userRepo.save(user);
             userLogic.createDefaultPlaylists(user);
         }
         return "redirect:/login";

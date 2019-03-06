@@ -18,9 +18,7 @@ export default class TextInput extends React.Component {
         const required = this.props.required ? 'required' : '';
         const size = this.props.size ? this.props.size : 20;
         const autoComplete = this.props.autoComplete ? this.props.autoComplete : '';
-        let isHorizontal = true;
-        if (this.props.horizontal === false)
-            isHorizontal = false;
+        let isHorizontal = this.props.horizontal;
         const autofocus = this.props.autofocus;
 
         const leftIcon = this.props.leftIcon;
@@ -37,7 +35,7 @@ export default class TextInput extends React.Component {
 
         let inputClass = 'input ';
         inputClass += this.props.isStatic ? ' is-static ' : '';
-        inputClass += this.props.inputClass;
+        inputClass += this.props.inputClass ? this.props.inputClass : '';
 
         const labelEl = !hideLabel ? (isHorizontal ? (
             <div className={labelClass}>
@@ -72,7 +70,9 @@ export default class TextInput extends React.Component {
 
         const fieldEl = isHorizontal ? (
             <div className="field-body">
-                {controlEl}
+                <div className="field">
+                    {controlEl}
+                </div>
             </div>
         ) : (controlEl);
 

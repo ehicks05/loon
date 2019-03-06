@@ -87,6 +87,7 @@ export default class PlaylistBuilder extends React.Component {
                         size={50}
                     />
 
+                    <label className="label">Tracks</label>
                     <CheckboxTree
                         nodes={this.state.treeData}
                         checked={this.state.checked}

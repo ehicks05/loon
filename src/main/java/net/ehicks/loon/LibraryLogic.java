@@ -31,6 +31,8 @@ public class LibraryLogic
     public String getLibraryPathsJson()
     {
         Node root = getLibraryPaths();
+        if (root == null)
+            return "";
 
         // todo this is test code
         playlistTrackRepository.findByPlaylistIdOrderByIndex(1L).forEach(playlistTrack ->
@@ -52,7 +54,11 @@ public class LibraryLogic
 
     private Node getLibraryPaths()
     {
-        Path libraryPath = Paths.get(loonSystemRepo.findById(1L).orElse(null).getMusicFolder());
+        String musicFolder = loonSystemRepo.findById(1L).orElse(null).getMusicFolder();
+        if (musicFolder.isBlank())
+            return null;
+
+        Path libraryPath = Paths.get(musicFolder);
 
         AtomicInteger folderId = new AtomicInteger();
         Node root = new Node(libraryPath, libraryPath.getRoot().toString(), folderId.getAndDecrement(), libraryPath.toFile().isDirectory());

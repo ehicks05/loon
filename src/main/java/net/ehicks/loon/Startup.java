@@ -2,7 +2,6 @@ package net.ehicks.loon;
 
 import net.ehicks.loon.beans.LoonSystem;
 import net.ehicks.loon.repos.LoonSystemRepository;
-import net.ehicks.loon.repos.TrackRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
@@ -18,15 +17,11 @@ public class Startup
 {
     private static final Logger log = LoggerFactory.getLogger(Startup.class);
     private Seeder seeder;
-    private MusicScanner musicScanner;
-    private TrackRepository trackRepo;
     private LoonSystemRepository loonSystemRepo;
 
-    public Startup(Seeder seeder, MusicScanner musicScanner, TrackRepository trackRepo, LoonSystemRepository loonSystemRepo)
+    public Startup(Seeder seeder, LoonSystemRepository loonSystemRepo)
     {
         this.seeder = seeder;
-        this.musicScanner = musicScanner;
-        this.trackRepo = trackRepo;
         this.loonSystemRepo = loonSystemRepo;
     }
 
@@ -36,16 +31,18 @@ public class Startup
         seeder.createDefaultRoles();
         seeder.createDefaultUsers(); // requires roles to exist
 
-        if (trackRepo.count() == 0)
-            musicScanner.scan(); // needs music file path from loonSystem
-
-        LoonSystem loonSystem = loonSystemRepo.findById(1L).orElse(null);
-
-        createSystemFolders(loonSystem);
+        createSystemFolders();
     }
 
-    private void createSystemFolders(LoonSystem loonSystem)
+    private void createSystemFolders()
     {
+        LoonSystem loonSystem = loonSystemRepo.findById(1L).orElse(null);
+        if (loonSystem == null)
+        {
+            log.error("loonSystem is null");
+            return;
+        }
+
         List<Path> paths = Arrays.asList(
                 Paths.get(loonSystem.getDataFolder(), "art").toAbsolutePath(),
                 Paths.get(loonSystem.getTranscodeFolder()).toAbsolutePath()

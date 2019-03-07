@@ -50,7 +50,9 @@ public class UserHandler
         if (track == null || playlistTrackMissing)
         {
             user.getUserState().setLastPlaylistId(0L);
-            user.getUserState().setLastTrackId(trackRepo.findAll().get(0).getId());
+
+            Track firstTrack = trackRepo.findTopByOrderById().orElse(null);
+            user.getUserState().setLastTrackId(firstTrack != null ? firstTrack.getId() : 0);
             userRepo.save(user);
         }
 

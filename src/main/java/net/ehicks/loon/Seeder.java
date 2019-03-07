@@ -15,47 +15,26 @@ public class Seeder
     private static final Logger log = LoggerFactory.getLogger(Seeder.class);
     private UserRepository userRepo;
     private RoleRepository roleRepo;
-    private TrackRepository trackRepo;
-    private PlaylistRepository playlistRepo;
-    private PlaylistTrackRepository playlistTrackRepo;
     private PasswordEncoder passwordEncoder;
     private LoonSystemRepository loonSystemRepo;
-    private PlaylistLogic playlistLogic;
     private UserLogic userLogic;
 
-    public Seeder(UserRepository userRepo, RoleRepository roleRepo, TrackRepository trackRepo, PlaylistRepository playlistRepo,
-                  PlaylistTrackRepository playlistTrackRepo, PasswordEncoder passwordEncoder, LoonSystemRepository loonSystemRepo,
-                  PlaylistLogic playlistLogic, UserLogic userLogic)
+    public Seeder(UserRepository userRepo, RoleRepository roleRepo, PasswordEncoder passwordEncoder,
+                  LoonSystemRepository loonSystemRepo, UserLogic userLogic)
     {
         this.userRepo = userRepo;
         this.roleRepo = roleRepo;
-        this.trackRepo = trackRepo;
-        this.playlistRepo = playlistRepo;
-        this.playlistTrackRepo = playlistTrackRepo;
         this.passwordEncoder = passwordEncoder;
         this.loonSystemRepo = loonSystemRepo;
-        this.playlistLogic = playlistLogic;
         this.userLogic = userLogic;
     }
 
     public void createLoonSystem()
     {
-        if (loonSystemRepo.findById(1L).orElse(null) != null)
+        if (loonSystemRepo.findById(1L).isPresent())
             return;
 
-        loonSystemRepo.deleteAll();
-        
-        LoonSystem loonSystem = new LoonSystem();
-        loonSystem.setId(1L);
-        loonSystem.setInstanceName("Loon");
-        loonSystem.setLogonMessage("Welcome to Loon.");
-        loonSystem.setTheme("default");
-        loonSystem.setMusicFolder("c:/k/music");
-        loonSystem.setTranscodeFolder("transcode");
-        loonSystem.setDataFolder("static");
-        loonSystem.setRegistrationEnabled(false);
-        loonSystem.setTranscodeQuality("default");
-        loonSystemRepo.save(loonSystem);
+        loonSystemRepo.save(new LoonSystem());
     }
 
     public void createDefaultRoles()
@@ -97,45 +76,5 @@ public class Seeder
 
             userLogic.createDefaultPlaylists(user);
         });
-    }
-
-    public void createRandomPlaylist(long userId)
-    {
-        int playlistSize = 10;
-        List<Track> tracks = trackRepo.findAll();
-        if (tracks.size() == 0)
-            return;
-
-        Random r = new Random();
-
-        String playlistName = "Random Playlist";
-
-        Playlist playlist = new Playlist();
-        playlist.setUserId(userId);
-        playlist.setName(playlistName);
-
-        playlist = playlistRepo.save(playlist);
-
-        List<Long> selectedTrackIds = new ArrayList<>();
-
-        int tries = 0;
-        while (tries < playlistSize)
-        {
-            int trackListIndex = r.nextInt(tracks.size());
-            Long trackId = tracks.get(trackListIndex).getId();
-            if (!selectedTrackIds.contains(trackId))
-                selectedTrackIds.add(trackId);
-
-            tries++;
-        }
-
-        for (Long selectedTrackId : selectedTrackIds)
-        {
-            PlaylistTrack playlistTrack = new PlaylistTrack();
-            playlistTrack.setPlaylist(playlist);
-            playlistTrack.setTrack(trackRepo.findById(selectedTrackId).orElse(null));
-            playlistTrack.setIndex(playlistLogic.getNextAvailableIndex(playlist.getId()));
-            playlistTrackRepo.save(playlistTrack);
-        }
     }
 }

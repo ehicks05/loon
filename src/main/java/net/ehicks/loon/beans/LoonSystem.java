@@ -10,17 +10,17 @@ import java.io.Serializable;
 public class LoonSystem implements Serializable
 {
     @Id
-    private Long id;
+    private Long id = 1L;
 
-    private String instanceName = "";
-    private String logonMessage = "";
-    private String theme = "";
+    private String instanceName = "Loon";
+    private String logonMessage = "Welcome to Loon.";
+    private String theme = "default";
     private String musicFolder = "";
-    private String transcodeFolder = "";
-    private String dataFolder = "";
+    private String transcodeFolder = "transcode";
+    private String dataFolder = "static";
     private String lastFmApiKey = "";
     private boolean registrationEnabled = false;
-    private String transcodeQuality = "";
+    private String transcodeQuality = "default";
 
     public LoonSystem()
     {

@@ -29,7 +29,8 @@ export default class PlaylistBuilder extends React.Component {
     {
         const self = this;
         fetch('/api/library/getLibraryTrackPaths', {method: 'GET'})
-            .then(response => response.json()).then(json => self.setState({treeData: json}));
+            .then(response => response.json())
+            .then(json => self.setState({treeData: json}));
 
         let playlistId = this.props.match.params.id ? Number(this.props.match.params.id) : 0;
         if (playlistId)
@@ -68,6 +69,7 @@ export default class PlaylistBuilder extends React.Component {
     {
         if (!this.state.treeData)
             return <div>Loading...</div>;
+
         if (this.state.redirectToPlaylists)
             return <Redirect to={'/playlists'} />;
 

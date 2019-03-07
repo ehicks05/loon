@@ -138,15 +138,16 @@ public class MusicScanner
         track.setTitle(tag.getFirst(FieldKey.TITLE));
         track.setAlbum(tag.getFirst(FieldKey.ALBUM));
         track.setAlbumArtist(tag.getFirst(FieldKey.ALBUM_ARTIST));
-        track.setTrackGain(tag.getFirst("REPLAYGAIN_TRACK_GAIN"));
         track.setTrackPeak(tag.getFirst("REPLAYGAIN_TRACK_PEAK"));
+        track.setTrackGain(tag.getFirst("REPLAYGAIN_TRACK_GAIN"));
 
         if (track.getTrackGain().isEmpty())
         {
-            String rpgain = deepScanForReplayGain(tag);
-            track.setTrackGain(rpgain + " dB");
+            String rpGain = deepScanForReplayGain(tag);
+            track.setTrackGain(rpGain);
         }
 
+        track.setTrackGain(track.getTrackGain().replace(" dB", ""));
         track.setTrackGainLinear(track.convertDBToLinear());
 
         if (tag.getArtworkList().size() > 0)
@@ -289,7 +290,7 @@ public class MusicScanner
                 return m.group();
             }
         }
-        return "";
+        return "0";
     }
 
     private byte[] resize(InputStream inputStream, String contentType, int targetWidth, int targetHeight) throws IOException

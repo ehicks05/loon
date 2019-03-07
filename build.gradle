@@ -42,12 +42,9 @@ repositories {
 ext['springBootAdminVersion'] = '2.1.3'
 
 dependencies {
-    compile 'com.github.ehicks05:common:-SNAPSHOT'
-
     compile 'com.github.goxr3plus:jaudiotagger:V2.2.6'
     compile 'org.apache.commons:commons-lang3:3.8.1'
     compile 'net.coobird:thumbnailator:0.4.8'
-    compile 'com.google.code.gson:gson:2.8.2'
     compile 'ws.schild:jave-all-deps:2.4.5'
     compile 'io.springfox:springfox-swagger2:2.9.2'
     compile 'io.springfox:springfox-swagger-ui:2.9.2'

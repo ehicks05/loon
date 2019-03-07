@@ -1,31 +1,31 @@
 package net.ehicks.loon;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.ehicks.loon.beans.Track;
 import net.ehicks.loon.repos.LoonSystemRepository;
-import net.ehicks.loon.repos.PlaylistTrackRepository;
 import net.ehicks.loon.repos.TrackRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class LibraryLogic
 {
+    private static final Logger log = LoggerFactory.getLogger(LibraryLogic.class);
+
     private LoonSystemRepository loonSystemRepo;
     private TrackRepository trackRepo;
-    private PlaylistTrackRepository playlistTrackRepository;
 
-    public LibraryLogic(LoonSystemRepository loonSystemRepo, TrackRepository trackRepo, PlaylistTrackRepository playlistTrackRepository)
+    public LibraryLogic(LoonSystemRepository loonSystemRepo, TrackRepository trackRepo)
     {
         this.loonSystemRepo = loonSystemRepo;
         this.trackRepo = trackRepo;
-        this.playlistTrackRepository = playlistTrackRepository;
     }
 
     public String getLibraryPathsJson()
@@ -34,22 +34,19 @@ public class LibraryLogic
         if (root == null)
             return "";
 
-        // todo this is test code
-        playlistTrackRepository.findByPlaylistIdOrderByIndex(1L).forEach(playlistTrack ->
-                root.getDescendantById(playlistTrack.getTrack().getId().intValue()).ifPresent(node -> node.checked = true)
-        );
+        List<Node> nodes = Collections.singletonList(root);
 
-        GsonBuilder gsonBuilder = new GsonBuilder().setPrettyPrinting();
+        try
+        {
+            ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.writeValueAsString(nodes);
+        }
+        catch (Exception e)
+        {
+            log.error(e.getMessage(), e);
+        }
 
-        gsonBuilder.registerTypeAdapter(Node.class, new Node.ReactCheckboxTreeSerializer());
-
-        Gson gson = gsonBuilder.create();
-
-        List<Node> nodes = Arrays.asList(root);
-        String json = gson.toJson(nodes);
-//        System.out.println(json);
-
-        return json;
+        return "";
     }
 
     private Node getLibraryPaths()
@@ -61,7 +58,7 @@ public class LibraryLogic
         Path libraryPath = Paths.get(musicFolder);
 
         AtomicInteger folderId = new AtomicInteger();
-        Node root = new Node(libraryPath, libraryPath.getRoot().toString(), folderId.getAndDecrement(), libraryPath.toFile().isDirectory());
+        Node root = new Node(libraryPath, libraryPath.getRoot().toString(), folderId.getAndDecrement());
 
         buildNodesFromPath(root, libraryPath, folderId, 0);
 
@@ -86,8 +83,8 @@ public class LibraryLogic
             Node child = context.getChildByTitle(subPath.toString());
             if (child == null)
             {
-                child = new Node(path.subpath(0, i + 1), subPath.toString(), nodeId, isFolder);
-                context.children.add(child);
+                child = new Node(path.subpath(0, i + 1), subPath.toString(), nodeId);
+                context.getChildren().add(child);
             }
             context = child;
         }

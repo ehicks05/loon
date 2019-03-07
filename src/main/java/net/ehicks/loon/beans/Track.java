@@ -1,7 +1,6 @@
 package net.ehicks.loon.beans;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import net.ehicks.common.Common;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -104,14 +103,25 @@ public class Track implements Serializable
                 '}';
     }
 
+    // db-to-linear(x) = 10^(x / 20)
     public String convertDBToLinear()
     {
-//        db-to-linear(x) = 10^(x / 20)
-        BigDecimal dbAdjustment = Common.stringToBigDecimal(trackGain.replace(" dB", ""));
-        BigDecimal twenty = new BigDecimal("20");
-        BigDecimal result = BigDecimal.valueOf(Math.pow(10,
-                dbAdjustment.divide(twenty, 3, RoundingMode.HALF_UP).doubleValue())).setScale(3, RoundingMode.HALF_UP);
-        return result.toString();
+        if (trackGain.isBlank())
+            return BigDecimal.ZERO.toString();
+
+        BigDecimal dbAdjustment = BigDecimal.ZERO;
+        try
+        {
+            dbAdjustment = new BigDecimal(trackGain);
+        }
+        catch (Exception e)
+        {
+
+        }
+
+        double xDividedBy20 = dbAdjustment.divide(new BigDecimal("20"), 3, RoundingMode.HALF_UP).doubleValue();
+        double result = Math.pow(10, xDividedBy20);
+        return BigDecimal.valueOf(result).setScale(3, RoundingMode.HALF_UP).toString();
     }
 
     // -------- Getters / Setters ----------

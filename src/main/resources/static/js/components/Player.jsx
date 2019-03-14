@@ -169,6 +169,13 @@ export default class Player extends React.Component {
             if (!track)
             {
                 console.log('no track found...');
+                this.handleTrackChange('next');
+                return;
+            }
+            if (track.missingFile)
+            {
+                console.log('attempted to play a track with missing file...');
+                this.handleTrackChange('next');
                 return;
             }
 

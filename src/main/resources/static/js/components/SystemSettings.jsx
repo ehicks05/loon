@@ -170,6 +170,7 @@ export default class SystemSettings extends React.Component {
                         <TextInput id="lastFmApiKey" label="Last.fm API Key" value={systemSettings.lastFmApiKey} size={50} />
                         <TextInput id="logonMessage" label="Welcome Message" value={systemSettings.logonMessage} size={50} />
                         <Select id="registrationEnabled" label="Registration Enabled" items={trueFalse} value={systemSettings.registrationEnabled} required={true} />
+                        <Select id="directoryWatcherEnabled" label="Directory Watcher Enabled" items={trueFalse} value={systemSettings.directoryWatcherEnabled} required={true} />
                         <Select id="transcodeQuality" label="Transcode Quality" items={transcodeQualityOptions} value={systemSettings.transcodeQuality} required={true} />
 
                         <span className="buttons">

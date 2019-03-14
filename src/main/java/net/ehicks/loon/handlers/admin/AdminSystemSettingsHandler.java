@@ -1,14 +1,18 @@
 package net.ehicks.loon.handlers.admin;
 
+import net.ehicks.loon.DirectoryWatcher;
 import net.ehicks.loon.ImageScanner;
 import net.ehicks.loon.MusicScanner;
 import net.ehicks.loon.ProgressTracker;
 import net.ehicks.loon.beans.LoonSystem;
+import net.ehicks.loon.beans.Track;
 import net.ehicks.loon.repos.LoonSystemRepository;
 import net.ehicks.loon.repos.TrackRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/systemSettings")
@@ -19,14 +23,16 @@ public class AdminSystemSettingsHandler
     private MusicScanner musicScanner;
     private ImageScanner imageScanner;
     private TrackRepository trackRepo;
+    private DirectoryWatcher directoryWatcher;
 
     public AdminSystemSettingsHandler(LoonSystemRepository loonSystemRepo, MusicScanner musicScanner,
-                                      ImageScanner imageScanner, TrackRepository trackRepo)
+                                      ImageScanner imageScanner, TrackRepository trackRepo, DirectoryWatcher directoryWatcher)
     {
         this.loonSystemRepo = loonSystemRepo;
         this.musicScanner = musicScanner;
         this.imageScanner = imageScanner;
         this.trackRepo = trackRepo;
+        this.directoryWatcher = directoryWatcher;
     }
 
     @GetMapping("")
@@ -52,6 +58,8 @@ public class AdminSystemSettingsHandler
         if (rescan)
             new Thread(musicScanner::scan).start();
 
+        directoryWatcher.watch();
+
         return loonSystem;
     }
 
@@ -75,7 +83,9 @@ public class AdminSystemSettingsHandler
     private void clearLibrary()
     {
         log.info("Clearing library...");
-        trackRepo.deleteAll();
+        List<Track> tracks = trackRepo.findAll();
+        tracks.forEach(track -> track.setMissingFile(true));
+        trackRepo.saveAll(tracks);
         log.info("Done clearing library...");
     }
 }

@@ -21,7 +21,7 @@ class FileWalker implements FileVisitor<Path>
     private List<Path> paths = new ArrayList<>();
 
     @Override
-    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException
+    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
     {
         if (dir.getFileName().toString().startsWith(".") || dir.toFile().isHidden())
             return FileVisitResult.SKIP_SUBTREE;
@@ -30,7 +30,7 @@ class FileWalker implements FileVisitor<Path>
     }
 
     @Override
-    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
         if (file.toFile().isHidden() || !isRecognizedExtension(file))
             return FileVisitResult.CONTINUE;
 
@@ -47,13 +47,13 @@ class FileWalker implements FileVisitor<Path>
     }
 
     @Override
-    public FileVisitResult visitFileFailed(Path file, IOException e) throws IOException {
+    public FileVisitResult visitFileFailed(Path file, IOException e) {
         log.error(e.getMessage(), e);
         return FileVisitResult.CONTINUE;
     }
 
     @Override
-    public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+    public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
         return FileVisitResult.CONTINUE;
     }
 

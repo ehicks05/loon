@@ -36,7 +36,7 @@ public class MediaController
     }
 
     @GetMapping("/media")
-    protected void getMedia(HttpServletRequest request, HttpServletResponse response, @RequestParam Long id)
+    protected void getMedia(HttpServletRequest request, HttpServletResponse response, @RequestParam String id)
     {
         LoonSystem loonSystem = loonSystemRepo.findById(1L).orElse(null);
         Track track = trackRepo.findById(id).orElse(null);

@@ -56,7 +56,7 @@ public class Playlist implements Serializable
     }
 
     @JsonIgnore
-    public List<Long> getTrackIds()
+    public List<String> getTrackIds()
     {
         return getPlaylistTracks().stream()
                 .map(playlistTrack -> playlistTrack.getTrack().getId())

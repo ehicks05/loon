@@ -20,6 +20,7 @@ public class LoonSystem implements Serializable
     private String dataFolder = "static";
     private String lastFmApiKey = "";
     private boolean registrationEnabled = false;
+    private boolean directoryWatcherEnabled = false;
     private String transcodeQuality = "default";
 
     public LoonSystem()
@@ -135,6 +136,16 @@ public class LoonSystem implements Serializable
     public void setRegistrationEnabled(boolean registrationEnabled)
     {
         this.registrationEnabled = registrationEnabled;
+    }
+
+    public boolean isDirectoryWatcherEnabled()
+    {
+        return directoryWatcherEnabled;
+    }
+
+    public void setDirectoryWatcherEnabled(boolean directoryWatcherEnabled)
+    {
+        this.directoryWatcherEnabled = directoryWatcherEnabled;
     }
 
     public String getTranscodeQuality()

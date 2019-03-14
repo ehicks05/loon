@@ -18,11 +18,13 @@ public class Startup
     private static final Logger log = LoggerFactory.getLogger(Startup.class);
     private Seeder seeder;
     private LoonSystemRepository loonSystemRepo;
+    private DirectoryWatcher directoryWatcher;
 
-    public Startup(Seeder seeder, LoonSystemRepository loonSystemRepo)
+    public Startup(Seeder seeder, LoonSystemRepository loonSystemRepo, DirectoryWatcher directoryWatcher)
     {
         this.seeder = seeder;
         this.loonSystemRepo = loonSystemRepo;
+        this.directoryWatcher = directoryWatcher;
     }
 
     void start()
@@ -31,11 +33,6 @@ public class Startup
         seeder.createDefaultRoles();
         seeder.createDefaultUsers(); // requires roles to exist
 
-        createSystemFolders();
-    }
-
-    private void createSystemFolders()
-    {
         LoonSystem loonSystem = loonSystemRepo.findById(1L).orElse(null);
         if (loonSystem == null)
         {
@@ -43,6 +40,13 @@ public class Startup
             return;
         }
 
+        createSystemFolders(loonSystem);
+
+        directoryWatcher.watch();
+    }
+
+    private void createSystemFolders(LoonSystem loonSystem)
+    {
         List<Path> paths = Arrays.asList(
                 Paths.get(loonSystem.getDataFolder(), "art").toAbsolutePath(),
                 Paths.get(loonSystem.getTranscodeFolder()).toAbsolutePath()

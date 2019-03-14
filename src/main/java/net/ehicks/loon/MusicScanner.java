@@ -20,9 +20,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
@@ -35,6 +33,7 @@ public class MusicScanner
 {
     private static final Logger log = LoggerFactory.getLogger(MusicScanner.class);
     private static final String PROGRESS_KEY = "musicFileScan";
+    private static boolean RUNNING = false;
 
     private LoonSystemRepository loonSystemRepo;
     private TrackRepository trackRepo;
@@ -47,13 +46,26 @@ public class MusicScanner
         this.fileWalker = fileWalker;
     }
 
+    public boolean isRunning()
+    {
+        return RUNNING;
+    }
+
+    /**
+     * After running, the library should be completely synchronized with the filesystem.
+     * */
     public void scan()
     {
+        if (RUNNING)
+            return;
+
         long start = System.currentTimeMillis();
         java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(Level.WARNING);
 
         try
         {
+            RUNNING = true;
+
             ProgressTracker.progressStatusMap.put(PROGRESS_KEY, new ProgressTracker.ProgressStatus(0, "incomplete"));
 
             AtomicInteger filesProcessed = new AtomicInteger();
@@ -74,33 +86,62 @@ public class MusicScanner
             Files.walkFileTree(basePath, fileWalker);
             List<Path> paths = fileWalker.getPaths();
 
+            List<Track> tracksOnDisk = new ArrayList<>();
             List<Track> tracksToSave = new ArrayList<>();
+            Set<String> trackIds = new HashSet<>();
 
             paths.forEach(path -> {
-                if (trackRepo.findByPath(path.toString()) != null)
-                    return;
-                
+                int progress = (int) ((filesProcessed.incrementAndGet() * 100) / (double) paths.size());
+                ProgressTracker.progressStatusMap.get(PROGRESS_KEY).setProgress(progress);
+
                 AudioFile audioFile = getAudioFile(path);
                 if (audioFile == null)
                     return;
 
                 Track track = parseAudioFile(audioFile, artPath);
-                tracksToSave.add(track);
+                if (trackIds.contains(track.getId()))
+                {
+                    Track alreadyFound = tracksOnDisk.stream().filter(track1 -> track1.getId().equals(track.getId())).findFirst().orElse(null);
+                    log.warn("Detected duplicate track: " + track.getPath() + " and " + alreadyFound.getPath());
+                    return;
+                }
 
-                int progress = (int) ((filesProcessed.incrementAndGet() * 100) / (double) paths.size());
-                ProgressTracker.progressStatusMap.get(PROGRESS_KEY).setProgress(progress);
+                trackIds.add(track.getId());
+                tracksOnDisk.add(track);
+            });
+
+            List<Track> tracksInDb = trackRepo.findAll();
+            tracksOnDisk.forEach(trackFromDisk -> {
+                Track trackFromDb = tracksInDb.stream().filter(track1 -> track1.getId().equals(trackFromDisk.getId())).findFirst().orElse(null);
+                if (trackFromDb != null)
+                    tracksInDb.remove(trackFromDb);
+
+                if (!trackFromDisk.equals(trackFromDb))
+                    tracksToSave.add(trackFromDisk);
             });
 
             trackRepo.saveAll(tracksToSave);
 
+            // at this point tracksInDb will only contain tracks that were not found in the filesystem.
+            List<Track> tracksWithMissingFile = tracksInDb;
+            tracksWithMissingFile.forEach(track -> track.setMissingFile(true));
+            trackRepo.saveAll(tracksWithMissingFile);
+
             log.info("Scan complete: Added " + tracksToSave.size() + " tracks.");
             long dur = System.currentTimeMillis() - start;
-            log.info("Took " + dur + "ms (" + (tracksToSave.size() / (((double) dur) / 1000)) + " tracks / sec)");
+            double durSeconds = ((double) dur) / 1000;
+            log.info("Files considered: " + paths.size() + ". " + dur + "ms (" + Math.round(paths.size() / durSeconds) + " files / sec)");
+            log.info("Tracks saved: " + tracksToSave.size() + ". " + dur + "ms (" + Math.round(tracksToSave.size() / durSeconds) + " tracks / sec)");
+            log.info("Tracks missing file: " + tracksWithMissingFile.size() + ". " + dur + "ms (" + Math.round(tracksWithMissingFile.size() / durSeconds) + " tracks / sec)");
             ProgressTracker.progressStatusMap.put(PROGRESS_KEY, new ProgressTracker.ProgressStatus(100, "complete"));
         }
         catch (Exception e)
         {
             log.error(e.getMessage(), e);
+        }
+        finally
+        {
+            RUNNING = false;
         }
     }
 
@@ -155,7 +196,9 @@ public class MusicScanner
             saveArtwork(tag, track, artPath);
         }
 
-        int trackNumber = !tag.getFirst(FieldKey.TRACK).isEmpty() ? Integer.valueOf(tag.getFirst(FieldKey.TRACK)) : 1;
+        String trackNumString = tag.getFirst(FieldKey.TRACK);
+        trackNumString = trackNumString.contains("/") ? trackNumString.substring(0, trackNumString.indexOf("/")) : trackNumString;
+        int trackNumber = trackNumString.isEmpty() ? 1 : Integer.valueOf(trackNumString);
         track.setTrackNumber(trackNumber);
         int discNumber = !tag.getFirst(FieldKey.DISC_NO).isEmpty() ? Integer.valueOf(tag.getFirst(FieldKey.DISC_NO)) : 1;
         track.setDiscNumber(discNumber);
@@ -163,8 +206,9 @@ public class MusicScanner
         track.setMusicBrainzTrackId(tag.getFirst(FieldKey.MUSICBRAINZ_TRACK_ID));
         if (track.getMusicBrainzTrackId().isEmpty())
         {
-            log.warn(track.getArtist() + " - " + track.getTitle() + ": no musicBrainzTrackId");
-            track.setMusicBrainzTrackId(track.getArtist() + " - " + track.getAlbum() + " - " + track.getTitle());
+            track.setMusicBrainzTrackId(tag.getFirst(FieldKey.MUSICBRAINZ_RELEASE_TRACK_ID));
+            if (track.getMusicBrainzTrackId().isEmpty())
+                log.warn(track.getArtist() + " - " + track.getTitle() + ": no musicBrainzTrackId");
         }
 
         // condense artists like 'Foo feat. Bar' down to hopefully just 'Foo'
@@ -183,6 +227,8 @@ public class MusicScanner
             track.setArtist(newArtist);
         }
 
+        String id = track.getMusicBrainzTrackId().isBlank() ? track.getArtist() + " - " + track.getAlbum() + " - " + track.getTitle() : track.getMusicBrainzTrackId();
+        track.setId(id);
         return track;
     }
 

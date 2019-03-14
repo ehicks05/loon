@@ -15,8 +15,7 @@ import java.util.Set;
 public class Track implements Serializable
 {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    private Long id;
+    private String id;
 
     @Column(name = "artist", nullable = false)
     private String artist = "";
@@ -69,19 +68,37 @@ public class Track implements Serializable
     @JsonIgnore
     private Set<PlaylistTrack> playlistTracks = new HashSet<>();
 
+    private Boolean missingFile = false;
+
     @Override
     public boolean equals(Object o)
     {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Track track = (Track) o;
-        return id.equals(track.id);
+        return id.equals(track.id) &&
+                artist.equals(track.artist) &&
+                title.equals(track.title) &&
+                album.equals(track.album) &&
+                Objects.equals(albumArtist, track.albumArtist) &&
+                path.equals(track.path) &&
+                extension.equals(track.extension) &&
+                duration.equals(track.duration) &&
+                size.equals(track.size) &&
+                Objects.equals(trackNumber, track.trackNumber) &&
+                Objects.equals(discNumber, track.discNumber) &&
+                Objects.equals(trackGain, track.trackGain) &&
+                Objects.equals(trackGainLinear, track.trackGainLinear) &&
+                Objects.equals(trackPeak, track.trackPeak) &&
+                Objects.equals(missingFile, track.missingFile) &&
+                Objects.equals(musicBrainzTrackId, track.musicBrainzTrackId);
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(id);
+        return Objects.hash(id, artist, title, album, albumArtist, path, extension, duration, size, trackNumber,
+                discNumber, trackGain, trackGainLinear, trackPeak, missingFile, musicBrainzTrackId);
     }
 
     @Override
@@ -100,6 +117,7 @@ public class Track implements Serializable
                 ", trackGain='" + trackGain + '\'' +
                 ", trackGainLinear='" + trackGainLinear + '\'' +
                 ", trackPeak='" + trackPeak + '\'' +
+                ", missingFile='" + missingFile + '\'' +
                 '}';
     }
 
@@ -124,14 +142,12 @@ public class Track implements Serializable
         return BigDecimal.valueOf(result).setScale(3, RoundingMode.HALF_UP).toString();
     }
 
-    // -------- Getters / Setters ----------
-
-    public Long getId()
+    public String getId()
     {
         return id;
     }
 
-    public void setId(Long id)
+    public void setId(String id)
     {
         this.id = id;
     }
@@ -304,5 +320,15 @@ public class Track implements Serializable
     public void setPlaylistTracks(Set<PlaylistTrack> playlistTracks)
     {
         this.playlistTracks = playlistTracks;
+    }
+
+    public Boolean isMissingFile()
+    {
+        return missingFile;
+    }
+
+    public void setMissingFile(Boolean missingFile)
+    {
+        this.missingFile = missingFile;
     }
 }

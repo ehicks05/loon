@@ -52,7 +52,7 @@ public class UserHandler
             user.getUserState().setLastPlaylistId(0L);
 
             Track firstTrack = trackRepo.findTopByOrderById().orElse(null);
-            user.getUserState().setLastTrackId(firstTrack != null ? firstTrack.getId() : 0);
+            user.getUserState().setLastTrackId(firstTrack != null ? firstTrack.getId() : "");
             userRepo.save(user);
         }
 
@@ -60,7 +60,7 @@ public class UserHandler
     }
 
     @PutMapping("/{id}/saveProgress")
-    public User modify(@AuthenticationPrincipal User user, @PathVariable Long id, @RequestParam Long lastPlaylistId, @RequestParam Long lastTrackId)
+    public User modify(@AuthenticationPrincipal User user, @PathVariable Long id, @RequestParam Long lastPlaylistId, @RequestParam String lastTrackId)
     {
         if (!user.getId().equals(id))
             return null;

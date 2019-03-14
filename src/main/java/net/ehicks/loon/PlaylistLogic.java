@@ -27,7 +27,7 @@ public class PlaylistLogic
         this.trackRepo = trackRepo;
     }
 
-    public void updatePlaylistTracks(Playlist playlist, List<Long> trackIds, String action, boolean clearExisting)
+    public void updatePlaylistTracks(Playlist playlist, List<String> trackIds, String action, boolean clearExisting)
     {
         if (clearExisting && trackIds.isEmpty())
         {

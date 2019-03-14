@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
@@ -21,6 +22,7 @@ import javax.servlet.Filter;
 
 @SpringBootApplication
 @EnableScheduling
+@EnableAsync
 public class Application
 {
     private static final Logger log = LoggerFactory.getLogger(Application.class);
@@ -64,6 +66,11 @@ public class Application
             {
                 ((StandardJarScanner) context.getJarScanner()).setScanManifest(false);
 
+                resizeTomcatResourceCache(context);
+            }
+
+            private void resizeTomcatResourceCache(Context context)
+            {
                 final int cacheSize = 128 * 1024;
                 StandardRoot standardRoot = new StandardRoot(context);
                 standardRoot.setCacheMaxSize(cacheSize);

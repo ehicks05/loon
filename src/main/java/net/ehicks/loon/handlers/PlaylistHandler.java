@@ -83,7 +83,7 @@ public class PlaylistHandler
 
     @PostMapping("/addOrModify")
     public Playlist add(@AuthenticationPrincipal User user, @RequestParam long playlistId, @RequestParam String action,
-                      @RequestParam String name, @RequestParam List<Long> trackIds)
+                      @RequestParam String name, @RequestParam List<String> trackIds)
     {
         Playlist playlist = playlistRepo.findById(playlistId).orElse(null);
         if (playlist != null && !playlist.getUserId().equals(user.getId()))
@@ -111,7 +111,7 @@ public class PlaylistHandler
 
     @PostMapping("/{playlistId}")
     public Playlist togglePlaylistTracks(@AuthenticationPrincipal User user, @PathVariable Long playlistId,
-                                         @RequestParam List<Long> trackIds, @RequestParam String mode,
+                                         @RequestParam List<String> trackIds, @RequestParam String mode,
                                          @RequestParam Optional<Boolean> replaceExisting)
     {
         Playlist playlist = playlistRepo.findById(playlistId).orElse(null);
@@ -139,9 +139,12 @@ public class PlaylistHandler
     public String dragAndDrop(@AuthenticationPrincipal User user, @RequestParam long playlistId,
                               @RequestParam long oldIndex, @RequestParam long newIndex)
     {
+        Playlist playlist = playlistRepo.findById(playlistId).orElse(null);
+        if (playlist == null || !playlist.getUserId().equals(user.getId()))
+            return "";
+
         final long LOW = Math.min(oldIndex, newIndex);
         final long HIGH = Math.max(oldIndex, newIndex);
-        Playlist playlist = playlistRepo.findById(playlistId).orElse(null);
 
         // increment the index of all other tracks in the playlist with indexes >= to the new index and < the previous index.
         Set<PlaylistTrack> playlistTracks = playlist.getPlaylistTracks();

@@ -24,7 +24,7 @@ export default class MyHelmet extends React.Component {
 
                 <link rel="stylesheet" href={uiState.themeUrl} />
 
-                <link rel="shortcut icon" href={basename + "/images/puffin.png"} />
+                <link rel="shortcut icon" href={basename + "/images/loon2.png"} />
                 <link rel="stylesheet" type="text/css" href={basename + "/styles/style.css"} media="screen" />
 
                 <style>

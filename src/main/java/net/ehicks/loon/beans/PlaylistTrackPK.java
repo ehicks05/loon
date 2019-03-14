@@ -8,7 +8,7 @@ import java.util.Objects;
 public class PlaylistTrackPK implements Serializable
 {
     private Long playlist;
-    private Long track;
+    private String track;
 
     @Override
     public boolean equals(Object o)
@@ -45,12 +45,12 @@ public class PlaylistTrackPK implements Serializable
         this.playlist = playlist;
     }
 
-    public Long getTrack()
+    public String getTrack()
     {
         return track;
     }
 
-    public void setTrack(Long track)
+    public void setTrack(String track)
     {
         this.track = track;
     }

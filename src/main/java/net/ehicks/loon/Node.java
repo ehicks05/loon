@@ -12,7 +12,7 @@ public class Node
     @JsonIgnore
     private Path path;
     private String label;
-    private int value;
+    private String value;
     @JsonIgnore
     private boolean checked;
     private List<Node> children = new ArrayList<>();
@@ -21,16 +21,16 @@ public class Node
     {
     }
 
-    public Node(Path path, String label, int value)
+    public Node(Path path, String label, String value)
     {
         this.path = path;
         this.label = label;
         this.value = value;
     }
 
-    public Optional<Node> getDescendantById(int id)
+    public Optional<Node> getDescendantById(String id)
     {
-        if (this.value == id) return Optional.of(this);
+        if (this.value.equals(id)) return Optional.of(this);
 
         Optional<Node> node;
 
@@ -83,12 +83,12 @@ public class Node
         this.label = label;
     }
 
-    public int getValue()
+    public String getValue()
     {
         return value;
     }
 
-    public void setValue(int value)
+    public void setValue(String value)
     {
         this.value = value;
     }

@@ -8,5 +8,5 @@ import java.util.List;
 public interface PlaylistTrackRepository extends JpaRepository<PlaylistTrack, Long>
 {
     List<PlaylistTrack> findByPlaylistIdOrderByIndex(Long playlistId);
-    PlaylistTrack findByPlaylistIdAndTrackId(Long playlistId, Long trackId);
+    PlaylistTrack findByPlaylistIdAndTrackId(Long playlistId, String trackId);
 }

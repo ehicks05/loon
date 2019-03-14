@@ -58,9 +58,9 @@ public class LibraryLogic
         Path libraryPath = Paths.get(musicFolder);
 
         AtomicInteger folderId = new AtomicInteger();
-        Node root = new Node(libraryPath, libraryPath.getRoot().toString(), folderId.getAndDecrement());
+        Node root = new Node(libraryPath, libraryPath.getRoot().toString(), String.valueOf(folderId.getAndDecrement()));
 
-        buildNodesFromPath(root, libraryPath, folderId, 0);
+        buildNodesFromPath(root, libraryPath, folderId, "");
 
         for (Track track : trackRepo.findAll())
         {
@@ -70,7 +70,7 @@ public class LibraryLogic
         return root;
     }
 
-    private void buildNodesFromPath(Node root, Path path, AtomicInteger folderId, long trackId)
+    private void buildNodesFromPath(Node root, Path path, AtomicInteger folderId, String trackId)
     {
         Node context = root;
         for (int i = 0; i < path.getNameCount(); i++)
@@ -78,7 +78,7 @@ public class LibraryLogic
             Path subPath = path.subpath(i, i + 1);
             boolean isFolder = Paths.get(path.getRoot().toString() + path.subpath(0, i+1)).toFile().isDirectory();
 
-            int nodeId = isFolder ? folderId.getAndDecrement() : (int) trackId;
+            String nodeId = isFolder ? String.valueOf(folderId.getAndDecrement()) : trackId;
 
             Node child = context.getChildByTitle(subPath.toString());
             if (child == null)

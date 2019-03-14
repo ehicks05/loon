@@ -70,6 +70,12 @@ export default class MediaItem extends React.Component {
 
         const showActionMenu = !isDragging && (isHovering || isDropdownActive);
 
+        const missingFile = this.props.track.missingFile;
+        const trackTitleEl =
+            <b style={{cursor: missingFile ? 'default' : 'pointer'}} onClick={missingFile ? null : (e) => this.handleSelectedTrackIdChange(e, playlistId, trackId)}>
+                {trackTitle}
+            </b>;
+
         return (
             <div className={highlightClass} id={'track' + trackId}
                 ref={innerRef}
@@ -77,13 +83,18 @@ export default class MediaItem extends React.Component {
                 style={getRowStyle(draggableStyle, isDragging)}
             >
                 <div className={'mediaItemDiv'} onMouseEnter={this.handleHoverTrue}
-                     onMouseLeave={this.handleHoverFalse}>
+                     onMouseLeave={this.handleHoverFalse} style={missingFile ? {color: 'red'} : null}>
                     <div className={'mediaItemCounter'}>
                         {trackNumber}
                     </div>
 
                     <div {...dragHandleProps} className={'list-song'}>
-                        <b style={{cursor: 'pointer'}} onClick={(e) => this.handleSelectedTrackIdChange(e, playlistId, trackId)}>{trackTitle}</b>
+                        {trackTitleEl}
+                        {missingFile &&
+                            <span style={{marginLeft: '1em'}} className={"tag is-normal is-danger"}>
+                                Track Missing
+                            </span>
+                        }
                         <br /><span style={{fontSize: '.875rem'}}><Link to={'/artist/' + artist}>{artist}</Link> - <Link to={'/artist/' + this.props.track.albumArtist + '/album/' + album}><i>{album}</i></Link></span>
                     </div>
 

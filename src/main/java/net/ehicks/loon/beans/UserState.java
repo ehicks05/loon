@@ -19,7 +19,7 @@ public class UserState implements Serializable
     private User user;
 
     private Long lastPlaylistId = 0L;
-    private Long lastTrackId = 1L;
+    private String lastTrackId = "";
     private boolean shuffle = false;
     private Boolean muted = false;
     private Double volume = 0D;
@@ -85,12 +85,12 @@ public class UserState implements Serializable
         this.lastPlaylistId = lastPlaylistId;
     }
 
-    public Long getLastTrackId()
+    public String getLastTrackId()
     {
         return lastTrackId;
     }
 
-    public void setLastTrackId(Long lastTrackId)
+    public void setLastTrackId(String lastTrackId)
     {
         this.lastTrackId = lastTrackId;
     }

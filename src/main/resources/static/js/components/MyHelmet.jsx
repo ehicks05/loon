@@ -14,13 +14,13 @@ export default class MyHelmet extends React.Component {
         const basename = '';
         const uiState = this.props.store.uiState;
         const selectedTrack = uiState.selectedTrack;
-        const trackTitle = selectedTrack ? ' - ' + selectedTrack.title : '';
+        const title = selectedTrack ? selectedTrack.title : 'Loon';
 
         return (
             <Helmet defer={false}>
                 <meta charset="utf-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
-                <title>Loon{trackTitle}</title>
+                <title>{title}</title>
 
                 <link rel="stylesheet" href={uiState.themeUrl} />
 

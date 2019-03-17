@@ -8,7 +8,8 @@ module.exports = {
     output: {
         path: path.resolve('src/main/resources/static/js/dist'),
         filename: 'index_bundle.js',
-        publicPath: '/js/dist/'
+        publicPath: '/js/dist/',
+        chunkFilename: '[name].bundle.js'
     },
     module: {
         rules: [
@@ -33,6 +34,12 @@ module.exports = {
                 use: "babel-loader"
             }
         ]
+    },
+    optimization: {
+        splitChunks: {
+            chunks: 'all',
+            automaticNameDelimiter: "-",
+        }
     },
     plugins: [
         new BundleAnalyzerPlugin({analyzerMode: 'disabled', openAnalyzer: false}), new HardSourceWebpackPlugin()

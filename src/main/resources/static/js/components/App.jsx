@@ -47,7 +47,7 @@ export default class App extends React.Component {
     render() {
         const store = this.props.store;
         if (!store.uiState.theme)
-            return (<div>Loading...</div>);
+            return (<div> </div>);
 
         if (!store.dataLoaded)
         {

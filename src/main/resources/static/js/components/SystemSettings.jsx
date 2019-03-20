@@ -77,25 +77,20 @@ export default class SystemSettings extends React.Component {
     submitForm(rescan, clearLibrary)
     {
         const self = this;
-        const rescanValue = rescan ? 'true' : 'false';
-        const clearLibraryValue = clearLibrary ? 'true' : 'false';
-        const url = '/api/admin/systemSettings?rescan=' + rescanValue + '&clearLibrary=' + clearLibraryValue;
         const formData = new FormData(document.getElementById('frmSystemSettings'));
+        formData.append('rescan', rescan ? 'true' : 'false');
+        formData.append('clearLibrary', clearLibrary ? 'true' : 'false');
 
-        fetch(url, {
-            method: 'PUT',
-            body: formData
-        }).then(response => response.json()).then(data => {
-            self.props.store.uiState.loadTheme();
-            console.log(data);
-            if (rescan)
-                self.getScanProgress();
-            if (clearLibrary)
-            {
-                self.handleUpdateTracks('clearing library');
-                self.handleUpdatePlaylists('clearing library');
-            }
-        });
+        this.props.store.appState.updateSystemSettings(formData)
+            .then(data => {
+                if (rescan)
+                    self.getScanProgress();
+                if (clearLibrary)
+                {
+                    self.handleUpdateTracks('clearing library');
+                    self.handleUpdatePlaylists('clearing library');
+                }
+            });
     }
 
     doImageScan()

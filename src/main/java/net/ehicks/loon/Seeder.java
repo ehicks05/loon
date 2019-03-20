@@ -1,13 +1,22 @@
 package net.ehicks.loon;
 
-import net.ehicks.loon.beans.*;
-import net.ehicks.loon.repos.*;
+import net.ehicks.loon.beans.LoonSystem;
+import net.ehicks.loon.beans.Role;
+import net.ehicks.loon.beans.User;
+import net.ehicks.loon.beans.UserState;
+import net.ehicks.loon.repos.LoonSystemRepository;
+import net.ehicks.loon.repos.RoleRepository;
+import net.ehicks.loon.repos.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Configuration
 public class Seeder
@@ -18,6 +27,12 @@ public class Seeder
     private PasswordEncoder passwordEncoder;
     private LoonSystemRepository loonSystemRepo;
     private UserLogic userLogic;
+
+    @Value("${seeder.default.username}")
+    private String defaultUsername;
+
+    @Value("${seeder.default.password}")
+    private String defaultPassword;
 
     public Seeder(UserRepository userRepo, RoleRepository roleRepo, PasswordEncoder passwordEncoder,
                   LoonSystemRepository loonSystemRepo, UserLogic userLogic)
@@ -55,8 +70,7 @@ public class Seeder
             return;
 
         List<List<String>> defaultUsers = Arrays.asList(
-                Arrays.asList("admin@test.com", "password", "Admin"),
-                Arrays.asList("user@test.com", "password", "User")
+                Arrays.asList(defaultUsername, defaultPassword, "Admin")
         );
 
         defaultUsers.forEach((userData) -> {

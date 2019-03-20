@@ -7,6 +7,11 @@ import {inject, observer} from "mobx-react";
 @inject('store')
 @observer
 export default class Header extends React.Component {
+    constructor(props) {
+        super(props);
+        this.handleLogout = this.handleLogout.bind(this);
+    }
+
     componentDidMount() {
         // Get all "navbar-burger" elements
         var $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
@@ -36,6 +41,11 @@ export default class Header extends React.Component {
                 });
             });
         }
+    }
+
+    handleLogout()
+    {
+        this.props.store.appState.logout();
     }
 
     render()
@@ -115,7 +125,7 @@ export default class Header extends React.Component {
                         </div>
                     </div>
                     <div className="navbar-end">
-                        <a href='/logout' className="navbar-item">
+                        <a onClick={this.handleLogout} href="" className="navbar-item">
                             <span style={{marginRight: '4px'}}>Sign Out</span>
                             <span className="icon is-medium">
                                 <FontAwesomeIcon icon={faSignOutAlt}/>

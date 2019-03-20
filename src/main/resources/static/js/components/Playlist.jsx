@@ -67,19 +67,11 @@ export default class Playlist extends React.Component {
 
     persistDragAndDrop(playlistId, oldIndex, newIndex)
     {
-        const self = this;
-        const params = 'playlistId=' + playlistId + '&oldIndex=' + oldIndex + ' &newIndex=' + newIndex;
-        let xhr = new XMLHttpRequest();
-        xhr.open('POST', '/api/playlists/dragAndDrop?' + params, false);
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                self.props.store.appState.loadPlaylists();
-            }
-            else {
-                console.log('Request failed.  Returned status of ' + xhr.status);
-            }
-        };
-        xhr.send();
+        const formData = new FormData();
+        formData.append("playlistId", playlistId);
+        formData.append("oldIndex", oldIndex);
+        formData.append("newIndex", newIndex);
+        this.props.store.appState.dragAndDrop(formData);
     }
 
     saveAsPlaylist() {
@@ -90,25 +82,12 @@ export default class Playlist extends React.Component {
         formData.append("fromPlaylistId", queueId);
         formData.append("name", document.getElementById('playlistName').value);
 
-        fetch('/api/playlists/copyFrom', {method: 'POST', body: formData})
-            .then(response => response.json()).then(data => {
-            self.props.store.appState.loadPlaylists();
-            self.setState({redirectTo: '/playlists/' + data.id});
-        });
+        this.props.store.appState.copyPlaylist(formData)
+            .then(data => self.setState({redirectTo: '/playlists/' + data.id}));
     }
     
     clearPlaylist() {
-        const self = this;
-
-        const formData = new FormData();
-        formData.append("mode", '');
-        formData.append("replaceExisting", true);
-        formData.append("trackIds", []);
-
-        fetch('/api/playlists/' + this.state.playlistId, {method: 'POST', body: formData})
-            .then(response => response.json()).then(data => {
-            self.props.store.appState.loadPlaylists();
-        });
+        this.props.store.appState.clearPlaylist(this.state.playlistId);
     }
 
     toggleSaveAsPlaylistForm() {

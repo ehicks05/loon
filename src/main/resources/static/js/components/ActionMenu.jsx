@@ -29,11 +29,8 @@ export default class ActionMenu extends React.Component {
         formData.append("trackIds", trackIds);
         formData.append("mode", action);
         formData.append("replaceExisting", replaceExisting ? replaceExisting : false);
-        fetch('/api/playlists/' + playlistId, {method: 'POST', body: formData})
-            .then(response => response.text()).then(responseText => {
-            console.log(responseText);
-            this.props.store.appState.loadPlaylists();
-        });
+
+        this.props.store.appState.toggleTracksInPlaylist(playlistId, formData);
     }
 
     addTracksToPlaylist(trackIds)

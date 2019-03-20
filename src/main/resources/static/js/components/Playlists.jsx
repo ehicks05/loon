@@ -12,15 +12,8 @@ export default class Playlists extends React.Component {
 
     delete(playlistId)
     {
-        const self = this;
         if (window.confirm("Do you really want to delete this playlist?"))
-        {
-            return fetch('/api/playlists/' + playlistId, {method: 'delete'})
-                .then(data => {
-                console.log(data);
-                self.props.store.appState.loadPlaylists();
-            });
-        }
+            return this.props.store.appState.deletePlaylist(playlistId);
     }
 
     render()

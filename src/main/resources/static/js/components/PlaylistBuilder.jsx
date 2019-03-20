@@ -50,11 +50,8 @@ export default class PlaylistBuilder extends React.Component {
         formData.append("name", document.getElementById('name').value);
         formData.append("trackIds", this.state.checked.toString());
 
-        fetch('/api/playlists/addOrModify', {method: 'POST',body: formData})
-            .then(response => response.json()).then(data => {
-            self.props.store.appState.loadPlaylists();
-            self.setState({redirectToPlaylists: true});
-        });
+        self.props.store.appState.addOrModifyPlaylist(formData)
+            .then(data => self.setState({redirectToPlaylists: true}));
     }
 
     onCheck(checked) {

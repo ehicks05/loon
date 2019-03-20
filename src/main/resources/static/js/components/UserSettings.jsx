@@ -28,8 +28,7 @@ export default class UserSettings extends React.Component {
     reloadUsers()
     {
         let self = this;
-        fetch('/api/admin/users', {method: 'GET'})
-            .then(response => response.json())
+        this.props.store.appState.loadUsers()
             .then(data => self.setState({users: data}));
     }
 
@@ -43,10 +42,9 @@ export default class UserSettings extends React.Component {
     {
         this.toggleModal();
 
-        let self = this;
-        fetch('/api/admin/users/' + id, {method: 'DELETE'})
-            .then(response => response.text())
-            .then(self.reloadUsers);
+        const self = this;
+        this.props.store.appState.deleteUser(id)
+            .then(data => self.reloadUsers());
     }
 
     saveUser(id)
@@ -61,10 +59,9 @@ export default class UserSettings extends React.Component {
             .map(option => option.value);
         formData.append('roles', selectedRoles);
 
-        let self = this;
-        fetch('/api/admin/users/' + id, {method: 'PUT', body: formData})
-            .then(response => response.json())
-            .then(self.reloadUsers);
+        const self = this;
+        this.props.store.appState.updateUser(id, formData)
+            .then(data => self.reloadUsers());
     }
 
     toggleModal() {
@@ -73,16 +70,11 @@ export default class UserSettings extends React.Component {
 
     submitForm()
     {
-        const self = this;
-        const url = '/api/admin/users';
         const formData = new FormData(document.getElementById('frmAddUser'));
 
-        fetch(url, {method: 'POST',body: formData})
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                self.reloadUsers();
-            });
+        const self = this;
+        this.props.store.appState.createUser(formData)
+            .then(data => self.reloadUsers());
     }
 
     render()

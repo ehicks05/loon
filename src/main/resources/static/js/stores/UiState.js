@@ -80,9 +80,8 @@ export class UiState {
         const formData = new FormData();
         formData.append('lastPlaylistId', this.selectedPlaylistId);
         formData.append('lastTrackId', this.selectedTrackId);
-        fetch('/api/users/' + this.user.id + '/saveProgress', {method: 'PUT', body: formData})
-            .then(response => response.json())
-        ;
+        this.rootStore.myFetch('/api/users/' + this.user.id + '/saveProgress', {method: 'PUT', body: formData})
+            .then(response => response.json());
     }
 
     @action
@@ -93,10 +92,8 @@ export class UiState {
         const formData = new FormData();
         formData.append('lastPlaylistId', this.selectedPlaylistId);
         formData.append('lastTrackId', this.selectedTrackId);
-        fetch('/api/users/' + this.user.id + '/saveProgress', {method: 'PUT', body: formData})
-            .then(response => response.json())
-            // .then(self.loadUser())
-        ;
+        this.rootStore.myFetch('/api/users/' + this.user.id + '/saveProgress', {method: 'PUT', body: formData})
+            .then(response => response.json());
     }
 
     @action
@@ -105,7 +102,7 @@ export class UiState {
 
         const formData = new FormData();
         formData.append('volume', volume);
-        fetch('/api/users/' + this.user.id, {method: 'PUT', body: formData})
+        this.rootStore.myFetch('/api/users/' + this.user.id, {method: 'PUT', body: formData})
             .then(response => response.json()).then(data => {console.log(data);});
     }
 
@@ -115,7 +112,7 @@ export class UiState {
 
         const formData = new FormData();
         formData.append('muted', muted);
-        fetch('/api/users/' + this.user.id, {method: 'PUT', body: formData})
+        this.rootStore.myFetch('/api/users/' + this.user.id, {method: 'PUT', body: formData})
             .then(response => response.json()).then(data => {console.log(data);});
     }
 
@@ -125,7 +122,7 @@ export class UiState {
 
         const formData = new FormData();
         formData.append('shuffle', shuffle);
-        fetch('/api/users/' + this.user.id, {method: 'PUT', body: formData})
+        this.rootStore.myFetch('/api/users/' + this.user.id, {method: 'PUT', body: formData})
             .then(response => response.json()).then(data => {console.log(data);});
     }
 
@@ -138,7 +135,7 @@ export class UiState {
         formData.append('eqNum', eqNum);
         formData.append('field', field);
         formData.append('value', value);
-        fetch('/api/users/' + this.user.id + '/eq', {method: 'PUT', body: formData})
+        this.rootStore.myFetch('/api/users/' + this.user.id + '/eq', {method: 'PUT', body: formData})
             .then(response => response.json()).then(data => {console.log(data);});
     }
 

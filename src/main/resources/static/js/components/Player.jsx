@@ -418,8 +418,7 @@ export default class Player extends React.Component {
     render()
     {
         return (
-            <div>
-                <PlaybackControls
+            <PlaybackControls
                     playerState={this.state.playerState}
                     selectedTrack={this.props.store.uiState.selectedTrack}
                     timeElapsed={this.state.timeElapsed}
@@ -428,7 +427,6 @@ export default class Player extends React.Component {
                     onPlayerStateChange={this.handlePlayerStateChange}
                     onTrackChange={this.handleTrackChange}
                     onProgressChange={this.handleProgressChange}
-                />
-            </div>);
+            />);
     }
 }

@@ -75,7 +75,7 @@ export default class App extends React.Component {
                                 </div>
                             </div>
                         </div>
-                        <div className="column" style={{overflowY: 'auto', overflowX: 'hidden'}}>
+                        <div className="column" style={{overflowY: 'auto', overflowX: 'hidden', height: '100%'}}>
                             <Route exact path='/'                               render={() => <Redirect to='/search' /> } />
                             <Route exact path='/admin/systemSettings'           render={() => <SystemSettings />}/>
                             <Route exact path='/admin/users'                    render={() => <UserSettings />}/>

@@ -14,7 +14,6 @@ public class LoonSystem implements Serializable
 
     private String instanceName = "Loon";
     private String logonMessage = "Welcome to Loon.";
-    private String theme = "default";
     private String musicFolder = "";
     private String transcodeFolder = "transcode";
     private String dataFolder = "static";
@@ -76,16 +75,6 @@ public class LoonSystem implements Serializable
     public void setLogonMessage(String logonMessage)
     {
         this.logonMessage = logonMessage;
-    }
-
-    public String getTheme()
-    {
-        return theme;
-    }
-
-    public void setTheme(String theme)
-    {
-        this.theme = theme;
     }
 
     public String getMusicFolder()

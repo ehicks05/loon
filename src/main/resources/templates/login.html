@@ -1,3 +1,6 @@
+<!--
+template from: https://github.com/dansup/bulma-templates/blob/master/templates/login.html
+-->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -5,13 +8,8 @@
     <span th:replace="inc_head"> </span>
 
     <style>
-        html,body {
-            font-size: 14px;
-            font-weight: 300;
-        }
-        .hero.is-success {
-            background: #F2F6FA;
-        }
+        html,body {font-size: 14px;font-weight: 300;}
+        .hero.is-success {background: #F2F6FA;}
     </style>
 </head>
 <body>
@@ -41,17 +39,11 @@
                                 <input class="input is-medium" type="password" placeholder="Your Password" id="password" name="password">
                             </div>
                         </div>
-                        <!--<div class="field">-->
-                            <!--<label class="checkbox">-->
-                                <!--<input type="checkbox" name="remember-me">-->
-                                <!--Remember me-->
-                            <!--</label>-->
-                        <!--</div>-->
-                        <input type="submit" value="Login" class="button is-block is-primary is-medium" onclick="loginForm.submit();" />
+                        <input type="submit" value="Login" class="button is-block is-primary is-medium is-fullwidth" onclick="loginForm.submit();" />
                     </form>
                 </div>
 
-                <article id="welcomeMessage" class="message is-primary">
+                <article id="welcomeMessage" class="message is-primary" th:if="${loonSystem.logonMessage != ''}">
                     <div class="message-header">
                         <p>Welcome Message</p>
                         <button class="delete" aria-label="delete" onclick="document.getElementById('welcomeMessage').classList.toggle('is-hidden')"> </button>

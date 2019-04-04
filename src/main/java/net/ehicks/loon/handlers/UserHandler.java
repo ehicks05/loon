@@ -131,4 +131,19 @@ public class UserHandler
         userRepo.save(user);
         return user;
     }
+
+    @PutMapping("/{id}/toggleDarkTheme")
+    public User toggleDarkTheme(@AuthenticationPrincipal User user, @PathVariable Long id)
+    {
+        if (!user.getId().equals(id))
+            return null;
+
+        if (user.getUserState().getTheme().equals("default"))
+            user.getUserState().setTheme("cyborg");
+        else
+            user.getUserState().setTheme("default");
+
+        userRepo.save(user);
+        return user;
+    }
 }

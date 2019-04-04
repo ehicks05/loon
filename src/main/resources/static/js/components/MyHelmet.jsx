@@ -11,7 +11,6 @@ export default class MyHelmet extends React.Component {
 
     render()
     {
-        const basename = '';
         const uiState = this.props.store.uiState;
         const selectedTrack = uiState.selectedTrack;
         const title = selectedTrack ? selectedTrack.title : 'Loon';
@@ -21,11 +20,54 @@ export default class MyHelmet extends React.Component {
                 <meta charset="utf-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <title>{title}</title>
-
                 <link rel="stylesheet" href={uiState.themeUrl} />
+                <link rel="shortcut icon" href={"/images/loon2.png"} />
 
-                <link rel="shortcut icon" href={basename + "/images/loon2.png"} />
-                <link rel="stylesheet" type="text/css" href={basename + "/styles/style.css"} media="screen" />
+                <style>
+                    {
+                        `
+                        html {overflow-y: auto !important;}
+
+                        #level {
+                            position: fixed;
+                            bottom: 0;
+                            width: 100%;
+                        }
+                        
+                        section {padding: 10px !important;}
+                        
+                        .playingHighlight {color: #23d160;}
+                        .playingHighlight:focus {outline:0;}
+                        
+                        .playlist {overflow-y: auto; }
+                        
+                        .media+.media {padding-top:.2rem;margin-top:.2rem;}
+                        
+                        .mediaItemDiv {padding: 5px; vertical-align: middle; display: flex; flex-direction: row; justify-content: space-between;
+                            transition: all .2s ease}
+                        
+                        .mediaItemDiv       .mediaItemEllipsis .dropdown{visibility: hidden;}
+                        .mediaItemDiv:hover .mediaItemEllipsis .dropdown{visibility: visible;}
+                        .is-visible-important {visibility: visible !important;}
+                        
+                        .list-song {flex: 8}
+                        .mediaItemCounter {text-align: right; margin-right: 5px; min-width: 30px; flex-basis: 36px;}
+                        
+                        .ReactVirtualized__List:focus{outline: none;}
+                        
+                        /* SCROLLBAR */
+                        ::-webkit-scrollbar {width: 8px;}
+                        
+                        /* Track */
+                        ::-webkit-scrollbar-track-piece:start {background: transparent url('../images/scrollbar.png') repeat-y !important;}
+                        ::-webkit-scrollbar-track-piece:end {background: transparent url('../images/scrollbar.png') repeat-y !important;}
+                        
+                        /* Handle */
+                        ::-webkit-scrollbar-thumb {background: #777;}
+                        ::-webkit-scrollbar-thumb:hover {background: #888;}
+                        `
+                    }
+                </style>
 
                 <style>
                     {uiState.isDarkTheme ?
@@ -43,6 +85,10 @@ export default class MyHelmet extends React.Component {
                          .card a:hover {color:#ccc}
                          .myLevel a {color:#aaa}
                          .myLevel a:hover {color:#ccc}
+                         
+                         .panel-block {border: none; border-left: 6px solid #282f2f;}
+                         .panel-block:first-child {border-top: none;}
+                         .panel-block:hover {border-left-color: #3273dc;}
                         `
                         :
                         `.myLevel {background-color: #f4f4f4;}
@@ -56,6 +102,10 @@ export default class MyHelmet extends React.Component {
                          .card a:hover {color:#888}
                          .myLevel a {color:#666}
                          .myLevel a:hover {color:#888}
+                         
+                         .panel-block {border: none; border-left: 6px solid #f4f4f4;}
+                         .panel-block:first-child {border-top: none;}
+                         .panel-block:hover {border-left-color: #3273dc;}
                         `
                     }
                 </style>

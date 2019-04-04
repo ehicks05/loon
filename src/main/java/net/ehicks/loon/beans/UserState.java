@@ -24,7 +24,6 @@ public class UserState implements Serializable
     private Boolean muted = false;
     private Double volume = 0D;
 
-    @Column()
     private Integer eq1Frequency = 200;
     private Integer eq1Gain = 0;
     private Integer eq2Frequency = 1_000;
@@ -33,6 +32,8 @@ public class UserState implements Serializable
     private Integer eq3Gain = 0;
     private Integer eq4Frequency = 10_000;
     private Integer eq4Gain = 0;
+
+    private String theme = "default";
 
     @Override
     public boolean equals(Object obj)
@@ -208,5 +209,15 @@ public class UserState implements Serializable
     public void setEq4Gain(Integer eq4Gain)
     {
         this.eq4Gain = eq4Gain;
+    }
+
+    public String getTheme()
+    {
+        return theme;
+    }
+
+    public void setTheme(String theme)
+    {
+        this.theme = theme;
     }
 }

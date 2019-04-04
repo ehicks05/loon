@@ -130,9 +130,10 @@ public class MusicScanner
             log.info("Scan complete: Added " + tracksToSave.size() + " tracks.");
             long dur = System.currentTimeMillis() - start;
             double durSeconds = ((double) dur) / 1000;
-            log.info("Files considered: " + paths.size() + ". " + dur + "ms (" + Math.round(paths.size() / durSeconds) + " files / sec)");
-            log.info("Tracks saved: " + tracksToSave.size() + ". " + dur + "ms (" + Math.round(tracksToSave.size() / durSeconds) + " tracks / sec)");
-            log.info("Tracks missing file: " + tracksWithMissingFile.size() + ". " + dur + "ms (" + Math.round(tracksWithMissingFile.size() / durSeconds) + " tracks / sec)");
+            log.info("Duration: " + dur + "ms");
+            log.info("Files considered: " + paths.size() + ". " + "(" + Math.round(paths.size() / durSeconds) + " files / sec)");
+            log.info("Tracks saved: " + tracksToSave.size() + ". " + "(" + Math.round(tracksToSave.size() / durSeconds) + " tracks / sec)");
+            log.info("Tracks missing file: " + tracksWithMissingFile.size() + ". " + "(" + Math.round(tracksWithMissingFile.size() / durSeconds) + " tracks / sec)");
             ProgressTracker.progressStatusMap.put(PROGRESS_KEY, new ProgressTracker.ProgressStatus(100, "complete"));
         }
         catch (Exception e)
@@ -173,7 +174,8 @@ public class MusicScanner
         track.setDuration((long) audioHeader.getTrackLength());
         track.setSize(audioFile.getFile().length());
 
-        audioHeader.getSampleRateAsNumber();
+        track.setSampleRate(audioHeader.getSampleRateAsNumber());
+        track.setBitDepth(audioHeader.getBitsPerSample());
 
         track.setArtist(tag.getFirst(FieldKey.ARTIST));
         track.setTitle(tag.getFirst(FieldKey.TITLE));

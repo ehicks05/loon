@@ -69,6 +69,8 @@ public class Track implements Serializable
     private Set<PlaylistTrack> playlistTracks = new HashSet<>();
 
     private Boolean missingFile = false;
+    private Integer sampleRate;
+    private Integer bitDepth;
 
     @Override
     public boolean equals(Object o)
@@ -330,5 +332,25 @@ public class Track implements Serializable
     public void setMissingFile(Boolean missingFile)
     {
         this.missingFile = missingFile;
+    }
+
+    public Integer getSampleRate()
+    {
+        return sampleRate;
+    }
+
+    public void setSampleRate(Integer sampleRate)
+    {
+        this.sampleRate = sampleRate;
+    }
+
+    public Integer getBitDepth()
+    {
+        return bitDepth;
+    }
+
+    public void setBitDepth(Integer bitDepth)
+    {
+        this.bitDepth = bitDepth;
     }
 }

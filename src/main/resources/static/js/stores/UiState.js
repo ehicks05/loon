@@ -37,7 +37,6 @@ export class UiState {
             self.windowDimensions.height = window.innerHeight;
         });
 
-        this.loadTheme();
         this.loadUser();
     }
 
@@ -54,19 +53,13 @@ export class UiState {
     }
 
     @action
-    loadTheme() {
-        return fetch('/api/systemSettings/theme', {method: 'GET'})
-            .then(response => response.text())
-            .then(data => this.theme = data);
-    }
-
-    @action
     loadUser()
     {
         const self = this;
         return fetch('/api/users/current', {method: 'GET'})
             .then(response => response.json()).then(data => {
                 self.user = data;
+                self.theme = data.userState.theme;
                 self.selectedPlaylistId = data.userState.lastPlaylistId;
                 self.selectedTrackId = data.userState.lastTrackId;
             });
@@ -137,6 +130,13 @@ export class UiState {
         formData.append('value', value);
         this.rootStore.myFetch('/api/users/' + this.user.id + '/eq', {method: 'PUT', body: formData})
             .then(response => response.json()).then(data => {console.log(data);});
+    }
+
+    @action
+    toggleDarkTheme() {
+        const self = this;
+        self.rootStore.myFetch('/api/users/' + this.user.id + '/toggleDarkTheme', {method: 'PUT'})
+            .then(response => self.loadUser());
     }
 
     @computed get themeUrl() {

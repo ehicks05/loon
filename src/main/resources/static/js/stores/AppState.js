@@ -75,7 +75,7 @@ export class AppState {
     @action
     dragAndDrop(formData) {
         return this.rootStore.myFetch('/api/playlists/dragAndDrop', {method: 'POST', body: formData})
-            .then(response => response.json())
+            .then(response => response.text())
             .then(data => {this.loadPlaylists();});
     }
 
@@ -96,8 +96,7 @@ export class AppState {
     @action
     updateSystemSettings(formData) {
         return this.rootStore.myFetch('/api/admin/systemSettings', {method: 'PUT', body: formData})
-            .then(response => response.json())
-            .then(data => {this.rootStore.uiState.loadTheme();});
+            .then(response => response.json());
     }
 
     // USER CALLS //

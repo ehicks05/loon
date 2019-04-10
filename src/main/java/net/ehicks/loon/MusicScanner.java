@@ -230,6 +230,7 @@ public class MusicScanner
         }
 
         String id = track.getMusicBrainzTrackId().isBlank() ? track.getArtist() + " - " + track.getAlbum() + " - " + track.getTitle() : track.getMusicBrainzTrackId();
+        id = id.replaceAll(",", "."); // fixes an issue with querying the DB for tracks with a comma in the ID
         track.setId(id);
         return track;
     }

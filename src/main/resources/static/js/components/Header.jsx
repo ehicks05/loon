@@ -46,12 +46,12 @@ export default class Header extends React.Component {
 
     handleLogout()
     {
-        this.props.store.appState.logout();
+        this.props.store.appState.logout().then(response => location.href = '/');
+        return false;
     }
 
     toggleDarkTheme() {
         this.props.store.uiState.toggleDarkTheme();
-        return false;
     }
 
     render()
@@ -136,7 +136,7 @@ export default class Header extends React.Component {
                                 <FontAwesomeIcon icon={this.props.store.uiState.theme === 'cyborg' ? faSun : faMoon}/>
                             </span>
                         </a>
-                        <a onClick={this.handleLogout} href="" className="navbar-item">
+                        <a onClick={this.handleLogout} href={null} className="navbar-item">
                             <span style={{marginRight: '4px'}}>Sign Out</span>
                             <span className="icon is-medium">
                                 <FontAwesomeIcon icon={faSignOutAlt}/>

@@ -34,7 +34,9 @@ public class LibraryLogic
         if (root == null)
             return "";
 
-        List<Node> nodes = Collections.singletonList(root);
+        sortChildren(root);
+
+        List<Node> nodes = Collections.singletonList(root); // we want the output wrapped in an array
 
         try
         {
@@ -47,6 +49,14 @@ public class LibraryLogic
         }
 
         return "";
+    }
+
+    private void sortChildren(Node node)
+    {
+        if (node.getChildren().isEmpty())
+            return;
+        node.getChildren().sort((o1, o2) -> o1.getLabel().compareToIgnoreCase(o2.getLabel()));
+        node.getChildren().forEach(this::sortChildren);
     }
 
     private Node getLibraryPaths()

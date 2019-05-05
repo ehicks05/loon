@@ -34,6 +34,7 @@ public class UserState implements Serializable
     private Integer eq4Gain = 0;
 
     private String theme = "default";
+    private boolean transcode = true;
 
     @Override
     public boolean equals(Object obj)
@@ -219,5 +220,15 @@ public class UserState implements Serializable
     public void setTheme(String theme)
     {
         this.theme = theme;
+    }
+
+    public boolean isTranscode()
+    {
+        return transcode;
+    }
+
+    public void setTranscode(boolean transcode)
+    {
+        this.transcode = transcode;
     }
 }

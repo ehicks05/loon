@@ -9,6 +9,7 @@ import MyHelmet from "./MyHelmet.jsx";
 import SystemSettings from "./SystemSettings.jsx";
 import Playlist from "./Playlist.jsx";
 import Playlists from "./Playlists.jsx";
+import GeneralSettings from "./GeneralSettings.jsx";
 import Eq from "./Eq.jsx";
 import PlaylistBuilder from "./PlaylistBuilder.jsx";
 
@@ -79,6 +80,7 @@ export default class App extends React.Component {
                             <Route exact path='/'                               render={() => <Redirect to='/search' /> } />
                             <Route exact path='/admin/systemSettings'           render={() => <SystemSettings />}/>
                             <Route exact path='/admin/users'                    render={() => <UserSettings />}/>
+                            <Route exact path='/settings/general'               render={() => <GeneralSettings />}/>
                             <Route exact path='/settings/eq'                    render={() => <Eq />}/>
                             <Route exact path='/albums'                         render={() => <Albums />}/>
                             <Route exact path='/artists'                        render={() => <Artists />}/>

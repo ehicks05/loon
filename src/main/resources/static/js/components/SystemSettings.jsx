@@ -15,6 +15,7 @@ export default class SystemSettings extends React.Component {
         this.handleUpdatePlaylists = this.handleUpdatePlaylists.bind(this);
         this.getScanProgress = this.getScanProgress.bind(this);
         this.doImageScan = this.doImageScan.bind(this);
+        this.doTranscodeLibrary = this.doTranscodeLibrary.bind(this);
 
         self.state = {
             timeoutNumber: 0,
@@ -74,12 +75,13 @@ export default class SystemSettings extends React.Component {
         this.props.store.appState.loadPlaylists();
     }
 
-    submitForm(rescan, clearLibrary)
+    submitForm(rescan, clearLibrary, deleteLibrary)
     {
         const self = this;
         const formData = new FormData(document.getElementById('frmSystemSettings'));
         formData.append('rescan', rescan ? 'true' : 'false');
         formData.append('clearLibrary', clearLibrary ? 'true' : 'false');
+        formData.append('deleteLibrary', deleteLibrary ? 'true' : 'false');
 
         this.props.store.appState.updateSystemSettings(formData)
             .then(data => {
@@ -90,12 +92,23 @@ export default class SystemSettings extends React.Component {
                     self.handleUpdateTracks('clearing library');
                     self.handleUpdatePlaylists('clearing library');
                 }
+                if (deleteLibrary)
+                {
+                    self.handleUpdateTracks('deleting library');
+                    self.handleUpdatePlaylists('deleting library');
+                }
             });
     }
 
     doImageScan()
     {
         fetch('/api/admin/systemSettings/imageScan', {method: 'GET'})
+            .then(response => response.json());
+    }
+
+    doTranscodeLibrary()
+    {
+        fetch('/api/admin/systemSettings/transcodeLibrary', {method: 'GET'})
             .then(response => response.json());
     }
 
@@ -112,14 +125,13 @@ export default class SystemSettings extends React.Component {
         const trueFalse = [{value:'false', text:'False'}, {value:'true', text:'True'}];
 
         const transcodeQualityOptions = [
-            {value:'default', text:'Default (Don\'t Transcode)'},
-            {value:'0', text:'0 (best)'},
-            {value:'1', text:'1'},
-            {value:'2', text:'2'},
-            {value:'3', text:'3'},
-            {value:'4', text:'4'},
-            {value:'5', text:'5'},
-            {value:'6', text:'6'}
+            {value:'0', text:'v0 (best)'},
+            {value:'1', text:'v1'},
+            {value:'2', text:'v2'},
+            {value:'3', text:'v3'},
+            {value:'4', text:'v4'},
+            {value:'5', text:'v5'},
+            {value:'6', text:'v6'}
         ];
 
         return (
@@ -144,9 +156,11 @@ export default class SystemSettings extends React.Component {
 
                         <span className="buttons">
                             <input id="saveSystemButton" type="button" value="Save" className="button is-primary" onClick={(e) => this.submitForm()} />
-                            <input id="saveAndRescanButton" type="button" value="Save and Re-scan" className="button is-success" onClick={(e) => this.submitForm(true, false)} />
-                            <input id="clearLibraryButton" type="button" value="Clear Library" className="button is-danger" onClick={(e) => this.submitForm(false, true)} />
+                            <input id="saveAndRescanButton" type="button" value="Save and Re-scan" className="button is-success" onClick={(e) => this.submitForm(true, false, false)} />
+                            <input id="clearLibraryButton" type="button" value="Clear Library" className="button is-warning" onClick={(e) => this.submitForm(false, true, false)} />
+                            <input id="deleteLibraryButton" type="button" value="Delete Library" className="button is-danger" onClick={(e) => this.submitForm(false, false, true)} />
                             <input id="imageScanButton" type="button" value="Scan for Images" className="button is-info" onClick={(e) => this.doImageScan()} />
+                            <input id="transcodeLibraryButton" type="button" value="Transcode Library" className="button is-info" onClick={(e) => this.doTranscodeLibrary()} />
                         </span>
                     </form>
                 </section>

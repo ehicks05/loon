@@ -20,7 +20,7 @@ public class LoonSystem implements Serializable
     private String lastFmApiKey = "";
     private boolean registrationEnabled = false;
     private boolean directoryWatcherEnabled = false;
-    private String transcodeQuality = "default";
+    private String transcodeQuality = "4";
 
     public LoonSystem()
     {

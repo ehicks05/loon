@@ -1,9 +1,6 @@
 package net.ehicks.loon.handlers.admin;
 
-import net.ehicks.loon.DirectoryWatcher;
-import net.ehicks.loon.ImageScanner;
-import net.ehicks.loon.MusicScanner;
-import net.ehicks.loon.ProgressTracker;
+import net.ehicks.loon.*;
 import net.ehicks.loon.beans.LoonSystem;
 import net.ehicks.loon.beans.Track;
 import net.ehicks.loon.repos.LoonSystemRepository;
@@ -22,15 +19,18 @@ public class AdminSystemSettingsHandler
     private LoonSystemRepository loonSystemRepo;
     private MusicScanner musicScanner;
     private ImageScanner imageScanner;
+    private TranscoderTask transcoderTask;
     private TrackRepository trackRepo;
     private DirectoryWatcher directoryWatcher;
 
     public AdminSystemSettingsHandler(LoonSystemRepository loonSystemRepo, MusicScanner musicScanner,
-                                      ImageScanner imageScanner, TrackRepository trackRepo, DirectoryWatcher directoryWatcher)
+                                      ImageScanner imageScanner, TranscoderTask transcoderTask, TrackRepository trackRepo,
+                                      DirectoryWatcher directoryWatcher)
     {
         this.loonSystemRepo = loonSystemRepo;
         this.musicScanner = musicScanner;
         this.imageScanner = imageScanner;
+        this.transcoderTask = transcoderTask;
         this.trackRepo = trackRepo;
         this.directoryWatcher = directoryWatcher;
     }
@@ -42,7 +42,8 @@ public class AdminSystemSettingsHandler
     }
 
     @PutMapping("")
-    public LoonSystem modify(LoonSystem loonSystem, @RequestParam boolean rescan, @RequestParam boolean clearLibrary)
+    public LoonSystem modify(LoonSystem loonSystem, @RequestParam boolean rescan, @RequestParam boolean clearLibrary,
+                             @RequestParam boolean deleteLibrary)
     {
         // if music folder has changed, clear library before re-scanning
         LoonSystem loonSystemFromDb = loonSystemRepo.findById(1L).orElse(null);
@@ -54,6 +55,8 @@ public class AdminSystemSettingsHandler
 
         if (clearLibrary)
             clearLibrary();
+        if (deleteLibrary)
+            deleteLibrary();
 
         if (rescan)
             new Thread(musicScanner::scan).start();
@@ -67,6 +70,15 @@ public class AdminSystemSettingsHandler
     public String imageScan()
     {
         new Thread(imageScanner::scan).start();
+        return "";
+    }
+
+    @GetMapping("/transcodeLibrary")
+    public String transcodeLibrary()
+    {
+        int q = Integer.valueOf(loonSystemRepo.findById(1L).orElse(null).getTranscodeQuality());
+
+        new Thread(() -> transcoderTask.run(trackRepo.findAll(), q)).start();
         return "";
     }
 
@@ -87,5 +99,12 @@ public class AdminSystemSettingsHandler
         tracks.forEach(track -> track.setMissingFile(true));
         trackRepo.saveAll(tracks);
         log.info("Done clearing library...");
+    }
+
+    private void deleteLibrary()
+    {
+        log.info("Deleting library...");
+        trackRepo.deleteAll();
+        log.info("Done deleting library...");
     }
 }

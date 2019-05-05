@@ -68,14 +68,13 @@ public class UserHandler
         UserState userState = user.getUserState();
         userState.setLastPlaylistId(lastPlaylistId);
         userState.setLastTrackId(lastTrackId);
-        user = userRepo.save(user);
-
-        return user;
+        return userRepo.save(user);
     }
     
     @PutMapping("/{id}")
     public User modify(@AuthenticationPrincipal User user, @PathVariable Long id, @RequestParam Optional<Double> volume,
-                       @RequestParam Optional<Boolean> shuffle, @RequestParam Optional<Boolean> muted)
+                       @RequestParam Optional<Boolean> shuffle, @RequestParam Optional<Boolean> muted,
+                       @RequestParam Optional<Boolean> transcode)
     {
         if (!user.getId().equals(id))
             return null;
@@ -86,9 +85,10 @@ public class UserHandler
             user.getUserState().setShuffle(shuffle.get());
         if (muted.isPresent())
             user.getUserState().setMuted(muted.get());
+        if (transcode.isPresent())
+            user.getUserState().setTranscode(transcode.get());
 
-        user = userRepo.save(user);
-        return user;
+        return userRepo.save(user);
     }
 
     @GetMapping("/{id}/changePassword")
@@ -128,8 +128,7 @@ public class UserHandler
             if (eqNum.equals(4)) user.getUserState().setEq4Gain(value);
         }
 
-        userRepo.save(user);
-        return user;
+        return userRepo.save(user);
     }
 
     @PutMapping("/{id}/toggleDarkTheme")
@@ -138,12 +137,8 @@ public class UserHandler
         if (!user.getId().equals(id))
             return null;
 
-        if (user.getUserState().getTheme().equals("default"))
-            user.getUserState().setTheme("cyborg");
-        else
-            user.getUserState().setTheme("default");
+        user.getUserState().setTheme(user.getUserState().getTheme().equals("default") ? "cyborg" : "default");
 
-        userRepo.save(user);
-        return user;
+        return userRepo.save(user);
     }
 }

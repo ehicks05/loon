@@ -120,6 +120,16 @@ export class UiState {
     }
 
     @action
+    updateTranscode(transcode) {
+        this.user.userState.transcode = transcode;
+
+        const formData = new FormData();
+        formData.append('transcode', transcode);
+        this.rootStore.myFetch('/api/users/' + this.user.id, {method: 'PUT', body: formData})
+            .then(response => response.json()).then(data => {console.log(data);});
+    }
+
+    @action
     updateEq(eqNum, field, value) {
         const prop = 'eq' + eqNum + field;
         this.user.userState[prop] = value;

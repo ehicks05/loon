@@ -1,7 +1,7 @@
 import React from 'react';
 import {NavLink} from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faServer, faUser, faSignOutAlt, faSlidersH, faMusic, faSun, faMoon} from '@fortawesome/free-solid-svg-icons'
+import {faServer, faUser, faSignOutAlt, faSlidersH, faMusic, faSun, faMoon, faUserCog} from '@fortawesome/free-solid-svg-icons'
 import {inject, observer} from "mobx-react";
 
 @inject('store')
@@ -121,10 +121,16 @@ export default class Header extends React.Component {
                         <div className={"navbar-item has-dropdown is-hoverable"}>
                             <div className="navbar-link">Settings</div>
                             <div className="navbar-dropdown">
+                                <NavLink to={'/settings/general'} className="navbar-item" activeClassName='is-active'>
+                                    <span className="panel-icon">
+                                        <FontAwesomeIcon icon={faUserCog} />
+                                    </span>
+                                    General
+                                </NavLink>
                                 <NavLink to={'/settings/eq'} className="navbar-item" activeClassName='is-active'>
-                                        <span className="panel-icon">
-                                            <FontAwesomeIcon icon={faSlidersH} rotation={90}/>
-                                        </span>
+                                    <span className="panel-icon">
+                                        <FontAwesomeIcon icon={faSlidersH} rotation={90}/>
+                                    </span>
                                     Equalizer
                                 </NavLink>
                             </div>

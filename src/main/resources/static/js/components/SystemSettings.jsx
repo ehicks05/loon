@@ -67,7 +67,6 @@ export default class SystemSettings extends React.Component {
     {
         console.log('Finished ' + action + ', updating track listing.');
         this.props.store.appState.loadTracks();
-        this.props.store.uiState.loadUser();
     }
 
     handleUpdatePlaylists(action)
@@ -103,14 +102,12 @@ export default class SystemSettings extends React.Component {
 
     doImageScan()
     {
-        fetch('/api/admin/systemSettings/imageScan', {method: 'GET'})
-            .then(response => response.json());
+        fetch('/api/admin/systemSettings/imageScan', {method: 'GET'});
     }
 
     doTranscodeLibrary()
     {
-        fetch('/api/admin/systemSettings/transcodeLibrary', {method: 'GET'})
-            .then(response => response.json());
+        fetch('/api/admin/systemSettings/transcodeLibrary', {method: 'GET'});
     }
 
     render()

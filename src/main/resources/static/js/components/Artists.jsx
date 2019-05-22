@@ -16,7 +16,7 @@ export default class Artists extends React.Component {
     {
         const tracks = this.props.store.appState.tracks;
 
-        const artists = [...new Set(tracks.map(track => {return JSON.stringify({artistName: track.artist, artistImageId: track.artistImageId})}))];
+        const artists = [...new Set(tracks.map(track => {return JSON.stringify({artistName: track.artist, artistImageId: track.artistThumbnailId})}))];
 
         const artistItems = artists.map((artistJson) => {
             const artist = JSON.parse(artistJson);

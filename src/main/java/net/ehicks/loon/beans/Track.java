@@ -64,6 +64,11 @@ public class Track implements Serializable
     @Column(length = 1000)
     private String albumImageId = "";
 
+    @Column(length = 1000)
+    private String artistThumbnailId = "";
+    @Column(length = 1000)
+    private String albumThumbnailId = "";
+
     @OneToMany(mappedBy = "track", cascade = CascadeType.REMOVE)
     @JsonIgnore
     private Set<PlaylistTrack> playlistTracks = new HashSet<>();
@@ -302,6 +307,26 @@ public class Track implements Serializable
     public void setArtistImageId(String artistImageId)
     {
         this.artistImageId = artistImageId;
+    }
+
+    public String getArtistThumbnailId()
+    {
+        return artistThumbnailId;
+    }
+
+    public void setArtistThumbnailId(String artistThumbnailId)
+    {
+        this.artistThumbnailId = artistThumbnailId;
+    }
+
+    public String getAlbumThumbnailId()
+    {
+        return albumThumbnailId;
+    }
+
+    public void setAlbumThumbnailId(String albumThumbnailId)
+    {
+        this.albumThumbnailId = albumThumbnailId;
     }
 
     public String getAlbumImageId()

@@ -20,7 +20,7 @@ export default class Albums extends React.Component {
 
         const hideTitle = this.props.hideTitle;
 
-        let albums = [...new Set(tracks.map(track => {return JSON.stringify({albumArtist: track.albumArtist, album: track.album, albumImageId: track.albumImageId})}))];
+        let albums = [...new Set(tracks.map(track => {return JSON.stringify({albumArtist: track.albumArtist, album: track.album, albumImageId: track.albumThumbnailId})}))];
         albums = albums.map(album => JSON.parse(album));
         albums = albums.sort((a1, a2) => {
             if (a1.albumArtist < a2.albumArtist) return -1;

@@ -2,6 +2,7 @@ package net.ehicks.loon;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.coobird.thumbnailator.Thumbnails;
 import net.ehicks.loon.beans.LoonSystem;
 import net.ehicks.loon.beans.Track;
 import net.ehicks.loon.repos.LoonSystemRepository;
@@ -81,108 +82,16 @@ public class ImageScanner
             List<Track> tracks = trackRepo.findAll();
             tracks.removeIf(track -> track.getArtist().isEmpty() || track.getAlbum().isEmpty());
             Set<Track> updated = new HashSet<>();
-            tracks.forEach(track -> {
-                tracksProcessed.incrementAndGet();
 
-                if (track.getArtistImageId().isEmpty())
-                {
-                    String escapedArtist = escapeForFileSystem(track.getArtist());
-                    Path artistPath = artPath.resolve(escapedArtist);
-                    if (artistPath.toFile().exists())
-                    {
-                        File[] files = artistPath.toFile().listFiles();
-                        if (files != null && files.length > 0)
-                        {
-                            File existingArt = Arrays.stream(files).filter(File::isFile).findFirst().orElse(null);
-                            if (existingArt != null)
-                            {
-                                track.setArtistImageId(escapedArtist + "/" + existingArt.getName());
-                                updated.add(track);
-                            }
-                        }
-                    }
+            for (Track track : tracks)
+            {
+                processArtistImage(track, loonSystem, artPath, imagesAdded, updated);
+                processAlbumImage(track, loonSystem, artPath, imagesAdded, updated);
+                processThumbnails(track, artPath, updated);
 
-                    if (track.getArtistImageId().isEmpty())
-                    {
-                        try
-                        {
-                            String imageUrl = getImageUrl(loonSystem.getLastFmApiKey(), track.getArtist(), null);
-
-                            if (imageUrl != null && !imageUrl.isEmpty())
-                            {
-                                try (InputStream in = new URL(imageUrl).openStream())
-                                {
-                                    String imageName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
-                                    Path base = Paths.get(artPath.toFile().getCanonicalPath(), escapedArtist);
-                                    Files.createDirectories(base);
-                                    Path out = base.resolve(imageName);
-                                    Files.copy(in, out);
-                                    imagesAdded.incrementAndGet();
-
-                                    track.setArtistImageId(escapedArtist + "/" + imageName);
-                                    updated.add(track);
-                                }
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            log.error(e.getMessage(), e);
-                        }
-                    }
-                }
-
-                if (track.getAlbumImageId().isEmpty())
-                {
-                    String escapedAlbumArtist = escapeForFileSystem(track.getAlbumArtist());
-                    String escapedAlbum = escapeForFileSystem(track.getAlbum());
-                    Path albumPath = artPath.resolve(Paths.get(escapedAlbumArtist, escapedAlbum));
-                    if (albumPath.toFile().exists())
-                    {
-                        File[] files = albumPath.toFile().listFiles();
-                        if (files != null && files.length > 0)
-                        {
-                            File existingArt = Arrays.stream(files).filter(File::isFile).findFirst().orElse(null);
-                            if (existingArt != null)
-                            {
-                                track.setAlbumImageId(escapedAlbumArtist + "/" + escapedAlbum + "/" + existingArt.getName());
-                                updated.add(track);
-                            }
-                        }
-                    }
-
-                    if (track.getAlbumImageId().isEmpty())
-                    {
-                        try
-                        {
-                            String imageUrl = getImageUrl(loonSystem.getLastFmApiKey(), track.getArtist(), track.getAlbum());
-
-                            if (imageUrl != null && !imageUrl.isEmpty())
-                            {
-                                try (InputStream in = new URL(imageUrl).openStream())
-                                {
-                                    String imageName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
-                                    Path base = Paths.get(artPath.toFile().getCanonicalPath(), escapedAlbumArtist, escapedAlbum);
-                                    Files.createDirectories(base);
-                                    Path out = base.resolve(imageName);
-                                    Files.copy(in, out);
-                                    imagesAdded.incrementAndGet();
-
-                                    track.setAlbumImageId(escapedAlbumArtist + "/" + escapedAlbum + "/" + imageName);
-                                    updated.add(track);
-                                }
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            log.error(e.getMessage(), e);
-                        }
-                    }
-                }
-
-                int progress = (int) ((tracksProcessed.get() * 100) / (double) tracks.size());
+                int progress = (int) ((tracksProcessed.incrementAndGet() * 100) / (double) tracks.size());
                 ProgressTracker.progressStatusMap.get(PROGRESS_KEY).setProgress(progress);
-            });
-
+            }
 
             trackRepo.saveAll(updated);
 
@@ -199,6 +108,155 @@ public class ImageScanner
         {
             RUNNING = false;
         }
+    }
+
+    private void processThumbnails(Track track, Path artPath, Set<Track> updated)
+    {
+        if (!track.getArtistImageId().isEmpty() && track.getArtistThumbnailId().isEmpty())
+        {
+            Path original = artPath.resolve(track.getArtistImageId());
+            String thumbFilename = makeThumbnail(original);
+            if (thumbFilename != null)
+            {
+                String escapedArtist = escapeForFileSystem(track.getArtist());
+                track.setArtistThumbnailId(escapedArtist + "/" + thumbFilename);
+                updated.add(track);
+            }
+        }
+        if (!track.getAlbumImageId().isEmpty() && track.getAlbumThumbnailId().isEmpty())
+        {
+            Path original = artPath.resolve(track.getAlbumImageId());
+            String thumbFilename = makeThumbnail(original);
+            if (thumbFilename != null)
+            {
+                String escapedAlbumArtist = escapeForFileSystem(track.getAlbumArtist());
+                String escapedAlbum = escapeForFileSystem(track.getAlbum());
+                track.setAlbumThumbnailId(escapedAlbumArtist + "/" + escapedAlbum + "/" + thumbFilename);
+                updated.add(track);
+            }
+        }
+    }
+
+    private String makeThumbnail(Path original)
+    {
+        if (original.toFile().exists())
+        {
+            String thumbFilename = "thumb-" + original.getFileName().toString();
+            thumbFilename = thumbFilename.replace(".png", ".jpg");
+            Path thumbnail = original.getRoot().resolve(original.subpath(0, original.getNameCount() - 1).resolve(thumbFilename));
+            try
+            {
+                if (!thumbnail.toFile().exists())
+                    Thumbnails.of(original.toFile()).size(300, 300).outputFormat("jpg").toFile(thumbnail.toFile());
+                return thumbFilename;
+            }
+            catch (Exception e)
+            {
+                log.error(original + ": " + e.getMessage(), e);
+            }
+        }
+        return null;
+    }
+
+    private void processArtistImage(Track track, LoonSystem loonSystem, Path artPath, AtomicInteger imagesAdded, Set<Track> updated)
+    {
+        if (track.getArtistImageId().isEmpty())
+        {
+            String escapedArtist = escapeForFileSystem(track.getArtist());
+
+            Path artistPath = artPath.resolve(escapedArtist);
+            File existingArt = findFileInPath(artistPath);
+            if (existingArt != null)
+            {
+                track.setArtistImageId(escapedArtist + "/" + existingArt.getName());
+                updated.add(track);
+            }
+
+            if (track.getArtistImageId().isEmpty())
+            {
+                try
+                {
+                    String imageUrl = getImageUrl(loonSystem.getLastFmApiKey(), track.getArtist(), null);
+
+                    if (imageUrl != null && !imageUrl.isEmpty())
+                    {
+                        try (InputStream in = new URL(imageUrl).openStream())
+                        {
+                            String imageName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+                            Path base = Paths.get(artPath.toFile().getCanonicalPath(), escapedArtist);
+                            Files.createDirectories(base);
+                            Path out = base.resolve(imageName);
+                            Files.copy(in, out);
+                            imagesAdded.incrementAndGet();
+
+                            track.setArtistImageId(escapedArtist + "/" + imageName);
+                            updated.add(track);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    log.error(e.getMessage(), e);
+                }
+            }
+        }
+    }
+
+    private void processAlbumImage(Track track, LoonSystem loonSystem, Path artPath, AtomicInteger imagesAdded, Set<Track> updated)
+    {
+
+        if (track.getAlbumImageId().isEmpty())
+        {
+            String escapedAlbumArtist = escapeForFileSystem(track.getAlbumArtist());
+            String escapedAlbum = escapeForFileSystem(track.getAlbum());
+
+            Path albumPath = artPath.resolve(Paths.get(escapedAlbumArtist, escapedAlbum));
+            File existingArt = findFileInPath(albumPath);
+            if (existingArt != null)
+            {
+                track.setAlbumImageId(escapedAlbumArtist + "/" + escapedAlbum + "/" + existingArt.getName());
+                updated.add(track);
+            }
+
+            if (track.getAlbumImageId().isEmpty())
+            {
+                try
+                {
+                    String imageUrl = getImageUrl(loonSystem.getLastFmApiKey(), track.getArtist(), track.getAlbum());
+
+                    if (imageUrl != null && !imageUrl.isEmpty())
+                    {
+                        try (InputStream in = new URL(imageUrl).openStream())
+                        {
+                            String imageName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+                            Path base = Paths.get(artPath.toFile().getCanonicalPath(), escapedAlbumArtist, escapedAlbum);
+                            Files.createDirectories(base);
+                            Path out = base.resolve(imageName);
+                            Files.copy(in, out);
+                            imagesAdded.incrementAndGet();
+
+                            track.setAlbumImageId(escapedAlbumArtist + "/" + escapedAlbum + "/" + imageName);
+                            updated.add(track);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    log.error(e.getMessage(), e);
+                }
+            }
+        }
+    }
+
+    private File findFileInPath(Path path)
+    {
+        if (path.toFile().exists())
+        {
+            File[] files = path.toFile().listFiles();
+            if (files != null && files.length > 0)
+                return Arrays.stream(files).filter(File::isFile).findFirst().orElse(null);
+        }
+        return null;
     }
 
     /** Get image url from last.fm api. Pass in null for the album to get artist art */

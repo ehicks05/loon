@@ -67,6 +67,7 @@ export default class SystemSettings extends React.Component {
     {
         console.log('Finished ' + action + ', updating track listing.');
         this.props.store.appState.loadTracks();
+        this.props.store.uiState.loadUser();
     }
 
     handleUpdatePlaylists(action)

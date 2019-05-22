@@ -16,10 +16,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
@@ -229,8 +231,25 @@ public class MusicScanner
             track.setArtist(newArtist);
         }
 
-        String id = track.getMusicBrainzTrackId().isBlank() ? track.getArtist() + " - " + track.getAlbum() + " - " + track.getTitle() : track.getMusicBrainzTrackId();
-        id = id.replaceAll(",", "."); // fixes an issue with querying the DB for tracks with a comma in the ID
+        String id = "";
+        if (track.getMusicBrainzTrackId().isBlank())
+        {
+            try
+            {
+                MessageDigest md = MessageDigest.getInstance("MD5");
+                String hashInput = track.getArtist() + ":" + track.getAlbum() + ":" + track.getTitle();
+                md.update(hashInput.getBytes());
+                byte[] digest = md.digest();
+                id = DatatypeConverter.printHexBinary(digest).toUpperCase();
+            }
+            catch (Exception e)
+            {
+                log.error(e.getMessage(), e);
+            }
+        }
+        else
+            id = track.getMusicBrainzTrackId();
+
         track.setId(id);
         return track;
     }

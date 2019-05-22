@@ -42,7 +42,8 @@ module.exports = {
         }
     },
     plugins: [
-        new BundleAnalyzerPlugin({analyzerMode: 'disabled', openAnalyzer: false}), new HardSourceWebpackPlugin()
-        // new BundleAnalyzerPlugin({analyzerMode: 'static', openAnalyzer: false}), new HardSourceWebpackPlugin()
+        new BundleAnalyzerPlugin({analyzerMode: 'disabled', openAnalyzer: false}),
+        // new BundleAnalyzerPlugin({analyzerMode: 'static', openAnalyzer: false}),
+        new HardSourceWebpackPlugin()
     ]
 }

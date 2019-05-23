@@ -4,6 +4,7 @@ export class AppState {
     @observable tracks;
     @observable playlists;
     @observable systemSettings = [];
+    @observable versionInfo = [];
     @observable pendingRequests = 0;
 
     constructor(rootStore) {
@@ -12,6 +13,7 @@ export class AppState {
 
         this.loadTracks();
         this.loadPlaylists();
+        this.loadVersionInfo();
     }
 
     @action
@@ -42,6 +44,14 @@ export class AppState {
     {
         return fetch('/api/library', {method: 'GET'})
             .then(response => response.json()).then(data => this.tracks = data);
+    }
+
+    @action
+    loadVersionInfo()
+    {
+        return fetch('/api/commitId', {method: 'GET'})
+            .then(response => response.json())
+            .then(data => this.versionInfo = data);
     }
 
     @action

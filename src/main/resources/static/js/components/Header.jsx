@@ -1,7 +1,7 @@
 import React from 'react';
 import {NavLink} from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faServer, faUser, faSignOutAlt, faSlidersH, faMusic, faSun, faMoon, faUserCog} from '@fortawesome/free-solid-svg-icons'
+import {faServer, faUser, faSignOutAlt, faSlidersH, faMusic, faSun, faMoon, faUserCog, faInfoCircle} from '@fortawesome/free-solid-svg-icons'
 import {inject, observer} from "mobx-react";
 
 @inject('store')
@@ -137,6 +137,11 @@ export default class Header extends React.Component {
                         </div>
                     </div>
                     <div className="navbar-end">
+                        <div className="navbar-item">
+                            <span className="icon is-medium" title={JSON.stringify(this.props.store.appState.versionInfo)}>
+                                <FontAwesomeIcon icon={faInfoCircle}/>
+                            </span>
+                        </div>
                         <a onClick={this.toggleDarkTheme} href={null} className={"navbar-item"}>
                             <span className="icon is-medium">
                                 <FontAwesomeIcon icon={this.props.store.uiState.theme === 'cyborg' ? faSun : faMoon}/>

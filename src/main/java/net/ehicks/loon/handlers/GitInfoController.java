@@ -9,19 +9,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@PropertySource("classpath:git.properties")
+@PropertySource(value = "classpath:git.properties", ignoreResourceNotFound = true)
 public class GitInfoController {
 
-    @Value("${git.commit.message.short}")
+    @Value("${git.commit.message.short:0}")
     private String commitMessage;
 
-    @Value("${git.branch}")
+    @Value("${git.branch:0}")
     private String branch;
 
-    @Value("${git.commit.id}")
+    @Value("${git.commit.id:0}")
     private String commitId;
 
-    @Value("${git.total.commit.count}")
+    @Value("${git.total.commit.count:0}")
     private String commitCount;
 
     @RequestMapping("/api/commitId")

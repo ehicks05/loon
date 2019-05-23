@@ -52,6 +52,8 @@ public class Transcoder
             if (target.toFile().exists())
                 return;
 
+            Files.createDirectories(Paths.get(loonSystem.getTranscodeFolder(), String.valueOf(quality)));
+
             long start = System.currentTimeMillis();
             javeEncoder().encode(new MultimediaObject(source.toFile()), temp.toFile(), getEncodingAttributes(quality));
 

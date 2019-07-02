@@ -147,6 +147,8 @@ export default class SystemSettings extends React.Component {
                         <TextInput id="transcodeFolder" label="Transcode Folder" value={systemSettings.transcodeFolder} />
                         <TextInput id="dataFolder" label="Data Folder" value={systemSettings.dataFolder} />
                         <TextInput id="lastFmApiKey" label="Last.fm API Key" value={systemSettings.lastFmApiKey} size={50} />
+                        <TextInput id="spotifyClientId" label="Spotify Client Id" value={systemSettings.spotifyClientId} size={50} />
+                        <TextInput id="spotifyClientSecret" label="Spotify Client Secret" value={systemSettings.spotifyClientSecret} size={50} />
                         <TextInput id="logonMessage" label="Welcome Message" value={systemSettings.logonMessage} size={50} />
                         <Select id="registrationEnabled" label="Registration Enabled" items={trueFalse} value={systemSettings.registrationEnabled} required={true} />
                         <Select id="directoryWatcherEnabled" label="Directory Watcher Enabled" items={trueFalse} value={systemSettings.directoryWatcherEnabled} required={true} />

@@ -2,7 +2,15 @@ package net.ehicks.loon;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wrapper.spotify.SpotifyApi;
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
+import com.wrapper.spotify.model_objects.credentials.ClientCredentials;
+import com.wrapper.spotify.model_objects.specification.Artist;
+import com.wrapper.spotify.model_objects.specification.Paging;
+import com.wrapper.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
+import com.wrapper.spotify.requests.data.search.simplified.SearchArtistsRequest;
 import net.coobird.thumbnailator.Thumbnails;
+import net.coobird.thumbnailator.makers.FixedSizeThumbnailMaker;
 import net.ehicks.loon.beans.LoonSystem;
 import net.ehicks.loon.beans.Track;
 import net.ehicks.loon.repos.LoonSystemRepository;
@@ -13,7 +21,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
@@ -146,8 +158,36 @@ public class ImageScanner
             Path thumbnail = original.getRoot().resolve(original.subpath(0, original.getNameCount() - 1).resolve(thumbFilename));
             try
             {
-                if (!thumbnail.toFile().exists())
-                    Thumbnails.of(original.toFile()).size(300, 300).outputFormat("jpg").toFile(thumbnail.toFile());
+                if (!thumbnail.toFile().exists() || true)
+                {
+//                    Thumbnails.of(original.toFile()).size(300, 300).keepAspectRatio(true).outputFormat("jpg").toFile(thumbnail.toFile());
+
+                    BufferedImage img = ImageIO.read(original.toFile());
+
+                    BufferedImage thumbnailImage = new FixedSizeThumbnailMaker()
+                            .size(300, 300)
+                            .keepAspectRatio(true)
+                            .fitWithinDimensions(true)
+                            .make(img);
+
+                    BufferedImage finalImage = new BufferedImage(300, 300, BufferedImage.TYPE_INT_ARGB);
+                    Graphics g = finalImage.getGraphics();
+                    BufferedImage background = new BufferedImage(300, 300, BufferedImage.TYPE_INT_ARGB);
+                    Graphics gBackground = background.getGraphics();
+                    gBackground.setColor(new Color(0, 0, 0, 255));
+                    gBackground.fillRect(0, 0, 300, 300);
+
+                    int x = 0;
+                    int y = 0;
+                    if (thumbnailImage.getWidth() < 300)
+                        x = (300 - thumbnailImage.getWidth()) / 2;
+                    if (thumbnailImage.getHeight() < 300)
+                        y = (300 - thumbnailImage.getHeight()) / 2;
+
+                    g.drawImage(background, 0, 0, null);
+                    g.drawImage(thumbnailImage, x, y, null);
+                    Thumbnails.of(finalImage).size(300, 300).outputFormat("jpg").toFile(thumbnail.toFile());
+                }
                 return thumbFilename;
             }
             catch (Exception e)
@@ -176,13 +216,13 @@ public class ImageScanner
             {
                 try
                 {
-                    String imageUrl = getImageUrl(loonSystem.getLastFmApiKey(), track.getArtist(), null);
+                    String imageUrl = getImageUrl(loonSystem, track.getArtist(), null);
 
                     if (imageUrl != null && !imageUrl.isEmpty())
                     {
                         try (InputStream in = new URL(imageUrl).openStream())
                         {
-                            String imageName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+                            String imageName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1) + ".jpg";
                             Path base = Paths.get(artPath.toFile().getCanonicalPath(), escapedArtist);
                             Files.createDirectories(base);
                             Path out = base.resolve(imageName);
@@ -222,7 +262,7 @@ public class ImageScanner
             {
                 try
                 {
-                    String imageUrl = getImageUrl(loonSystem.getLastFmApiKey(), track.getArtist(), track.getAlbum());
+                    String imageUrl = getImageUrl(loonSystem, track.getArtist(), track.getAlbum());
 
                     if (imageUrl != null && !imageUrl.isEmpty())
                     {
@@ -260,7 +300,7 @@ public class ImageScanner
     }
 
     /** Get image url from last.fm api. Pass in null for the album to get artist art */
-    private String getImageUrl(String lastFmApiKey, String artist, String album)
+    private String getImageUrlLastFm(String lastFmApiKey, String artist, String album)
     {
         RestTemplate restTemplate = restTemplate();
         ObjectMapper objectMapper = objectMapper();
@@ -301,5 +341,46 @@ public class ImageScanner
             log.error("Unable to parse response for: " + artist + " - " + (album == null ? "null album" : album));
         }
         return imageUrl;
+    }
+
+    /** Get image url from spotify api. Pass in null for the album to get artist art */
+    private String getImageUrl(LoonSystem loonSystem, String artist, String album)
+    {
+        SpotifyApi spotifyApi = new SpotifyApi.Builder()
+                .setClientId(loonSystem.getSpotifyClientId())
+                .setClientSecret(loonSystem.getSpotifyClientSecret())
+                .build();
+
+        ClientCredentialsRequest clientCredentialsRequest = spotifyApi.clientCredentials()
+                .build();
+
+        try {
+            final ClientCredentials clientCredentials = clientCredentialsRequest.execute();
+
+            // Set access token for further "spotifyApi" object usage
+            spotifyApi.setAccessToken(clientCredentials.getAccessToken());
+
+            SearchArtistsRequest searchArtistsRequest = spotifyApi.searchArtists(artist)
+//          .limit(10)
+                    .build();
+
+            final Paging<Artist> artistPaging = searchArtistsRequest.execute();
+
+            if (artistPaging.getItems().length > 0)
+            {
+                Artist artistItem = artistPaging.getItems()[0];
+
+                if (artistItem.getImages().length > 0)
+                {
+                    String imageUrl = artistItem.getImages()[0].getUrl();
+                    return imageUrl;
+                }
+            }
+
+        } catch (IOException | SpotifyWebApiException e) {
+            log.error(e.getMessage());
+        }
+
+        return null;
     }
 }

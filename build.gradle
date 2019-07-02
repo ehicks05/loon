@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.1.5.RELEASE'
+        springBootVersion = '2.1.6.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -43,8 +43,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'ws.schild:jave-core:2.4.6'
-    implementation 'ws.schild:jave-native-win64:2.4.6'
+    implementation 'ws.schild:jave-core:2.5.0'
+    implementation 'ws.schild:jave-nativebin-win64:2.5.0'
+    implementation 'se.michaelthelin.spotify:spotify-web-api-java:2.2.0'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'org.postgresql:postgresql'

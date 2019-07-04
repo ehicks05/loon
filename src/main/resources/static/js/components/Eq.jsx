@@ -32,26 +32,31 @@ export default class Eq extends React.Component {
     {
         const userState = this.props.store.uiState.user.userState;
 
+        const cellStyle = {border: '3px solid gray', borderBottomLeftRadius: '6px', borderBottomRightRadius: '6px', borderTopLeftRadius: '6px', borderTopRightRadius: '6px', }
+
         const eqTable =
-            <table style={{padding: '8px', maxWidth: '80%'}}>
+            <table style={{padding: '8px', maxWidth: '80%', borderCollapse: 'separate'}}>
                 <tbody>
                 <tr>
-                    <td><input className={'input has-text-centered'} name={'eq1Frequency'} type={'number'} min={20} max={20000} step={1} defaultValue={userState.eq1Frequency} onChange={this.handleEqChange} /></td>
-                    <td><input className={'input has-text-centered'} name={'eq2Frequency'} type={'number'} min={20} max={20000} step={1} defaultValue={userState.eq2Frequency} onChange={this.handleEqChange} /></td>
-                    <td><input className={'input has-text-centered'} name={'eq3Frequency'} type={'number'} min={20} max={20000} step={1} defaultValue={userState.eq3Frequency} onChange={this.handleEqChange} /></td>
-                    <td><input className={'input has-text-centered'} name={'eq4Frequency'} type={'number'} min={20} max={20000} step={1} defaultValue={userState.eq4Frequency} onChange={this.handleEqChange} /></td>
+                    <td style={cellStyle} className={'has-text-centered'}>Frequency</td>
+                    <td><input className={'input has-text-right'} name={'eq1Frequency'} type={'number'} min={20} max={20000} step={1} defaultValue={userState.eq1Frequency} onChange={this.handleEqChange} /></td>
+                    <td><input className={'input has-text-right'} name={'eq2Frequency'} type={'number'} min={20} max={20000} step={1} defaultValue={userState.eq2Frequency} onChange={this.handleEqChange} /></td>
+                    <td><input className={'input has-text-right'} name={'eq3Frequency'} type={'number'} min={20} max={20000} step={1} defaultValue={userState.eq3Frequency} onChange={this.handleEqChange} /></td>
+                    <td><input className={'input has-text-right'} name={'eq4Frequency'} type={'number'} min={20} max={20000} step={1} defaultValue={userState.eq4Frequency} onChange={this.handleEqChange} /></td>
                 </tr>
                 <tr>
-                    <td><VerticalSlider name={'eq1Gain'} value={userState.eq1Gain} onChange={this.handleSliderChange} /></td>
-                    <td><VerticalSlider name={'eq2Gain'} value={userState.eq2Gain} onChange={this.handleSliderChange} /></td>
-                    <td><VerticalSlider name={'eq3Gain'} value={userState.eq3Gain} onChange={this.handleSliderChange} /></td>
-                    <td><VerticalSlider name={'eq4Gain'} value={userState.eq4Gain} onChange={this.handleSliderChange} /></td>
+                    <td style={cellStyle} className={'has-text-centered'}>Gain</td>
+                    <td style={cellStyle}><VerticalSlider name={'eq1Gain'} value={userState.eq1Gain} onChange={this.handleSliderChange} /></td>
+                    <td style={cellStyle}><VerticalSlider name={'eq2Gain'} value={userState.eq2Gain} onChange={this.handleSliderChange} /></td>
+                    <td style={cellStyle}><VerticalSlider name={'eq3Gain'} value={userState.eq3Gain} onChange={this.handleSliderChange} /></td>
+                    <td style={cellStyle}><VerticalSlider name={'eq4Gain'} value={userState.eq4Gain} onChange={this.handleSliderChange} /></td>
                 </tr>
                 <tr>
-                    <td className={'has-text-centered'}>Low Shelf</td>
-                    <td className={'has-text-centered'}>Peaking</td>
-                    <td className={'has-text-centered'}>Peaking</td>
-                    <td className={'has-text-centered'}>High Shelf</td>
+                    <td style={cellStyle} className={'has-text-centered'}>Type</td>
+                    <td style={cellStyle} className={'has-text-centered'}>Low Shelf</td>
+                    <td style={cellStyle} className={'has-text-centered'}>Peaking</td>
+                    <td style={cellStyle} className={'has-text-centered'}>Peaking</td>
+                    <td style={cellStyle} className={'has-text-centered'}>High Shelf</td>
                 </tr>
                 </tbody>
             </table>;

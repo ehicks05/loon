@@ -54,9 +54,6 @@ export default class Search extends React.Component {
             this.setState({searchResults: tracks});
             
             this.cache.clearAll();
-            // this.listRef.recomputeRowHeights();
-            // this.listRef.forceUpdateGrid();
-            // this.listRef.measureAllRows();
         }
     }
 

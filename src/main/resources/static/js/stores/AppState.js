@@ -8,7 +8,7 @@ export class AppState {
     @observable pendingRequests = 0;
 
     constructor(rootStore) {
-        autorun(() => console.log(this.report));
+        // autorun(() => console.log(this.report));
         this.rootStore = rootStore;
 
         this.loadTracks();

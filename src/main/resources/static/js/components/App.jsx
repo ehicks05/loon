@@ -43,6 +43,9 @@ export default class App extends React.Component {
 
     componentDidMount() {
         const pollIntervalId = setInterval(poll, 60 * 60 * 1000); // once an hour
+
+        this.props.store.uiState.getScreenDimensions();
+        this.props.store.uiState.getWindowDimensions();
     }
 
     render() {

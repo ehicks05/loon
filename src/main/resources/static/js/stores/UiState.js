@@ -27,14 +27,18 @@ export class UiState {
         const self = this;
         this.getScreenDimensions();
         window.addEventListener('resize', function(e) {
-            self.screenDimensions.width = window.screen.availWidth;
-            self.screenDimensions.height = window.screen.availHeight;
+            if (typeof window === 'object') {
+                self.screenDimensions.width = window.screen.availWidth;
+                self.screenDimensions.height = window.screen.availHeight;
+            }
         });
 
         this.getWindowDimensions();
         window.addEventListener('resize', function(e) {
-            self.windowDimensions.width = window.innerWidth;
-            self.windowDimensions.height = window.innerHeight;
+            if (typeof window === 'object') {
+                self.windowDimensions.width = window.innerWidth;
+                self.windowDimensions.height = window.innerHeight;
+            }
         });
 
         this.loadUser();
@@ -42,14 +46,18 @@ export class UiState {
 
     @action
     getScreenDimensions(e) {
-        this.screenDimensions.width = window.screen.availWidth;
-        this.screenDimensions.height = window.screen.availHeight;
+        if (typeof window === 'object') {
+            this.screenDimensions.width = window.screen.availWidth;
+            this.screenDimensions.height = window.screen.availHeight;
+        }
     }
 
     @action
     getWindowDimensions(e) {
-        this.windowDimensions.width = window.innerWidth;
-        this.windowDimensions.height = window.innerHeight;
+        if (typeof window === 'object') {
+            this.windowDimensions.width = window.innerWidth;
+            this.windowDimensions.height = window.innerHeight;
+        }
     }
 
     @action

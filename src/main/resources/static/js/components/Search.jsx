@@ -28,7 +28,14 @@ export default class Search extends React.Component {
         this.disposer = autorun(() => {
             const width = self.props.store.uiState.windowDimensions.width;
             const height = self.props.store.uiState.windowDimensions.height;
-            self.cache.clearAll();
+            const theme = self.props.store.uiState.theme;
+
+            // wait 1 second, otherwise sometimes there are huge gaps between rows, especially when toggling light/dark mode.
+            setTimeout(function () {
+                self.cache.clearAll();
+                self.listRef.recomputeRowHeights();
+                self.listRef.forceUpdateGrid();
+            }, 1000)
         });
         this.setState({
             searchResults: this.props.store.appState.tracks
@@ -72,6 +79,7 @@ export default class Search extends React.Component {
         const selectedTrackId = this.props.store.uiState.selectedTrackId;
         const scrollToIndex = this.state.searchResults.indexOf(this.state.searchResults.find(track => track.id === selectedTrackId));
         const inputClass = this.props.store.uiState.isDarkTheme ? ' has-text-light has-background-dark' : '';
+        const theme = this.props.store.uiState.theme; // seems to help prevent the 'huge gaps between rows' issue when toggling theme.
 
         return (
             <div style={{display: 'flex', flexDirection: 'column', height: '100%', flex: '1', overflow: 'hidden'}}>

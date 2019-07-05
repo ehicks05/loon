@@ -13,7 +13,7 @@ export default class MyHelmet extends React.Component {
     {
         const uiState = this.props.store.uiState;
         const selectedTrack = uiState.selectedTrack;
-        const title = selectedTrack ? selectedTrack.title : 'Loon';
+        const title = selectedTrack ? selectedTrack.title + ' by ' + selectedTrack.artist : 'Loon';
 
         return (
             <Helmet defer={false}>

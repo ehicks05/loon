@@ -261,7 +261,7 @@ export default class Player extends React.Component {
             const avg = average(slice);
 
             mergedData.push(avg * linearAdjustment);
-
+            // console.log('i:' + i + '. bins:' + bins + '. db adjust:' + linearAdjustment + '. ' + (i * binWidth) + ' - ' + (i * binWidth + (bins * binWidth) - 1));
             i += bins;
             size *= 1.3;
         }

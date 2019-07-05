@@ -88,6 +88,10 @@ export default class Header extends React.Component {
                 <div className="navbar-menu" id="navMenu">
                     <div className="navbar-start">
                         <NavLink to='/search' activeClassName='is-active' className="navbar-item">Search</NavLink>
+                        <NavLink to='/favorites' activeClassName='is-active' className="navbar-item">Favorites</NavLink>
+                        <NavLink to='/queue' activeClassName='is-active' className="navbar-item">Queue</NavLink>
+                        <NavLink to='/artists' activeClassName='is-active' className="navbar-item">Artists</NavLink>
+                        <NavLink to='/albums' activeClassName='is-active' className="navbar-item">Albums</NavLink>
                         <div className={"navbar-item has-dropdown is-hoverable"}>
                             <NavLink to='/playlists' activeClassName='is-active' className="navbar-link">
                                 Playlists

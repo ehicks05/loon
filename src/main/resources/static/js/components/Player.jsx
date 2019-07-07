@@ -93,6 +93,7 @@ export default class Player extends React.Component {
     componentDidMount()
     {
         Player.scrollIntoView(this.props.selectedTrackId);
+        requestAnimationFrame(this.step.bind(this));
     }
 
     componentDidUpdate(prevProps, prevState)
@@ -196,7 +197,7 @@ export default class Player extends React.Component {
 
             const playPromise = self.audio.play();
             if (playPromise !== null) {
-                playPromise.then(() => { self.audio.volume = 1; requestAnimationFrame(self.step.bind(self)); })
+                playPromise.then(() => { self.audio.volume = 1; })
                     .catch(() => { self.audio.play(); })
             }
 
@@ -410,10 +411,7 @@ export default class Player extends React.Component {
             this.lastAnimationFrame = Date.now();
         }
 
-        // If the sound is still playing, continue stepping.
-        if (this.state.playerState === 'playing') {
-            requestAnimationFrame(self.step.bind(self));
-        }
+        requestAnimationFrame(self.step.bind(self));
     }
 
     render()

@@ -17,11 +17,10 @@ Be able to stream your entire music library from your browser. Support desktop o
 * Replaygain tag support
 * Transcode to various mp3 quality levels
 
-### Known Issues
-* React-beautiful-dnd doesn't yet support react-virtualized. Until then we either have drag and drop, or snappy 
-  lists of songs.
-* The JAVE library, used for transcoding, outputs to a file. This requires waiting for a song to finish transcoding, 
-  which can take several seconds. If this could generate a stream maybe we could avoid the wait?
+### Known Issues / Todo
+* Adopt React-beautiful-dnd virtual lists once it is ready. Without virtual lists, we get to about 1000 songs in a 
+  list before it becomes really slow on a beefy pc.
+* Can we monitor the music library for changes and automatically react based on the changes?
 
 ### Getting Started
 
@@ -40,8 +39,9 @@ Be able to stream your entire music library from your browser. Support desktop o
 1. Configure application.properties for DB connection info, etc...
 2. Build fat jar file with Gradle
 3. Place jar file where you want to run Loon
-4. Log in as admin@test.com, pw: password.
-5. Once logged in, go to Admin -> Manage System to identify where music is stored.
+4. Run 'java -jar nameofjar.jar'
+5. Log in as admin@test.com, pw: password.
+6. Once logged in, go to Admin -> Manage System to specify where music is stored.
 
 ### Built With (partial listing)
 * [Spring Boot](https://spring.io/projects/spring-boot) - Backend Framework

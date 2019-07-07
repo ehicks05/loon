@@ -6,7 +6,9 @@ const SliderWithTooltip = createSliderWithTooltip(Slider);
 
 const marks = {
     '-12' : '-12',
+    '-6' : '-6',
     '0' : '0',
+    '6' : '+6',
     '12' : '+12'
 };
 

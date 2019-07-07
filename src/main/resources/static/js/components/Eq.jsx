@@ -32,17 +32,17 @@ export default class Eq extends React.Component {
     {
         const userState = this.props.store.uiState.user.userState;
 
-        const cellStyle = {border: '3px solid gray', borderBottomLeftRadius: '6px', borderBottomRightRadius: '6px', borderTopLeftRadius: '6px', borderTopRightRadius: '6px', }
+        const cellStyle = {border: '1px solid gray', verticalAlign: 'middle', padding: '8px'};
 
         const eqTable =
-            <table style={{padding: '8px', maxWidth: '80%', borderCollapse: 'separate'}}>
+            <table style={{padding: '8px'}}>
                 <tbody>
                 <tr>
-                    <td style={cellStyle} className={'has-text-centered'}>Frequency</td>
-                    <td><input className={'input has-text-right'} name={'eq1Frequency'} type={'number'} min={20} max={20000} step={1} defaultValue={userState.eq1Frequency} onChange={this.handleEqChange} /></td>
-                    <td><input className={'input has-text-right'} name={'eq2Frequency'} type={'number'} min={20} max={20000} step={1} defaultValue={userState.eq2Frequency} onChange={this.handleEqChange} /></td>
-                    <td><input className={'input has-text-right'} name={'eq3Frequency'} type={'number'} min={20} max={20000} step={1} defaultValue={userState.eq3Frequency} onChange={this.handleEqChange} /></td>
-                    <td><input className={'input has-text-right'} name={'eq4Frequency'} type={'number'} min={20} max={20000} step={1} defaultValue={userState.eq4Frequency} onChange={this.handleEqChange} /></td>
+                    <td style={cellStyle} className={'has-text-centered'}>Freq</td>
+                    <td style={cellStyle}><input className={'input has-text-right'} name={'eq1Frequency'} type={'number'} min={20} max={20000} step={1} defaultValue={userState.eq1Frequency} onChange={this.handleEqChange} /></td>
+                    <td style={cellStyle}><input className={'input has-text-right'} name={'eq2Frequency'} type={'number'} min={20} max={20000} step={1} defaultValue={userState.eq2Frequency} onChange={this.handleEqChange} /></td>
+                    <td style={cellStyle}><input className={'input has-text-right'} name={'eq3Frequency'} type={'number'} min={20} max={20000} step={1} defaultValue={userState.eq3Frequency} onChange={this.handleEqChange} /></td>
+                    <td style={cellStyle}><input className={'input has-text-right'} name={'eq4Frequency'} type={'number'} min={20} max={20000} step={1} defaultValue={userState.eq4Frequency} onChange={this.handleEqChange} /></td>
                 </tr>
                 <tr>
                     <td style={cellStyle} className={'has-text-centered'}>Gain</td>

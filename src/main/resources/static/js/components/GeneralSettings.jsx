@@ -9,6 +9,15 @@ export default class GeneralSettings extends React.Component {
         super(props);
 
         this.save = this.save.bind(this);
+        this.state = {};
+    }
+
+    componentDidMount()
+    {
+        let self = this;
+        fetch('/api/systemSettings/transcodeQuality', {method: 'GET'})
+            .then(response => response.json())
+            .then(data => self.setState({transcodeQuality: data}));
     }
 
     save(e)
@@ -21,6 +30,7 @@ export default class GeneralSettings extends React.Component {
     {
         const userState = this.props.store.uiState.user.userState;
         const cellStyle = {padding: '10px'};
+        const transcodeQuality = this.state.transcodeQuality ? this.state.transcodeQuality : "";
 
         return (
             <div>
@@ -39,7 +49,7 @@ export default class GeneralSettings extends React.Component {
                                 <td style={cellStyle} className={'has-text-centered'}>
                                     <div className="field">
                                         <input type="checkbox" className="switch is-rounded" id="transcode" name="transcode" defaultChecked={userState.transcode} />
-                                        <label htmlFor="transcode">Transcode</label>
+                                        <label htmlFor="transcode">Transcode all tracks to mp3 v{transcodeQuality}</label>
                                     </div>
                                 </td>
                             </tr>

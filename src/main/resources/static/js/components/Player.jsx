@@ -99,7 +99,7 @@ export default class Player extends React.Component {
     {
         if (prevProps.selectedTrackId !== this.props.selectedTrackId)
         {
-            this.handlePlayerStateChange('playing', this.props.selectedTrackId);
+            this.handlePlayerStateChange(null, this.props.selectedTrackId);
         }
 
         if (prevProps.volume !== this.props.volume)
@@ -141,7 +141,7 @@ export default class Player extends React.Component {
         {
             this.audioCtx.suspend();
         }
-        if (newPlayerState === 'playing')
+        if (newPlayerState === 'playing' || !newPlayerState)
         {
             if (!newTrackId && self.audio && self.audioCtx.state === 'suspended')
             {
@@ -205,7 +205,8 @@ export default class Player extends React.Component {
             this.renderSpectrumFrame();
         }
 
-        this.setState({playerState: newPlayerState});
+        if (newPlayerState)
+            this.setState({playerState: newPlayerState});
     }
 
     getFrequencyTiltAdjustment(binStartingFreq) {

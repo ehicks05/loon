@@ -7,7 +7,7 @@ const SliderWithTooltip = createSliderWithTooltip(Slider);
 const marks = {
     '-12' : '-12',
     '0' : '0',
-    '12' : '12'
+    '12' : '+12'
 };
 
 class VerticalSlider extends Component {
@@ -27,7 +27,7 @@ class VerticalSlider extends Component {
                     max={12}
                     defaultValue={this.props.value}
                     onChange={(value) => this.props.onChange(value, this.props.name)}
-                    tipFormatter={v => `${v}dB`}
+                    tipFormatter={v => (v > 0 ? '+' : '') + `${v}dB`}
                     tipProps={{placement: 'right'}}
                     trackStyle={{ backgroundColor: 'hsl(141, 71%, 48%)', height: 4 }}
                     railStyle={{backgroundColor: '#ddd'}}

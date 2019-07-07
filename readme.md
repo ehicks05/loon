@@ -21,6 +21,7 @@ Be able to stream your entire music library from your browser. Support desktop o
 * Adopt React-beautiful-dnd virtual lists once it is ready. Without virtual lists, we get to about 1000 songs in a 
   list before it becomes really slow on a beefy pc.
 * Can we monitor the music library for changes and automatically react based on the changes?
+* Fix context menu when search.jsx is showing one item. (it cuts off)
 
 ### Getting Started
 

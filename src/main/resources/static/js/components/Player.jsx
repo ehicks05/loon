@@ -193,7 +193,7 @@ export default class Player extends React.Component {
 
             self.audio.volume = 0;
             self.audio.src = '/media?id=' + track.id;
-            self.trackGainNode.gain.value = track.trackGainLinear;
+            self.trackGainNode.gain.value = Player.getMaxSafeGain(track.trackGainLinear, track.trackPeak);
 
             const playPromise = self.audio.play();
             if (playPromise !== null) {
@@ -385,6 +385,24 @@ export default class Player extends React.Component {
             level = 0;
 
         return level;
+    }
+
+    static getMaxSafeGain(trackGainLinear, trackPeak)
+    {
+        if (!trackPeak)
+            return trackGainLinear;
+
+        let maxSafeGain = 1 / trackPeak;
+
+        if (maxSafeGain < trackGainLinear)
+        {
+            console.log('Whoa there! Track replaygain is ' + trackGainLinear +
+                ', but with a track peak of ' + trackPeak + ', we can only adjust gain by ' + maxSafeGain + '.');
+
+            return maxSafeGain;
+        }
+
+        return trackGainLinear;
     }
 
     handleProgressChange(progress) {

@@ -186,9 +186,14 @@ public class MusicScanner
         track.setTrackPeak(tag.getFirst("REPLAYGAIN_TRACK_PEAK"));
         track.setTrackGain(tag.getFirst("REPLAYGAIN_TRACK_GAIN"));
 
+        if (track.getTrackPeak().isEmpty())
+        {
+            String rpPeak = deepScanForTagField(tag, "replaygain_track_peak", "");
+            track.setTrackPeak(rpPeak);
+        }
         if (track.getTrackGain().isEmpty())
         {
-            String rpGain = deepScanForReplayGain(tag);
+            String rpGain = deepScanForTagField(tag, "replaygain_track_gain", "0");
             track.setTrackGain(rpGain);
         }
 
@@ -344,21 +349,21 @@ public class MusicScanner
         }
     }
 
-    private String deepScanForReplayGain(Tag tag)
+    private String deepScanForTagField(Tag tag, String query, String defaultVal)
     {
-        final Pattern getGain = Pattern.compile("-?[.\\d]+");
+        final Pattern pattern = Pattern.compile("-?[.\\d]+");
         Iterator<TagField> fields = tag.getFields();
         while(fields.hasNext())
         {
             TagField field = fields.next();
-            if((field.getId() + field.toString().toLowerCase()).contains("replaygain_track_gain"))
+            if((field.getId() + field.toString().toLowerCase()).contains(query))
             {
-                Matcher m = getGain.matcher(field.toString());
+                Matcher m = pattern.matcher(field.toString());
                 m.find();
                 return m.group();
             }
         }
-        return "0";
+        return defaultVal;
     }
 
     private byte[] resize(InputStream inputStream, String contentType, int targetWidth, int targetHeight) throws IOException

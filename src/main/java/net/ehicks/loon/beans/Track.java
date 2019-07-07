@@ -53,7 +53,6 @@ public class Track implements Serializable
     private String trackGainLinear = "";
 
     @Column(name = "track_peak", nullable = false)
-    @JsonIgnore
     private String trackPeak = "";
 
     @JsonIgnore
@@ -147,6 +146,26 @@ public class Track implements Serializable
         double xDividedBy20 = dbAdjustment.divide(new BigDecimal("20"), 3, RoundingMode.HALF_UP).doubleValue();
         double result = Math.pow(10, xDividedBy20);
         return BigDecimal.valueOf(result).setScale(3, RoundingMode.HALF_UP).toString();
+    }
+
+    // linear-to-db(x) = 20 * log10(x)
+    public String convertLinearToDB()
+    {
+        if (trackGain.isBlank())
+            return BigDecimal.ZERO.toString();
+
+        BigDecimal linearAdjustment = BigDecimal.ZERO;
+        try
+        {
+            linearAdjustment = new BigDecimal(trackGain);
+        }
+        catch (Exception e)
+        {
+
+        }
+
+        double result = 20 * Math.log10(linearAdjustment.doubleValue());
+        return String.format("%.2f", result);
     }
 
     public String getId()

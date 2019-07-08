@@ -8,6 +8,9 @@ import { faVolumeUp, faVolumeOff, faRandom, faPlay, faPause, faStepForward, faSt
 import {inject, observer} from "mobx-react";
 import {Link} from "react-router-dom";
 
+import 'lazysizes';
+import 'lazysizes/plugins/attrchange/ls.attrchange';
+
 const SliderWithTooltip = createSliderWithTooltip(Slider);
 
 @inject('store')
@@ -161,9 +164,19 @@ export default class PlaybackControls extends React.Component {
                                    onChange={this.handleVolumeChange} />
             </div>;
 
+        const placeholder = 'https://via.placeholder.com/600x600.png?text=placeholder';
+        const imageUrl = selectedTrack.albumThumbnailId ? '/art/' + selectedTrack.albumThumbnailId : placeholder;
+
+        // todo: does this need to be lazyload?
+        const albumArt =
+            <figure className={"image is-64x64"} style={{margin: 'auto', paddingTop: '4px', paddingRight: '8px'}}>
+                <img src={placeholder} data-src={imageUrl} alt="Placeholder image" className='lazyload'/>
+            </figure>;
+
         const levelLeft =
             <div className="level-left">
                 {windowWidth > 768 && playbackButtons}
+                {albumArt}
                 {trackDescription}
             </div>;
 

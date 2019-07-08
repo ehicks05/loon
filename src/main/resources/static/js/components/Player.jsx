@@ -197,7 +197,17 @@ export default class Player extends React.Component {
 
             const playPromise = self.audio.play();
             if (playPromise !== null) {
-                playPromise.then(() => { self.audio.volume = 1; })
+                playPromise
+                    .then(() => {
+                        self.audio.volume = 1;
+
+                        // This triggers when we hit 'next track' button while playback is paused.
+                        // The player will go to start playing the new track and immediately pause.
+                        if (!newPlayerState && (this.state.playerState === 'paused' || this.state.playerState === 'stopped'))
+                        {
+                            this.audioCtx.suspend();
+                        }
+                    })
                     .catch(() => { self.audio.play(); })
             }
 

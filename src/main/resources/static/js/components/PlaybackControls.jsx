@@ -165,7 +165,7 @@ export default class PlaybackControls extends React.Component {
             </div>;
 
         const placeholder = 'https://via.placeholder.com/600x600.png?text=placeholder';
-        const imageUrl = selectedTrack.albumThumbnailId ? '/art/' + selectedTrack.albumThumbnailId : placeholder;
+        const imageUrl = (selectedTrack && selectedTrack.albumThumbnailId) ? '/art/' + selectedTrack.albumThumbnailId : placeholder;
 
         // todo: does this need to be lazyload?
         const albumArt =

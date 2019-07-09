@@ -1,6 +1,5 @@
 package net.ehicks.loon.tasks;
 
-import net.coobird.thumbnailator.Thumbnails;
 import net.ehicks.loon.FileWalker;
 import net.ehicks.loon.beans.LoonSystem;
 import net.ehicks.loon.beans.Track;
@@ -37,6 +36,8 @@ public class MusicScanner extends Task
     private static final Logger log = LoggerFactory.getLogger(MusicScanner.class);
     public String id = "MusicScanner";
 
+    private int artFilesCopied = 0;
+
     public String getId()
     {
         return id;
@@ -56,9 +57,12 @@ public class MusicScanner extends Task
     }
 
     /**
-     * After running, the library should be completely synchronized with the filesystem.
-     *
-     *
+     * After running, the library should be completely synchronized with the filesystem:
+     * New files should be added as tracks.
+     * Changes to file metadata should be reflected in the tracks.
+     * Files removed from the filesystem should be identified.
+     * New or changed artwork should be copied to the static assets folder and linked to the tracks.
+     * Deleted artwork should have no effect on the copies in the static assets folder.
      * */
     public void performTask(Map<String, Object> options)
     {
@@ -121,9 +125,9 @@ public class MusicScanner extends Task
             trackRepo.saveAll(tracksToSave);
 
             // at this point tracksInDb will only contain tracks that were not found in the filesystem.
-            List<Track> tracksWithMissingFile = tracksInDb;
-            tracksWithMissingFile.forEach(track -> track.setMissingFile(true));
-            trackRepo.saveAll(tracksWithMissingFile);
+            List<Track> tracksWithoutAFile = tracksInDb;
+            tracksWithoutAFile.forEach(track -> track.setMissingFile(true));
+            trackRepo.saveAll(tracksWithoutAFile);
 
             log.info("Scan complete: Added " + tracksToSave.size() + " tracks.");
             long dur = System.currentTimeMillis() - (long)options.get("startTime");
@@ -131,7 +135,8 @@ public class MusicScanner extends Task
             log.info("Duration: " + dur + "ms");
             log.info("Files considered: " + paths.size() + ". " + "(" + Math.round(paths.size() / durSeconds) + " files / sec)");
             log.info("Tracks saved: " + tracksToSave.size() + ". " + "(" + Math.round(tracksToSave.size() / durSeconds) + " tracks / sec)");
-            log.info("Tracks missing file: " + tracksWithMissingFile.size() + ". " + "(" + Math.round(tracksWithMissingFile.size() / durSeconds) + " tracks / sec)");
+            log.info("Tracks missing file: " + tracksWithoutAFile.size() + ". " + "(" + Math.round(tracksWithoutAFile.size() / durSeconds) + " tracks / sec)");
+            log.info("Art files copied to static assets folder: " + artFilesCopied + ". " + "(" + Math.round(artFilesCopied / durSeconds) + " art files / sec)");
         }
         catch (Exception e)
         {
@@ -191,10 +196,7 @@ public class MusicScanner extends Task
         track.setTrackGain(track.getTrackGain().replace(" dB", ""));
         track.setTrackGainLinear(track.convertDBToLinear());
 
-        if (tag.getArtworkList().size() > 0)
-        {
-            saveArtwork(tag, track, artPath);
-        }
+        findLocalArtwork(tag, track, artPath);
 
         String trackNumString = tag.getFirst(FieldKey.TRACK);
         trackNumString = trackNumString.contains("/") ? trackNumString.substring(0, trackNumString.indexOf("/")) : trackNumString;
@@ -213,19 +215,7 @@ public class MusicScanner extends Task
 
         // condense artists like 'Foo feat. Bar' down to hopefully just 'Foo'
         if (track.getArtist().contains(" feat. "))
-        {
-            String albumArtist = tag.getFirst(FieldKey.ALBUM_ARTIST);
-            String artists = tag.getFirst(FieldKey.ARTISTS);
-
-            String newArtist = "";
-            if (!albumArtist.isBlank() && !albumArtist.contains(" feat. "))
-                newArtist = albumArtist;
-            if (newArtist.isBlank() && !artists.isBlank() && !artists.contains(" feat. "))
-                newArtist = artists;
-
-            log.debug("Replacing " + track.getArtist() + " ...with... " + newArtist);
-            track.setArtist(newArtist);
-        }
+            removeFeaturedArtist(tag, track);
 
         String id = "";
         if (track.getMusicBrainzTrackId().isBlank())
@@ -235,8 +225,7 @@ public class MusicScanner extends Task
                 MessageDigest md = MessageDigest.getInstance("MD5");
                 String hashInput = track.getArtist() + ":" + track.getAlbum() + ":" + track.getTitle();
                 md.update(hashInput.getBytes());
-                byte[] digest = md.digest();
-                id = DatatypeConverter.printHexBinary(digest).toUpperCase();
+                id = DatatypeConverter.printHexBinary(md.digest()).toUpperCase();
             }
             catch (Exception e)
             {
@@ -250,38 +239,59 @@ public class MusicScanner extends Task
         return track;
     }
 
-    private void saveArtwork(Tag tag, Track track, Path artPath)
+    private void removeFeaturedArtist(Tag tag, Track track) {
+        String albumArtist = tag.getFirst(FieldKey.ALBUM_ARTIST);
+        String artists = tag.getFirst(FieldKey.ARTISTS);
+
+        String newArtist = "";
+        if (!albumArtist.isBlank() && !albumArtist.contains(" feat. "))
+            newArtist = albumArtist;
+        if (newArtist.isBlank() && !artists.isBlank() && !artists.contains(" feat. "))
+            newArtist = artists;
+
+        log.debug("Replacing " + track.getArtist() + " ...with... " + newArtist);
+        track.setArtist(newArtist);
+    }
+
+    private void findLocalArtwork(Tag tag, Track track, Path artPath)
     {
-        Artwork artwork = tag.getFirstArtwork();
-        if (artwork == null)
-            return;
-
-        String ext = "." + artwork.getMimeType().replace("image/", "");
-
         String escapedAlbumArtist = escapeForFileSystem(track.getAlbumArtist());
         String escapedAlbum = escapeForFileSystem(track.getAlbum());
-        String imageFileName = escapeForFileSystem(track.getAlbum()) + ext;
 
-        // look for a 'folder.jpg' in the track's directory
+        Path outputPath;
+        try
+        {
+            outputPath = Paths.get(artPath.toFile().getCanonicalPath(), escapedAlbumArtist, escapedAlbum);
+            Files.createDirectories(outputPath);
+        }
+        catch (Exception e)
+        {
+            log.error(e.getMessage(), e);
+            return;
+        }
+
+        // look for a 'folder.jpg' in the track's directory, copy it to artPath/artist/album/folder.xyz
         Path trackPath = Paths.get(track.getPath());
         Path trackFolderPath = trackPath.getRoot().resolve(trackPath.subpath(0, trackPath.getNameCount() - 1));
-        if (trackFolderPath.toFile().exists() && trackFolderPath.toFile().isDirectory())
+        if (trackFolderPath.toFile().isDirectory())
         {
             File[] files = trackFolderPath.toFile().listFiles();
             for (File file : files)
             {
                 if (file.isFile() && file.getName().toLowerCase().startsWith("folder"))
                 {
+                    String extension = file.getName().substring(file.getName().lastIndexOf(".") + 1);
+                    Path out = outputPath.resolve(escapedAlbum + "." + extension);
+
                     try (InputStream in = new BufferedInputStream(new FileInputStream(file)))
                     {
-                        Path base = Paths.get(artPath.toFile().getCanonicalPath(), escapedAlbumArtist, escapedAlbum);
-                        Files.createDirectories(base);
-                        Path out = base.resolve(file.getName());
-
-                        if (!out.toFile().exists())
+                        if (isFileCopyNeeded(Files.readAllBytes(file.toPath()), out))
+                        {
                             Files.copy(in, out);
+                            artFilesCopied++;
+                        }
 
-                        track.setAlbumImageId(escapedAlbumArtist + "/" + escapedAlbum + "/" + file.getName());
+                        track.setAlbumImageId(escapedAlbumArtist + "/" + escapedAlbum + "/" + escapedAlbum + "." + extension);
                         return;
                     }
                     catch (Exception e)
@@ -292,52 +302,52 @@ public class MusicScanner extends Task
             }
         }
 
-        try
+        // look for artwork embedded in the file
+        Artwork artwork = tag.getFirstArtwork();
+        if (artwork == null || artwork.getBinaryData() == null)
+            return;
+
+        String ext = "." + artwork.getMimeType().replace("image/", "");
+        String outputFileNameWithExtension = escapedAlbum + ext;
+        Path out = outputPath.resolve(outputFileNameWithExtension);
+
+        if (isFileCopyNeeded(artwork.getBinaryData(), out))
         {
-            File artFile = Paths.get(artPath.toFile().getCanonicalPath(), escapedAlbumArtist, escapedAlbum, imageFileName).toFile();
-            if (artFile.exists())
+            try (InputStream in = new ByteArrayInputStream(artwork.getBinaryData()))
             {
-                track.setAlbumImageId(escapedAlbumArtist + "/" + escapedAlbum + "/" + imageFileName);
-                return;
+                if (!out.toFile().exists())
+                {
+                    Files.copy(in, out);
+                    artFilesCopied++;
+                }
+
+                track.setAlbumImageId(escapedAlbumArtist + "/" + escapedAlbum + "/" + outputFileNameWithExtension);
+            }
+            catch (Exception e)
+            {
+                log.error(e.getMessage(), e);
             }
         }
-        catch (Exception e)
+    }
+
+    private boolean isFileCopyNeeded(byte[] in, Path out) {
+        boolean copyFile = false;
+        if (!out.toFile().exists())
+            copyFile = true;
+        else
         {
-            log.error(e.getMessage(), e);
-            return;
+            try
+            {
+                byte[] f2 = Files.readAllBytes(out);
+                if (!Arrays.equals(in, f2))
+                    copyFile = true;
+            }
+            catch (Exception e)
+            {
+                log.error(e.getMessage(), e);
+            }
         }
-
-        byte[] imageData = artwork.getBinaryData();
-        byte[] resizedImageData;
-
-        try
-        {
-            resizedImageData = resize(new ByteArrayInputStream(imageData), artwork.getMimeType(), 300, 300);
-        }
-        catch (Exception e)
-        {
-            log.error(e.getMessage(), e);
-            return;
-        }
-
-        if (resizedImageData == null)
-            return;
-
-        try (InputStream in = new ByteArrayInputStream(resizedImageData))
-        {
-            Path base = Paths.get(artPath.toFile().getCanonicalPath(), escapedAlbumArtist, escapedAlbum);
-            Files.createDirectories(base);
-            Path out = base.resolve(imageFileName);
-
-            if (!out.toFile().exists())
-                Files.copy(in, out);
-
-            track.setAlbumImageId(escapedAlbumArtist + "/" + escapedAlbum + "/" + imageFileName);
-        }
-        catch (Exception e)
-        {
-            log.error(e.getMessage(), e);
-        }
+        return copyFile;
     }
 
     private String deepScanForTagField(Tag tag, String query, String defaultVal)
@@ -355,12 +365,5 @@ public class MusicScanner extends Task
             }
         }
         return defaultVal;
-    }
-
-    private byte[] resize(InputStream inputStream, String contentType, int targetWidth, int targetHeight) throws IOException
-    {
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Thumbnails.of(inputStream).size(targetWidth, targetHeight).toOutputStream(os);
-        return os.toByteArray();
     }
 }

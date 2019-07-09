@@ -96,8 +96,8 @@ public class Track implements Serializable
                 Objects.equals(trackGain, track.trackGain) &&
                 Objects.equals(trackGainLinear, track.trackGainLinear) &&
                 Objects.equals(trackPeak, track.trackPeak) &&
-                Objects.equals(missingFile, track.missingFile) &&
-                Objects.equals(musicBrainzTrackId, track.musicBrainzTrackId);
+                Objects.equals(musicBrainzTrackId, track.musicBrainzTrackId) &&
+                Objects.equals(missingFile, track.missingFile);
     }
 
     @Override

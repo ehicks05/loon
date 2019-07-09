@@ -75,7 +75,7 @@ public class PlaylistHandler
         toPlaylist.setName(name);
         toPlaylist = playlistRepo.save(toPlaylist);
 
-        // playlist must have an ID at this point
+        // playlist must have an id at this point
         playlistLogic.updatePlaylistTracks(toPlaylist, fromPlaylist.getTrackIds(), "add", true);
 
         return toPlaylist;
@@ -102,7 +102,7 @@ public class PlaylistHandler
 
             playlist = playlistRepo.save(playlist);
 
-            // playlist must have an ID at this point
+            // playlist must have an id at this point
             playlistLogic.updatePlaylistTracks(playlist, trackIds, "add", true);
         }
 

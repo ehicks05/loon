@@ -13,8 +13,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+// Visit folders that are unhidden and do not begin with a '.'
+// Return a list of paths that are unhidden and have a recognized extension
 @Configuration
-class FileWalker implements FileVisitor<Path>
+public class FileWalker implements FileVisitor<Path>
 {
     private static final Logger log = LoggerFactory.getLogger(FileWalker.class);
     private static final List<String> RECOGNIZED_EXTENSIONS = Arrays.asList("mp3", "flac", "wav");

@@ -1,4 +1,4 @@
-package net.ehicks.loon;
+package net.ehicks.loon.tasks;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,20 +31,22 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static net.ehicks.loon.CommonUtil.escapeForFileSystem;
 
 @Configuration
-public class ImageScanner
+public class ImageScanner extends Task
 {
-    private static final Logger log = LoggerFactory.getLogger(MusicScanner.class);
-    private static final String PROGRESS_KEY = "imageScan";
-    private static boolean RUNNING = false;
+    private static final Logger log = LoggerFactory.getLogger(ImageScanner.class);
+    public String id = "ImageScanner";
+
+    public String getId()
+    {
+        return id;
+    }
 
     private LoonSystemRepository loonSystemRepo;
     private TrackRepository trackRepo;
@@ -53,6 +55,8 @@ public class ImageScanner
     {
         this.loonSystemRepo = loonSystemRepo;
         this.trackRepo = trackRepo;
+
+        TaskWatcher.initTask(id);
     }
 
     @Bean
@@ -65,16 +69,10 @@ public class ImageScanner
         return new ObjectMapper();
     }
 
-    public void scan()
+    public void performTask(Map<String, Object> options)
     {
-        if (RUNNING)
-            return;
-
         try
         {
-            RUNNING = true;
-            long start = System.currentTimeMillis();
-
             LoonSystem loonSystem = loonSystemRepo.findById(1L).orElse(null);
             if (loonSystem == null)
                 return;
@@ -85,8 +83,6 @@ public class ImageScanner
                 log.error("artwork path does not exist");
                 return;
             }
-
-            ProgressTracker.progressStatusMap.put(PROGRESS_KEY, new ProgressTracker.ProgressStatus(0, "incomplete"));
 
             AtomicInteger tracksProcessed = new AtomicInteger();
             AtomicInteger imagesAdded = new AtomicInteger();
@@ -102,100 +98,19 @@ public class ImageScanner
                 processThumbnails(track, artPath, updated);
 
                 int progress = (int) ((tracksProcessed.incrementAndGet() * 100) / (double) tracks.size());
-                ProgressTracker.progressStatusMap.get(PROGRESS_KEY).setProgress(progress);
+                TaskWatcher.update(id, progress);
             }
 
             trackRepo.saveAll(updated);
 
             log.info("Scan complete: Added " + imagesAdded + " images.");
-            long dur = System.currentTimeMillis() - start;
+            long dur = System.currentTimeMillis() - (long) options.get("startTime");
             log.info("Took " + dur + "ms (" + (imagesAdded.doubleValue() / (((double) dur) / 1000)) + " images / sec)");
-            ProgressTracker.progressStatusMap.put(PROGRESS_KEY, new ProgressTracker.ProgressStatus(100, "complete"));
         }
         catch (Exception e)
         {
             log.error(e.getMessage(), e);
         }
-        finally
-        {
-            RUNNING = false;
-        }
-    }
-
-    private void processThumbnails(Track track, Path artPath, Set<Track> updated)
-    {
-        if (!track.getArtistImageId().isEmpty() && track.getArtistThumbnailId().isEmpty())
-        {
-            Path original = artPath.resolve(track.getArtistImageId());
-            String thumbFilename = makeThumbnail(original);
-            if (thumbFilename != null)
-            {
-                String escapedArtist = escapeForFileSystem(track.getArtist());
-                track.setArtistThumbnailId(escapedArtist + "/" + thumbFilename);
-                updated.add(track);
-            }
-        }
-        if (!track.getAlbumImageId().isEmpty() && track.getAlbumThumbnailId().isEmpty())
-        {
-            Path original = artPath.resolve(track.getAlbumImageId());
-            String thumbFilename = makeThumbnail(original);
-            if (thumbFilename != null)
-            {
-                String escapedAlbumArtist = escapeForFileSystem(track.getAlbumArtist());
-                String escapedAlbum = escapeForFileSystem(track.getAlbum());
-                track.setAlbumThumbnailId(escapedAlbumArtist + "/" + escapedAlbum + "/" + thumbFilename);
-                updated.add(track);
-            }
-        }
-    }
-
-    private String makeThumbnail(Path original)
-    {
-        if (original.toFile().exists())
-        {
-            String thumbFilename = "thumb-" + original.getFileName().toString();
-            thumbFilename = thumbFilename.replace(".png", ".jpg");
-            Path thumbnail = original.getRoot().resolve(original.subpath(0, original.getNameCount() - 1).resolve(thumbFilename));
-            try
-            {
-                if (!thumbnail.toFile().exists() || true)
-                {
-//                    Thumbnails.of(original.toFile()).size(300, 300).keepAspectRatio(true).outputFormat("jpg").toFile(thumbnail.toFile());
-
-                    BufferedImage img = ImageIO.read(original.toFile());
-
-                    BufferedImage thumbnailImage = new FixedSizeThumbnailMaker()
-                            .size(300, 300)
-                            .keepAspectRatio(true)
-                            .fitWithinDimensions(true)
-                            .make(img);
-
-                    BufferedImage finalImage = new BufferedImage(300, 300, BufferedImage.TYPE_INT_ARGB);
-                    Graphics g = finalImage.getGraphics();
-                    BufferedImage background = new BufferedImage(300, 300, BufferedImage.TYPE_INT_ARGB);
-                    Graphics gBackground = background.getGraphics();
-                    gBackground.setColor(new Color(0, 0, 0, 255));
-                    gBackground.fillRect(0, 0, 300, 300);
-
-                    int x = 0;
-                    int y = 0;
-                    if (thumbnailImage.getWidth() < 300)
-                        x = (300 - thumbnailImage.getWidth()) / 2;
-                    if (thumbnailImage.getHeight() < 300)
-                        y = (300 - thumbnailImage.getHeight()) / 2;
-
-                    g.drawImage(background, 0, 0, null);
-                    g.drawImage(thumbnailImage, x, y, null);
-                    Thumbnails.of(finalImage).size(300, 300).outputFormat("jpg").toFile(thumbnail.toFile());
-                }
-                return thumbFilename;
-            }
-            catch (Exception e)
-            {
-                log.error(original + ": " + e.getMessage(), e);
-            }
-        }
-        return null;
     }
 
     private void processArtistImage(Track track, LoonSystem loonSystem, Path artPath, AtomicInteger imagesAdded, Set<Track> updated)
@@ -244,7 +159,6 @@ public class ImageScanner
 
     private void processAlbumImage(Track track, LoonSystem loonSystem, Path artPath, AtomicInteger imagesAdded, Set<Track> updated)
     {
-
         if (track.getAlbumImageId().isEmpty())
         {
             String escapedAlbumArtist = escapeForFileSystem(track.getAlbumArtist());
@@ -381,6 +295,85 @@ public class ImageScanner
             log.error(e.getMessage());
         }
 
+        return null;
+    }
+
+    private void processThumbnails(Track track, Path artPath, Set<Track> updated)
+    {
+        if (!track.getArtistImageId().isEmpty() && track.getArtistThumbnailId().isEmpty())
+        {
+            Path original = artPath.resolve(track.getArtistImageId());
+            String thumbFilename = makeThumbnail(original);
+            if (thumbFilename != null)
+            {
+                String escapedArtist = escapeForFileSystem(track.getArtist());
+                track.setArtistThumbnailId(escapedArtist + "/" + thumbFilename);
+                updated.add(track);
+            }
+        }
+        if (!track.getAlbumImageId().isEmpty() && track.getAlbumThumbnailId().isEmpty())
+        {
+            Path original = artPath.resolve(track.getAlbumImageId());
+            String thumbFilename = makeThumbnail(original);
+            if (thumbFilename != null)
+            {
+                String escapedAlbumArtist = escapeForFileSystem(track.getAlbumArtist());
+                String escapedAlbum = escapeForFileSystem(track.getAlbum());
+                track.setAlbumThumbnailId(escapedAlbumArtist + "/" + escapedAlbum + "/" + thumbFilename);
+                updated.add(track);
+            }
+        }
+    }
+
+    private Path getThumbnailPath(Path original)
+    {
+        String thumbFilename = "thumb-" + original.getFileName().toString();
+        thumbFilename = thumbFilename.replace(".png", ".jpg");
+        return original.getRoot().resolve(original.subpath(0, original.getNameCount() - 1).resolve(thumbFilename));
+    }
+
+    private String makeThumbnail(Path original)
+    {
+        if (original.toFile().exists())
+        {
+            Path thumbnail = getThumbnailPath(original);
+            try
+            {
+                if (!thumbnail.toFile().exists())
+                {
+                    BufferedImage img = ImageIO.read(original.toFile());
+
+                    BufferedImage thumbnailImage = new FixedSizeThumbnailMaker()
+                            .size(300, 300)
+                            .keepAspectRatio(true)
+                            .fitWithinDimensions(true)
+                            .make(img);
+
+                    BufferedImage finalImage = new BufferedImage(300, 300, BufferedImage.TYPE_INT_ARGB);
+                    Graphics g = finalImage.getGraphics();
+                    BufferedImage background = new BufferedImage(300, 300, BufferedImage.TYPE_INT_ARGB);
+                    Graphics gBackground = background.getGraphics();
+                    gBackground.setColor(new Color(0, 0, 0, 255));
+                    gBackground.fillRect(0, 0, 300, 300);
+
+                    int x = 0;
+                    int y = 0;
+                    if (thumbnailImage.getWidth() < 300)
+                        x = (300 - thumbnailImage.getWidth()) / 2;
+                    if (thumbnailImage.getHeight() < 300)
+                        y = (300 - thumbnailImage.getHeight()) / 2;
+
+                    g.drawImage(background, 0, 0, null);
+                    g.drawImage(thumbnailImage, x, y, null);
+                    Thumbnails.of(finalImage).size(300, 300).outputFormat("jpg").toFile(thumbnail.toFile());
+                }
+                return thumbnail.toFile().getName();
+            }
+            catch (Exception e)
+            {
+                log.error(original + ": " + e.getMessage(), e);
+            }
+        }
         return null;
     }
 }

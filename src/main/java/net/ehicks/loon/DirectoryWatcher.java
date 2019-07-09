@@ -2,6 +2,7 @@ package net.ehicks.loon;
 
 import net.ehicks.loon.beans.LoonSystem;
 import net.ehicks.loon.repos.LoonSystemRepository;
+import net.ehicks.loon.tasks.MusicScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -32,7 +33,7 @@ public class DirectoryWatcher
         if (changeDetected && !musicScanner.isRunning())
         {
             changeDetected = false;
-            musicScanner.scan();
+            musicScanner.run();
         }
     }
 

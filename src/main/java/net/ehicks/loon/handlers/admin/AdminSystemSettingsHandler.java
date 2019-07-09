@@ -1,15 +1,21 @@
 package net.ehicks.loon.handlers.admin;
 
-import net.ehicks.loon.*;
+import net.ehicks.loon.DirectoryWatcher;
 import net.ehicks.loon.beans.LoonSystem;
 import net.ehicks.loon.beans.Track;
 import net.ehicks.loon.repos.LoonSystemRepository;
 import net.ehicks.loon.repos.TrackRepository;
+import net.ehicks.loon.tasks.ImageScanner;
+import net.ehicks.loon.tasks.MusicScanner;
+import net.ehicks.loon.tasks.TaskWatcher;
+import net.ehicks.loon.tasks.TranscoderTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin/systemSettings")
@@ -59,7 +65,7 @@ public class AdminSystemSettingsHandler
             deleteLibrary();
 
         if (rescan)
-            new Thread(musicScanner::scan).start();
+            new Thread(musicScanner::run).start();
 
         directoryWatcher.watch();
 
@@ -69,7 +75,7 @@ public class AdminSystemSettingsHandler
     @GetMapping("/imageScan")
     public String imageScan()
     {
-        new Thread(imageScanner::scan).start();
+        new Thread(imageScanner::run).start();
         return "";
     }
 
@@ -78,18 +84,20 @@ public class AdminSystemSettingsHandler
     {
         int q = Integer.valueOf(loonSystemRepo.findById(1L).orElse(null).getTranscodeQuality());
 
-        new Thread(() -> transcoderTask.run(trackRepo.findAll(), q)).start();
+        Map<String, Object> options = new HashMap<>();
+        options.put("tracks", trackRepo.findAll());
+        options.put("quality", q);
+
+        new Thread(() -> transcoderTask.run(options)).start();
         return "";
     }
 
-    @GetMapping("/getScanProgress/{key}")
-    public ProgressTracker.ProgressStatus getScanProgress(@PathVariable String key)
+    @GetMapping("/getTaskStatuses")
+    public Map<String, TaskWatcher.TaskStatus> getTaskStatuses()
     {
-        ProgressTracker.ProgressStatus progressStatus = ProgressTracker.progressStatusMap.get(key);
-        if (progressStatus == null)
-            progressStatus = new ProgressTracker.ProgressStatus(0, "n/a");
+        Map<String, TaskWatcher.TaskStatus> tasks = TaskWatcher.tasks;
 
-        return progressStatus;
+        return tasks;
     }
 
     private void clearLibrary()

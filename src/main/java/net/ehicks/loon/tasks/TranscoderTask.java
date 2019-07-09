@@ -1,48 +1,51 @@
-package net.ehicks.loon;
+package net.ehicks.loon.tasks;
 
+import net.ehicks.loon.Transcoder;
 import net.ehicks.loon.beans.Track;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
-public class TranscoderTask
+public class TranscoderTask extends Task
 {
     private static final Logger log = LoggerFactory.getLogger(TranscoderTask.class);
-    private static final String PROGRESS_KEY = "transcoder";
-    private static boolean RUNNING = false;
+    public String id = "TranscoderTask";
+
+    public String getId() {
+        return id;
+    }
 
     private Transcoder transcoder;
 
     public TranscoderTask(Transcoder transcoder)
     {
         this.transcoder = transcoder;
+
+        TaskWatcher.initTask(id);
     }
 
-    public void run(List<Track> tracks, int quality)
+    public void performTask(Map<String, Object> options)
     {
-        if (RUNNING)
-            return;
+        List<Track> tracks = (List<Track>) options.get("tracks");
+        int quality = (int) options.get("quality");
 
         try
         {
             log.info("Transcoder task starting.");
-            RUNNING = true;
             AtomicInteger tracksTranscoded = new AtomicInteger(0);
             AtomicInteger atomicProgress = new AtomicInteger(0);
-            long start = System.currentTimeMillis();
-
-            ProgressTracker.progressStatusMap.put(PROGRESS_KEY, new ProgressTracker.ProgressStatus(0, "incomplete"));
 
             tracks.stream().forEach(track -> {
                 transcoder.transcode(track, quality);
                 tracksTranscoded.incrementAndGet();
 
                 int progress = (int) ((tracksTranscoded.get() / (double) tracks.size()) * 100);
-                ProgressTracker.progressStatusMap.put(PROGRESS_KEY, new ProgressTracker.ProgressStatus(progress, "incomplete"));
+                TaskWatcher.update(id, progress);
 
                 if (atomicProgress.get() != progress)
                 {
@@ -51,11 +54,9 @@ public class TranscoderTask
                 }
             });
         }
-        finally
+        catch (Exception e)
         {
-            RUNNING = false;
-            ProgressTracker.progressStatusMap.put(PROGRESS_KEY, new ProgressTracker.ProgressStatus(100, "complete"));
-            log.info("Transcoder task finished.");
+            log.error(e.getMessage(), e);
         }
     }
 }

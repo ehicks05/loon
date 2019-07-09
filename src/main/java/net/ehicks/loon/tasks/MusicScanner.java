@@ -1,6 +1,7 @@
-package net.ehicks.loon;
+package net.ehicks.loon.tasks;
 
 import net.coobird.thumbnailator.Thumbnails;
+import net.ehicks.loon.FileWalker;
 import net.ehicks.loon.beans.LoonSystem;
 import net.ehicks.loon.beans.Track;
 import net.ehicks.loon.repos.LoonSystemRepository;
@@ -31,11 +32,15 @@ import java.util.regex.Pattern;
 import static net.ehicks.loon.CommonUtil.escapeForFileSystem;
 
 @Configuration
-public class MusicScanner
+public class MusicScanner extends Task
 {
     private static final Logger log = LoggerFactory.getLogger(MusicScanner.class);
-    private static final String PROGRESS_KEY = "musicFileScan";
-    private static boolean RUNNING = false;
+    public String id = "MusicScanner";
+
+    public String getId()
+    {
+        return id;
+    }
 
     private LoonSystemRepository loonSystemRepo;
     private TrackRepository trackRepo;
@@ -46,30 +51,21 @@ public class MusicScanner
         this.loonSystemRepo = loonSystemRepo;
         this.trackRepo = trackRepo;
         this.fileWalker = fileWalker;
-    }
 
-    public boolean isRunning()
-    {
-        return RUNNING;
+        TaskWatcher.initTask(id);
     }
 
     /**
      * After running, the library should be completely synchronized with the filesystem.
+     *
+     *
      * */
-    public void scan()
+    public void performTask(Map<String, Object> options)
     {
-        if (RUNNING)
-            return;
-
-        long start = System.currentTimeMillis();
         java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(Level.WARNING);
 
         try
         {
-            RUNNING = true;
-
-            ProgressTracker.progressStatusMap.put(PROGRESS_KEY, new ProgressTracker.ProgressStatus(0, "incomplete"));
-
             AtomicInteger filesProcessed = new AtomicInteger();
             LoonSystem loonSystem = loonSystemRepo.findById(1L).orElse(null);
             if (loonSystem == null)
@@ -94,7 +90,7 @@ public class MusicScanner
 
             paths.forEach(path -> {
                 int progress = (int) ((filesProcessed.incrementAndGet() * 100) / (double) paths.size());
-                ProgressTracker.progressStatusMap.get(PROGRESS_KEY).setProgress(progress);
+                TaskWatcher.update(id, progress);
 
                 AudioFile audioFile = getAudioFile(path);
                 if (audioFile == null)
@@ -130,21 +126,16 @@ public class MusicScanner
             trackRepo.saveAll(tracksWithMissingFile);
 
             log.info("Scan complete: Added " + tracksToSave.size() + " tracks.");
-            long dur = System.currentTimeMillis() - start;
+            long dur = System.currentTimeMillis() - (long)options.get("startTime");
             double durSeconds = ((double) dur) / 1000;
             log.info("Duration: " + dur + "ms");
             log.info("Files considered: " + paths.size() + ". " + "(" + Math.round(paths.size() / durSeconds) + " files / sec)");
             log.info("Tracks saved: " + tracksToSave.size() + ". " + "(" + Math.round(tracksToSave.size() / durSeconds) + " tracks / sec)");
             log.info("Tracks missing file: " + tracksWithMissingFile.size() + ". " + "(" + Math.round(tracksWithMissingFile.size() / durSeconds) + " tracks / sec)");
-            ProgressTracker.progressStatusMap.put(PROGRESS_KEY, new ProgressTracker.ProgressStatus(100, "complete"));
         }
         catch (Exception e)
         {
             log.error(e.getMessage(), e);
-        }
-        finally
-        {
-            RUNNING = false;
         }
     }
 
@@ -231,7 +222,7 @@ public class MusicScanner
                 newArtist = albumArtist;
             if (newArtist.isBlank() && !artists.isBlank() && !artists.contains(" feat. "))
                 newArtist = artists;
-            
+
             log.info("Replacing " + track.getArtist() + " ...with... " + newArtist);
             track.setArtist(newArtist);
         }

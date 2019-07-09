@@ -13,13 +13,13 @@ export default class SystemSettings extends React.Component {
         this.submitForm = this.submitForm.bind(this);
         this.handleUpdateTracks = this.handleUpdateTracks.bind(this);
         this.handleUpdatePlaylists = this.handleUpdatePlaylists.bind(this);
-        this.getScanProgress = this.getScanProgress.bind(this);
+        this.getTaskStatuses = this.getTaskStatuses.bind(this);
         this.doImageScan = this.doImageScan.bind(this);
         this.doTranscodeLibrary = this.doTranscodeLibrary.bind(this);
 
         self.state = {
             timeoutNumber: 0,
-            scanProgress: {progress: 0, status: 'n/a'}
+            taskStatuses: {}
         };
     }
 
@@ -27,9 +27,10 @@ export default class SystemSettings extends React.Component {
     {
         let self = this;
         fetch('/api/admin/systemSettings', {method: 'GET'})
-            .then(response => response.json()).then(data => self.setState({settings: data}));
+            .then(response => response.json())
+            .then(data => self.setState({settings: data}));
 
-        this.getScanProgress();
+        this.getTaskStatuses();
     }
 
     componentWillUnmount()
@@ -37,30 +38,32 @@ export default class SystemSettings extends React.Component {
         clearTimeout(this.state.timeoutNumber);
     }
 
-    getScanProgress()
-    {
+    getTaskStatuses() {
         let self = this;
 
-        fetch('/api/admin/systemSettings/getScanProgress/musicFileScan', {method: 'GET'})
-            .then(response => response.json()).then(scanProgress => {
+        fetch('/api/admin/systemSettings/getTaskStatuses', {method: 'GET'})
+            .then(response => response.json())
+            .then(data => {
 
-            console.log(scanProgress);
-            self.setState({scanProgress: scanProgress});
+                const taskStatuses = new Map(Object.entries(data));
+                console.log(taskStatuses);
 
-            if (scanProgress.status === 'incomplete')
-            {
-                const timeoutNumber = setTimeout(self.getScanProgress, 1000);
-                self.setState({reloadLibraryWhenScanFinishes: true, timeoutNumber: timeoutNumber})
-            }
-            if (scanProgress.status === 'complete')
-            {
-                if (self.state.reloadLibraryWhenScanFinishes)
-                {
-                    self.handleUpdateTracks('scanning library');
-                    self.setState({reloadLibraryWhenScanFinishes: false})
+                self.setState({taskStatuses: taskStatuses});
+
+                let tasksInProgress = Object.keys(data).filter((key) => data[key].status === 'incomplete');
+                let tasksComplete = Object.keys(data).filter((key) => data[key].status === 'complete');
+
+                if (tasksInProgress.length > 0) {
+                    const timeoutNumber = setTimeout(self.getTaskStatuses, 1000);
+                    self.setState({reloadLibraryWhenTaskFinishes: true, timeoutNumber: timeoutNumber})
                 }
-            }
-        });
+                if (tasksInProgress.length === 0) {
+                    if (self.state.reloadLibraryWhenTaskFinishes) {
+                        self.handleUpdateTracks(tasksComplete);
+                        self.setState({reloadLibraryWhenTaskFinishes: false});
+                    }
+                }
+            });
     }
 
     handleUpdateTracks(action)
@@ -86,7 +89,7 @@ export default class SystemSettings extends React.Component {
         this.props.store.appState.updateSystemSettings(formData)
             .then(data => {
                 if (rescan)
-                    self.getScanProgress();
+                    self.getTaskStatuses();
                 if (clearLibrary)
                 {
                     self.handleUpdateTracks('clearing library');
@@ -102,23 +105,25 @@ export default class SystemSettings extends React.Component {
 
     doImageScan()
     {
-        fetch('/api/admin/systemSettings/imageScan', {method: 'GET'});
+        const self = this;
+        fetch('/api/admin/systemSettings/imageScan', {method: 'GET'})
+            .then(setTimeout(self.getTaskStatuses, 50));
     }
 
     doTranscodeLibrary()
     {
-        fetch('/api/admin/systemSettings/transcodeLibrary', {method: 'GET'});
+        const self = this;
+        fetch('/api/admin/systemSettings/transcodeLibrary', {method: 'GET'})
+            .then(setTimeout(self.getTaskStatuses, 10));
     }
 
     render()
     {
-        if (!this.state.settings)
+        if (!this.state.settings || !this.state.taskStatuses)
             return (<div>Loading...</div>);
 
         const systemSettings = this.state.settings;
-        const scanProgress = this.state.scanProgress;
-        const progressClass = 'progress is-small ' + (scanProgress.status === 'complete' ? 'is-success' : 'is-info');
-        const showProgressBar = scanProgress.status === 'complete' || scanProgress.status === 'incomplete';
+        const taskStatuses = this.state.taskStatuses;
 
         const trueFalse = [{value:'false', text:'False'}, {value:'true', text:'True'}];
 
@@ -141,42 +146,61 @@ export default class SystemSettings extends React.Component {
                     </h2>
                 </section>
                 <section className="section">
-                    <form id="frmSystemSettings" method="post" action="">
-                        <TextInput id="instanceName" label="Instance Name" value={systemSettings.instanceName} />
-                        <TextInput id="musicFolder" label="Music Folder" value={systemSettings.musicFolder} />
-                        <TextInput id="transcodeFolder" label="Transcode Folder" value={systemSettings.transcodeFolder} />
-                        <TextInput id="dataFolder" label="Data Folder" value={systemSettings.dataFolder} />
-                        <TextInput id="lastFmApiKey" label="Last.fm API Key" value={systemSettings.lastFmApiKey} size={50} />
-                        <TextInput id="spotifyClientId" label="Spotify Client Id" value={systemSettings.spotifyClientId} size={50} />
-                        <TextInput id="spotifyClientSecret" label="Spotify Client Secret" value={systemSettings.spotifyClientSecret} size={50} />
-                        <TextInput id="logonMessage" label="Welcome Message" value={systemSettings.logonMessage} size={50} />
-                        <Select id="registrationEnabled" label="Registration Enabled" items={trueFalse} value={systemSettings.registrationEnabled} required={true} />
-                        <Select id="directoryWatcherEnabled" label="Directory Watcher Enabled" items={trueFalse} value={systemSettings.directoryWatcherEnabled} required={true} />
-                        <Select id="transcodeQuality" label="Transcode Quality" items={transcodeQualityOptions} value={systemSettings.transcodeQuality} required={true} />
 
-                        <span className="buttons">
-                            <input id="saveSystemButton" type="button" value="Save" className="button is-primary" onClick={(e) => this.submitForm()} />
-                            <input id="saveAndRescanButton" type="button" value="Save and Re-scan" className="button is-success" onClick={(e) => this.submitForm(true, false, false)} />
-                            <input id="clearLibraryButton" type="button" value="Clear Library" className="button is-warning" onClick={(e) => this.submitForm(false, true, false)} />
-                            <input id="deleteLibraryButton" type="button" value="Delete Library" className="button is-danger" onClick={(e) => this.submitForm(false, false, true)} />
-                            <input id="imageScanButton" type="button" value="Scan for Images" className="button is-info" onClick={(e) => this.doImageScan()} />
-                            <input id="transcodeLibraryButton" type="button" value="Transcode Library" className="button is-info" onClick={(e) => this.doTranscodeLibrary()} />
-                        </span>
-                    </form>
-                </section>
-
-                {
-                    showProgressBar &&
-                    <section className="section">
-                        <div>
-                            Music Scan Progress:
-                            <progress style={{width: "20em"}} title={scanProgress.progress + '%'} className={progressClass}
-                                      value={scanProgress.progress} max={"100"}>{scanProgress.progress}%</progress>
+                    <div className={'columns'}>
+                        <div className={"column is-narrow"}>
+                            <form id="frmSystemSettings" method="post" action="">
+                                <TextInput id="instanceName" label="Instance Name" value={systemSettings.instanceName} />
+                                <TextInput id="musicFolder" label="Music Folder" value={systemSettings.musicFolder} />
+                                <TextInput id="transcodeFolder" label="Transcode Folder" value={systemSettings.transcodeFolder} />
+                                <TextInput id="dataFolder" label="Data Folder" value={systemSettings.dataFolder} />
+                                <TextInput id="lastFmApiKey" label="Last.fm API Key" value={systemSettings.lastFmApiKey} size={50} />
+                                <TextInput id="spotifyClientId" label="Spotify Client Id" value={systemSettings.spotifyClientId} size={50} />
+                                <TextInput id="spotifyClientSecret" label="Spotify Client Secret" value={systemSettings.spotifyClientSecret} size={50} />
+                                <TextInput id="logonMessage" label="Welcome Message" value={systemSettings.logonMessage} size={50} />
+                                <Select id="registrationEnabled" label="Registration Enabled" items={trueFalse} value={systemSettings.registrationEnabled} required={true} />
+                                <Select id="directoryWatcherEnabled" label="Directory Watcher Enabled" items={trueFalse} value={systemSettings.directoryWatcherEnabled} required={true} />
+                                <Select id="transcodeQuality" label="Transcode Quality" items={transcodeQualityOptions} value={systemSettings.transcodeQuality} required={true} />
+                            </form>
                         </div>
-                    </section>
-                }
+                        <div className="column">
+                            <div className={'content'}>
+                                <div className={'buttons has-addons'} style={{marginBottom: '0'}}>
+                                    <span className="button" onClick={(e) => this.submitForm(true, false, false)} >Save and Re-scan</span>
+                                    <ProgressText taskStatus={taskStatuses.get('MusicScanner')}/>
+                                </div>
+                                <div className={'buttons has-addons'} style={{marginBottom: '0', marginLeft: '16px'}}>
+                                    <span className="button" onClick={(e) => this.submitForm(true, false, false)} >Scan for Files</span>
+                                    <ProgressText taskStatus={taskStatuses.get('MusicScanner')}/>
+                                </div>
+                                <div className={'buttons has-addons'} style={{marginBottom: '0', marginLeft: '16px'}}>
+                                    <span className="button" onClick={(e) => this.doImageScan()} >Scan for Images</span>
+                                    <ProgressText taskStatus={taskStatuses.get('ImageScanner')}/>
+                                </div>
+                                <div className={'buttons has-addons'} style={{marginBottom: '0', marginLeft: '16px'}}>
+                                    <span className="button" onClick={(e) => this.doTranscodeLibrary()} >Transcode Library</span>
+                                    <ProgressText taskStatus={taskStatuses.get('TranscoderTask')}/>
+                                </div>
+                                <span className="button is-danger" onClick={(e) => this.submitForm(false, false, true)} >Delete Library</span>
+                            </div>
+                        </div>
+                    </div>
 
+                </section>
             </div>
         );
     }
+}
+
+function ProgressText(props) {
+    if (!props.taskStatus)
+        return null;
+
+    const progress = props.taskStatus.progress;
+    const status = props.taskStatus.status;
+    const progressClass = 'button ' + (status === 'complete' ? 'is-success' : 'is-info');
+    const showProgressBar = status === 'complete' || status === 'incomplete';
+
+    return showProgressBar &&
+        <span className={progressClass} style={{}}>{progress}%</span>;
 }

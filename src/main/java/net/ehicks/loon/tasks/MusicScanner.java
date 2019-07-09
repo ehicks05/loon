@@ -223,7 +223,7 @@ public class MusicScanner extends Task
             if (newArtist.isBlank() && !artists.isBlank() && !artists.contains(" feat. "))
                 newArtist = artists;
 
-            log.info("Replacing " + track.getArtist() + " ...with... " + newArtist);
+            log.debug("Replacing " + track.getArtist() + " ...with... " + newArtist);
             track.setArtist(newArtist);
         }
 

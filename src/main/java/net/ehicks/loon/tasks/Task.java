@@ -28,6 +28,7 @@ public abstract class Task
         try
         {
             RUNNING = true;
+            log.info("Starting " + getId());
 
             TaskWatcher.update(getId(), 0, "incomplete");
             long startTime = System.currentTimeMillis();
@@ -37,7 +38,7 @@ public abstract class Task
 
             long dur = System.currentTimeMillis() - startTime;
 
-            log.info("Finished in " + dur + "ms");
+            log.info("Finished " + getId() + " in " + dur + "ms");
         }
         catch (Exception e)
         {

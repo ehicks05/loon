@@ -19,7 +19,7 @@ export default class SystemSettings extends React.Component {
 
         self.state = {
             timeoutNumber: 0,
-            taskStatuses: {}
+            taskStatuses: null
         };
     }
 

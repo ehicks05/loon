@@ -114,7 +114,7 @@ export default class SystemSettings extends React.Component {
     {
         const self = this;
         fetch('/api/admin/systemSettings/transcodeLibrary', {method: 'GET'})
-            .then(setTimeout(self.getTaskStatuses, 10));
+            .then(setTimeout(self.getTaskStatuses, 1000));
     }
 
     render()

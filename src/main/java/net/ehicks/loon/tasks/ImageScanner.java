@@ -1,6 +1,5 @@
 package net.ehicks.loon.tasks;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
@@ -31,12 +30,13 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static net.ehicks.loon.CommonUtil.escapeForFileSystem;
 
+// todo: ensure that changes to existing files are acted upon (see line 119 for an example of what needs to change)
 @Configuration
 public class ImageScanner extends Task
 {
@@ -213,50 +213,6 @@ public class ImageScanner extends Task
         return null;
     }
 
-    /** Get image url from last.fm api. Pass in null for the album to get artist art */
-    private String getImageUrlLastFm(String lastFmApiKey, String artist, String album)
-    {
-        RestTemplate restTemplate = restTemplate();
-        ObjectMapper objectMapper = objectMapper();
-
-        String url;
-        String method;
-        String jsonResponse;
-
-        if (album == null)
-        {
-            url = "http://ws.audioscrobbler.com/2.0/?method={method}&artist={artist}&api_key={api_key}&format={format}";
-            method = "artist.getinfo";
-            jsonResponse = restTemplate.getForObject(url, String.class, method, artist, lastFmApiKey, "json");
-        }
-        else
-        {
-            url = "http://ws.audioscrobbler.com/2.0/?method={method}&artist={artist}&album={album}&api_key={api_key}&format={format}";
-            method = "album.getinfo";
-            jsonResponse = restTemplate.getForObject(url, String.class, method, artist, album, lastFmApiKey, "json");
-        }
-
-        String imageUrl = "";
-
-        try
-        {
-            JsonNode imageLinks = album == null ?
-                    objectMapper.readTree(jsonResponse).get("artist").get("image") :
-                    objectMapper.readTree(jsonResponse).get("album").get("image");
-
-            for (JsonNode imageLink : imageLinks)
-            {
-                if (imageLink.get("size").textValue().equals("mega"))
-                    imageUrl = imageLink.get("#text").textValue();
-            }
-        }
-        catch (Exception e)
-        {
-            log.error("Unable to parse response for: " + artist + " - " + (album == null ? "null album" : album));
-        }
-        return imageUrl;
-    }
-
     /** Get image url from spotify api. Pass in null for the album to get artist art */
     private String getImageUrl(LoonSystem loonSystem, String artist, String album)
     {
@@ -275,7 +231,7 @@ public class ImageScanner extends Task
             spotifyApi.setAccessToken(clientCredentials.getAccessToken());
 
             SearchArtistsRequest searchArtistsRequest = spotifyApi.searchArtists(artist)
-//          .limit(10)
+                    .limit(1)
                     .build();
 
             final Paging<Artist> artistPaging = searchArtistsRequest.execute();
@@ -285,10 +241,7 @@ public class ImageScanner extends Task
                 Artist artistItem = artistPaging.getItems()[0];
 
                 if (artistItem.getImages().length > 0)
-                {
-                    String imageUrl = artistItem.getImages()[0].getUrl();
-                    return imageUrl;
-                }
+                    return artistItem.getImages()[0].getUrl();
             }
 
         } catch (IOException | SpotifyWebApiException e) {

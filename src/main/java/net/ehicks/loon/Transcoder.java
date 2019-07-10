@@ -49,7 +49,10 @@ public class Transcoder
                     .resolve(String.valueOf(quality))
                     .resolve(track.getId() + ".mp3");
 
-            if (target.toFile().exists())
+            boolean isTranscodeNeeded = false;
+            if (source.toFile().lastModified() > target.toFile().lastModified())
+                isTranscodeNeeded = true;
+            if (!isTranscodeNeeded)
                 return;
 
             Files.createDirectories(Paths.get(loonSystem.getTranscodeFolder(), String.valueOf(quality)));

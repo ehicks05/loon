@@ -144,22 +144,21 @@ export default class Player extends React.Component {
         }
         if (newPlayerState === 'playing' || !newPlayerState)
         {
-            if (!newTrackId && self.audio && self.audioCtx.state === 'suspended')
+
+            // resume
+            if (!newTrackId && self.audio.currentSrc && self.audioCtx.state === 'suspended')
             {
-                // we need to resume
-                console.log('resuming from pause?');
                 this.audio.play();
                 this.audioCtx.resume();
 
-                // Start updating the progress of the track.
-                requestAnimationFrame(self.step.bind(self));  // do this since we're exiting early
-
-                this.setState({playerState: newPlayerState}, function () {
-                    requestAnimationFrame(self.step.bind(self)); // do this since we're exiting early
-                });
+                this.setState({playerState: newPlayerState});
 
                 return;
             }
+
+            // resume if suspended because of Autoplay Policy
+            if (self.audioCtx.state === 'suspended')
+                this.audioCtx.resume();
 
             this.setState({timeElapsed: 0});
 

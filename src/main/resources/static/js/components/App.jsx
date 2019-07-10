@@ -1,26 +1,26 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import {Redirect, Route, Router, Switch} from 'react-router-dom'
 import {createBrowserHistory} from 'history'
 import 'bulma-extensions/bulma-pageloader/dist/css/bulma-pageloader.min.css'
+import {inject, observer} from "mobx-react";
 
 import Header from "./Header.jsx";
-import Player from "./Player.jsx";
 import MyHelmet from "./MyHelmet.jsx";
-import SystemSettings from "./SystemSettings.jsx";
-import Playlist from "./Playlist.jsx";
-import Playlists from "./Playlists.jsx";
-import GeneralSettings from "./GeneralSettings.jsx";
-import Eq from "./Eq.jsx";
-import PlaylistBuilder from "./PlaylistBuilder.jsx";
+import Player from "./Player.jsx";
+const SystemSettings = lazy(() => import('./SystemSettings.jsx'));
+const Playlist = lazy(() => import('./Playlist.jsx'));
+const Playlists = lazy(() => import('./Playlists.jsx'));
+const GeneralSettings = lazy(() => import('./GeneralSettings.jsx'));
+const Eq = lazy(() => import('./Eq.jsx'));
+const PlaylistBuilder = lazy(() => import('./PlaylistBuilder.jsx'));
 
-import SidePanel from "./SidePanel.jsx";
-import UserSettings from "./UserSettings.jsx";
-import Artists from "./Artists.jsx";
-import Albums from "./Albums.jsx";
-import Artist from "./Artist.jsx";
-import Search from "./Search.jsx";
-import Album from "./Album.jsx";
-import {inject, observer} from "mobx-react";
+const SidePanel = lazy(() => import('./SidePanel.jsx'));
+const UserSettings = lazy(() => import('./UserSettings.jsx'));
+const Artists = lazy(() => import('./Artists.jsx'));
+const Albums = lazy(() => import('./Albums.jsx'));
+const Artist = lazy(() => import('./Artist.jsx'));
+const Search = lazy(() => import('./Search.jsx'));
+const Album = lazy(() => import('./Album.jsx'));
 
 function poll()
 {
@@ -65,7 +65,7 @@ export default class App extends React.Component {
 
         return (
             <Router history={this.state.history}>
-                 <div style={{display: 'flex', flexDirection: 'column', height: this.props.store.uiState.windowDimensions.height}}>
+                <div style={{display: 'flex', flexDirection: 'column', height: this.props.store.uiState.windowDimensions.height}}>
                     <MyHelmet />
                     <Header />
 
@@ -80,26 +80,29 @@ export default class App extends React.Component {
                             </div>
                         </div>
                         <div className="column" style={{overflowY: 'auto', overflowX: 'hidden', height: '100%'}}>
-                            <Route exact path='/'                               render={() => <Redirect to='/search' /> } />
-                            <Route exact path='/admin/systemSettings'           render={() => <SystemSettings />}/>
-                            <Route exact path='/admin/users'                    render={() => <UserSettings />}/>
-                            <Route exact path='/settings/general'               render={() => <GeneralSettings />}/>
-                            <Route exact path='/settings/eq'                    render={() => <Eq />}/>
-                            <Route exact path='/albums'                         render={() => <Albums />}/>
-                            <Route exact path='/artists'                        render={() => <Artists />}/>
-                            <Route exact path='/artist/:artist'                 render={(props) => <Artist {...props} />}/>
-                            <Route exact path='/artist/:artist/album/:album'    render={(props) => <Album {...props} />} />
-                            <Route exact path='/search'                         render={(props) => <Search {...props} />} />
-                            <Route exact path='/favorites'                      render={(props) => <Playlist {...props} />} />
-                            <Route exact path='/queue'                          render={(props) => <Playlist {...props} />} />
+                            <Suspense fallback={<div>Loading...</div>}>
 
-                            <Switch>
-                                <Route exact path='/playlists/new'              render={(props) => <PlaylistBuilder {...props} />} />
-                                <Route exact path='/playlists/:id/edit'         render={(props) => <PlaylistBuilder {...props} />} />
+                                <Route exact path='/'                               render={() => <Redirect to='/search' /> } />
+                                <Route exact path='/admin/systemSettings'           render={() => <SystemSettings />}/>
+                                <Route exact path='/admin/users'                    render={() => <UserSettings />}/>
+                                <Route exact path='/settings/general'               render={() => <GeneralSettings />}/>
+                                <Route exact path='/settings/eq'                    render={() => <Eq />}/>
+                                <Route exact path='/albums'                         render={() => <Albums />}/>
+                                <Route exact path='/artists'                        render={() => <Artists />}/>
+                                <Route exact path='/artist/:artist'                 render={(props) => <Artist {...props} />}/>
+                                <Route exact path='/artist/:artist/album/:album'    render={(props) => <Album {...props} />} />
+                                <Route exact path='/search'                         render={(props) => <Search {...props} />} />
+                                <Route exact path='/favorites'                      render={(props) => <Playlist {...props} />} />
+                                <Route exact path='/queue'                          render={(props) => <Playlist {...props} />} />
 
-                                <Route exact path='/playlists'                  render={() => <Playlists />} />
-                                <Route exact path='/playlists/:id'              render={(props) => <Playlist {...props} />} />
-                            </Switch>
+                                <Switch>
+                                    <Route exact path='/playlists/new'              render={(props) => <PlaylistBuilder {...props} />} />
+                                    <Route exact path='/playlists/:id/edit'         render={(props) => <PlaylistBuilder {...props} />} />
+
+                                    <Route exact path='/playlists'                  render={() => <Playlists />} />
+                                    <Route exact path='/playlists/:id'              render={(props) => <Playlist {...props} />} />
+                                </Switch>
+                            </Suspense>
                         </div>
                     </div>
 

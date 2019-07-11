@@ -50,13 +50,16 @@ public class ImageScanner extends Task
 
     private LoonSystemRepository loonSystemRepo;
     private TrackRepository trackRepo;
+    private TaskWatcher taskWatcher;
 
-    public ImageScanner(LoonSystemRepository loonSystemRepo, TrackRepository trackRepo)
+    public ImageScanner(LoonSystemRepository loonSystemRepo, TrackRepository trackRepo, TaskWatcher taskWatcher)
     {
+        super(taskWatcher);
         this.loonSystemRepo = loonSystemRepo;
         this.trackRepo = trackRepo;
+        this.taskWatcher = taskWatcher;
 
-        TaskWatcher.initTask(id);
+        taskWatcher.initTask(id);
     }
 
     @Bean
@@ -98,7 +101,7 @@ public class ImageScanner extends Task
                 processThumbnails(track, artPath, updated);
 
                 int progress = (int) ((tracksProcessed.incrementAndGet() * 100) / (double) tracks.size());
-                TaskWatcher.update(id, progress);
+                taskWatcher.update(id, progress);
             }
 
             trackRepo.saveAll(updated);

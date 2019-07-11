@@ -14,6 +14,12 @@ public abstract class Task
 
     private boolean RUNNING = false;
 
+    private TaskWatcher taskWatcher;
+    public Task(TaskWatcher taskWatcher)
+    {
+        this.taskWatcher = taskWatcher;
+    }
+
     public abstract String getId();
 
     public void run() {
@@ -22,6 +28,11 @@ public abstract class Task
 
     public void run(Map<String, Object> options)
     {
+        if (taskWatcher.isTasksRunning())
+        {
+            log.warn("Task run denied. Unable to run task " + getId() + ". Another task is already in progress.");
+            return;
+        }
         if (RUNNING)
             return;
 
@@ -30,7 +41,7 @@ public abstract class Task
             RUNNING = true;
             log.info("Starting " + getId());
 
-            TaskWatcher.update(getId(), 0, "incomplete");
+            taskWatcher.announceStart(getId());
             long startTime = System.currentTimeMillis();
             options.put("startTime", startTime);
 
@@ -46,7 +57,7 @@ public abstract class Task
         }
         finally
         {
-            TaskWatcher.update(getId(), 100, "complete");
+            taskWatcher.announceCompletion(getId());
 
             RUNNING = false;
         }

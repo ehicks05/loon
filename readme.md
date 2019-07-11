@@ -9,7 +9,7 @@ Be able to stream your entire music library from your browser. Support desktop o
 ### Feature Summary
 * Stream your music library from any browser
 * Album art support
-* Last.fm api support for artist/album artwork
+* ~~Last.fm~~ Spotify api support for artist/album artwork
 * Make playlists
 * Mark songs as your favorites!
 * Drag and drop re-ordering for playlists

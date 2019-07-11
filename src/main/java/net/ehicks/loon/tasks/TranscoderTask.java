@@ -2,6 +2,8 @@ package net.ehicks.loon.tasks;
 
 import net.ehicks.loon.Transcoder;
 import net.ehicks.loon.beans.Track;
+import net.ehicks.loon.repos.LoonSystemRepository;
+import net.ehicks.loon.repos.TrackRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -21,37 +23,36 @@ public class TranscoderTask extends Task
     }
 
     private Transcoder transcoder;
+    private TaskWatcher taskWatcher;
+    private TrackRepository trackRepo;
+    private LoonSystemRepository loonSystemRepo;
 
-    public TranscoderTask(Transcoder transcoder)
+    public TranscoderTask(Transcoder transcoder, TaskWatcher taskWatcher, TrackRepository trackRepo, LoonSystemRepository loonSystemRepo)
     {
+        super(taskWatcher);
         this.transcoder = transcoder;
+        this.taskWatcher = taskWatcher;
+        this.trackRepo = trackRepo;
+        this.loonSystemRepo = loonSystemRepo;
 
-        TaskWatcher.initTask(id);
+        taskWatcher.initTask(id);
     }
 
     public void performTask(Map<String, Object> options)
     {
-        List<Track> tracks = (List<Track>) options.get("tracks");
-        int quality = (int) options.get("quality");
+        List<Track> tracks = trackRepo.findAll();
+        int quality = Integer.valueOf(loonSystemRepo.findById(1L).orElse(null).getTranscodeQuality());
 
         try
         {
-            log.info("Transcoder task starting.");
             AtomicInteger tracksTranscoded = new AtomicInteger(0);
-            AtomicInteger atomicProgress = new AtomicInteger(0);
 
             tracks.stream().forEach(track -> {
                 transcoder.transcode(track, quality);
                 tracksTranscoded.incrementAndGet();
 
                 int progress = (int) ((tracksTranscoded.get() / (double) tracks.size()) * 100);
-                TaskWatcher.update(id, progress);
-
-                if (atomicProgress.get() != progress)
-                {
-                    atomicProgress.set(progress);
-                    log.info("TranscoderTask progress: " + progress + "%");
-                }
+                taskWatcher.update(id, progress);
             });
         }
         catch (Exception e)

@@ -19,19 +19,26 @@ public class LibrarySyncTask extends Task
     private MusicScanner musicScanner;
     private ImageScanner imageScanner;
     private TranscoderTask transcoderTask;
+    private TaskWatcher taskWatcher;
 
-    public LibrarySyncTask(MusicScanner musicScanner, ImageScanner imageScanner, TranscoderTask transcoderTask) {
+    public LibrarySyncTask(MusicScanner musicScanner, ImageScanner imageScanner, TranscoderTask transcoderTask,
+                           TaskWatcher taskWatcher) {
+        super(taskWatcher);
         this.musicScanner = musicScanner;
         this.imageScanner = imageScanner;
         this.transcoderTask = transcoderTask;
+        this.taskWatcher = taskWatcher;
 
-        TaskWatcher.initTask("LibrarySyncTask");
+        this.taskWatcher.initTask("LibrarySyncTask");
     }
 
     public void performTask(Map<String, Object> options)
     {
+        taskWatcher.resetProgress();
         musicScanner.run();
+        taskWatcher.update(getId(), 33);
         imageScanner.run();
+        taskWatcher.update(getId(), 66);
         transcoderTask.run();
     }
 }

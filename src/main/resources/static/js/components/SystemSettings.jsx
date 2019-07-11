@@ -19,7 +19,8 @@ export default class SystemSettings extends React.Component {
 
         self.state = {
             timeoutNumber: 0,
-            taskStatuses: null
+            taskStatuses: null,
+            tasksRunning: 0
         };
     }
 
@@ -44,14 +45,15 @@ export default class SystemSettings extends React.Component {
         fetch('/api/admin/systemSettings/getTaskStatuses', {method: 'GET'})
             .then(response => response.json())
             .then(data => {
-
-                const taskStatuses = new Map(Object.entries(data));
+                const tasks = data.tasks;
+                const tasksRunning = data.tasksRunning;
+                const taskStatuses = new Map(Object.entries(tasks));
                 console.log(taskStatuses);
 
-                self.setState({taskStatuses: taskStatuses});
+                self.setState({taskStatuses: taskStatuses, tasksRunning: tasksRunning});
 
-                let tasksInProgress = Object.keys(data).filter((key) => data[key].status === 'incomplete');
-                let tasksComplete = Object.keys(data).filter((key) => data[key].status === 'complete');
+                let tasksInProgress = Object.keys(tasks).filter((key) => tasks[key].status === 'incomplete');
+                let tasksComplete = Object.keys(tasks).filter((key) => tasks[key].status === 'complete');
 
                 if (tasksInProgress.length > 0) {
                     const timeoutNumber = setTimeout(self.getTaskStatuses, 1000);
@@ -60,6 +62,7 @@ export default class SystemSettings extends React.Component {
                 if (tasksInProgress.length === 0) {
                     if (self.state.reloadLibraryWhenTaskFinishes) {
                         self.handleUpdateTracks(tasksComplete);
+                        self.handleUpdatePlaylists(tasksComplete);
                         self.setState({reloadLibraryWhenTaskFinishes: false});
                     }
                 }
@@ -78,18 +81,20 @@ export default class SystemSettings extends React.Component {
         this.props.store.appState.loadPlaylists();
     }
 
-    submitForm(rescan, deleteTracksWithoutFiles, deleteLibrary)
+    submitForm(rescan, deleteTracksWithoutFiles, deleteLibrary, librarySync)
     {
+        this.setState({tasksRunning: 1});
         const self = this;
         const formData = new FormData(document.getElementById('frmSystemSettings'));
         formData.append('rescan', rescan ? 'true' : 'false');
         formData.append('deleteTracksWithoutFiles', deleteTracksWithoutFiles ? 'true' : 'false');
         formData.append('deleteLibrary', deleteLibrary ? 'true' : 'false');
+        formData.append('librarySync', librarySync ? 'true' : 'false');
 
         this.props.store.appState.updateSystemSettings(formData)
             .then(data => {
-                if (rescan)
-                    self.getTaskStatuses();
+                if (rescan || librarySync)
+                    setTimeout(self.getTaskStatuses, 1000);
                 if (deleteTracksWithoutFiles)
                 {
                     self.handleUpdateTracks('deleting tracks without files');
@@ -107,7 +112,7 @@ export default class SystemSettings extends React.Component {
     {
         const self = this;
         fetch('/api/admin/systemSettings/imageScan', {method: 'GET'})
-            .then(setTimeout(self.getTaskStatuses, 50));
+            .then(setTimeout(self.getTaskStatuses, 1000));
     }
 
     doTranscodeLibrary()
@@ -136,6 +141,8 @@ export default class SystemSettings extends React.Component {
             {value:'5', text:'v5'},
             {value:'6', text:'v6'}
         ];
+
+        const isTasksRunning = this.state.tasksRunning > 0;
 
         return (
             <div>
@@ -166,26 +173,26 @@ export default class SystemSettings extends React.Component {
                         <div className="column">
                             <div className={'content'}>
                                 <div className={'buttons has-addons'} style={{marginBottom: '0'}}>
-                                    <span className="button" onClick={(e) => this.submitForm(true, false, false)} >Save and Re-scan</span>
+                                    <span className="button" disabled={isTasksRunning} onClick={(e) => this.submitForm(false, false, false, true)} >Library Sync</span>
+                                    <ProgressText taskStatus={taskStatuses.get('LibrarySyncTask')}/>
+                                </div>
+                                <div className={'buttons has-addons'} style={{marginBottom: '0', marginLeft: '16px'}}>
+                                    <span className="button" disabled={isTasksRunning} onClick={(e) => this.submitForm(true, false, false, false)} >Scan for Files</span>
                                     <ProgressText taskStatus={taskStatuses.get('MusicScanner')}/>
                                 </div>
                                 <div className={'buttons has-addons'} style={{marginBottom: '0', marginLeft: '16px'}}>
-                                    <span className="button" onClick={(e) => this.submitForm(true, false, false)} >Scan for Files</span>
-                                    <ProgressText taskStatus={taskStatuses.get('MusicScanner')}/>
-                                </div>
-                                <div className={'buttons has-addons'} style={{marginBottom: '0', marginLeft: '16px'}}>
-                                    <span className="button" onClick={(e) => this.doImageScan()} >Scan for Images</span>
+                                    <span className="button" disabled={isTasksRunning} onClick={(e) => this.doImageScan()} >Scan for Images</span>
                                     <ProgressText taskStatus={taskStatuses.get('ImageScanner')}/>
                                 </div>
                                 <div className={'buttons has-addons'} style={{marginBottom: '0', marginLeft: '16px'}}>
-                                    <span className="button" onClick={(e) => this.doTranscodeLibrary()} >Transcode Library</span>
+                                    <span className="button" disabled={isTasksRunning} onClick={(e) => this.doTranscodeLibrary()} >Transcode Library</span>
                                     <ProgressText taskStatus={taskStatuses.get('TranscoderTask')}/>
                                 </div>
                                 <div className={'buttons'} style={{marginBottom: '0'}}>
-                                    <span className="button is-danger" onClick={(e) => this.submitForm(false, true, false)} >Delete Tracks Without Files</span>
+                                    <span className="button is-danger" disabled={isTasksRunning} onClick={(e) => this.submitForm(false, true, false, false)} >Delete Tracks Without Files</span>
                                 </div>
                                 <div className={'buttons'} style={{marginBottom: '0'}}>
-                                    <span className="button is-danger" onClick={(e) => this.submitForm(false, false, true)} >Delete Library</span>
+                                    <span className="button is-danger" disabled={isTasksRunning} onClick={(e) => this.submitForm(false, false, true, false)} >Delete Library</span>
                                 </div>
                             </div>
                         </div>

@@ -5,10 +5,7 @@ import net.ehicks.loon.beans.LoonSystem;
 import net.ehicks.loon.beans.Track;
 import net.ehicks.loon.repos.LoonSystemRepository;
 import net.ehicks.loon.repos.TrackRepository;
-import net.ehicks.loon.tasks.ImageScanner;
-import net.ehicks.loon.tasks.MusicScanner;
-import net.ehicks.loon.tasks.TaskWatcher;
-import net.ehicks.loon.tasks.TranscoderTask;
+import net.ehicks.loon.tasks.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -28,10 +25,12 @@ public class AdminSystemSettingsHandler
     private TranscoderTask transcoderTask;
     private TrackRepository trackRepo;
     private DirectoryWatcher directoryWatcher;
+    private TaskWatcher taskWatcher;
+    private LibrarySyncTask librarySyncTask;
 
     public AdminSystemSettingsHandler(LoonSystemRepository loonSystemRepo, MusicScanner musicScanner,
                                       ImageScanner imageScanner, TranscoderTask transcoderTask, TrackRepository trackRepo,
-                                      DirectoryWatcher directoryWatcher)
+                                      DirectoryWatcher directoryWatcher, TaskWatcher taskWatcher, LibrarySyncTask librarySyncTask)
     {
         this.loonSystemRepo = loonSystemRepo;
         this.musicScanner = musicScanner;
@@ -39,6 +38,8 @@ public class AdminSystemSettingsHandler
         this.transcoderTask = transcoderTask;
         this.trackRepo = trackRepo;
         this.directoryWatcher = directoryWatcher;
+        this.taskWatcher = taskWatcher;
+        this.librarySyncTask = librarySyncTask;
     }
 
     @GetMapping("")
@@ -49,7 +50,7 @@ public class AdminSystemSettingsHandler
 
     @PutMapping("")
     public LoonSystem modify(LoonSystem loonSystem, @RequestParam boolean rescan, @RequestParam boolean deleteTracksWithoutFiles,
-                             @RequestParam boolean deleteLibrary)
+                             @RequestParam boolean deleteLibrary, @RequestParam boolean librarySync)
     {
         // if music folder has changed, clear library before re-scanning
         LoonSystem loonSystemFromDb = loonSystemRepo.findById(1L).orElse(null);
@@ -67,6 +68,9 @@ public class AdminSystemSettingsHandler
         if (rescan)
             new Thread(musicScanner::run).start();
 
+        if (librarySync)
+            new Thread(librarySyncTask::run).start();
+
         directoryWatcher.watch();
 
         return loonSystem;
@@ -82,22 +86,14 @@ public class AdminSystemSettingsHandler
     @GetMapping("/transcodeLibrary")
     public String transcodeLibrary()
     {
-        int q = Integer.valueOf(loonSystemRepo.findById(1L).orElse(null).getTranscodeQuality());
-
-        Map<String, Object> options = new HashMap<>();
-        options.put("tracks", trackRepo.findAll());
-        options.put("quality", q);
-
-        new Thread(() -> transcoderTask.run(options)).start();
+        new Thread(transcoderTask::run).start();
         return "";
     }
 
     @GetMapping("/getTaskStatuses")
-    public Map<String, TaskWatcher.TaskStatus> getTaskStatuses()
+    public TaskWatcher.TaskState getTaskStatuses()
     {
-        Map<String, TaskWatcher.TaskStatus> tasks = TaskWatcher.tasks;
-
-        return tasks;
+        return taskWatcher.getTaskState();
     }
 
     private void deleteTracksWithoutFiles()

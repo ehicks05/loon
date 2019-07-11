@@ -46,14 +46,17 @@ public class MusicScanner extends Task
     private LoonSystemRepository loonSystemRepo;
     private TrackRepository trackRepo;
     private FileWalker fileWalker;
+    private TaskWatcher taskWatcher;
 
-    public MusicScanner(LoonSystemRepository loonSystemRepo, TrackRepository trackRepo, FileWalker fileWalker)
+    public MusicScanner(LoonSystemRepository loonSystemRepo, TrackRepository trackRepo, FileWalker fileWalker, TaskWatcher taskWatcher)
     {
+        super(taskWatcher);
         this.loonSystemRepo = loonSystemRepo;
         this.trackRepo = trackRepo;
         this.fileWalker = fileWalker;
+        this.taskWatcher = taskWatcher;
 
-        TaskWatcher.initTask(id);
+        taskWatcher.initTask(id);
     }
 
     /**
@@ -94,7 +97,7 @@ public class MusicScanner extends Task
 
             paths.forEach(path -> {
                 int progress = (int) ((filesProcessed.incrementAndGet() * 100) / (double) paths.size());
-                TaskWatcher.update(id, progress);
+                taskWatcher.update(id, progress);
 
                 AudioFile audioFile = getAudioFile(path);
                 if (audioFile == null)

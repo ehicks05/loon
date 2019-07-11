@@ -11,5 +11,6 @@ public interface TrackRepository extends JpaRepository<Track, String>
     Track findByPath(String path);
     List<Track> findAllByOrderByArtistAscAlbumAscTitleAsc();
     List<Track> findAllByIdIn(List<Long> ids);
+    List<Track> findAllByMissingFile(boolean missingFile);
     Optional<Track> findTopByOrderById();
 }

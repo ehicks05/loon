@@ -48,19 +48,19 @@ public class AdminSystemSettingsHandler
     }
 
     @PutMapping("")
-    public LoonSystem modify(LoonSystem loonSystem, @RequestParam boolean rescan, @RequestParam boolean clearLibrary,
+    public LoonSystem modify(LoonSystem loonSystem, @RequestParam boolean rescan, @RequestParam boolean deleteTracksWithoutFiles,
                              @RequestParam boolean deleteLibrary)
     {
         // if music folder has changed, clear library before re-scanning
         LoonSystem loonSystemFromDb = loonSystemRepo.findById(1L).orElse(null);
         if (loonSystemFromDb != null && !loonSystemFromDb.getMusicFolder().equals(loonSystem.getMusicFolder()))
-            clearLibrary = true;
+            deleteLibrary = true;
 
         loonSystem.setId(1L);
         loonSystem = loonSystemRepo.save(loonSystem);
 
-        if (clearLibrary)
-            clearLibrary();
+        if (deleteTracksWithoutFiles)
+            deleteTracksWithoutFiles();
         if (deleteLibrary)
             deleteLibrary();
 
@@ -100,13 +100,12 @@ public class AdminSystemSettingsHandler
         return tasks;
     }
 
-    private void clearLibrary()
+    private void deleteTracksWithoutFiles()
     {
-        log.info("Clearing library...");
-        List<Track> tracks = trackRepo.findAll();
-        tracks.forEach(track -> track.setMissingFile(true));
-        trackRepo.saveAll(tracks);
-        log.info("Done clearing library...");
+        log.info("Deleting tracks with no backing file...");
+        List<Track> tracks = trackRepo.findAllByMissingFile(true);
+        trackRepo.deleteAll(tracks);
+        log.info("Done deleting tracks with no backing file...");
     }
 
     private void deleteLibrary()

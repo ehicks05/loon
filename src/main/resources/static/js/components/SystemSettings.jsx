@@ -78,22 +78,22 @@ export default class SystemSettings extends React.Component {
         this.props.store.appState.loadPlaylists();
     }
 
-    submitForm(rescan, clearLibrary, deleteLibrary)
+    submitForm(rescan, deleteTracksWithoutFiles, deleteLibrary)
     {
         const self = this;
         const formData = new FormData(document.getElementById('frmSystemSettings'));
         formData.append('rescan', rescan ? 'true' : 'false');
-        formData.append('clearLibrary', clearLibrary ? 'true' : 'false');
+        formData.append('deleteTracksWithoutFiles', deleteTracksWithoutFiles ? 'true' : 'false');
         formData.append('deleteLibrary', deleteLibrary ? 'true' : 'false');
 
         this.props.store.appState.updateSystemSettings(formData)
             .then(data => {
                 if (rescan)
                     self.getTaskStatuses();
-                if (clearLibrary)
+                if (deleteTracksWithoutFiles)
                 {
-                    self.handleUpdateTracks('clearing library');
-                    self.handleUpdatePlaylists('clearing library');
+                    self.handleUpdateTracks('deleting tracks without files');
+                    self.handleUpdatePlaylists('deleting tracks without files');
                 }
                 if (deleteLibrary)
                 {
@@ -181,7 +181,12 @@ export default class SystemSettings extends React.Component {
                                     <span className="button" onClick={(e) => this.doTranscodeLibrary()} >Transcode Library</span>
                                     <ProgressText taskStatus={taskStatuses.get('TranscoderTask')}/>
                                 </div>
-                                <span className="button is-danger" onClick={(e) => this.submitForm(false, false, true)} >Delete Library</span>
+                                <div className={'buttons'} style={{marginBottom: '0'}}>
+                                    <span className="button is-danger" onClick={(e) => this.submitForm(false, true, false)} >Delete Tracks Without Files</span>
+                                </div>
+                                <div className={'buttons'} style={{marginBottom: '0'}}>
+                                    <span className="button is-danger" onClick={(e) => this.submitForm(false, false, true)} >Delete Library</span>
+                                </div>
                             </div>
                         </div>
                     </div>

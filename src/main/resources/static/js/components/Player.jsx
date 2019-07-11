@@ -157,7 +157,7 @@ export default class Player extends React.Component {
             }
 
             // resume if suspended because of Autoplay Policy
-            if (self.audioCtx.state === 'suspended')
+            if (newPlayerState === 'playing' && self.audioCtx.state === 'suspended')
                 this.audioCtx.resume();
 
             this.setState({timeElapsed: 0});

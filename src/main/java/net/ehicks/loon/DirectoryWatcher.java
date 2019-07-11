@@ -2,7 +2,7 @@ package net.ehicks.loon;
 
 import net.ehicks.loon.beans.LoonSystem;
 import net.ehicks.loon.repos.LoonSystemRepository;
-import net.ehicks.loon.tasks.MusicScanner;
+import net.ehicks.loon.tasks.LibrarySyncTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -17,23 +17,28 @@ public class DirectoryWatcher
     private static final Logger log = LoggerFactory.getLogger(DirectoryWatcher.class);
 
     private LoonSystemRepository loonSystemRepo;
-    private MusicScanner musicScanner;
+    private LibrarySyncTask librarySyncTask;
     private static boolean changeDetected = false;
     private static WatchService watchService;
 
-    public DirectoryWatcher(LoonSystemRepository loonSystemRepo, MusicScanner musicScanner)
+    public DirectoryWatcher(LoonSystemRepository loonSystemRepo, LibrarySyncTask librarySyncTask)
     {
         this.loonSystemRepo = loonSystemRepo;
-        this.musicScanner = musicScanner;
+        this.librarySyncTask = librarySyncTask;
     }
 
     @Scheduled(fixedDelay = 30 * 1000)
     public void triggerScan()
     {
-        if (changeDetected && !musicScanner.isRunning())
+        handleChangeDetected();
+    }
+
+    private void handleChangeDetected()
+    {
+        if (changeDetected && !librarySyncTask.isRunning())
         {
             changeDetected = false;
-            musicScanner.run();
+            new Thread(librarySyncTask::run).start();
         }
     }
 
@@ -69,6 +74,7 @@ public class DirectoryWatcher
                 {
                     log.info("Event kind:" + event.kind() + ". File affected: " + event.context() + ".");
                     changeDetected = true;
+                    handleChangeDetected();
                 }
                 watchKey.reset();
             }

@@ -1,18 +1,22 @@
 import {AppState} from "./AppState";
 import {UiState} from "./UiState";
-import {computed} from "mobx";
+import {computed, observable} from "mobx";
 import fetchDefaults from 'fetch-defaults'
 
 export class RootStore {
+
+    @observable csrfHeader;
+    @observable csrfToken;
+
     constructor() {
         this.appState = new AppState(this);
         this.uiState = new UiState(this);
 
-        const header = document.head.querySelector("[name~=_csrf_header][content]").content;
-        const token = document.head.querySelector("[name~=_csrf][content]").content;
+        this.csrfHeader = document.head.querySelector("[name~=_csrf_header][content]").content;
+        this.csrfToken = document.head.querySelector("[name~=_csrf][content]").content;
 
         this.myFetch = fetchDefaults(window.fetch, "", {
-            headers: {[header]: token}
+            headers: {[this.csrfHeader]: this.csrfToken}
         });
     }
 

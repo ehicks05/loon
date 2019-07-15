@@ -7,6 +7,7 @@ import {inject, observer} from "mobx-react";
 import Header from "./Header.jsx";
 import MyHelmet from "./MyHelmet.jsx";
 import Player from "./Player.jsx";
+import SystemStatusBar from "./SystemStatusBar.jsx";
 const SystemSettings = lazy(() => import('./SystemSettings.jsx'));
 const Playlist = lazy(() => import('./Playlist.jsx'));
 const Playlists = lazy(() => import('./Playlists.jsx'));
@@ -68,6 +69,7 @@ export default class App extends React.Component {
                 <div style={{display: 'flex', flexDirection: 'column', height: this.props.store.uiState.windowDimensions.height}}>
                     <MyHelmet />
                     <Header />
+                    <SystemStatusBar />
 
                     <div className={'columns is-gapless'} style={{margin: '0', flex: '1 1 auto', display: 'flex'}}>
                         <div id='left-column' className={"column is-narrow is-hidden-touch" + (store.uiState.isDarkTheme ? ' is-dark ' : '')} style={{overflowY: 'auto'}}>

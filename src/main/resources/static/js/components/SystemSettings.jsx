@@ -173,19 +173,19 @@ export default class SystemSettings extends React.Component {
                         <div className="column">
                             <div className={'content'}>
                                 <div className={'buttons has-addons'} style={{marginBottom: '0'}}>
-                                    <span className="button" disabled={isTasksRunning} onClick={(e) => this.submitForm(false, false, false, true)} >Library Sync</span>
+                                    <span className="button is-dark" disabled={isTasksRunning} onClick={(e) => this.submitForm(false, false, false, true)} >Library Sync</span>
                                     <ProgressText taskStatus={taskStatuses.get('LibrarySyncTask')}/>
                                 </div>
                                 <div className={'buttons has-addons'} style={{marginBottom: '0', marginLeft: '16px'}}>
-                                    <span className="button" disabled={isTasksRunning} onClick={(e) => this.submitForm(true, false, false, false)} >Scan for Files</span>
+                                    <span className="button is-dark" disabled={isTasksRunning} onClick={(e) => this.submitForm(true, false, false, false)} >Scan for Files</span>
                                     <ProgressText taskStatus={taskStatuses.get('MusicScanner')}/>
                                 </div>
                                 <div className={'buttons has-addons'} style={{marginBottom: '0', marginLeft: '16px'}}>
-                                    <span className="button" disabled={isTasksRunning} onClick={(e) => this.doImageScan()} >Scan for Images</span>
+                                    <span className="button is-dark" disabled={isTasksRunning} onClick={(e) => this.doImageScan()} >Scan for Images</span>
                                     <ProgressText taskStatus={taskStatuses.get('ImageScanner')}/>
                                 </div>
                                 <div className={'buttons has-addons'} style={{marginBottom: '0', marginLeft: '16px'}}>
-                                    <span className="button" disabled={isTasksRunning} onClick={(e) => this.doTranscodeLibrary()} >Transcode Library</span>
+                                    <span className="button is-dark" disabled={isTasksRunning} onClick={(e) => this.doTranscodeLibrary()} >Transcode Library</span>
                                     <ProgressText taskStatus={taskStatuses.get('TranscoderTask')}/>
                                 </div>
                                 <div className={'buttons'} style={{marginBottom: '0'}}>

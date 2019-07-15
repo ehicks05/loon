@@ -2,6 +2,8 @@ package net.ehicks.loon.tasks;
 
 import org.springframework.context.annotation.Configuration;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class TaskWatcher
 {
     private TaskState taskState = new TaskState();
+    private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
     public TaskWatcher() {
     }
 
@@ -75,8 +78,13 @@ public class TaskWatcher
 
     public void update(String id, int progress)
     {
-        taskState.getTasks().get(id).setProgress(progress);
+        setProgressById(id, progress);
 
+        updateLibrarySyncTaskProgress(id);
+    }
+
+    private void updateLibrarySyncTaskProgress(String id)
+    {
         // todo: this is a hacky way to keep LibrarySyncTask's progress up-to-date.
         if (!id.equals("LibrarySyncTask") && taskState.getTasks().get("LibrarySyncTask").getStatus().equals("incomplete"))
         {
@@ -92,8 +100,8 @@ public class TaskWatcher
 
     public void announceStart(String id)
     {
-        taskState.getTasks().get(id).setProgress(0);
-        taskState.getTasks().get(id).setStatus("incomplete");
+        setProgressById(id, 0);
+        setStatusById(id, "incomplete");
 
         if (!id.equals("LibrarySyncTask")) // todo: this line is a hack
             taskState.setTasksRunning(taskState.getTasksRunning() + 1);
@@ -101,8 +109,8 @@ public class TaskWatcher
 
     public void announceCompletion(String id)
     {
-        taskState.getTasks().get(id).setProgress(100);
-        taskState.getTasks().get(id).setStatus("complete");
+        setProgressById(id, 100);
+        setStatusById(id, "complete");
 
         if (!id.equals("LibrarySyncTask")) // todo: this line is a hack
             taskState.setTasksRunning(taskState.getTasksRunning() - 1);
@@ -120,7 +128,22 @@ public class TaskWatcher
         return taskState;
     }
 
-    public void setTaskState(TaskState taskState) {
-        this.taskState = taskState;
+    public void setProgressById(String id, int progress)
+    {
+        int prevProgress = taskState.getTasks().get(id).getProgress();
+        taskState.getTasks().get(id).setProgress(progress);
+        changeSupport.firePropertyChange("progress", prevProgress, progress);
+    }
+
+    public void setStatusById(String id, String status)
+    {
+        String prevStatus = taskState.getTasks().get(id).getStatus();
+        taskState.getTasks().get(id).setStatus(status);
+        changeSupport.firePropertyChange("status", prevStatus, status);
+    }
+
+    public void register(PropertyChangeListener propertyChangeListener)
+    {
+        changeSupport.addPropertyChangeListener(propertyChangeListener);
     }
 }

@@ -6,6 +6,7 @@ export class AppState {
     @observable systemSettings = [];
     @observable versionInfo = [];
     @observable pendingRequests = 0;
+    @observable taskState = {};
 
     constructor(rootStore) {
         // autorun(() => console.log(this.report));
@@ -133,5 +134,11 @@ export class AppState {
     loadUsers() {
         return fetch('/api/admin/users', {method: 'GET'})
             .then(response => response.json());
+    }
+
+    // TASK STATE //
+    @action
+    setTaskState(taskState) {
+        this.taskState = taskState;
     }
 }

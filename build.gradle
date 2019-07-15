@@ -43,6 +43,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.security:spring-security-messaging:5.1.5.RELEASE'
     implementation 'ws.schild:jave-core:2.5.0'
     implementation 'ws.schild:jave-nativebin-win64:2.5.0'
     implementation 'se.michaelthelin.spotify:spotify-web-api-java:2.2.0'

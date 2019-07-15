@@ -14,6 +14,7 @@
     "@fortawesome/free-regular-svg-icons": "^5.9.0",
     "@fortawesome/free-solid-svg-icons": "^5.9.0",
     "@fortawesome/react-fontawesome": "^0.1.4",
+    "@stomp/stompjs": "^5.4.2",
     "bulma-extensions": "^6.2.7",
     "bulma-switch": "^2.0.0",
     "fetch-defaults": "^1.0.0",
@@ -32,10 +33,10 @@
     "react-virtualized": "^9.21.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.5.0",
-    "@babel/plugin-proposal-object-rest-spread": "^7.5.0",
+    "@babel/core": "^7.5.4",
+    "@babel/plugin-proposal-object-rest-spread": "^7.5.4",
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
-    "@babel/preset-env": "^7.5.0",
+    "@babel/preset-env": "^7.5.4",
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.6",
     "babel-preset-mobx": "^2.0.0",
@@ -43,8 +44,8 @@
     "hard-source-webpack-plugin": "^0.13.1",
     "style-loader": "^0.23.1",
     "url-loader": "^2.0.1",
-    "webpack": "^4.35.2",
+    "webpack": "^4.35.3",
     "webpack-bundle-analyzer": "^3.3.2",
-    "webpack-cli": "^3.3.5"
+    "webpack-cli": "^3.3.6"
   }
 }

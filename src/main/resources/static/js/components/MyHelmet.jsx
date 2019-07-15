@@ -89,6 +89,9 @@ export default class MyHelmet extends React.Component {
                          .panel-block {border: none; border-left: 6px solid #282f2f;}
                          .panel-block:first-child {border-top: none;}
                          .panel-block:hover {border-left-color: #3273dc;}
+                         
+                         .input {color:#eee; background-color:#333;}
+                         .select select {color:#eee; background-color:#333;}
                         `
                         :
                         `table {background-color: #EEE !important}

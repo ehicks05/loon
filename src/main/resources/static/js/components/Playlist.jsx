@@ -3,7 +3,7 @@ import MediaItem from "./MediaItem.jsx";
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import {inject, observer} from "mobx-react";
 import TextInput from "./TextInput.jsx";
-import {Redirect} from "react-router-dom";
+import {Link, Redirect} from "react-router-dom";
 
 function parsePlaylistId(component)
 {
@@ -188,6 +188,15 @@ export default class Playlist extends React.Component {
                                 </div>
                             </div>
                         </form>
+                    </span>
+                </div>
+        }
+        if (playlist && !playlist.queue && !playlist.favorites)
+        {
+            actions =
+                <div>
+                    <span className="buttons">
+                        <Link to={'/playlists/' + playlist.id + '/edit'} className="button is-success">Edit</Link>
                     </span>
                 </div>
         }

@@ -98,7 +98,7 @@ export default class MediaItem extends React.Component {
                         <br /><span style={{fontSize: '.875rem'}}><Link to={'/artist/' + artist}>{artist}</Link> - <Link to={'/artist/' + this.props.track.albumArtist + '/album/' + album}><i>{album}</i></Link></span>
                     </div>
 
-                    <div className={'mediaItemEllipsis'} style={{marginRight: '8px', flexBasis: '20px'}}>
+                    <div className={'mediaItemEllipsis'}>
                         {showActionMenu &&
                             <ActionMenu tracks={[this.props.track]} contextMenuId={contextMenuId} />
                         }

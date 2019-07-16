@@ -48,6 +48,7 @@ export default class MyHelmet extends React.Component {
                         
                         .mediaItemDiv       .mediaItemEllipsis .dropdown{visibility: hidden;}
                         .mediaItemDiv:hover .mediaItemEllipsis .dropdown{visibility: visible;}
+                        .mediaItemEllipsis {margin-right: 8px; flex-basis: 20px;}
                         .is-visible-important {visibility: visible !important;}
                         
                         .list-song {flex: 8}

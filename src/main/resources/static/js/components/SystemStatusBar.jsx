@@ -22,7 +22,7 @@ export default class SystemStatusBar extends React.Component {
             debug: function (str) {
                 console.log(str);
             },
-            reconnectDelay: 50000,
+            reconnectDelay: 5000,
             heartbeatIncoming: 4000,
             heartbeatOutgoing: 4000
         });
@@ -60,7 +60,7 @@ export default class SystemStatusBar extends React.Component {
     render() {
         const tasks = this.props.store.appState.taskState.tasks;
         if (!tasks)
-            return '<div>Loading...</div>';
+            return null;
 
         let inProgress = Object.entries(tasks).filter((entry) => entry[1].status === 'incomplete');
         if (inProgress.filter((task) => task[0] === 'LibrarySyncTask').length === 1)

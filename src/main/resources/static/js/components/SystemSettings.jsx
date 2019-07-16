@@ -2,6 +2,7 @@ import React from 'react';
 import TextInput from "./TextInput.jsx";
 import Select from "./Select.jsx";
 import {inject, observer} from "mobx-react";
+import 'bulma-switch/dist/css/bulma-switch.min.css'
 
 @inject('store')
 @observer
@@ -133,13 +134,13 @@ export default class SystemSettings extends React.Component {
         const trueFalse = [{value:'false', text:'False'}, {value:'true', text:'True'}];
 
         const transcodeQualityOptions = [
-            {value:'0', text:'v0 (best)'},
-            {value:'1', text:'v1'},
-            {value:'2', text:'v2'},
-            {value:'3', text:'v3'},
-            {value:'4', text:'v4'},
-            {value:'5', text:'v5'},
-            {value:'6', text:'v6'}
+            {value:'0', text:'v0 (~240 Kbps)'},
+            {value:'1', text:'v1 (~220 Kbps)'},
+            {value:'2', text:'v2 (~190 Kbps)'},
+            {value:'3', text:'v3 (~170 Kbps)'},
+            {value:'4', text:'v4 (~160 Kbps)'},
+            {value:'5', text:'v5 (~130 Kbps)'},
+            {value:'6', text:'v6 (~120 Kbps)'}
         ];
 
         const isTasksRunning = this.state.tasksRunning > 0;
@@ -158,15 +159,23 @@ export default class SystemSettings extends React.Component {
                         <div className={"column is-narrow"}>
                             <form id="frmSystemSettings" method="post" action="">
                                 <TextInput id="instanceName" label="Instance Name" value={systemSettings.instanceName} />
+                                <TextInput id="logonMessage" label="Welcome Message" value={systemSettings.logonMessage} size={50} />
                                 <TextInput id="musicFolder" label="Music Folder" value={systemSettings.musicFolder} />
                                 <TextInput id="transcodeFolder" label="Transcode Folder" value={systemSettings.transcodeFolder} />
                                 <TextInput id="dataFolder" label="Data Folder" value={systemSettings.dataFolder} />
-                                <TextInput id="lastFmApiKey" label="Last.fm API Key" value={systemSettings.lastFmApiKey} size={50} />
+                                {/*<TextInput id="lastFmApiKey" label="Last.fm API Key" value={systemSettings.lastFmApiKey} size={50} />*/}
                                 <TextInput id="spotifyClientId" label="Spotify Client Id" value={systemSettings.spotifyClientId} size={50} />
                                 <TextInput id="spotifyClientSecret" label="Spotify Client Secret" value={systemSettings.spotifyClientSecret} size={50} />
-                                <TextInput id="logonMessage" label="Welcome Message" value={systemSettings.logonMessage} size={50} />
-                                <Select id="registrationEnabled" label="Registration Enabled" items={trueFalse} value={systemSettings.registrationEnabled} required={true} />
-                                <Select id="directoryWatcherEnabled" label="Directory Watcher Enabled" items={trueFalse} value={systemSettings.directoryWatcherEnabled} required={true} />
+                                {/*<Select id="registrationEnabled" label="Registration Enabled" items={trueFalse} value={systemSettings.registrationEnabled} required={true} />*/}
+                                <div className="field">
+                                    <input type="checkbox" className="switch is-rounded" id="registrationEnabled" name="registrationEnabled" defaultChecked={systemSettings.registrationEnabled} />
+                                    <label htmlFor="registrationEnabled">Registration Enabled</label>
+                                </div>
+                                {/*<Select id="directoryWatcherEnabled" label="Directory Watcher Enabled" items={trueFalse} value={systemSettings.directoryWatcherEnabled} required={true} />*/}
+                                <div className="field">
+                                    <input type="checkbox" className="switch is-rounded" id="directoryWatcherEnabled" name="directoryWatcherEnabled" defaultChecked={systemSettings.directoryWatcherEnabled} />
+                                    <label htmlFor="directoryWatcherEnabled">Directory Watcher Enabled</label>
+                                </div>
                                 <Select id="transcodeQuality" label="Transcode Quality" items={transcodeQualityOptions} value={systemSettings.transcodeQuality} required={true} />
                             </form>
                         </div>

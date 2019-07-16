@@ -1,6 +1,5 @@
 const path = require('path');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-
 const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 module.exports = {
@@ -25,11 +24,7 @@ module.exports = {
                 ]
             },
             {
-                test: /\.js$/,
-                exclude: /node_modules/,
-                use: "babel-loader"
-            }, {
-                test: /\.jsx?$/,
+                test: /\.(js|jsx)$/,
                 exclude: /node_modules/,
                 use: "babel-loader"
             }

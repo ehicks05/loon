@@ -100,20 +100,20 @@ public class TaskWatcher
 
     public void announceStart(String id)
     {
-        setProgressById(id, 0);
-        setStatusById(id, "incomplete");
-
         if (!id.equals("LibrarySyncTask")) // todo: this line is a hack
             taskState.setTasksRunning(taskState.getTasksRunning() + 1);
+
+        setProgressById(id, 0);
+        setStatusById(id, "incomplete");
     }
 
     public void announceCompletion(String id)
     {
-        setProgressById(id, 100);
-        setStatusById(id, "complete");
-
         if (!id.equals("LibrarySyncTask")) // todo: this line is a hack
             taskState.setTasksRunning(taskState.getTasksRunning() - 1);
+
+        setProgressById(id, 100);
+        setStatusById(id, "complete");
     }
 
     public boolean isTasksRunning() {

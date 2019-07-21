@@ -91,8 +91,17 @@ export default class PlaybackControls extends React.Component {
                 <span id="duration" style={{fontSize: '.875rem', marginLeft: '8px'}}>{formattedDuration}</span>
             </div>;
 
+        const placeholder = 'https://via.placeholder.com/600x600.png?text=placeholder';
+        const imageUrl = (selectedTrack && selectedTrack.albumThumbnailId) ? '/art/' + selectedTrack.albumThumbnailId : placeholder;
+
+        // todo: does this need to be lazyload?
+        const albumArt =
+            <img src={placeholder} data-src={imageUrl} alt="Placeholder image" className='lazyload'
+                 style={{height: '48px', margin: '0', paddingRight: '8px'}}/>;
+
         const trackDescription =
             <div className="level-item">
+                {albumArt}
                 <span id="track" style={{maxWidth: textWidth, maxHeight: '72px', overflow: 'auto'}}>
                     <b>{title}</b>
                     <br/>
@@ -164,19 +173,9 @@ export default class PlaybackControls extends React.Component {
                                    onChange={this.handleVolumeChange} />
             </div>;
 
-        const placeholder = 'https://via.placeholder.com/600x600.png?text=placeholder';
-        const imageUrl = (selectedTrack && selectedTrack.albumThumbnailId) ? '/art/' + selectedTrack.albumThumbnailId : placeholder;
-
-        // todo: does this need to be lazyload?
-        const albumArt =
-            <figure className={"image is-64x64"} style={{margin: 'auto', paddingTop: '4px', paddingRight: '8px'}}>
-                <img src={placeholder} data-src={imageUrl} alt="Placeholder image" className='lazyload'/>
-            </figure>;
-
         const levelLeft =
             <div className="level-left">
                 {windowWidth > 768 && playbackButtons}
-                {albumArt}
                 {trackDescription}
             </div>;
 

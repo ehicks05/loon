@@ -21,7 +21,7 @@
     "history": "^4.9.0",
     "lazysizes": "^5.1.0",
     "lodash.debounce": "^4.0.8",
-    "mobx": "^5.11.0",
+    "mobx": "^5.13.0",
     "mobx-react": "^6.1.1",
     "rc-slider": "^8.6.13",
     "react": "^16.8.6",

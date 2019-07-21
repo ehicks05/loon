@@ -8,6 +8,8 @@ export default class SystemStatusBar extends React.Component {
 
     constructor(props) {
         super(props);
+
+        this.reloadLibrary = this.reloadLibrary.bind(this);
     }
 
     componentDidMount() {
@@ -20,7 +22,7 @@ export default class SystemStatusBar extends React.Component {
                 'X-CSRF-TOKEN': csrfToken
             },
             debug: function (str) {
-                console.log(str);
+                // console.log(str);
             },
             reconnectDelay: 5000,
             heartbeatIncoming: 4000,
@@ -35,8 +37,8 @@ export default class SystemStatusBar extends React.Component {
             let callback = function(message) {
                 // called when the client receives a STOMP message from the server
                 if (message.body) {
-                    console.log("got message with body " + message.body);
                     self.props.store.appState.setTaskState(JSON.parse(message.body));
+                    self.reloadLibrary();
                 } else {
                     console.log("got empty message");
                 }
@@ -57,19 +59,34 @@ export default class SystemStatusBar extends React.Component {
         client.activate();
     }
 
+    reloadLibrary() {
+        const appState = this.props.store.appState;
+
+        let tasksInProgress = appState.tasksInProgress;
+
+        if (tasksInProgress.length > 0) {
+            this.setState({reloadLibraryWhenTaskFinishes: true})
+        }
+        if (tasksInProgress.length === 0) {
+            if (this.state.reloadLibraryWhenTaskFinishes) {
+                appState.loadTracks();
+                appState.loadPlaylists();
+                this.setState({reloadLibraryWhenTaskFinishes: false});
+            }
+        }
+    }
+
     render() {
         const tasks = this.props.store.appState.taskState.tasks;
         if (!tasks)
             return null;
 
-        let inProgress = Object.entries(tasks).filter((entry) => entry[1].status === 'incomplete');
-        if (inProgress.filter((task) => task[0] === 'LibrarySyncTask').length === 1)
-            inProgress = inProgress.filter((task) => task[0] === 'LibrarySyncTask');
+        let tasksInProgress = this.props.store.appState.tasksInProgress;
 
-        if (inProgress.length !== 1)
+        if (tasksInProgress.length !== 1)
             return null;
 
-        const progress = String(inProgress[0][1].progress);
+        const progress = String(tasksInProgress[0][1].progress);
 
         return (
             <div>

@@ -141,4 +141,17 @@ export class AppState {
     setTaskState(taskState) {
         this.taskState = taskState;
     }
+
+    @computed
+    get tasksInProgress() {
+        const tasks = this.taskState.tasks;
+        if (!tasks)
+            return null;
+
+        let inProgress = Object.entries(tasks).filter((entry) => entry[1].status === 'incomplete');
+        if (inProgress.filter((task) => task[0] === 'LibrarySyncTask').length === 1)
+            inProgress = inProgress.filter((task) => task[0] === 'LibrarySyncTask');
+
+        return inProgress;
+    }
 }

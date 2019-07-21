@@ -118,6 +118,12 @@ export default class Header extends React.Component {
                                         </span>
                                         Manage Users
                                     </NavLink>
+                                    <NavLink to={'/admin/about'} className="navbar-item" activeClassName='is-active'>
+                                        <span className="panel-icon">
+                                            <FontAwesomeIcon icon={faInfoCircle}/>
+                                        </span>
+                                        About
+                                    </NavLink>
                                 </div>
                             </div>
                         }
@@ -141,11 +147,6 @@ export default class Header extends React.Component {
                         </div>
                     </div>
                     <div className="navbar-end">
-                        <div className="navbar-item">
-                            <span className="icon is-medium" title={JSON.stringify(this.props.store.appState.versionInfo)}>
-                                <FontAwesomeIcon icon={faInfoCircle}/>
-                            </span>
-                        </div>
                         <a onClick={this.toggleDarkTheme} href={null} className={"navbar-item"}>
                             <span className="icon is-medium">
                                 <FontAwesomeIcon icon={this.props.store.uiState.theme === 'cyborg' ? faSun : faMoon}/>

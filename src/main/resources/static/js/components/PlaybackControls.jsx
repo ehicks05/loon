@@ -70,9 +70,6 @@ export default class PlaybackControls extends React.Component {
         const album = selectedTrack ? selectedTrack.album : '';
         const title = selectedTrack ? selectedTrack.title : '';
 
-        const sampleRate = selectedTrack ? selectedTrack.sampleRate : '';
-        const bitDepth = selectedTrack ? selectedTrack.bitDepth : '';
-
         const formattedTimeElapsed = PlaybackControls.formatTime(Math.round(timeElapsed));
         const formattedDuration = PlaybackControls.formatTime(Math.round(duration));
 
@@ -149,13 +146,6 @@ export default class PlaybackControls extends React.Component {
                 </span>
             </a>;
 
-        const infoButton =
-            <span className={"button is-small"} style={{margin:'0 .75em 0 .5em'}} title={'Sample Rate: ' + sampleRate + '. Bit Depth: ' + bitDepth}>
-                <span className="icon">
-                    <FontAwesomeIcon icon={faInfo} fixedWidth/>
-                </span>
-            </span>;
-
         const muteButton =
             <a className="button is-small" id="volumeBtn" style={{margin:'0 .75em 0 .5em'}} onClick={this.handleMuteChange}>
                 <span className="icon">
@@ -184,7 +174,6 @@ export default class PlaybackControls extends React.Component {
                 <div className="level-item">
                     {windowWidth <= 768 && playbackButtons}
                     {shuffleButton}
-                    {infoButton}
                     {muteButton}
                     {volumeSlider}
                 </div>

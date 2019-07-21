@@ -9,6 +9,7 @@ export default class SystemStatusBar extends React.Component {
     constructor(props) {
         super(props);
 
+        this.state = {};
         this.reloadLibrary = this.reloadLibrary.bind(this);
     }
 
@@ -45,6 +46,7 @@ export default class SystemStatusBar extends React.Component {
             };
             let subscription = client.subscribe("/topic/messages", callback);
 
+            // Send an initial message to receive task state.
             setTimeout(function () {
                 client.publish({destination: '/app/hello', body: 'Hello'});
             }, 100);

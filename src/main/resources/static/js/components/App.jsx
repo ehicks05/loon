@@ -17,6 +17,7 @@ const PlaylistBuilder = lazy(() => import('./PlaylistBuilder.jsx'));
 
 const SidePanel = lazy(() => import('./SidePanel.jsx'));
 const UserSettings = lazy(() => import('./UserSettings.jsx'));
+const About = lazy(() => import('./About.jsx'));
 const Artists = lazy(() => import('./Artists.jsx'));
 const Albums = lazy(() => import('./Albums.jsx'));
 const Artist = lazy(() => import('./Artist.jsx'));
@@ -87,6 +88,7 @@ export default class App extends React.Component {
                                 <Route exact path='/'                               render={() => <Redirect to='/search' /> } />
                                 <Route exact path='/admin/systemSettings'           render={() => <SystemSettings />}/>
                                 <Route exact path='/admin/users'                    render={() => <UserSettings />}/>
+                                <Route exact path='/admin/about'                    render={() => <About />}/>
                                 <Route exact path='/settings/general'               render={() => <GeneralSettings />}/>
                                 <Route exact path='/settings/eq'                    render={() => <Eq />}/>
                                 <Route exact path='/albums'                         render={() => <Albums />}/>

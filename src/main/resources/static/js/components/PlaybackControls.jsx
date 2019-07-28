@@ -170,7 +170,7 @@ export default class PlaybackControls extends React.Component {
             </div>;
 
         const levelRight =
-            <div className="level-right" style={{marginTop: '4px', marginRight: '6px'}}>
+            <div className="level-right" style={{marginTop: '4px', marginRight: '8px'}}>
                 <div className="level-item">
                     {windowWidth <= 768 && playbackButtons}
                     {shuffleButton}

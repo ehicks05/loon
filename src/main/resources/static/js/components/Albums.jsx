@@ -19,6 +19,7 @@ export default class Albums extends React.Component {
             tracks = this.props.tracks;
 
         const hideTitle = this.props.hideTitle;
+        const hideAlbumArtist = this.props.hideAlbumArtist;
 
         let albums = [...new Set(tracks.map(track => {return JSON.stringify({albumArtist: track.albumArtist, album: track.album, albumImageId: track.albumThumbnailId})}))];
         albums = albums.map(album => JSON.parse(album));
@@ -30,7 +31,7 @@ export default class Albums extends React.Component {
 
         const albumItems = albums.map((album) => {
             // const album = JSON.parse(albumJson);
-            return <AlbumCard key={album.albumArtist + '-' + album.album} album={album} />
+            return <AlbumCard key={album.albumArtist + '-' + album.album} album={album} hideAlbumArtist={hideAlbumArtist} />
         });
 
         const windowWidth = this.props.store.uiState.windowDimensions.width;
@@ -90,6 +91,8 @@ export class AlbumCard extends React.Component
             this.props.store.appState.tracks.filter(track => track.albumArtist === album.albumArtist && track.album === album.album)
             : [];
 
+        const hideAlbumArtist = this.props.hideAlbumArtist;
+
         const displayArtist = album.albumArtist.length > 15 ? album.albumArtist.substring(0, 32) : album.albumArtist;
         const displayAlbum = album.album.length > 15 ? album.album.substring(0, 32) : album.album;
         return (
@@ -105,10 +108,16 @@ export class AlbumCard extends React.Component
                 </div>
                 <div className="card-content" style={{padding: '.75rem'}}>
                     <div className="content">
-                        <Link to={'/artist/' + album.albumArtist}>
-                            <span title={album.albumArtist}>{displayArtist}</span>
-                        </Link>
-                        &nbsp;-&nbsp;
+                        {
+                            !hideAlbumArtist &&
+                            <span>
+                                <Link to={'/artist/' + album.albumArtist}>
+                                    <span title={album.albumArtist}>{displayArtist}</span>
+                                </Link>
+                                &nbsp;-&nbsp;
+                            </span>
+                        }
+
                         <Link to={'/artist/' + album.albumArtist + '/album/' + album.album}>
                             <span title={album.albumArtist + ' - ' + album.album}>{displayAlbum}</span>
                         </Link>

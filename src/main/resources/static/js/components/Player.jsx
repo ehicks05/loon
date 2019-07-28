@@ -23,6 +23,8 @@ export default class Player extends React.Component {
         this.handleProgressChange = this.handleProgressChange.bind(this);
         this.renderSpectrumFrame = this.renderSpectrumFrame.bind(this);
         this.getMergedFrequencyBins = this.getMergedFrequencyBins.bind(this);
+        this.getCurrentPlaylistTrackIds = this.getCurrentPlaylistTrackIds.bind(this);
+        this.getNewTrackId = this.getNewTrackId.bind(this);
 
         this.lastAnimationFrame = Date.now();
 
@@ -334,24 +336,19 @@ export default class Player extends React.Component {
         }
     }
 
-    handleTrackChange(input) {
-        console.log('handleTrackChange');
-        const userState = this.props.store.uiState.user.userState;
-
-        let currentPlaylistTrackIds = [];
+    getCurrentPlaylistTrackIds() {
         const currentPlaylist = this.props.store.appState.playlists.find(playlist => playlist.id === this.props.store.uiState.selectedPlaylistId);
         if (currentPlaylist)
-        {
-            currentPlaylistTrackIds = currentPlaylist.playlistTracks.map((playlistTrack) => {
-                return playlistTrack.track.id;
-            });
-        }
+            return currentPlaylist.playlistTracks.map((playlistTrack) => playlistTrack.track.id);
         else
-            currentPlaylistTrackIds = this.props.store.appState.tracks.map(track => track.id);
+            return this.props.store.appState.tracks.map(track => track.id);
+    }
 
+    getNewTrackId(input) {
+        const currentPlaylistTrackIds = this.getCurrentPlaylistTrackIds();
         let newTrackId = -1;
-
-        if (userState.shuffle)
+        const shuffle = this.props.store.uiState.user.userState.shuffle;
+        if (shuffle)
         {
             let newPlaylistTrackIndex = Math.floor (Math.random() * currentPlaylistTrackIds.length);
             newTrackId = currentPlaylistTrackIds[newPlaylistTrackIndex];
@@ -380,6 +377,12 @@ export default class Player extends React.Component {
 
         if (newTrackId === -1)
             newTrackId = input;
+
+        return newTrackId;
+    }
+
+    handleTrackChange(input) {
+        const newTrackId = this.getNewTrackId(input);
 
         this.props.store.uiState.handleSelectedTrackIdChange(newTrackId);
     }

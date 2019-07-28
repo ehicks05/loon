@@ -118,10 +118,13 @@ public class MusicScanner extends Task
             List<Track> tracksInDb = trackRepo.findAll();
             tracksOnDisk.forEach(trackFromDisk -> {
                 Track trackFromDb = tracksInDb.stream().filter(track1 -> track1.getId().equals(trackFromDisk.getId())).findFirst().orElse(null);
+
                 if (trackFromDb != null)
                     tracksInDb.remove(trackFromDb);
 
-                if (!trackFromDisk.equals(trackFromDb))
+                boolean missingArtwork = isMissingArtwork(artPath, trackFromDb);
+
+                if (!trackFromDisk.equals(trackFromDb) || missingArtwork)
                     tracksToSave.add(trackFromDisk);
             });
 
@@ -137,14 +140,35 @@ public class MusicScanner extends Task
             double durSeconds = ((double) dur) / 1000;
             log.info("Duration: " + dur + "ms");
             log.info("Files considered: " + paths.size() + ". " + "(" + Math.round(paths.size() / durSeconds) + " files / sec)");
-            log.info("Tracks saved: " + tracksToSave.size() + ". " + "(" + Math.round(tracksToSave.size() / durSeconds) + " tracks / sec)");
-            log.info("Tracks missing file: " + tracksWithoutAFile.size() + ". " + "(" + Math.round(tracksWithoutAFile.size() / durSeconds) + " tracks / sec)");
-            log.info("Art files copied to static assets folder: " + artFilesCopied + ". " + "(" + Math.round(artFilesCopied / durSeconds) + " art files / sec)");
+            log.info("Tracks saved: " + tracksToSave.size());
+            log.info("Tracks missing file: " + tracksWithoutAFile.size());
+            log.info("Art files copied to static assets folder: " + artFilesCopied);
         }
         catch (Exception e)
         {
             log.error(e.getMessage(), e);
         }
+    }
+
+    private boolean isMissingArtwork(Path artPath, Track trackFromDb) {
+        boolean missingArtwork = false;
+        if (trackFromDb != null)
+        {
+            // check for missing artwork files
+            if (!trackFromDb.getArtistImageId().isEmpty())
+            {
+                Path path = artPath.resolve(trackFromDb.getArtistImageId());
+                if (!path.toFile().exists())
+                    missingArtwork = true;
+            }
+            if (!trackFromDb.getAlbumImageId().isEmpty())
+            {
+                Path path = artPath.resolve(trackFromDb.getAlbumImageId());
+                if (!path.toFile().exists())
+                    missingArtwork = true;
+            }
+        }
+        return missingArtwork;
     }
 
     private AudioFile getAudioFile(Path path)
@@ -203,9 +227,9 @@ public class MusicScanner extends Task
 
         String trackNumString = tag.getFirst(FieldKey.TRACK);
         trackNumString = trackNumString.contains("/") ? trackNumString.substring(0, trackNumString.indexOf("/")) : trackNumString;
-        int trackNumber = trackNumString.isEmpty() ? 1 : Integer.valueOf(trackNumString);
+        int trackNumber = trackNumString.isEmpty() ? 1 : Integer.parseInt(trackNumString);
         track.setTrackNumber(trackNumber);
-        int discNumber = !tag.getFirst(FieldKey.DISC_NO).isEmpty() ? Integer.valueOf(tag.getFirst(FieldKey.DISC_NO)) : 1;
+        int discNumber = !tag.getFirst(FieldKey.DISC_NO).isEmpty() ? Integer.parseInt(tag.getFirst(FieldKey.DISC_NO)) : 1;
         track.setDiscNumber(discNumber);
 
         track.setMusicBrainzTrackId(tag.getFirst(FieldKey.MUSICBRAINZ_TRACK_ID));

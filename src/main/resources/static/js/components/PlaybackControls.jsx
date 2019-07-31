@@ -88,7 +88,7 @@ export default class PlaybackControls extends React.Component {
                 <span id="duration" style={{fontSize: '.875rem', marginLeft: '8px'}}>{formattedDuration}</span>
             </div>;
 
-        const placeholder = 'https://via.placeholder.com/600x600.png?text=placeholder';
+        const placeholder = 'https://via.placeholder.com/48x48.png?text=placeholder';
         const imageUrl = (selectedTrack && selectedTrack.albumThumbnailId) ? '/art/' + selectedTrack.albumThumbnailId : placeholder;
 
         // todo: does this need to be lazyload?

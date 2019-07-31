@@ -11,13 +11,11 @@ import org.jaudiotagger.audio.AudioHeader;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagField;
-import org.jaudiotagger.tag.images.Artwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 
 import javax.xml.bind.DatatypeConverter;
-import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,15 +26,11 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static net.ehicks.loon.CommonUtil.escapeForFileSystem;
-
 @Configuration
 public class MusicScanner extends Task
 {
     private static final Logger log = LoggerFactory.getLogger(MusicScanner.class);
     public String id = "MusicScanner";
-
-    private int artFilesCopied = 0;
 
     public String getId()
     {
@@ -78,8 +72,6 @@ public class MusicScanner extends Task
             if (loonSystem == null)
                 return;
 
-            Path artPath = Paths.get(loonSystem.getDataFolder(), "art").toAbsolutePath();
-
             Path basePath = Paths.get(loonSystem.getMusicFolder());
             if (!basePath.toFile().exists())
             {
@@ -103,7 +95,7 @@ public class MusicScanner extends Task
                 if (audioFile == null)
                     return;
 
-                Track track = parseAudioFile(audioFile, artPath);
+                Track track = parseAudioFile(audioFile);
                 if (trackIds.contains(track.getId()))
                 {
                     Track alreadyFound = tracksOnDisk.stream().filter(track1 -> track1.getId().equals(track.getId())).findFirst().orElse(null);
@@ -122,9 +114,7 @@ public class MusicScanner extends Task
                 if (trackFromDb != null)
                     tracksInDb.remove(trackFromDb);
 
-                boolean missingArtwork = isMissingArtwork(artPath, trackFromDb);
-
-                if (!trackFromDisk.equals(trackFromDb) || missingArtwork)
+                if (!trackFromDisk.equals(trackFromDb))
                     tracksToSave.add(trackFromDisk);
             });
 
@@ -136,39 +126,17 @@ public class MusicScanner extends Task
             trackRepo.saveAll(tracksWithoutAFile);
 
             log.info("Scan complete: Added " + tracksToSave.size() + " tracks.");
-            long dur = System.currentTimeMillis() - (long)options.get("startTime");
+            long dur = System.currentTimeMillis() - (long) options.get("startTime");
             double durSeconds = ((double) dur) / 1000;
             log.info("Duration: " + dur + "ms");
             log.info("Files considered: " + paths.size() + ". " + "(" + Math.round(paths.size() / durSeconds) + " files / sec)");
             log.info("Tracks saved: " + tracksToSave.size());
             log.info("Tracks missing file: " + tracksWithoutAFile.size());
-            log.info("Art files copied to static assets folder: " + artFilesCopied);
         }
         catch (Exception e)
         {
             log.error(e.getMessage(), e);
         }
-    }
-
-    private boolean isMissingArtwork(Path artPath, Track trackFromDb) {
-        boolean missingArtwork = false;
-        if (trackFromDb != null)
-        {
-            // check for missing artwork files
-            if (!trackFromDb.getArtistImageId().isEmpty())
-            {
-                Path path = artPath.resolve(trackFromDb.getArtistImageId());
-                if (!path.toFile().exists())
-                    missingArtwork = true;
-            }
-            if (!trackFromDb.getAlbumImageId().isEmpty())
-            {
-                Path path = artPath.resolve(trackFromDb.getAlbumImageId());
-                if (!path.toFile().exists())
-                    missingArtwork = true;
-            }
-        }
-        return missingArtwork;
     }
 
     private AudioFile getAudioFile(Path path)
@@ -188,20 +156,19 @@ public class MusicScanner extends Task
         return audioFile;
     }
 
-    private Track parseAudioFile(AudioFile audioFile, Path artPath)
+    private Track parseAudioFile(AudioFile audioFile)
     {
-        AudioHeader audioHeader = audioFile.getAudioHeader();
-        Tag tag = audioFile.getTag();
-
         Track track = new Track();
-        track.setPath(audioFile.getFile().toPath().toString());
-        track.setExtension(audioFile.getExt());
-        track.setDuration((long) audioHeader.getTrackLength());
-        track.setSize(audioFile.getFile().length());
 
+        AudioHeader audioHeader = audioFile.getAudioHeader();
+        track.setDuration((long) audioHeader.getTrackLength());
         track.setSampleRate(audioHeader.getSampleRateAsNumber());
         track.setBitDepth(audioHeader.getBitsPerSample());
 
+        Tag tag = audioFile.getTag();
+        track.setPath(audioFile.getFile().toPath().toString());
+        track.setExtension(audioFile.getExt());
+        track.setSize(audioFile.getFile().length());
         track.setArtist(tag.getFirst(FieldKey.ARTIST));
         track.setTitle(tag.getFirst(FieldKey.TITLE));
         track.setAlbum(tag.getFirst(FieldKey.ALBUM));
@@ -222,8 +189,6 @@ public class MusicScanner extends Task
 
         track.setTrackGain(track.getTrackGain().replace(" dB", ""));
         track.setTrackGainLinear(track.convertDBToLinear());
-
-        findLocalArtwork(tag, track, artPath);
 
         String trackNumString = tag.getFirst(FieldKey.TRACK);
         trackNumString = trackNumString.contains("/") ? trackNumString.substring(0, trackNumString.indexOf("/")) : trackNumString;
@@ -278,103 +243,6 @@ public class MusicScanner extends Task
 
         log.debug("Replacing " + track.getArtist() + " ...with... " + newArtist);
         track.setArtist(newArtist);
-    }
-
-    private void findLocalArtwork(Tag tag, Track track, Path artPath)
-    {
-        String escapedAlbumArtist = escapeForFileSystem(track.getAlbumArtist());
-        String escapedAlbum = escapeForFileSystem(track.getAlbum());
-
-        Path outputPath;
-        try
-        {
-            outputPath = Paths.get(artPath.toFile().getCanonicalPath(), escapedAlbumArtist, escapedAlbum);
-            Files.createDirectories(outputPath);
-        }
-        catch (Exception e)
-        {
-            log.error(e.getMessage(), e);
-            return;
-        }
-
-        // look for a 'folder.jpg' in the track's directory, copy it to artPath/artist/album/folder.xyz
-        Path trackPath = Paths.get(track.getPath());
-        Path trackFolderPath = trackPath.getRoot().resolve(trackPath.subpath(0, trackPath.getNameCount() - 1));
-        if (trackFolderPath.toFile().isDirectory())
-        {
-            File[] files = trackFolderPath.toFile().listFiles();
-            for (File file : files)
-            {
-                if (file.isFile() && file.getName().toLowerCase().startsWith("folder"))
-                {
-                    String extension = file.getName().substring(file.getName().lastIndexOf(".") + 1);
-                    Path out = outputPath.resolve(escapedAlbum + "." + extension);
-
-                    try (InputStream in = new BufferedInputStream(new FileInputStream(file)))
-                    {
-                        if (isFileCopyNeeded(Files.readAllBytes(file.toPath()), out))
-                        {
-                            Files.copy(in, out);
-                            artFilesCopied++;
-                        }
-
-                        track.setAlbumImageId(escapedAlbumArtist + "/" + escapedAlbum + "/" + escapedAlbum + "." + extension);
-                        return;
-                    }
-                    catch (Exception e)
-                    {
-                        log.error(e.getMessage(), e);
-                    }
-                }
-            }
-        }
-
-        // look for artwork embedded in the file
-        Artwork artwork = tag.getFirstArtwork();
-        if (artwork == null || artwork.getBinaryData() == null)
-            return;
-
-        String ext = "." + artwork.getMimeType().replace("image/", "");
-        String outputFileNameWithExtension = escapedAlbum + ext;
-        Path out = outputPath.resolve(outputFileNameWithExtension);
-
-        if (isFileCopyNeeded(artwork.getBinaryData(), out))
-        {
-            try (InputStream in = new ByteArrayInputStream(artwork.getBinaryData()))
-            {
-                if (!out.toFile().exists())
-                {
-                    Files.copy(in, out);
-                    artFilesCopied++;
-                }
-
-                track.setAlbumImageId(escapedAlbumArtist + "/" + escapedAlbum + "/" + outputFileNameWithExtension);
-            }
-            catch (Exception e)
-            {
-                log.error(e.getMessage(), e);
-            }
-        }
-    }
-
-    private boolean isFileCopyNeeded(byte[] in, Path out) {
-        boolean copyFile = false;
-        if (!out.toFile().exists())
-            copyFile = true;
-        else
-        {
-            try
-            {
-                byte[] f2 = Files.readAllBytes(out);
-                if (!Arrays.equals(in, f2))
-                    copyFile = true;
-            }
-            catch (Exception e)
-            {
-                log.error(e.getMessage(), e);
-            }
-        }
-        return copyFile;
     }
 
     private String deepScanForTagField(Tag tag, String query, String defaultVal)

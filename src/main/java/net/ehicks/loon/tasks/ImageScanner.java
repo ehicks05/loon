@@ -252,6 +252,7 @@ public class ImageScanner extends Task
     }
 
     /** Get image url from spotify api. Pass in null for the album to get artist art */
+    // todo: implement album search
     private String getImageUrl(LoonSystem loonSystem, String artist, String album)
     {
         SpotifyApi spotifyApi = new SpotifyApi.Builder()

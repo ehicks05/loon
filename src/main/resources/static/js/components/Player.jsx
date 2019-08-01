@@ -72,7 +72,7 @@ export default class Player extends React.Component {
         this.band4.gain.value = userState.eq4Gain;
 
         this.analyser = this.audioCtx.createAnalyser();
-        this.analyser.fftSize = 2048;
+        this.analyser.fftSize = 4096;
 
         this.trackGainNode.connect(this.band1);
         this.band1.connect(this.band2);

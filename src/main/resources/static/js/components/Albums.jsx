@@ -24,8 +24,8 @@ export default class Albums extends React.Component {
         let albums = [...new Set(tracks.map(track => {return JSON.stringify({albumArtist: track.albumArtist, album: track.album, albumImageId: track.albumThumbnailId})}))];
         albums = albums.map(album => JSON.parse(album));
         albums = albums.sort((a1, a2) => {
-            if (a1.albumArtist < a2.albumArtist) return -1;
-            if (a1.albumArtist > a2.albumArtist) return 1;
+            if (a1.albumArtist.toLowerCase() < a2.albumArtist.toLowerCase()) return -1;
+            if (a1.albumArtist.toLowerCase() > a2.albumArtist.toLowerCase()) return 1;
             return 0;
         });
 

@@ -80,6 +80,8 @@ export class AlbumCard extends React.Component
     render()
     {
         const album = this.props.album;
+        const displayArtist = album.albumArtist.length > 15 ? album.albumArtist.substring(0, 32) : album.albumArtist;
+        const displayAlbum = album.album.length > 15 ? album.album.substring(0, 32) : album.album;
         const placeholder = 'https://via.placeholder.com/600x600.png?text=placeholder';
         const imageUrl = album.albumImageId ? '/art/' + album.albumImageId : placeholder;
 
@@ -93,8 +95,21 @@ export class AlbumCard extends React.Component
 
         const hideAlbumArtist = this.props.hideAlbumArtist;
 
-        const displayArtist = album.albumArtist.length > 15 ? album.albumArtist.substring(0, 32) : album.albumArtist;
-        const displayAlbum = album.album.length > 15 ? album.album.substring(0, 32) : album.album;
+        const linkAlbumArtist = this.props.store.appState.tracks.filter(track => track.artist === album.albumArtist).length > 0;
+
+        let albumArtistText = <span title={album.albumArtist}>{displayArtist}</span>;
+        if (linkAlbumArtist)
+            albumArtistText =
+                <Link to={'/artist/' + album.albumArtist}>
+                    {albumArtistText}
+                </Link>;
+
+        const albumArtist = hideAlbumArtist ? null :
+            <span>
+                {albumArtistText}
+                &nbsp;-&nbsp;
+            </span>;
+
         return (
             <div className="card" onMouseEnter={this.handleHoverTrue} onMouseLeave={this.handleHoverFalse}>
                 <div className="card-image">
@@ -108,15 +123,7 @@ export class AlbumCard extends React.Component
                 </div>
                 <div className="card-content" style={{padding: '.75rem'}}>
                     <div className="content">
-                        {
-                            !hideAlbumArtist &&
-                            <span>
-                                <Link to={'/artist/' + album.albumArtist}>
-                                    <span title={album.albumArtist}>{displayArtist}</span>
-                                </Link>
-                                &nbsp;-&nbsp;
-                            </span>
-                        }
+                        {albumArtist}
 
                         <Link to={'/artist/' + album.albumArtist + '/album/' + album.album}>
                             <span title={album.albumArtist + ' - ' + album.album}>{displayAlbum}</span>

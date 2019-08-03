@@ -7,6 +7,7 @@ export class AppState {
     @observable versionInfo = [];
     @observable pendingRequests = 0;
     @observable taskState = {};
+    @observable distinctArtists = [];
 
     constructor(rootStore) {
         // autorun(() => console.log(this.report));
@@ -44,7 +45,12 @@ export class AppState {
     loadTracks()
     {
         return fetch('/api/library', {method: 'GET'})
-            .then(response => response.json()).then(data => this.tracks = data);
+            .then(response => response.json())
+            .then(data => {
+                this.tracks = data;
+                const artists = data.map(track => track.artist);
+                this.distinctArtists = [...new Set(artists)];
+            });
     }
 
     @action

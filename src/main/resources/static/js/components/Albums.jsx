@@ -95,7 +95,7 @@ export class AlbumCard extends React.Component
 
         const hideAlbumArtist = this.props.hideAlbumArtist;
 
-        const linkAlbumArtist = this.props.store.appState.tracks.filter(track => track.artist === album.albumArtist).length > 0;
+        const linkAlbumArtist = this.props.store.appState.distinctArtists.includes(album.albumArtist);
 
         let albumArtistText = <span title={album.albumArtist}>{displayArtist}</span>;
         if (linkAlbumArtist)

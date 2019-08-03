@@ -4,9 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.credentials.ClientCredentials;
+import com.wrapper.spotify.model_objects.specification.AlbumSimplified;
 import com.wrapper.spotify.model_objects.specification.Artist;
 import com.wrapper.spotify.model_objects.specification.Paging;
 import com.wrapper.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
+import com.wrapper.spotify.requests.data.search.simplified.SearchAlbumsRequest;
 import com.wrapper.spotify.requests.data.search.simplified.SearchArtistsRequest;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.makers.FixedSizeThumbnailMaker;
@@ -232,7 +234,7 @@ public class ImageScanner extends Task
         }
 
         // check spotify
-        String imageUrl = getImageUrl(loonSystem, track.getArtist(), track.getAlbum());
+        String imageUrl = getImageUrl(loonSystem, track.getAlbumArtist(), track.getAlbum());
         if (imageUrl != null && !imageUrl.isEmpty())
             ingestImage(new URL(imageUrl), out, track, artPath, true);
     }
@@ -252,7 +254,6 @@ public class ImageScanner extends Task
     }
 
     /** Get image url from spotify api. Pass in null for the album to get artist art */
-    // todo: implement album search
     private String getImageUrl(LoonSystem loonSystem, String artist, String album)
     {
         SpotifyApi spotifyApi = new SpotifyApi.Builder()
@@ -269,18 +270,34 @@ public class ImageScanner extends Task
             // Set access token for further "spotifyApi" object usage
             spotifyApi.setAccessToken(clientCredentials.getAccessToken());
 
-            SearchArtistsRequest searchArtistsRequest = spotifyApi.searchArtists(artist)
-                    .limit(1)
-                    .build();
-
-            final Paging<Artist> artistPaging = searchArtistsRequest.execute();
-
-            if (artistPaging.getItems().length > 0)
+            if (album == null)
             {
-                Artist artistItem = artistPaging.getItems()[0];
+                SearchArtistsRequest searchArtistsRequest = spotifyApi.searchArtists(artist)
+                        .limit(1)
+                        .build();
 
-                if (artistItem.getImages().length > 0)
-                    return artistItem.getImages()[0].getUrl();
+                final Paging<Artist> artistPaging = searchArtistsRequest.execute();
+
+                if (artistPaging.getItems().length > 0)
+                {
+                    Artist artistItem = artistPaging.getItems()[0];
+                    if (artistItem.getImages().length > 0)
+                        return artistItem.getImages()[0].getUrl();
+                }
+            }
+            else
+            {
+                SearchAlbumsRequest searchAlbumsRequest = spotifyApi.searchAlbums("album:" + album + " artist:" + artist)
+                        .limit(1)
+                        .build();
+
+                final Paging<AlbumSimplified> albumPaging = searchAlbumsRequest.execute();
+                if (albumPaging.getItems().length > 0)
+                {
+                    AlbumSimplified albumSimplified = albumPaging.getItems()[0];
+                    if (albumSimplified.getImages().length > 0)
+                        return albumSimplified.getImages()[0].getUrl();
+                }
             }
 
         } catch (IOException | SpotifyWebApiException e) {

@@ -279,7 +279,7 @@ export default class Player extends React.Component {
             size *= 1.3;
         }
 
-        return mergedData;
+        return mergedData.slice(2); // the first 2 frequency bins tend to have very little energy
     }
 
     renderSpectrumFrame() {

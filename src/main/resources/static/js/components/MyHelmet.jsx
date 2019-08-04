@@ -109,6 +109,7 @@ export default class MyHelmet extends React.Component {
                          .card a:hover {color:#888}
                          .myLevel a {color:#666}
                          .myLevel a:hover {color:#888}
+                         .navbar {border:none;}
                          
                          .panel-block {border: none; border-left: 6px solid #f4f4f4;}
                          .panel-block:first-child {border-top: none;}

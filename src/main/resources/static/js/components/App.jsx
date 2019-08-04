@@ -61,7 +61,7 @@ export default class App extends React.Component {
 
                     <div className={'columns is-gapless'}>
                         <div id='left-column' className={"column is-narrow is-hidden-touch" + (store.uiState.isDarkTheme ? ' is-dark ' : '')}>
-                            <div style={{height: '99%', display: 'flex', flexDirection: 'column'}}>
+                            <div style={{height: '100%', display: 'flex', flexDirection: 'column'}}>
                                 <div style={{overflowY: 'auto'}}><SidePanel /></div>
                                 <div style={{flex: '1 1 auto'}}> </div>
                                 <div style={{height: '100px'}}>
@@ -69,7 +69,7 @@ export default class App extends React.Component {
                                 </div>
                             </div>
                         </div>
-                        <div className="column" style={{height: 'calc(100vh - (52px + 23px + ' + footerHeight + '))', overflowY: 'scroll'}}>
+                        <div className="column" style={{height: 'calc(100vh - (52px + 23px + ' + footerHeight + '))', overflow: 'hidden auto'}}>
                             <Routes />
                         </div>
                     </div>

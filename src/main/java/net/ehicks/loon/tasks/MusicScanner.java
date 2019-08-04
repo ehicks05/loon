@@ -1,5 +1,6 @@
 package net.ehicks.loon.tasks;
 
+import net.ehicks.loon.CommonUtil;
 import net.ehicks.loon.FileWalker;
 import net.ehicks.loon.beans.LoonSystem;
 import net.ehicks.loon.beans.Track;
@@ -169,10 +170,10 @@ public class MusicScanner extends Task
         track.setPath(audioFile.getFile().toPath().toString());
         track.setExtension(audioFile.getExt());
         track.setSize(audioFile.getFile().length());
-        track.setArtist(tag.getFirst(FieldKey.ARTIST));
-        track.setTitle(tag.getFirst(FieldKey.TITLE));
-        track.setAlbum(tag.getFirst(FieldKey.ALBUM));
-        track.setAlbumArtist(tag.getFirst(FieldKey.ALBUM_ARTIST));
+        track.setArtist(CommonUtil.escapeForFileSystem(tag.getFirst(FieldKey.ARTIST)));
+        track.setTitle(CommonUtil.escapeForFileSystem(tag.getFirst(FieldKey.TITLE)));
+        track.setAlbum(CommonUtil.escapeForFileSystem(tag.getFirst(FieldKey.ALBUM)));
+        track.setAlbumArtist(CommonUtil.escapeForFileSystem(tag.getFirst(FieldKey.ALBUM_ARTIST)));
         track.setTrackPeak(tag.getFirst("REPLAYGAIN_TRACK_PEAK"));
         track.setTrackGain(tag.getFirst("REPLAYGAIN_TRACK_GAIN"));
 

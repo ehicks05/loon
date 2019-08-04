@@ -98,7 +98,7 @@ export default class MyHelmet extends React.Component {
                         `
                         :
                         `table {background-color: #EEE !important}
-                         .myLevel {background-color: #f4f4f4;}
+                         .myLevel {color: #4a4a4a; background-color: #f4f4f4;}
                          #left-column {background-color: #f4f4f4;}
                          .mediaItemDiv:hover {background-color: #f4f4f4;}
                          .mediaItemDiv a {color:#666}

@@ -26,13 +26,15 @@ export default class MyHelmet extends React.Component {
                 <style>
                     {
                         `
-                        html {overflow-y: auto !important;}
+                        html {overflow-y: hidden !important;}
 
                         #level {
                             position: fixed;
                             bottom: 0;
                             width: 100%;
                         }
+                        
+                        .columns {margin-bottom: 0 !important;}
                         
                         section {padding: 10px !important;}
                         

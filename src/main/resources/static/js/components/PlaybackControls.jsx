@@ -74,7 +74,7 @@ export default class PlaybackControls extends React.Component {
         const formattedDuration = PlaybackControls.formatTime(Math.round(duration));
 
         const windowWidth = this.props.store.uiState.windowDimensions.width;
-        const textWidth = windowWidth > 768 ? (windowWidth - 350) + 'px' : '100%';
+        const textWidth = windowWidth > 768 ? (windowWidth - 408) + 'px' : '100%';
 
         const trackProgressBar =
             <div className="level-item" style={{marginBottom: '0'}}>
@@ -99,7 +99,7 @@ export default class PlaybackControls extends React.Component {
         const trackDescription =
             <div className="level-item">
                 {albumArt}
-                <span id="track" style={{maxWidth: textWidth, maxHeight: '72px', overflow: 'auto'}}>
+                <span id="track" style={{maxWidth: textWidth, maxHeight: '48px', overflow: 'auto'}}>
                     <b>{title}</b>
                     <br/>
                     <span style={{fontSize: '.875rem'}}>
@@ -180,7 +180,7 @@ export default class PlaybackControls extends React.Component {
             </div>;
 
         return (
-            <div>
+            <>
                 <div className="section myLevel" style={{zIndex: '5', position: 'static', padding: '2px 6px 0 6px'}}>
                     <nav className="level">
                         {trackProgressBar}
@@ -193,7 +193,7 @@ export default class PlaybackControls extends React.Component {
                         {levelRight}
                     </nav>
                 </div>
-            </div>
+            </>
         );
     }
 }

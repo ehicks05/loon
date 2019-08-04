@@ -1,4 +1,4 @@
-html {overflow-y: auto;}
+html {overflow-y: hidden;}
 
 #level {
     position: fixed;

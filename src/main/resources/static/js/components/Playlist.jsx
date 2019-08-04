@@ -146,8 +146,8 @@ export default class Playlist extends React.Component {
                 <DragDropContext onDragEnd={this.onDragEnd}>
                     <Droppable droppableId="droppable">
                         {(provided, snapshot) => (
-                            <div ref={provided.innerRef} style={{display: 'flex', flexDirection: 'column', flex: '1', flexGrow: '1'}}>
-                                <ul id="list" style={{display: 'flex', flexDirection: 'column', flex: '1', flexGrow: '1'}}>
+                            <div ref={provided.innerRef}>
+                                <ul id="list">
                                     {mediaItems}
                                 </ul>
                                 {provided.placeholder}
@@ -158,7 +158,7 @@ export default class Playlist extends React.Component {
         }
         else {
             mediaList = (
-                <ul id="list" style={{display: 'flex', flexDirection: 'column', flex: '1', flexGrow: '1'}}>
+                <ul id="list">
                     {mediaItems}
                 </ul>
             );
@@ -203,15 +203,15 @@ export default class Playlist extends React.Component {
 
         const title = playlist ? playlist.name : 'Library';
         return (
-            <div>
+            <>
 
-                <section className={'section'} style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
+                <section className={'section'}>
                     <h1 className="title">{title}</h1>
                     {actions}
                 </section>
 
                 {mediaList}
-            </div>
+            </>
         );
     }
 }

@@ -34,8 +34,14 @@ public class PlaylistTrack implements Serializable
             , "trackPeak"
             , "artworkDbFileId"
             , "artistImageId"
-            , "albumImageId",
-            "playlistTracks"})
+            , "albumImageId"
+            , "artistThumbnailId"
+            , "albumThumbnailId"
+            , "playlistTracks"
+            , "missingFile"
+            , "sampleRate"
+            , "bitDepth"
+    })
     @JoinColumn(name = "track_id", referencedColumnName = "id")
     private Track track;
 

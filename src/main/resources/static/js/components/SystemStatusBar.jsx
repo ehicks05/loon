@@ -1,5 +1,4 @@
 import React from 'react';
-import { Client, Message } from '@stomp/stompjs';
 import {inject, observer} from "mobx-react";
 
 @inject('store')
@@ -14,51 +13,13 @@ export default class SystemStatusBar extends React.Component {
     }
 
     componentDidMount() {
-        const csrfHeader = this.props.store.csrfHeader;
-        const csrfToken = this.props.store.csrfToken;
-
-        const client = new Client({
-            brokerURL: "ws://" + window.location.host + "/hello",
-            connectHeaders: {
-                'X-CSRF-TOKEN': csrfToken
-            },
-            debug: function (str) {
-                // console.log(str);
-            },
-            reconnectDelay: 5000,
-            heartbeatIncoming: 4000,
-            heartbeatOutgoing: 4000
-        });
-
         const self = this;
-        client.onConnect = function(frame) {
-            // Do something, all subscribes must be done is this callback
-            // This is needed because this will be executed after a (re)connect
+        const eventSource = new EventSource("/hello", { withCredentials: true } );
 
-            let callback = function(message) {
-                // called when the client receives a STOMP message from the server
-                if (message.body) {
-                    self.props.store.appState.setTaskState(JSON.parse(message.body));
-                    self.reloadLibrary();
-                } else {
-                    console.log("got empty message");
-                }
-            };
-            let subscription = client.subscribe("/topic/messages", callback);
-
-            // Send an initial message to receive task state.
-            setTimeout(function () {
-                client.publish({destination: '/app/hello', body: 'Hello'});
-            }, 100);
-
-        };
-
-        client.onStompError = function (frame) {
-            console.log('Broker reported error: ' + frame.headers['message']);
-            console.log('Additional details: ' + frame.body);
-        };
-
-        client.activate();
+        eventSource.addEventListener("taskStateUpdate", function (e) {
+            self.props.store.appState.setTaskState(JSON.parse(e.data));
+            self.reloadLibrary();
+        });
     }
 
     reloadLibrary() {

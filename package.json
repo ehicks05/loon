@@ -14,7 +14,6 @@
     "@fortawesome/free-regular-svg-icons": "^5.10.1",
     "@fortawesome/free-solid-svg-icons": "^5.10.1",
     "@fortawesome/react-fontawesome": "^0.1.4",
-    "@stomp/stompjs": "^5.4.2",
     "bulma-extensions": "^6.2.7",
     "bulma-switch": "^2.0.0",
     "fetch-defaults": "^1.0.0",

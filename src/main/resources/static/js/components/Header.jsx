@@ -71,6 +71,11 @@ export default class Header extends React.Component {
                 )
             });
 
+        const innerHeight = this.props.store.uiState.windowDimensions.height;
+        const navbarMenuHeight = innerHeight - 52;
+        // helps with issue where nav menu was not scrollable on mobile and items at the bottom were inaccessible.
+        const navbarMenuStyle = this.props.store.uiState.windowDimensions.width < 1024 ? {overflowY: 'auto', height: navbarMenuHeight + 'px'} : null;
+
         return (
             <nav className={"navbar " + (this.props.store.uiState.isDarkTheme ? ' is-dark ': ' is-success ')} role="navigation" aria-label="main navigation">
                 <div className="navbar-brand">
@@ -85,7 +90,7 @@ export default class Header extends React.Component {
                     </a>
                 </div>
 
-                <div className="navbar-menu" id="navMenu">
+                <div className="navbar-menu" id="navMenu" style={navbarMenuStyle}>
                     <div className="navbar-start">
                         <NavLink to='/search' activeClassName='is-active' className="navbar-item">Search</NavLink>
                         <NavLink to='/favorites' activeClassName='is-active' className="navbar-item">Favorites</NavLink>

@@ -50,8 +50,9 @@ export default class App extends React.Component {
             );
         }
 
+        const innerHeight = this.props.store.uiState.windowDimensions.height;
         const footerHeight = this.props.store.uiState.windowDimensions.width <= 768 ? '103px' : '54px';
-        const columnHeight = 'calc(100vh - (52px + 23px + ' + footerHeight + '))';
+        const columnHeight = 'calc(' + innerHeight + 'px - (52px + 23px + ' + footerHeight + '))';
         return (
             <Router history={this.state.history}>
                 <>
@@ -61,7 +62,7 @@ export default class App extends React.Component {
 
                     <div className={'columns is-gapless'}>
                         <div id='left-column' style={{height: columnHeight, overflow: 'hidden auto'}} className={"column is-narrow is-hidden-touch" + (store.uiState.isDarkTheme ? ' is-dark ' : '')}>
-                            <div style={{height: '99%', display: 'flex', flexDirection: 'column'}}>
+                            <div style={{height: '98%', display: 'flex', flexDirection: 'column'}}>
                                 <div style={{overflowY: 'auto'}}><SidePanel /></div>
                                 <div style={{flex: '1 1 auto'}}> </div>
                                 <div style={{height: '100px'}}>

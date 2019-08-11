@@ -162,7 +162,10 @@ export class UiState {
         if (!theme)
             theme = 'default';
 
-        return 'https://unpkg.com/bulmaswatch/' + theme + '/bulmaswatch.min.css';
+        if (theme === 'default')
+            return 'https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css';
+        if (theme === 'cyborg')
+            return 'https://unpkg.com/bulma-dark@0.0.1/dist/css/cyborg.css';
     }
 
     @computed get selectedTrack() {

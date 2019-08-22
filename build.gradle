@@ -13,7 +13,8 @@ buildscript {
 }
 
 plugins {
-    id "com.gorylenko.gradle-git-properties" version "2.0.0"
+    id "com.gorylenko.gradle-git-properties" version "2.1.0"
+    id "com.github.ben-manes.versions" version "0.22.0"
 }
 
 // for spring boot devtools
@@ -45,10 +46,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'ws.schild:jave-core:2.5.1'
-    implementation 'ws.schild:jave-nativebin-win64:2.5.1'
+    implementation 'ws.schild:jave-core:2.6.0'
+    implementation 'ws.schild:jave-nativebin-win64:2.6.0'
     implementation 'se.michaelthelin.spotify:spotify-web-api-java:2.2.0'
-    implementation 'com.twelvemonkeys.imageio:imageio-jpeg:3.4.1' // adds support for jpegs with cmyk encoding.
+    implementation 'com.twelvemonkeys.imageio:imageio-jpeg:3.4.2' // adds support for jpegs with cmyk encoding.
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'org.postgresql:postgresql'

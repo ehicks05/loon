@@ -106,17 +106,14 @@ export default class Playlist extends React.Component {
 
         const routeParamPlaylistId = this.state.playlistId;
 
-        let mediaItems;
         const playlist = playlists.find(playlist => playlist.id === routeParamPlaylistId);
 
         if (routeParamPlaylistId && !playlist)
             return <div>Loading...</div>;
 
-        if (playlist)
-        {
-            mediaItems = playlist.playlistTracks.map((playlistTrack, index) => {
-                    const track = tracks.find(track => track.id === playlistTrack.track.id);
-                    return (
+        const mediaItems = playlist.playlistTracks.map((playlistTrack, index) => {
+                const track = tracks.find(track => track.id === playlistTrack.track.id);
+                return (
                     <Draggable
                         key={track.id}
                         draggableId={track.id}
@@ -125,46 +122,48 @@ export default class Playlist extends React.Component {
                         {(provided, snapshot) => (
                             <MediaItem provided={provided} snapshot={snapshot} key={track.id} playlistId={routeParamPlaylistId}
                                        track={track} trackNumber={playlistTrack.index + 1}
-                                />
+                            />
 
                         )}
                     </Draggable>
-                    )
-                }
-            );
-        }
-        else
-        {
-            mediaItems = tracks.map((track, index) => <MediaItem key={track.id} playlistId={routeParamPlaylistId} track={track} trackNumber={index + 1} />);
-        }
+                )
+            }
+        );
 
-        let mediaList;
+        const mediaList = (
+            <DragDropContext onDragEnd={this.onDragEnd}>
+                <Droppable droppableId="droppable">
+                    {(provided, snapshot) => (
+                        <div ref={provided.innerRef}>
+                            <ul id="list">
+                                {mediaItems}
+                            </ul>
+                            {provided.placeholder}
+                        </div>
+                    )}
+                </Droppable>
+            </DragDropContext>
+        );
 
-        if (playlist)
-        {
-            mediaList = (
-                <DragDropContext onDragEnd={this.onDragEnd}>
-                    <Droppable droppableId="droppable">
-                        {(provided, snapshot) => (
-                            <div ref={provided.innerRef}>
-                                <ul id="list">
-                                    {mediaItems}
-                                </ul>
-                                {provided.placeholder}
-                            </div>
-                        )}
-                    </Droppable>
-                </DragDropContext>);
-        }
-        else {
-            mediaList = (
-                <ul id="list">
-                    {mediaItems}
-                </ul>
-            );
-        }
+        let actions = this.renderActions(playlist);
 
-        let actions = '';
+        const title = playlist ? playlist.name : 'Library';
+        return (
+            <>
+
+                <section className={'section'}>
+                    <h1 className="title">{title}</h1>
+                    {actions}
+                </section>
+
+                {mediaList}
+            </>
+        );
+    }
+
+    renderActions(playlist) {
+        let actions = null;
+
         if (playlist && playlist.queue)
         {
             const disabled = playlist.playlistTracks.length === 0;
@@ -201,17 +200,6 @@ export default class Playlist extends React.Component {
                 </div>
         }
 
-        const title = playlist ? playlist.name : 'Library';
-        return (
-            <>
-
-                <section className={'section'}>
-                    <h1 className="title">{title}</h1>
-                    {actions}
-                </section>
-
-                {mediaList}
-            </>
-        );
+        return actions;
     }
 }

@@ -195,8 +195,7 @@ public class MusicScanner extends Task
         trackNumString = trackNumString.contains("/") ? trackNumString.substring(0, trackNumString.indexOf("/")) : trackNumString;
         int trackNumber = trackNumString.isEmpty() ? 1 : Integer.parseInt(trackNumString);
         track.setTrackNumber(trackNumber);
-        int discNumber = !tag.getFirst(FieldKey.DISC_NO).isEmpty() ? Integer.parseInt(tag.getFirst(FieldKey.DISC_NO)) : 1;
-        track.setDiscNumber(discNumber);
+        track.setDiscNumber(getDiscNumber(tag));
 
         track.setMusicBrainzTrackId(tag.getFirst(FieldKey.MUSICBRAINZ_TRACK_ID));
         if (track.getMusicBrainzTrackId().isEmpty())
@@ -230,6 +229,22 @@ public class MusicScanner extends Task
 
         track.setId(id);
         return track;
+    }
+
+    private int getDiscNumber(Tag tag)
+    {
+        String val = tag.getFirst(FieldKey.DISC_NO);
+        if (val.isBlank()) return 1;
+        if (val.contains("/"))
+            val = val.substring(0, val.indexOf("/"));
+        try
+        {
+            return Integer.parseInt(val);
+        }
+        catch (Exception e)
+        {
+            return 1;
+        }
     }
 
     private void removeFeaturedArtist(Tag tag, Track track) {

@@ -51,8 +51,12 @@ export default class App extends React.Component {
         }
 
         const innerHeight = this.props.store.uiState.windowDimensions.height;
-        const footerHeight = this.props.store.uiState.windowDimensions.width <= 768 ? '103px' : '54px';
-        const columnHeight = 'calc(' + innerHeight + 'px - (52px + 23px + ' + footerHeight + '))';
+        const footerHeight = this.props.store.uiState.windowDimensions.width <= 768 ? 103 : 54;
+        // const columnHeight = 'calc(' + innerHeight + 'px - (52px + 23px + ' + footerHeight + '))';
+        const ch = Number(innerHeight) - (52 + 23 + Number(footerHeight));
+        const columnHeight = '' + ch + 'px';
+        console.log('New columnHeight: ' + columnHeight + '... window height('+innerHeight+') - (header height('+52+') + footer height(23 + '+footerHeight+'))):');
+
         return (
             <Router history={this.state.history}>
                 <>

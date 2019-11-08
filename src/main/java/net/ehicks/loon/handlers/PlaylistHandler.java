@@ -146,7 +146,7 @@ public class PlaylistHandler
         final long LOW = Math.min(oldIndex, newIndex);
         final long HIGH = Math.max(oldIndex, newIndex);
 
-        // increment the index of all other tracks in the playlist with indexes >= to the new index and < the previous index.
+        // adjust the index of all other tracks in the playlist with indexes >= to LOW and <= HIGH.
         Set<PlaylistTrack> playlistTracks = playlist.getPlaylistTracks();
 
         int adjustOthersBy = newIndex < oldIndex ? 1 : -1;

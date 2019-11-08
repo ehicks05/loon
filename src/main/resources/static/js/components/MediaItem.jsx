@@ -24,7 +24,8 @@ export default class MediaItem extends React.Component {
         super(props);
         this.handleHoverTrue = this.handleHoverTrue.bind(this);
         this.handleHoverFalse = this.handleHoverFalse.bind(this);
-        this.state = {hover: false}
+        this.limitLength = this.limitLength.bind(this);
+        this.state = {hover: false, limitTextLength: false}
     }
 
     handleHoverTrue()
@@ -43,14 +44,25 @@ export default class MediaItem extends React.Component {
         this.props.store.uiState.handleSelectedPlaylistIdChange(selectedPlaylistId, selectedTrackId);
     }
 
+    // not sure this is a good idea...
+    limitLength(input, fraction) {
+        if (!this.state.limitTextLength)
+            return input;
+
+        const limit = ((this.props.store.uiState.windowDimensions.width * 1.6) / 20) / fraction;
+        if (input.length > limit)
+            return input.substring(0, limit) + '...';
+        return input;
+    }
+
     render()
     {
         const playlistId = this.props.playlistId;
         const trackId = this.props.track.id;
         const trackNumber = this.props.trackNumber;
-        const artist = this.props.track.artist ? this.props.track.artist : 'Missing!';
-        const trackTitle = this.props.track.title ? this.props.track.title : 'Missing!';
-        const album = this.props.track.album ? this.props.track.album : 'Missing!';
+        const artist = this.props.track.artist ? this.limitLength(this.props.track.artist, 1.8) : 'Missing!';
+        const trackTitle = this.props.track.title ? this.limitLength(this.props.track.title, 1) : 'Missing!';
+        const album = this.props.track.album ? this.limitLength(this.props.track.album, 1.8) : 'Missing!';
         const formattedDuration = this.props.track.duration;
 
         const highlightClass = trackId === this.props.store.uiState.selectedTrackId ? ' playingHighlight' : '';

@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom'
 import MediaItem from "./MediaItem.jsx";
 import {DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd';
 import {inject, observer} from "mobx-react";
@@ -16,7 +17,6 @@ export default class Playlist extends React.Component {
         super(props);
 
         this.parsePlaylistId = this.parsePlaylistId.bind(this);
-        this.setListRef = this.setListRef.bind(this);
         this.renderRow = this.renderRow.bind(this);
 
         this.onDragEnd = this.onDragEnd.bind(this);
@@ -171,7 +171,6 @@ export default class Playlist extends React.Component {
                                 {
                                     ({width, height}) => {
                                         return <List
-                                            ref={this.setListRef}
                                             width={width}
                                             height={height}
                                             rowHeight={this.cache.rowHeight}
@@ -183,6 +182,19 @@ export default class Playlist extends React.Component {
                                             overscanRowCount={3}
                                             deferredMeasurementCache={this.cache}
                                             estimatedRowSize={58}
+                                            ref={ref => {
+                                                // from https://github.com/atlassian/react-beautiful-dnd/blob/master/stories/src/virtual/react-virtualized/list.jsx
+                                                // react-virtualized has no way to get the list's ref that I can so
+                                                // So we use the `ReactDOM.findDOMNode(ref)` escape hatch to get the ref
+                                                if (ref) {
+                                                    // eslint-disable-next-line react/no-find-dom-node
+                                                    const whatHasMyLifeComeTo = ReactDOM.findDOMNode(ref);
+                                                    if (whatHasMyLifeComeTo instanceof HTMLElement) {
+                                                        provided.innerRef(whatHasMyLifeComeTo);
+                                                        self.listRef = ref;
+                                                    }
+                                                }
+                                            }}
                                         />
                                     }
                                 }
@@ -238,11 +250,6 @@ export default class Playlist extends React.Component {
                 )}
             </Draggable>
         );
-    }
-
-    setListRef(ref)
-    {
-        this.listRef = ref;
     }
 
     renderActions(playlist)

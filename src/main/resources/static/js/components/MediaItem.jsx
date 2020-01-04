@@ -54,9 +54,15 @@ export default class MediaItem extends React.Component {
         const playlistId = this.props.playlistId;
         const trackId = this.props.track.id;
         const trackNumber = this.props.trackNumber;
-        const artist = this.props.track.artist ? this.limitLength(this.props.track.artist, 1.8) : 'Missing!';
-        const trackTitle = this.props.track.title ? this.limitLength(this.props.track.title, 1) : 'Missing!';
-        const album = this.props.track.album ? this.limitLength(this.props.track.album, 1.8) : 'Missing!';
+
+        const artist = this.props.track.artist ? this.props.track.artist : 'Missing!';
+        const trackTitle = this.props.track.title ? this.props.track.title : 'Missing!';
+        const album = this.props.track.album ? this.props.track.album : 'Missing!';
+
+        const trimmedArtist = this.limitLength(artist, 1.8);
+        const trimmedTrackTitle = this.limitLength(trackTitle, 1);
+        const trimmedAlbum = this.limitLength(album, 1.8);
+
         const formattedDuration = this.props.track.formattedDuration;
 
         const highlightClass = trackId === this.props.store.uiState.selectedTrackId ? ' playingHighlight' : '';
@@ -79,7 +85,7 @@ export default class MediaItem extends React.Component {
         const missingFile = this.props.track.missingFile;
         const trackTitleEl =
             <b style={{cursor: missingFile ? 'default' : 'pointer'}} onClick={missingFile ? null : (e) => this.handleSelectedTrackIdChange(e, playlistId, trackId)}>
-                {trackTitle}
+                {trimmedTrackTitle}
             </b>;
 
         return (
@@ -103,7 +109,7 @@ export default class MediaItem extends React.Component {
                         }
                         <br />
                         <span style={{fontSize: '.875rem'}}>
-                            <Link to={'/artist/' + artist}>{artist}</Link> - <Link to={'/artist/' + this.props.track.albumArtist + '/album/' + album}><i>{album}</i></Link>
+                            <Link to={'/artist/' + artist}>{trimmedArtist}</Link> - <Link to={'/artist/' + this.props.track.albumArtist + '/album/' + album}><i>{trimmedAlbum}</i></Link>
                         </span>
                     </div>
 

@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.2.1.RELEASE'
+        springBootVersion = '2.2.2.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -48,9 +48,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'ws.schild:jave-core:2.7.1'
     implementation 'ws.schild:jave-nativebin-win64:2.7.1'
-    implementation 'se.michaelthelin.spotify:spotify-web-api-java:4.2.0'
+    implementation 'se.michaelthelin.spotify:spotify-web-api-java:4.2.1'
     implementation 'com.twelvemonkeys.imageio:imageio-jpeg:3.4.2' // adds support for jpegs with cmyk encoding.
-
+    compile 'com.googlecode.json-simple:json-simple:1.1.1'
+    
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'org.postgresql:postgresql'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

@@ -29,7 +29,7 @@ public class GitInfoController {
         Map<String, String> result = new HashMap<>();
         result.put("Commit message",commitMessage);
         result.put("Commit branch", branch);
-        result.put("Commit id", commitId);
+        result.put("Commit id", commitId.substring(0, 5) + "...");
         result.put("Commit count", commitCount);
         return result;
     }

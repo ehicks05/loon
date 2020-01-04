@@ -12,6 +12,18 @@ function formatTime(secs) {
 export default class DraggingMediaItem extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {limitTextLength: true}
+    }
+
+    // not sure this is a good idea...
+    limitLength(input, fraction) {
+        if (!this.state.limitTextLength)
+            return input;
+
+        const limit = ((this.props.store.uiState.windowDimensions.width * 1.6) / 20) / fraction;
+        if (input.length > limit)
+            return input.substring(0, limit) + '...';
+        return input;
     }
 
     render()
@@ -21,9 +33,9 @@ export default class DraggingMediaItem extends React.Component {
         const provided = this.props.provided;
 
         const trackId = track.id;
-        const artist = track.artist ? track.artist : 'Missing!';
-        const trackTitle = track.title ? track.title : 'Missing!';
-        const album = track.album ? track.album : 'Missing!';
+        const artist = this.props.track.artist ? this.limitLength(this.props.track.artist, 1.8) : 'Missing!';
+        const trackTitle = this.props.track.title ? this.limitLength(this.props.track.title, 1) : 'Missing!';
+        const album = this.props.track.album ? this.limitLength(this.props.track.album, 1.8) : 'Missing!';
         const formattedDuration = track.duration;
 
         const highlightClass = trackId === this.props.store.uiState.selectedTrackId ? ' playingHighlight' : '';
@@ -42,7 +54,7 @@ export default class DraggingMediaItem extends React.Component {
             <div className={highlightClass} id={'track' + trackId}
                  ref={innerRef}
                  {...draggableProps}
-                 style={{userSelect: "none",filter: 'brightness(150%)'}}
+                 style={{userSelect: "none", filter: 'brightness(130%)', boxSizing: 'border-box', border: '3px solid gray'}}
             >
                 <div className={'mediaItemDiv'} style={missingFile ? {color: 'red'} : null}>
                     <div className={'mediaItemCounter'}>

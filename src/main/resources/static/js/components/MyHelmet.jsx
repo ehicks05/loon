@@ -26,7 +26,7 @@ export default class MyHelmet extends React.Component {
                 <style>
                     {
                         `
-                        html {overflow-y: hidden !important;}
+                        html {overflow: auto;}
 
                         #level {
                             position: fixed;

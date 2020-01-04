@@ -209,7 +209,7 @@ export default class Playlist extends React.Component {
 
         const title = playlist ? playlist.name : 'Library';
         return (
-            <div style={{display: 'flex', flexDirection: 'column', height: '100%', flex: '1', overflow: 'hidden'}}>
+            <div style={{display: 'flex', flexDirection: 'column', height: '100%', flex: '1'}}>
                 <section className={'section'} style={{display: 'flex', flexDirection: 'column'}}>
                     <h1 className="title">{title}</h1>
                     {actions}
@@ -229,20 +229,20 @@ export default class Playlist extends React.Component {
         return (
             <Draggable
                 style={style}
-                key={track.id + index}
+                key={track.id}
                 draggableId={track.id}
                 index={index}
             >
                 {(provided, snapshot) => (
                     <CellMeasurer
                         style={style}
-                        key={track.id + index}
+                        key={track.id}
                         cache={this.cache}
                         parent={parent}
                         columnIndex={0}
                         rowIndex={index}>
                         <div key={track.id + index} style={style}>
-                            <MediaItem style={style} provided={provided} snapshot={snapshot} key={track.id + index} playlistId={this.state.playlistId}
+                            <MediaItem provided={provided} snapshot={snapshot} playlistId={this.state.playlistId}
                                        track={track} trackNumber={index + 1}
                             />
                         </div>

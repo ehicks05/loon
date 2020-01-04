@@ -25,7 +25,7 @@ export default class MediaItem extends React.Component {
         this.handleHoverTrue = this.handleHoverTrue.bind(this);
         this.handleHoverFalse = this.handleHoverFalse.bind(this);
         this.limitLength = this.limitLength.bind(this);
-        this.state = {hover: false, limitTextLength: false}
+        this.state = {hover: false, limitTextLength: true}
     }
 
     handleHoverTrue()

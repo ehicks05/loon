@@ -263,8 +263,8 @@ export default class Playlist extends React.Component {
             actions =
                 <div className={'subtitle'}>
                     <span className="buttons">
-                        <button className="button is-success" disabled={disabled} onClick={this.toggleSaveAsPlaylistForm}>Save as Playlist</button>
-                        <button className="button is-danger" disabled={disabled} onClick={this.clearPlaylist}>Clear</button>
+                        <button className="button is-small is-success" disabled={disabled} onClick={this.toggleSaveAsPlaylistForm}>Save as Playlist</button>
+                        <button className="button is-small is-danger" disabled={disabled} onClick={this.clearPlaylist}>Clear</button>
 
                         <form id="saveAsPlaylistForm" className="is-invisible">
                             <div className="field has-addons">
@@ -288,7 +288,7 @@ export default class Playlist extends React.Component {
             actions =
                 <div className={'subtitle'}>
                     <span className="buttons">
-                        <Link to={'/playlists/' + playlist.id + '/edit'} className="button is-success">Edit</Link>
+                        <Link to={'/playlists/' + playlist.id + '/edit'} className="button is-small is-success">Edit</Link>
                     </span>
                 </div>
         }

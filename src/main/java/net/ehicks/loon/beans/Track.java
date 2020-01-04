@@ -168,6 +168,13 @@ public class Track implements Serializable
         return String.format("%.2f", result);
     }
 
+    public String getFormattedDuration()
+    {
+        long minutes = this.duration / 60;
+        long seconds = this.duration - (minutes * 60);
+        return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+    }
+
     public String getId()
     {
         return id;

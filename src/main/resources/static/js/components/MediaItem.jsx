@@ -11,12 +11,6 @@ const getRowStyle = (draggableStyle, isDragging) => ({
     ...draggableStyle
 });
 
-function formatTime(secs) {
-    const minutes = Math.floor(secs / 60) || 0;
-    const seconds = (secs - minutes * 60) || 0;
-    return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
-}
-
 @inject('store')
 @observer
 export default class MediaItem extends React.Component {
@@ -63,7 +57,7 @@ export default class MediaItem extends React.Component {
         const artist = this.props.track.artist ? this.limitLength(this.props.track.artist, 1.8) : 'Missing!';
         const trackTitle = this.props.track.title ? this.limitLength(this.props.track.title, 1) : 'Missing!';
         const album = this.props.track.album ? this.limitLength(this.props.track.album, 1.8) : 'Missing!';
-        const formattedDuration = this.props.track.duration;
+        const formattedDuration = this.props.track.formattedDuration;
 
         const highlightClass = trackId === this.props.store.uiState.selectedTrackId ? ' playingHighlight' : '';
 
@@ -120,7 +114,7 @@ export default class MediaItem extends React.Component {
                     </div>
 
                     <div style={{flexBasis: '20px'}}>
-                        {formatTime(formattedDuration)}
+                        {formattedDuration}
                     </div>
                 </div>
             </div>);

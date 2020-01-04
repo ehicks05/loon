@@ -223,8 +223,8 @@ export default class Playlist extends React.Component {
     renderRow({index, key, style, parent, playlistTracks})
     {
         // const playlistTrack = this.props.store.appState.getPlaylistById(this.state.playlistId).playlistTracks.find(track => track.index === index);
-        const playlistTrack = playlistTracks.find(track => track.index === index);
-        const track = this.props.store.appState.tracks.find(track => track.id === playlistTrack.track.id);
+        const playlistTrack = playlistTracks[index];
+        const track = this.props.store.appState.trackMap.get(playlistTrack.track.id);
 
         return (
             <Draggable
@@ -296,8 +296,8 @@ export default class Playlist extends React.Component {
     }
 
     renderDraggingMediaItem(index, provided) {
-        const playlistTrack = this.props.store.appState.getPlaylistById(this.state.playlistId).playlistTracks.find(track => track.index === index);
-        const track = this.props.store.appState.tracks.find(track => track.id === playlistTrack.track.id);
+        const playlistTrack = this.props.store.appState.getPlaylistById(this.state.playlistId).playlistTracks[index];
+        const track = this.props.store.appState.trackMap.get(playlistTrack.track.id);
 
         return <DraggingMediaItem provided={provided} key={track.id} track={track} trackNumber={playlistTrack.index + 1} />;
     }

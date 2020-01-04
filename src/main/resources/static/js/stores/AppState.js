@@ -3,6 +3,7 @@ import {createTransformer} from "mobx-utils";
 
 export class AppState {
     @observable tracks;
+    @observable trackMap = new Map();
     @observable playlists = [];
     @observable systemSettings = [];
     @observable versionInfo = [];
@@ -52,6 +53,12 @@ export class AppState {
             .then(response => response.json())
             .then(data => {
                 this.tracks = data;
+
+                this.trackMap.clear();
+                this.tracks.forEach(track => {
+                    this.trackMap.set(track.id, track);
+                });
+
                 const artists = data.map(track => track.artist);
                 this.distinctArtists = [...new Set(artists)];
             });

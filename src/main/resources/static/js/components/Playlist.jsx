@@ -149,7 +149,7 @@ export default class Playlist extends React.Component {
         this.props.store.appState.playlists.length;
         this.props.store.appState.playlists.forEach(playlist => playlist.playlistTracks.length);
 
-        const scrollToIndex = playlist.playlistTracks.indexOf(playlist.playlistTracks.find(track => track.id === selectedTrackId));
+        const scrollToIndex = playlist.playlistTracks.indexOf(playlist.playlistTracks.find(playlistTrack => playlistTrack.track.id === selectedTrackId));
 
         const mediaList = (
             <DragDropContext onDragEnd={this.onDragEnd}>

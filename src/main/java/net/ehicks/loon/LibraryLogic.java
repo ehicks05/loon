@@ -53,7 +53,7 @@ public class LibraryLogic
 
     private void sortChildren(Node node)
     {
-        if (node.getChildren().isEmpty())
+        if (node.getChildren() == null || node.getChildren().isEmpty())
             return;
         node.getChildren().sort((o1, o2) -> o1.getLabel().compareToIgnoreCase(o2.getLabel()));
         node.getChildren().forEach(this::sortChildren);
@@ -94,7 +94,7 @@ public class LibraryLogic
             if (child == null)
             {
                 child = new Node(path.subpath(0, i + 1), subPath.toString(), nodeId);
-                context.getChildren().add(child);
+                context.addChild(child);
             }
             context = child;
         }

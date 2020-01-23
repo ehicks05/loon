@@ -15,7 +15,7 @@ public class Node
     private String value;
     @JsonIgnore
     private boolean checked;
-    private List<Node> children = new ArrayList<>();
+    private List<Node> children;
 
     public Node()
     {
@@ -28,24 +28,18 @@ public class Node
         this.value = value;
     }
 
-    public Optional<Node> getDescendantById(String id)
+    public void addChild(Node child)
     {
-        if (this.value.equals(id)) return Optional.of(this);
-
-        Optional<Node> node;
-
-        for (Node child : children)
-        {
-            node = child.getDescendantById(id);
-            if (node.isPresent())
-                return node;
-        }
-
-        return Optional.empty();
+        if (children == null)
+            children = new ArrayList<>();
+        children.add(child);
     }
 
     public Node getChildByTitle(String title)
     {
+        if (children == null)
+            return null;
+
         return children.stream()
                 .filter(node -> node.label.equals(title))
                 .findFirst().orElse(null);

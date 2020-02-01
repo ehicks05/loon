@@ -22,12 +22,13 @@ const Album = lazy(() => import('./Album.jsx'));
 export default class Routes extends React.Component {
 
     render() {
+        const isAdmin = this.props.store.uiState.user.admin;
         return (
             <Suspense fallback={<div>Loading...</div>}>
                 <Route exact path='/'                               render={() => <Redirect to='/search' /> } />
-                <Route exact path='/admin/systemSettings'           render={() => <SystemSettings />}/>
-                <Route exact path='/admin/users'                    render={() => <UserSettings />}/>
-                <Route exact path='/admin/about'                    render={() => <About />}/>
+                <AdminRoute exact path='/admin/systemSettings' appProps={{isAdmin}} component={SystemSettings}/>
+                <AdminRoute exact path='/admin/users'          appProps={{isAdmin}} component={UserSettings}/>
+                <AdminRoute exact path='/admin/about'          appProps={{isAdmin}} component={About}/>
                 <Route exact path='/settings/general'               render={() => <GeneralSettings />}/>
                 <Route exact path='/settings/eq'                    render={() => <Eq />}/>
                 <Route exact path='/albums'                         render={() => <Albums />}/>
@@ -48,4 +49,18 @@ export default class Routes extends React.Component {
             </Suspense>
         );
     }
+}
+
+function AdminRoute({ component: C, appProps, ...rest }) {
+    return (
+        <Route
+            {...rest}
+            render={props =>
+                appProps.isAdmin
+                    ? <C {...props} {...appProps} />
+                    : <Redirect
+                        to={'/'}
+                    />}
+        />
+    );
 }

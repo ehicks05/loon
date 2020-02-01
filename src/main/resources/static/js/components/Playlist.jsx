@@ -178,7 +178,7 @@ export default class Playlist extends React.Component {
                                                 this.renderRow({ index, key, style, parent, playlistTracks: mobx.toJS(self.props.store.appState.getPlaylistById(self.state.playlistId).playlistTracks.slice()) })
                                             )}
                                             rowCount={playlist.playlistTracks.length}
-                                            scrollToAlignment={'center'}
+                                            scrollToAlignment={'auto'}
                                             scrollToIndex={scrollToIndex}
                                             overscanRowCount={3}
                                             deferredMeasurementCache={this.cache}

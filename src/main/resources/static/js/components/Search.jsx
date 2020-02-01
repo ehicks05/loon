@@ -100,7 +100,7 @@ export default class Search extends React.Component {
                                     rowHeight={this.cache.rowHeight}
                                     rowRenderer={this.renderRow}
                                     rowCount={this.state.searchResults.length}
-                                    scrollToAlignment={'center'}
+                                    scrollToAlignment={'auto'}
                                     scrollToIndex={scrollToIndex}
                                     estimatedRowSize={58}
                                     overscanRowCount={3} />

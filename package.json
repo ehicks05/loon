@@ -20,7 +20,7 @@
     "history": "^4.10.1",
     "lazysizes": "^5.2.0",
     "lodash.debounce": "^4.0.8",
-    "mobx": "^5.15.2",
+    "mobx": "^5.15.4",
     "mobx-react": "^6.1.4",
     "mobx-utils": "^5.5.3",
     "rc-slider": "^9.1.0",
@@ -33,10 +33,10 @@
     "react-virtualized": "^9.21.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.8.3",
+    "@babel/core": "^7.8.4",
     "@babel/plugin-proposal-object-rest-spread": "^7.8.3",
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
-    "@babel/preset-env": "^7.8.3",
+    "@babel/preset-env": "^7.8.4",
     "@babel/preset-react": "^7.8.3",
     "babel-loader": "^8.0.6",
     "babel-preset-mobx": "^2.0.0",

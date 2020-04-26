@@ -16,6 +16,7 @@ import net.ehicks.loon.beans.LoonSystem;
 import net.ehicks.loon.beans.Track;
 import net.ehicks.loon.repos.LoonSystemRepository;
 import net.ehicks.loon.repos.TrackRepository;
+import org.apache.hc.core5.http.ParseException;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.tag.Tag;
@@ -256,6 +257,9 @@ public class ImageScanner extends Task
     /** Get image url from spotify api. Pass in null for the album to get artist art */
     private String getImageUrl(LoonSystem loonSystem, String artist, String album)
     {
+        if (loonSystem.getSpotifyClientId().isEmpty() || loonSystem.getSpotifyClientSecret().isEmpty())
+            return null;
+
         SpotifyApi spotifyApi = new SpotifyApi.Builder()
                 .setClientId(loonSystem.getSpotifyClientId())
                 .setClientSecret(loonSystem.getSpotifyClientSecret())
@@ -300,7 +304,7 @@ public class ImageScanner extends Task
                 }
             }
 
-        } catch (IOException | SpotifyWebApiException e) {
+        } catch (IOException | ParseException | SpotifyWebApiException e) {
             log.error(e.getMessage());
         }
 

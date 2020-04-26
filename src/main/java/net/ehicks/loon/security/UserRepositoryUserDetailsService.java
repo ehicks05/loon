@@ -1,4 +1,4 @@
-package net.ehicks.loon;
+package net.ehicks.loon.security;
 
 import net.ehicks.loon.beans.User;
 import net.ehicks.loon.repos.UserRepository;

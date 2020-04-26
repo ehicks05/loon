@@ -1,6 +1,5 @@
 package net.ehicks.loon.tasks;
 
-import net.ehicks.loon.CommonUtil;
 import net.ehicks.loon.FileWalker;
 import net.ehicks.loon.beans.LoonSystem;
 import net.ehicks.loon.beans.Track;

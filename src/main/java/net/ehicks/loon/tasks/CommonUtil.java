@@ -1,4 +1,4 @@
-package net.ehicks.loon;
+package net.ehicks.loon.tasks;
 
 public class CommonUtil
 {

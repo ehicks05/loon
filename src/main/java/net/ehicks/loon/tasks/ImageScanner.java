@@ -44,7 +44,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static net.ehicks.loon.CommonUtil.escapeForFileSystem;
+import static net.ehicks.loon.tasks.CommonUtil.escapeForFileSystem;
 
 @Configuration
 public class ImageScanner extends Task

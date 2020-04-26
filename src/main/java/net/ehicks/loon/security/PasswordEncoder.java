@@ -1,4 +1,4 @@
-package net.ehicks.loon;
+package net.ehicks.loon.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

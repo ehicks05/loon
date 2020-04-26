@@ -78,7 +78,7 @@ export default class PlaybackControls extends React.Component {
 
         const trackProgressBar =
             <div className="level-item" style={{marginBottom: '0'}}>
-                <span id="timer" style={{fontSize: '.875rem', marginRight: '8px'}}>{formattedTimeElapsed}</span>
+                <span id="timer" style={{fontSize: '.875rem', marginRight: '10px'}}>{formattedTimeElapsed}</span>
                 <SliderWithTooltip name="progress" id="progress" style={{width: '100%', margin: '0'}}
                                    trackStyle={{backgroundColor: 'hsl(141, 71%, 48%)', height: 4}}
                                    railStyle={{backgroundColor: '#ddd'}}
@@ -181,7 +181,7 @@ export default class PlaybackControls extends React.Component {
 
         return (
             <>
-                <div className="section myLevel" style={{zIndex: '5', position: 'static', padding: '2px 6px 0 6px'}}>
+                <div className="section myLevel" style={{zIndex: '5', position: 'static', padding: '2px 10px 0 10px'}}>
                     <nav className="level">
                         {trackProgressBar}
                     </nav>

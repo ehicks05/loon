@@ -1,63 +1,42 @@
 buildscript {
     ext {
-        springBootVersion = '2.3.0.M4'
-    }
-    repositories {
-        mavenCentral()
-        jcenter()
-        maven { url 'https://repo.spring.io/milestone' }
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        springBootVersion = '2.3.0.RELEASE'
     }
 }
 
 plugins {
+    id 'java'
+    id 'org.springframework.boot' version "${springBootVersion}"
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
     id "com.gorylenko.gradle-git-properties" version "2.2.2"
     id "com.github.ben-manes.versions" version "0.28.0"
 }
 
-// for spring boot devtools
-configurations {
-    developmentOnly
-    runtimeClasspath {
-        extendsFrom developmentOnly
-    }
-}
-
-apply plugin: 'java'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
-
 group = 'net.ehicks'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = 11
+sourceCompatibility = '11'
 
 repositories {
     mavenCentral()
     maven { url "https://jitpack.io" }
-    maven { url 'https://repo.spring.io/milestone' }
 }
 
 dependencies {
-    implementation 'com.github.goxr3plus:jaudiotagger:V2.2.6'
-    implementation 'net.coobird:thumbnailator:0.4.11'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    implementation 'com.github.goxr3plus:jaudiotagger:V2.2.6'
+    implementation 'net.coobird:thumbnailator:0.4.11'
     implementation 'ws.schild:jave-core:2.7.3'
     implementation 'ws.schild:jave-nativebin-win64:2.7.3'
-    implementation 'se.michaelthelin.spotify:spotify-web-api-java:5.0.4'
+    implementation 'se.michaelthelin.spotify:spotify-web-api-java:6.0.0'
     implementation 'com.twelvemonkeys.imageio:imageio-jpeg:3.5' // adds support for jpegs with cmyk encoding.
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'org.postgresql:postgresql'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-}
-
-configurations.all {
-    exclude group: 'org.slf4j', module: 'slf4j-simple'
 }
 
 springBoot {

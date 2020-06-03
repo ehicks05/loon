@@ -111,21 +111,22 @@ export default class PlaybackControls extends React.Component {
             </div>;
 
         const prevButton =
-            <a className="button" id="prevBtn" onClick={(e) => this.handleTrackChange(e, 'prev')}>
+            <a className="button" id="prevBtn" style={{height: '36px', width: '36px'}} onClick={(e) => this.handleTrackChange(e, 'prev')}>
                 <span className="icon">
                     <FontAwesomeIcon icon={faStepBackward}/>
                 </span>
             </a>;
 
         const playButton =
-            <a className="button is-medium" id="pauseBtn" onClick={(e) => this.handlePlayerStateChange(e, this.props.playerState === 'playing' ? 'paused' : 'playing')}>
+            <a className="button is-medium" id="pauseBtn" style={{height: '45px', width: '45px'}}
+               onClick={(e) => this.handlePlayerStateChange(e, this.props.playerState === 'playing' ? 'paused' : 'playing')}>
                 <span className="icon">
                     <FontAwesomeIcon icon={this.props.playerState === 'playing' ? faPause : faPlay}/>
                 </span>
             </a>;
 
         const nextButton =
-            <a className="button" id="nextBtn" onClick={(e) => this.handleTrackChange(e, 'next')}>
+            <a className="button" id="nextBtn" style={{height: '36px', width: '36px'}} onClick={(e) => this.handleTrackChange(e, 'next')}>
                 <span className="icon">
                     <FontAwesomeIcon icon={faStepForward}/>
                 </span>

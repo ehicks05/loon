@@ -43,5 +43,7 @@ module.exports = {
     ],
     resolve: {
         extensions: ['.wasm', '.mjs', '.js', '.jsx', '.json']
-    }
+    },
+    // log warnings were in yellow and hard to see on white bg.
+    stats: {colors: {yellow: '\u001b[1m\u001b[35m'}}
 }

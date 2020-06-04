@@ -5,11 +5,9 @@ export class AppState {
     @observable tracks;
     @observable trackMap = new Map();
     @observable playlists = [];
-    @observable versionInfo = [];
     @observable pendingRequests = 0;
     @observable taskState = {};
     @observable distinctArtists = [];
-    @observable systemInfo = [];
 
     constructor(rootStore) {
         // autorun(() => console.log(this.report));
@@ -17,8 +15,6 @@ export class AppState {
 
         this.loadTracks();
         this.loadPlaylists();
-        this.loadVersionInfo();
-        this.loadSystemInfo();
     }
 
     getPlaylistById = createTransformer(id => this.playlists.find(playlist => playlist.id === id));
@@ -63,22 +59,6 @@ export class AppState {
                 const artists = data.map(track => track.artist);
                 this.distinctArtists = [...new Set(artists)];
             });
-    }
-
-    @action
-    loadVersionInfo()
-    {
-        return fetch('/api/commitId', {method: 'GET'})
-            .then(response => response.json())
-            .then(data => this.versionInfo = data);
-    }
-
-    @action
-    loadSystemInfo()
-    {
-        return fetch('/api/admin/systemInfo', {method: 'GET'})
-            .then(response => response.json())
-            .then(data => this.systemInfo = data);
     }
 
     @action

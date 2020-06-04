@@ -8,6 +8,7 @@ import Header from "./Header.jsx";
 import MyHelmet from "./MyHelmet.jsx";
 import Player from "./Player.jsx";
 import Routes from "./Routes";
+import {UserContextProvider} from "./UserContextProvider";
 
 const SidePanel = lazy(() => import('./SidePanel.jsx'));
 
@@ -51,6 +52,7 @@ export default class App extends React.Component {
         console.log('New columnHeight: ' + columnHeight + '... window height('+innerHeight+') - (header height('+52+') + footer height(23 + '+footerHeight+'))):');
 
         return (
+            <UserContextProvider>
             <Router history={this.state.history}>
                 <>
                     <MyHelmet />
@@ -85,6 +87,7 @@ export default class App extends React.Component {
                     />
                 </>
             </Router>
+            </UserContextProvider>
         );
     }
 }

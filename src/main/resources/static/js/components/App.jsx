@@ -18,11 +18,7 @@ export default class App extends React.Component {
 
     constructor(props) {
         super(props);
-        let self = this;
-
-        const basename = '/';
-        const history = createBrowserHistory({ basename });
-        self.state = {history: history};
+        this.state = {history: createBrowserHistory({ basename: '/' })};
     }
 
     componentDidMount() {

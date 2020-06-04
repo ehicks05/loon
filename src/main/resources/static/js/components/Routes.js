@@ -1,15 +1,15 @@
 import React, { Suspense, lazy } from 'react';
 import {Redirect, Route, Switch} from 'react-router-dom'
 
-const SystemSettings = lazy(() => import('./SystemSettings.jsx'));
+const SystemSettings = lazy(() => import('./SystemSettings'));
 const Playlist = lazy(() => import('./Playlist.jsx'));
 const Playlists = lazy(() => import('./Playlists.jsx'));
-const GeneralSettings = lazy(() => import('./GeneralSettings.jsx'));
-const Eq = lazy(() => import('./Eq.jsx'));
+const GeneralSettings = lazy(() => import('./GeneralSettings'));
+const Eq = lazy(() => import('./Eq'));
 const PlaylistBuilder = lazy(() => import('./PlaylistBuilder.jsx'));
 
-const UserSettings = lazy(() => import('./UserSettings.jsx'));
-const About = lazy(() => import('./About.jsx'));
+const UserSettings = lazy(() => import('./UserSettings'));
+const About = lazy(() => import('./About'));
 const Artists = lazy(() => import('./Artists.jsx'));
 const Albums = lazy(() => import('./Albums.jsx'));
 const Artist = lazy(() => import('./Artist.jsx'));

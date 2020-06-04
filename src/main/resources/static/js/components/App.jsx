@@ -10,7 +10,7 @@ import Player from "./Player.jsx";
 import Routes from "./Routes";
 import {UserContextProvider} from "./UserContextProvider";
 
-const SidePanel = lazy(() => import('./SidePanel.jsx'));
+const SidePanel = lazy(() => import('./SidePanel'));
 
 @inject('store')
 @observer
@@ -39,7 +39,7 @@ export default class App extends React.Component {
             return (
                 <>
                     <MyHelmet/>
-                    <div className={"pageloader is-active is-dark"}><span className="title">Loading...</span></div>
+                    <div className={"pageloader is-active is-success"}><span className="title">Loading...</span></div>
                 </>
             );
         }

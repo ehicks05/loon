@@ -2,7 +2,7 @@ import React from 'react';
 import MediaItem from "./MediaItem.jsx";
 import {AutoSizer, CellMeasurer, CellMeasurerCache, List} from 'react-virtualized'
 import debounce from "lodash.debounce";
-import TextInput from "./TextInput.jsx";
+import TextInput from "./TextInput";
 import {faSearch} from "@fortawesome/free-solid-svg-icons";
 import {inject, observer} from "mobx-react";
 import {autorun} from "mobx";

@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import VerticalSlider from "./VerticalSlider.jsx";
+import VerticalSlider from "./VerticalSlider";
 import {UserContext} from "./UserContextProvider";
 
 export default function Eq() {

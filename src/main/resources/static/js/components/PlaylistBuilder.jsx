@@ -7,7 +7,7 @@ import {faCheckSquare, faPlusSquare, faMinusSquare, faSquare, faFolder, faFolder
 
 import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
-import TextInput from "./TextInput.jsx";
+import TextInput from "./TextInput";
 import {inject, observer} from "mobx-react";
 
 @inject('store')

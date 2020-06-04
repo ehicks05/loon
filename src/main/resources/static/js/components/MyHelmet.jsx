@@ -14,6 +14,7 @@ export default class MyHelmet extends React.Component {
         const uiState = this.props.store.uiState;
         const selectedTrack = uiState.selectedTrack;
         const title = selectedTrack ? selectedTrack.title + ' by ' + selectedTrack.artist : 'Loon';
+        const transparentPixel = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
 
         return (
             <Helmet defer={false}>
@@ -61,12 +62,8 @@ export default class MyHelmet extends React.Component {
                         
                         /* SCROLLBAR */
                         ::-webkit-scrollbar {width: 8px;}
-                        
-                        /* Track */
-                        ::-webkit-scrollbar-track-piece:start {background: transparent url('../images/scrollbar.png') repeat-y !important;}
-                        ::-webkit-scrollbar-track-piece:end {background: transparent url('../images/scrollbar.png') repeat-y !important;}
-                        
-                        /* Handle */
+                        ::-webkit-scrollbar-track-piece:start {background: transparent url(${transparentPixel}) repeat-y !important;}
+                        ::-webkit-scrollbar-track-piece:end {background: url(${transparentPixel}) repeat-y !important;}
                         ::-webkit-scrollbar-thumb {background: #777;}
                         ::-webkit-scrollbar-thumb:hover {background: #888;}
                         `

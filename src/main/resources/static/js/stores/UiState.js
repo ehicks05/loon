@@ -1,13 +1,11 @@
 import {observable, computed, action} from 'mobx';
 
 export class UiState {
-    @observable language = "en_US";
     @observable theme;
     @observable user;
     @observable selectedPlaylistId;
     @observable selectedTrackId;
     @observable selectedContextMenuId;
-    @observable pendingRequestCount = 0;
 
     // .struct makes sure observer won't be signaled unless the
     // dimensions object changed in a deepEqual manner
@@ -175,9 +173,5 @@ export class UiState {
 
     @computed get isDarkTheme() {
         return ['cyborg', 'darkly', 'nuclear', 'slate', 'solar', 'superhero',].includes(this.theme);
-    }
-
-    @computed get appIsInSync() {
-        return this.pendingRequestCount === 0
     }
 }

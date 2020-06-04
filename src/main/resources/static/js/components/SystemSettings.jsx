@@ -3,6 +3,7 @@ import TextInput from "./TextInput.jsx";
 import Select from "./Select.jsx";
 import {inject, observer} from "mobx-react";
 import 'bulma-switch/dist/css/bulma-switch.min.css'
+import superFetch from "./SuperFetch";
 
 @inject('store')
 @observer
@@ -13,6 +14,7 @@ export default class SystemSettings extends React.Component {
         this.submitForm = this.submitForm.bind(this);
         this.doImageScan = this.doImageScan.bind(this);
         this.doTranscodeLibrary = this.doTranscodeLibrary.bind(this);
+        this.updateSystemSettings = this.updateSystemSettings.bind(this);
 
         this.state = {};
     }
@@ -38,7 +40,7 @@ export default class SystemSettings extends React.Component {
         formData.append('deleteLibrary', deleteLibrary ? 'true' : 'false');
         formData.append('librarySync', librarySync ? 'true' : 'false');
 
-        this.props.store.appState.updateSystemSettings(formData)
+        this.updateSystemSettings(formData)
             .then(data => {
                 if (deleteTracksWithoutFiles || deleteLibrary)
                 {
@@ -48,6 +50,11 @@ export default class SystemSettings extends React.Component {
                     self.props.store.appState.loadPlaylists();
                 }
             });
+    }
+
+    updateSystemSettings(formData) {
+        return superFetch('/api/admin/systemSettings', {method: 'PUT', body: formData})
+            .then(response => response.json());
     }
 
     doImageScan()

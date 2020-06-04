@@ -5,7 +5,6 @@ export class AppState {
     @observable tracks;
     @observable trackMap = new Map();
     @observable playlists = [];
-    @observable systemSettings = [];
     @observable versionInfo = [];
     @observable pendingRequests = 0;
     @observable taskState = {};

@@ -61,7 +61,7 @@ export default class App extends React.Component {
                     <div className={'columns is-gapless'}>
                         <div id='left-column' style={{height: columnHeight, overflow: 'hidden auto'}} className={"column is-narrow is-hidden-touch" + (store.uiState.isDarkTheme ? ' is-dark ' : '')}>
                             <div style={{height: '98%', display: 'flex', flexDirection: 'column'}}>
-                                <div style={{overflowY: 'auto'}}><SidePanel /></div>
+                                <div style={{overflowY: 'auto'}}><SidePanel playlists={store.appState.playlists} /></div>
                                 <div style={{flex: '1 1 auto'}}> </div>
                                 <div style={{height: '100px'}}>
                                     <canvas id='spectrumCanvas' height={100} width={150}> </canvas>

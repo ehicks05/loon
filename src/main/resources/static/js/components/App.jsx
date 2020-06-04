@@ -69,7 +69,7 @@ export default class App extends React.Component {
                             </div>
                         </div>
                         <div className="column" style={{height: columnHeight, overflow: 'hidden auto'}}>
-                            <Routes />
+                            <Routes admin={store.uiState.user.admin} />
                         </div>
                     </div>
 

@@ -157,40 +157,6 @@ export class AppState {
             .then(data => {this.loadPlaylists();});
     }
 
-    // LOON SYSTEM CALLS //
-
-    @action
-    updateSystemSettings(formData) {
-        return this.rootStore.myFetch('/api/admin/systemSettings', {method: 'PUT', body: formData})
-            .then(response => response.json());
-    }
-
-    // USER CALLS //
-
-    @action
-    createUser(formData) {
-        return this.rootStore.myFetch('/api/admin/users', {method: 'POST', body: formData})
-            .then(response => response.json());
-    }
-
-    @action
-    updateUser(id, formData) {
-        return this.rootStore.myFetch('/api/admin/users/' + id, {method: 'PUT', body: formData})
-            .then(response => response.json());
-    }
-
-    @action
-    deleteUser(id) {
-        return this.rootStore.myFetch('/api/admin/users/' + id, {method: 'DELETE'})
-            .then(response => response.text());
-    }
-
-    @action
-    loadUsers() {
-        return fetch('/api/admin/users', {method: 'GET'})
-            .then(response => response.json());
-    }
-
     // TASK STATE //
     @action
     setTaskState(taskState) {

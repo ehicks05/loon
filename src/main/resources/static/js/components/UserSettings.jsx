@@ -1,53 +1,67 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import TextInput from "./TextInput.jsx";
-import {inject, observer} from "mobx-react";
 import Select from "./Select.jsx";
+import superFetch from "./SuperFetch";
 
-@inject('store')
-@observer
-export default class UserSettings extends React.Component {
-    constructor(props) {
-        super(props);
-        let self = this;
+export default function UserSettings(props)  {
 
-        this.submitForm = this.submitForm.bind(this);
-        this.reloadUsers = this.reloadUsers.bind(this);
-        this.showDeleteConfirmation = this.showDeleteConfirmation.bind(this);
-        this.deleteUser = this.deleteUser.bind(this);
-        this.toggleModal = this.toggleModal.bind(this);
-        this.saveUser = this.saveUser.bind(this);
+    const [currentUser, setCurrentUser] = useState({});
+    const [users, setUsers] = useState([]);
+    const [userIdToDelete, setUserIdToDelete] = useState('');
 
-        self.state = {};
+    useEffect(() => {
+        function getCurrentUser()
+        {
+            // todo this logic is duplicated from UiState.js
+            return fetch('/api/users/current', {method: 'GET'})
+                .then(response => response.json())
+                .then(data => setCurrentUser(data));
+        }
+
+        getCurrentUser();
+
+        loadUsers();
+    }, []);
+
+    // USER CALLS //
+
+    function createUser(formData) {
+        return superFetch('/api/admin/users', {method: 'POST', body: formData})
+            .then(response => response.json())
+            .then(json => loadUsers());
     }
 
-    componentDidMount()
+    function updateUser(id, formData) {
+        return superFetch('/api/admin/users/' + id, {method: 'PUT', body: formData})
+            .then(response => response.json())
+            .then(json => loadUsers());
+    }
+
+    function deleteUserFETCH(id) {
+        return superFetch('/api/admin/users/' + id, {method: 'DELETE'})
+            .then(response => response.text())
+            .then(json => loadUsers());
+    }
+
+    function loadUsers() {
+        return fetch('/api/admin/users', {method: 'GET'})
+            .then(response => response.json())
+            .then(json => setUsers([...json]));
+    }
+
+    function showDeleteConfirmation(id)
     {
-        this.reloadUsers();
+        setUserIdToDelete(id);
+        toggleModal();
     }
 
-    reloadUsers()
+    function deleteUser(id)
     {
-        let self = this;
-        this.props.store.appState.loadUsers()
-            .then(data => self.setState({users: data}));
+        toggleModal();
+        deleteUserFETCH(id);
     }
 
-    showDeleteConfirmation(id)
-    {
-        this.setState({userIdToDelete: id});
-        this.toggleModal();
-    }
-
-    deleteUser(id)
-    {
-        this.toggleModal();
-
-        const self = this;
-        this.props.store.appState.deleteUser(id)
-            .then(data => self.reloadUsers());
-    }
-
-    saveUser(id)
+    function saveUser(id)
     {
         const formData = new FormData();
         formData.append('username', document.getElementById('username' + id).value);
@@ -59,109 +73,101 @@ export default class UserSettings extends React.Component {
             .map(option => option.value);
         formData.append('roles', selectedRoles);
 
-        const self = this;
-        this.props.store.appState.updateUser(id, formData)
-            .then(data => self.reloadUsers());
+        updateUser(id, formData);
     }
 
-    toggleModal() {
+    function toggleModal() {
         document.getElementById('confirmDelete').classList.toggle('is-active');
     }
 
-    submitForm()
+    function submitForm()
     {
         const formData = new FormData(document.getElementById('frmAddUser'));
-
-        const self = this;
-        this.props.store.appState.createUser(formData)
-            .then(data => self.reloadUsers());
+        createUser(formData);
     }
 
-    render()
-    {
-        if (!this.state.users)
-            return (<div>Loading...</div>);
+    if (!users)
+        return (<div>Loading...</div>);
 
-        const usersTable = this.state.users.map(user => {
-            const isCurrentUser = user.id === this.props.store.uiState.user.id;
-            const deleteButton = isCurrentUser ? '' : <button className="button is-danger" onClick={(e) => this.showDeleteConfirmation(user.id)}>Delete</button>;
-            const saveButton = <button className="button" onClick={(e) => this.saveUser(user.id)}>Save</button>;
-
-            return (
-                <tr key={user.id}>
-                    <td><TextInput id={'username' + user.id} value={user.username}/></td>
-                    <td><TextInput id={'fullName' + user.id} value={user.fullName}/></td>
-                    <td><TextInput id={'password' + user.id} value={user.password}/></td>
-                    <td>
-                        <Select id={'roles' + user.id} required={true} multiple={true} value={user.roles.map(role => role.role)}
-                                items={[{text: 'USER', value: 'ROLE_USER'}, {text: 'ADMIN', value: 'ROLE_ADMIN'}]} size={2}/>
-                    </td>
-                    <td>
-                        <div className="buttons">{saveButton}{deleteButton}</div>
-                    </td>
-                </tr>
-            );
-        });
+    const usersTable = users.map(user => {
+        const isCurrentUser = user.id === currentUser.id;
+        const deleteButton = isCurrentUser ? '' : <button className="button is-danger" onClick={(e) => showDeleteConfirmation(user.id)}>Delete</button>;
+        const saveButton = <button className="button" onClick={(e) => saveUser(user.id)}>Save</button>;
 
         return (
-            <div>
-                <section className={"section"}>
-                    <h1 className="title">Admin</h1>
-                    <h2 className="subtitle">
-                        Users
-                    </h2>
-                </section>
-                <section className="section">
-                    <table className="table" style={{display: 'block',overflowX: 'auto'}}>
-                        <thead>
-                            <tr>
-                                <th>Username</th>
-                                <th>Full Name</th>
-                                <th>Password</th>
-                                <th>Roles</th>
-                                <th> </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {usersTable}
-                        </tbody>
-                    </table>
-                </section>
+            <tr key={user.id}>
+                <td><TextInput id={'username' + user.id} value={user.username}/></td>
+                <td><TextInput id={'fullName' + user.id} value={user.fullName}/></td>
+                <td><TextInput id={'password' + user.id} value={user.password}/></td>
+                <td>
+                    <Select id={'roles' + user.id} required={true} multiple={true} value={user.roles.map(role => role.role)}
+                            items={[{text: 'USER', value: 'ROLE_USER'}, {text: 'ADMIN', value: 'ROLE_ADMIN'}]} size={2}/>
+                </td>
+                <td>
+                    <div className="buttons">{saveButton}{deleteButton}</div>
+                </td>
+            </tr>
+        );
+    });
 
-                <section className="section">
-                    <h2 className="subtitle">
-                        Add User
-                    </h2>
+    return (
+        <div>
+            <section className={"section"}>
+                <h1 className="title">Admin</h1>
+                <h2 className="subtitle">
+                    Users
+                </h2>
+            </section>
+            <section className="section">
+                <table className="table" style={{display: 'block',overflowX: 'auto'}}>
+                    <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Full Name</th>
+                        <th>Password</th>
+                        <th>Roles</th>
+                        <th> </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {usersTable}
+                    </tbody>
+                </table>
+            </section>
 
-                    <form id="frmAddUser" method="post" action="">
-                        <TextInput id="username" label="Username" value="" />
-                        <TextInput id="fullname" label="Full Name" value="" />
-                        <TextInput id="password" label="Password" value="" />
+            <section className="section">
+                <h2 className="subtitle">
+                    Add User
+                </h2>
 
-                        <span className="buttons">
-                            <input id="saveButton" type="button" value="Save" className="button is-primary" onClick={(e) => this.submitForm()} />
+                <form id="frmAddUser" method="post" action="">
+                    <TextInput id="username" label="Username" value="" />
+                    <TextInput id="fullname" label="Full Name" value="" />
+                    <TextInput id="password" label="Password" value="" />
+
+                    <span className="buttons">
+                            <input id="saveButton" type="button" value="Save" className="button is-primary" onClick={(e) => submitForm()} />
                         </span>
-                    </form>
-                </section>
+                </form>
+            </section>
 
-                <div id="confirmDelete" className="modal">
-                    <div className="modal-background" onClick={this.toggleModal}> </div>
-                    <div className="modal-card">
-                        <header className="modal-card-head">
-                            <p className="modal-card-title">Confirm Delete</p>
-                            <button className="delete" aria-label="close" onClick={this.toggleModal}> </button>
-                        </header>
-                        <section className="modal-card-body">
-                            <div>
-                                Are you sure you want to delete this user?
-                            </div>
-                        </section>
-                        <footer className="modal-card-foot">
-                            <button className="button is-danger" onClick={(e) => this.deleteUser(this.state.userIdToDelete)}>Delete</button>
-                            <button className="button" onClick={this.toggleModal}>Cancel</button>
-                        </footer>
-                    </div>
+            <div id="confirmDelete" className="modal">
+                <div className="modal-background" onClick={toggleModal}> </div>
+                <div className="modal-card">
+                    <header className="modal-card-head">
+                        <p className="modal-card-title">Confirm Delete</p>
+                        <button className="delete" aria-label="close" onClick={toggleModal}> </button>
+                    </header>
+                    <section className="modal-card-body">
+                        <div>
+                            Are you sure you want to delete this user?
+                        </div>
+                    </section>
+                    <footer className="modal-card-foot">
+                        <button className="button is-danger" onClick={(e) => deleteUser(userIdToDelete)}>Delete</button>
+                        <button className="button" onClick={toggleModal}>Cancel</button>
+                    </footer>
                 </div>
-            </div>);
-    }
+            </div>
+        </div>);
 }

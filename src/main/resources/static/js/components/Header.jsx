@@ -79,7 +79,7 @@ export default class Header extends React.Component {
         const navbarMenuStyle = this.props.store.uiState.windowDimensions.width < 1024 ? {overflowY: 'auto', height: navbarMenuHeight + 'px'} : null;
 
         return (
-            <nav className={"navbar " + (this.props.store.uiState.isDarkTheme ? ' is-dark ': ' is-success ')} role="navigation" aria-label="main navigation">
+            <nav className={"navbar is-success"} role="navigation" aria-label="main navigation">
                 <div className="navbar-brand">
                     <div className="navbar-item">
                         <img id='headerLogo' src={"/images/loon.png"} style={{height: '28px'}} alt="Loon" />
@@ -154,11 +154,6 @@ export default class Header extends React.Component {
                         </div>
                     </div>
                     <div className="navbar-end">
-                        <a onClick={this.toggleDarkTheme} href={null} className={"navbar-item"}>
-                            <span className="icon is-medium">
-                                <FontAwesomeIcon icon={this.props.store.uiState.theme === 'cyborg' ? faSun : faMoon}/>
-                            </span>
-                        </a>
                         <a onClick={this.handleLogout} href={null} className="navbar-item">
                             <span style={{marginRight: '4px'}}>Sign Out</span>
                             <span className="icon is-medium">

@@ -28,7 +28,6 @@ export default class Search extends React.Component {
         this.disposer = autorun(() => {
             const width = self.props.store.uiState.windowDimensions.width;
             const height = self.props.store.uiState.windowDimensions.height;
-            const theme = self.props.store.uiState.theme;
 
             // wait 1 second, otherwise sometimes there are huge gaps between rows, especially when toggling light/dark mode.
             setTimeout(function () {
@@ -78,14 +77,12 @@ export default class Search extends React.Component {
     {
         const selectedTrackId = this.props.store.uiState.selectedTrackId;
         const scrollToIndex = this.state.searchResults.indexOf(this.state.searchResults.find(track => track.id === selectedTrackId));
-        const inputClass = this.props.store.uiState.isDarkTheme ? ' has-text-light has-background-dark' : '';
-        const theme = this.props.store.uiState.theme; // seems to help prevent the 'huge gaps between rows' issue when toggling theme.
 
         return (
             <div style={{display: 'flex', flexDirection: 'column', height: '100%', flex: '1', overflow: 'hidden'}}>
                 <section className={'section'} style={{display: 'flex', flexDirection: 'column'}}>
                     <form><TextInput id={'searchInput'} label={'Search'} leftIcon={faSearch} value={this.state.searchKey}
-                                     onChange={this.handleSearchKeyChange} horizontal={false} hideLabel={true} autoComplete='off' inputClass={inputClass} /></form>
+                                     onChange={this.handleSearchKeyChange} horizontal={false} hideLabel={true} autoComplete='off' /></form>
                 </section>
 
                 <div id="list" style={{display: 'flex', flexDirection: 'column', height: '100%', flex: '1', flexGrow: '1'}}>

@@ -32,15 +32,13 @@ export default class App extends React.Component {
 
     render() {
         const store = this.props.store;
-        if (!store.uiState.theme)
-            return (<div> </div>);
 
         if (!store.dataLoaded)
         {
             return (
                 <>
                     <MyHelmet/>
-                    <div className={"pageloader is-active" + (store.uiState.isDarkTheme ? ' is-dark ' : '')}><span className="title">Loading...</span></div>
+                    <div className={"pageloader is-active is-dark"}><span className="title">Loading...</span></div>
                 </>
             );
         }
@@ -59,7 +57,7 @@ export default class App extends React.Component {
                     <Header />
 
                     <div className={'columns is-gapless'}>
-                        <div id='left-column' style={{height: columnHeight, overflow: 'hidden auto'}} className={"column is-narrow is-hidden-touch" + (store.uiState.isDarkTheme ? ' is-dark ' : '')}>
+                        <div id='left-column' style={{height: columnHeight, overflow: 'hidden auto'}} className={"column is-narrow is-hidden-touch"}>
                             <div style={{height: '98%', display: 'flex', flexDirection: 'column'}}>
                                 <div style={{overflowY: 'auto'}}><SidePanel playlists={store.appState.playlists} /></div>
                                 <div style={{flex: '1 1 auto'}}> </div>

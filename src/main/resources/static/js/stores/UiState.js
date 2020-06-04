@@ -1,7 +1,6 @@
 import {observable, computed, action} from 'mobx';
 
 export class UiState {
-    @observable theme;
     @observable user;
     @observable selectedPlaylistId;
     @observable selectedTrackId;
@@ -65,7 +64,6 @@ export class UiState {
         return fetch('/api/users/current', {method: 'GET'})
             .then(response => response.json()).then(data => {
                 self.user = data;
-                self.theme = data.userState.theme;
                 self.selectedPlaylistId = data.userState.lastPlaylistId;
                 self.selectedTrackId = data.userState.lastTrackId;
             });
@@ -148,30 +146,8 @@ export class UiState {
             .then(response => response.json()).then(data => {console.log(data);});
     }
 
-    @action
-    toggleDarkTheme() {
-        const self = this;
-        self.rootStore.myFetch('/api/users/' + this.user.id + '/toggleDarkTheme', {method: 'PUT'})
-            .then(response => self.loadUser());
-    }
-
-    @computed get themeUrl() {
-        let theme = this.theme;
-        if (!theme)
-            theme = 'default';
-
-        if (theme === 'default')
-            return 'https://cdnjs.cloudflare.com/ajax/libs/bulma/0.8.2/css/bulma.min.css';
-        if (theme === 'cyborg')
-            return 'https://unpkg.com/bulma-dark@0.0.2/dist/css/cyborg.css';
-    }
-
     @computed get selectedTrack() {
         return this.rootStore.appState.tracks && typeof this.rootStore.appState.tracks === 'object'?
             this.rootStore.appState.tracks.find(track => track.id === this.selectedTrackId) : null;
-    }
-
-    @computed get isDarkTheme() {
-        return ['cyborg', 'darkly', 'nuclear', 'slate', 'solar', 'superhero',].includes(this.theme);
     }
 }

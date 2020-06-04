@@ -21,7 +21,7 @@ export class RootStore {
     }
 
     @computed get dataLoaded() {
-        return this.appState.tracks && this.appState.playlists && this.uiState.user && this.uiState.theme
+        return this.appState.tracks && this.appState.playlists && this.uiState.user
     }
 
 }

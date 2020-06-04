@@ -20,7 +20,8 @@ export default class MyHelmet extends React.Component {
                 <meta charset="utf-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <title>{title}</title>
-                <link rel="stylesheet" href={uiState.themeUrl} />
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.8.2/css/bulma.min.css" />
+                <link rel="stylesheet" href="/styles/bulma-prefers-dark.min.css" />
                 <link rel="shortcut icon" href={"/images/loon2.png"} />
 
                 <style>
@@ -72,32 +73,11 @@ export default class MyHelmet extends React.Component {
                     }
                 </style>
 
+                {/* prefers-color-scheme styles */}
                 <style>
-                    {uiState.isDarkTheme ?
-                        `.myLevel {background-color: #282f2f; color: #ddd}
-                         #left-column {background-color: #282f2f;}
-                         .panel-block {border-left-color: #282f2f;}
-                         #headerLogo {filter: invert(100%);}
-                         .mediaItemDiv:hover {background-color: #282f2f;}
-
-                         .mediaItemDiv a {color:#aaa}
-                         .mediaItemDiv a:hover {color:#ccc}
-                         .dropdown a {color:#aaa}
-                         .dropdown a:hover {color:#ccc}
-                         .card a {color:#aaa}
-                         .card a:hover {color:#ccc}
-                         .myLevel a {color:#aaa}
-                         .myLevel a:hover {color:#ccc}
-                         
-                         .panel-block {border: none; border-left: 6px solid #282f2f;}
-                         .panel-block:first-child {border-top: none;}
-                         .panel-block:hover {border-left-color: #3273dc;}
-                         
-                         .input {color:#eee; background-color:#333;}
-                         .select select {color:#eee; background-color:#333;}
-                        `
-                        :
-                        `table {background-color: #EEE !important}
+                    {
+                        `                        
+                         // table {background-color: #EEE !important}
                          .myLevel {color: #4a4a4a; background-color: #f4f4f4;}
                          #left-column {background-color: #f4f4f4;}
                          .mediaItemDiv:hover {background-color: #f4f4f4;}
@@ -114,6 +94,42 @@ export default class MyHelmet extends React.Component {
                          .panel-block {border: none; border-left: 6px solid #f4f4f4;}
                          .panel-block:first-child {border-top: none;}
                          .panel-block:hover {border-left-color: #3273dc;}
+                         
+                         @media (prefers-color-scheme: dark) {
+                             .myLevel {background-color: #282f2f; color: #ddd}
+                             #left-column {background-color: #282f2f;}
+                             .panel-block {border-left-color: #282f2f;}
+                             #headerLogo {filter: invert(100%);}
+                             .mediaItemDiv:hover {background-color: #282f2f;}
+    
+                             .mediaItemDiv a {color:#aaa}
+                             .mediaItemDiv a:hover {color:#ccc}
+                             .dropdown a {color:#aaa}
+                             .dropdown a:hover {color:#ccc}
+                             .card a {color:#aaa}
+                             .card a:hover {color:#ccc}
+                             .myLevel a {color:#aaa}
+                             .myLevel a:hover {color:#ccc}
+                             
+                             .panel-block {border: none; border-left: 6px solid #282f2f;}
+                             .panel-block:first-child {border-top: none;}
+                             .panel-block:hover {border-left-color: #3273dc;}
+                             
+                             .input {color:#eee; background-color:#333;}
+                             .select select {color:#eee; background-color:#333;}
+                             
+                             // checkbox tree
+                             .ignore {}
+ 
+                             .rct-node-icon {color:lightblue !important;}
+                             
+                             // problematic with bulma-prefers-dark   
+                             .ignore {}
+                             
+                             .panel-icon {color: white;}
+                             .panel-block:not(:last-child), .panel-tabs:not(:last-child) {border-bottom: none !important;}
+                             
+                         }
                         `
                     }
                 </style>

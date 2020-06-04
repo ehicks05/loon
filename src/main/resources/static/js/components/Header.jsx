@@ -3,6 +3,7 @@ import {NavLink} from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faServer, faUser, faSignOutAlt, faSlidersH, faMusic, faSun, faMoon, faUserCog, faInfoCircle} from '@fortawesome/free-solid-svg-icons'
 import {inject, observer} from "mobx-react";
+import superFetch from "./SuperFetch";
 
 @inject('store')
 @observer
@@ -46,7 +47,8 @@ export default class Header extends React.Component {
 
     handleLogout()
     {
-        this.props.store.appState.logout().then(response => location.href = '/');
+        superFetch('/logout', {method: 'POST'})
+            .then(response => location.href = '/');
         return false;
     }
 

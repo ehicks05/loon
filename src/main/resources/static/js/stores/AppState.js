@@ -1,15 +1,13 @@
-import {observable, computed, action} from 'mobx';
+import {observable, action} from 'mobx';
 import {createTransformer} from "mobx-utils";
 
 export class AppState {
     @observable tracks;
     @observable trackMap = new Map();
     @observable playlists = [];
-    @observable pendingRequests = 0;
     @observable distinctArtists = [];
 
     constructor(rootStore) {
-        // autorun(() => console.log(this.report));
         this.rootStore = rootStore;
 
         this.loadTracks();
@@ -17,13 +15,6 @@ export class AppState {
     }
 
     getPlaylistById = createTransformer(id => this.playlists.find(playlist => playlist.id === id));
-    getTrackById = createTransformer(id => this.tracks.find(track => track.id === id));
-
-    @action
-    logout()
-    {
-        return this.rootStore.myFetch('/logout', {method: 'POST'});
-    }
 
     @action
     loadPlaylists()

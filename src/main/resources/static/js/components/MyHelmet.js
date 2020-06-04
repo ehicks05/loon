@@ -1,33 +1,24 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
-import {inject, observer} from "mobx-react";
 
-@inject('store')
-@observer
-export default class MyHelmet extends React.Component {
-    constructor(props) {
-        super(props);
-    }
+export default function MyHelmet(props) {
 
-    render()
-    {
-        const uiState = this.props.store.uiState;
-        const selectedTrack = uiState.selectedTrack;
-        const title = selectedTrack ? selectedTrack.title + ' by ' + selectedTrack.artist : 'Loon';
-        const transparentPixel = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+    const selectedTrack = props.selectedTrack;
+    const title = selectedTrack ? selectedTrack.title + ' by ' + selectedTrack.artist : 'Loon';
+    const transparentPixel = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
 
-        return (
-            <Helmet defer={false}>
-                <meta charset="utf-8" />
-                <meta name="viewport" content="width=device-width, initial-scale=1" />
-                <title>{title}</title>
-                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.8.2/css/bulma.min.css" />
-                <link rel="stylesheet" href="/styles/bulma-prefers-dark.min.css" />
-                <link rel="shortcut icon" href={"/images/loon2.png"} />
+    return (
+        <Helmet defer={false}>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>{title}</title>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.8.2/css/bulma.min.css" />
+            <link rel="stylesheet" href="/styles/bulma-prefers-dark.min.css" />
+            <link rel="shortcut icon" href={"/images/loon2.png"} />
 
-                <style>
-                    {
-                        `
+            <style>
+                {
+                    `
                         html {overflow: auto;}
 
                         #level {
@@ -67,13 +58,13 @@ export default class MyHelmet extends React.Component {
                         ::-webkit-scrollbar-thumb {background: #777;}
                         ::-webkit-scrollbar-thumb:hover {background: #888;}
                         `
-                    }
-                </style>
+                }
+            </style>
 
-                {/* prefers-color-scheme styles */}
-                <style>
-                    {
-                        `                        
+            {/* prefers-color-scheme styles */}
+            <style>
+                {
+                    `                        
                          // table {background-color: #EEE !important}
                          .myLevel {color: #4a4a4a; background-color: #f4f4f4;}
                          #left-column {background-color: #f4f4f4;}
@@ -128,8 +119,8 @@ export default class MyHelmet extends React.Component {
                              
                          }
                         `
-                    }
-                </style>
-            </Helmet>);
-    }
+                }
+            </style>
+        </Helmet>
+    );
 }

@@ -5,7 +5,7 @@ import 'bulma-extensions/bulma-pageloader/dist/css/bulma-pageloader.min.css'
 import {inject, observer} from "mobx-react";
 
 import Header from "./Header.jsx";
-import MyHelmet from "./MyHelmet.jsx";
+import MyHelmet from "./MyHelmet";
 import Player from "./Player.jsx";
 import Routes from "./Routes";
 import {UserContextProvider} from "./UserContextProvider";
@@ -55,7 +55,7 @@ export default class App extends React.Component {
             <UserContextProvider>
             <Router history={this.state.history}>
                 <>
-                    <MyHelmet />
+                    <MyHelmet selectedTrack={store.uiState.selectedTrack} />
                     <Header />
 
                     <div className={'columns is-gapless'}>

@@ -6,7 +6,6 @@ export class AppState {
     @observable trackMap = new Map();
     @observable playlists = [];
     @observable pendingRequests = 0;
-    @observable taskState = {};
     @observable distinctArtists = [];
 
     constructor(rootStore) {
@@ -135,24 +134,5 @@ export class AppState {
         return this.rootStore.myFetch('/api/playlists/' + playlistId, {method: 'POST', body: formData})
             .then(response => response.json())
             .then(data => {this.loadPlaylists();});
-    }
-
-    // TASK STATE //
-    @action
-    setTaskState(taskState) {
-        this.taskState = taskState;
-    }
-
-    @computed
-    get tasksInProgress() {
-        const tasks = this.taskState.tasks;
-        if (!tasks)
-            return null;
-
-        let inProgress = Object.entries(tasks).filter((entry) => entry[1].status === 'incomplete');
-        if (inProgress.filter((task) => task[0] === 'LibrarySyncTask').length === 1)
-            inProgress = inProgress.filter((task) => task[0] === 'LibrarySyncTask');
-
-        return inProgress;
     }
 }

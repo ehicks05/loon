@@ -1,4 +1,4 @@
-import React, { lazy } from 'react';
+import React, {lazy} from 'react';
 import {Router} from 'react-router-dom'
 import {createBrowserHistory} from 'history'
 import 'bulma-extensions/bulma-pageloader/dist/css/bulma-pageloader.min.css'
@@ -7,7 +7,6 @@ import {inject, observer} from "mobx-react";
 import Header from "./Header.jsx";
 import MyHelmet from "./MyHelmet.jsx";
 import Player from "./Player.jsx";
-import SystemStatusBar from "./SystemStatusBar.jsx";
 import Routes from "./Routes";
 
 const SidePanel = lazy(() => import('./SidePanel.jsx'));
@@ -58,7 +57,6 @@ export default class App extends React.Component {
                 <>
                     <MyHelmet />
                     <Header />
-                    <SystemStatusBar />
 
                     <div className={'columns is-gapless'}>
                         <div id='left-column' style={{height: columnHeight, overflow: 'hidden auto'}} className={"column is-narrow is-hidden-touch" + (store.uiState.isDarkTheme ? ' is-dark ' : '')}>

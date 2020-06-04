@@ -123,29 +123,6 @@ export class UiState {
             .then(response => response.json()).then(data => {console.log(data);});
     }
 
-    @action
-    updateTranscode(transcode) {
-        this.user.userState.transcode = transcode;
-
-        const formData = new FormData();
-        formData.append('transcode', transcode);
-        this.rootStore.myFetch('/api/users/' + this.user.id, {method: 'PUT', body: formData})
-            .then(response => response.json()).then(data => {console.log(data);});
-    }
-
-    @action
-    updateEq(eqNum, field, value) {
-        const prop = 'eq' + eqNum + field;
-        this.user.userState[prop] = value;
-
-        const formData = new FormData();
-        formData.append('eqNum', eqNum);
-        formData.append('field', field);
-        formData.append('value', value);
-        this.rootStore.myFetch('/api/users/' + this.user.id + '/eq', {method: 'PUT', body: formData})
-            .then(response => response.json()).then(data => {console.log(data);});
-    }
-
     @computed get selectedTrack() {
         return this.rootStore.appState.tracks && typeof this.rootStore.appState.tracks === 'object'?
             this.rootStore.appState.tracks.find(track => track.id === this.selectedTrackId) : null;

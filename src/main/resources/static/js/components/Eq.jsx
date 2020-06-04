@@ -1,74 +1,71 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import VerticalSlider from "./VerticalSlider.jsx";
-import {inject, observer} from "mobx-react";
+import {UserContext} from "./UserContextProvider";
 
-@inject('store')
-@observer
-export default class Eq extends React.Component {
-    constructor(props) {
-        super(props);
+export default function Eq() {
+    const userContext = useContext(UserContext);
 
-        this.handleEqChange = this.handleEqChange.bind(this);
-        this.handleSliderChange = this.handleSliderChange.bind(this);
-    }
-
-    handleEqChange(e)
+    function handleEqChange(e)
     {
         const eqNum = e.target.name.substring(2, 3);
         const field = e.target.name.substring(3);
         const value = e.target.value;
 
-        this.props.store.uiState.updateEq(eqNum, field, value);
+        userContext.setEq(eqNum, field, value);
     }
 
-    handleSliderChange(value, name)
+    function handleSliderChange(value, name)
     {
         const eqNum = name.substring(2, 3);
         const field = name.substring(3);
-        this.props.store.uiState.updateEq(eqNum, field, value);
+        userContext.setEq(eqNum, field, value);
     }
 
-    render()
-    {
-        const userState = this.props.store.uiState.user.userState;
+    const cellStyle = {border: '1px solid gray', verticalAlign: 'middle', padding: '8px'};
+    const userState = userContext.user.userState;
 
-        const cellStyle = {border: '1px solid gray', verticalAlign: 'middle', padding: '8px'};
+    const eqs = [
+        {name: 'eq1', frequency: userState.eq1Frequency, gain: userState.eq1Gain, type: 'Low Shelf'},
+        {name: 'eq2', frequency: userState.eq2Frequency, gain: userState.eq2Gain, type: 'Peaking'},
+        {name: 'eq3', frequency: userState.eq3Frequency, gain: userState.eq3Gain, type: 'Peaking'},
+        {name: 'eq4', frequency: userState.eq4Frequency, gain: userState.eq4Gain, type: 'High Shelf'},
+    ];
 
-        const eqTable =
-            <table style={{padding: '8px'}}>
-                <tbody>
-                <tr>
-                    <td style={cellStyle} className={'has-text-centered'}>Freq</td>
-                    <td style={cellStyle}><input className={'input has-text-right'} name={'eq1Frequency'} type={'number'} min={20} max={20000} step={1} defaultValue={userState.eq1Frequency} onChange={this.handleEqChange} /></td>
-                    <td style={cellStyle}><input className={'input has-text-right'} name={'eq2Frequency'} type={'number'} min={20} max={20000} step={1} defaultValue={userState.eq2Frequency} onChange={this.handleEqChange} /></td>
-                    <td style={cellStyle}><input className={'input has-text-right'} name={'eq3Frequency'} type={'number'} min={20} max={20000} step={1} defaultValue={userState.eq3Frequency} onChange={this.handleEqChange} /></td>
-                    <td style={cellStyle}><input className={'input has-text-right'} name={'eq4Frequency'} type={'number'} min={20} max={20000} step={1} defaultValue={userState.eq4Frequency} onChange={this.handleEqChange} /></td>
-                </tr>
-                <tr>
-                    <td style={cellStyle} className={'has-text-centered'}>Gain</td>
-                    <td style={cellStyle}><VerticalSlider name={'eq1Gain'} value={userState.eq1Gain} onChange={this.handleSliderChange} /></td>
-                    <td style={cellStyle}><VerticalSlider name={'eq2Gain'} value={userState.eq2Gain} onChange={this.handleSliderChange} /></td>
-                    <td style={cellStyle}><VerticalSlider name={'eq3Gain'} value={userState.eq3Gain} onChange={this.handleSliderChange} /></td>
-                    <td style={cellStyle}><VerticalSlider name={'eq4Gain'} value={userState.eq4Gain} onChange={this.handleSliderChange} /></td>
-                </tr>
-                <tr>
-                    <td style={cellStyle} className={'has-text-centered'}>Type</td>
-                    <td style={cellStyle} className={'has-text-centered'}>Low Shelf</td>
-                    <td style={cellStyle} className={'has-text-centered'}>Peaking</td>
-                    <td style={cellStyle} className={'has-text-centered'}>Peaking</td>
-                    <td style={cellStyle} className={'has-text-centered'}>High Shelf</td>
-                </tr>
-                </tbody>
-            </table>;
+    const freqCells = eqs.map(eq =>
+        <td key={eq.name} style={cellStyle}>
+            <input className={'input has-text-right'} name={eq.name + 'Frequency'} type={'number'}
+                   min={20} max={20000} step={1} defaultValue={eq.frequency} onChange={handleEqChange}/>
+        </td>
+    );
+    const gainCells = eqs.map(eq => <td key={eq.name} style={cellStyle}><VerticalSlider name={eq.name + 'Gain'} value={eq.gain} onChange={handleSliderChange} /></td>);
+    const typeCells = eqs.map(eq => <td key={eq.name} style={cellStyle} className={'has-text-centered'}>{eq.type}</td>);
 
-        return (
-            <div>
-                <section className={"section"}>
-                    <h1 className="title">Settings</h1>
-                    <h2 className="subtitle">Equalizer</h2>
+    const eqTable =
+        <table style={{padding: '8px'}}>
+            <tbody>
+            <tr>
+                <td style={cellStyle} className={'has-text-centered'}>Freq</td>
+                {freqCells}
+            </tr>
+            <tr>
+                <td style={cellStyle} className={'has-text-centered'}>Gain</td>
+                {gainCells}
+            </tr>
+            <tr>
+                <td style={cellStyle} className={'has-text-centered'}>Type</td>
+                {typeCells}
+            </tr>
+            </tbody>
+        </table>;
 
-                    {eqTable}
-                </section>
-            </div>);
-    }
+    return (
+        <div>
+            <section className={"section"}>
+                <h1 className="title">Settings</h1>
+                <h2 className="subtitle">Equalizer</h2>
+
+                {eqTable}
+            </section>
+        </div>
+    );
 }

@@ -1,67 +1,47 @@
-import React from 'react';
-import {inject, observer} from "mobx-react";
+import React, {useContext, useEffect, useState} from 'react';
 import 'bulma-switch/dist/css/bulma-switch.min.css'
+import {UserContext} from "./UserContextProvider";
 
-@inject('store')
-@observer
-export default class GeneralSettings extends React.Component {
-    constructor(props) {
-        super(props);
+export default function GeneralSettings() {
+    const userContext = useContext(UserContext);
 
-        this.save = this.save.bind(this);
-        this.state = {};
-    }
+    const [transcodeQuality, setTranscodeQuality] = useState('');
 
-    componentDidMount()
-    {
-        let self = this;
+    useEffect(() => {
         fetch('/api/systemSettings/transcodeQuality', {method: 'GET'})
             .then(response => response.json())
-            .then(data => self.setState({transcodeQuality: data}));
-    }
+            .then(data => setTranscodeQuality(data));
+    }, []);
 
-    save(e)
+    function setTranscode(e)
     {
-        const formData = new FormData(document.getElementById('frmGeneralSettings'));
-        this.props.store.uiState.updateTranscode(formData.get('transcode') === 'on');
+        userContext.setTranscode(e.target.checked);
     }
 
-    render()
-    {
-        const userState = this.props.store.uiState.user.userState;
-        const cellStyle = {padding: '10px'};
-        const transcodeQuality = this.state.transcodeQuality ? this.state.transcodeQuality : "";
-
-        return (
-            <div>
-                <section className={"section"}>
-                    <h1 className="title">Settings</h1>
-                    <h2 className="subtitle">
-                        General Settings
-                    </h2>
-                </section>
-                <section className="section">
-                    <form id="frmGeneralSettings" method="post" action="">
-
-                        <table className={'table'} style={{padding: '8px', maxWidth: '80%', borderCollapse: 'separate'}}>
-                            <tbody>
-                            <tr>
-                                <td style={cellStyle} className={'has-text-centered'}>
-                                    <div className="field">
-                                        <input type="checkbox" className="switch is-rounded" id="transcode" name="transcode" defaultChecked={userState.transcode} />
-                                        <label htmlFor="transcode">Transcode all tracks to mp3 v{transcodeQuality}</label>
-                                    </div>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-
-                        <span className="buttons">
-                            <input id="saveButton" type="button" value="Save" className="button is-primary" onClick={(e) => this.save()} />
-                        </span>
-                    </form>
-                </section>
-            </div>
-        );
-    }
+    return (
+        <div>
+            <section className={"section"}>
+                <h1 className="title">Settings</h1>
+                <h2 className="subtitle">
+                    General Settings
+                </h2>
+            </section>
+            <section className="section">
+                <form id="frmGeneralSettings" method="post" action="">
+                    <table className={'table'} style={{padding: '8px', maxWidth: '80%', borderCollapse: 'separate'}}>
+                        <tbody>
+                        <tr>
+                            <td style={{padding: '10px'}} className={'has-text-centered'}>
+                                <div className="field">
+                                    <input type="checkbox" className="switch is-rounded" id="transcode" name="transcode" checked={userContext.user.userState.transcode} onChange={(e) => setTranscode(e)} />
+                                    <label htmlFor="transcode">Transcode all tracks to mp3 v{transcodeQuality}</label>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </form>
+            </section>
+        </div>
+    );
 }

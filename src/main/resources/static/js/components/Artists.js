@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 import 'lazysizes';
 import 'lazysizes/plugins/attrchange/ls.attrchange';
-import {ArtistCard} from "./ArtistCard.jsx";
+import {ArtistCard} from "./ArtistCard";
 import {AppContext} from "./AppContextProvider";
 import useWindowSize from "./WindowSizeHook";
 

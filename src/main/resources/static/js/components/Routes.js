@@ -11,9 +11,9 @@ const PlaylistBuilder = lazy(() => import('./PlaylistBuilder.jsx'));
 
 const UserSettings = lazy(() => import('./UserSettings'));
 const About = lazy(() => import('./About'));
-const Artists = lazy(() => import('./Artists.jsx'));
+const Artists = lazy(() => import('./Artists'));
 const Albums = lazy(() => import('./Albums'));
-const Artist = lazy(() => import('./Artist.jsx'));
+const Artist = lazy(() => import('./Artist'));
 const Search = lazy(() => import('./Search.jsx'));
 const Album = lazy(() => import('./Album'));
 

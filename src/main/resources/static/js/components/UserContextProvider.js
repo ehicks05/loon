@@ -5,6 +5,7 @@ const UserContext = React.createContext();
 
 function UserContextProvider(props) {
     const[user, setUser] = useState(null);
+    const[selectedContextMenuId, setSelectedContextMenuId] = useState(null);
 
     useEffect(() => {
         fetchUser();
@@ -85,6 +86,8 @@ function UserContextProvider(props) {
             setShuffle: setShuffle,
             setTranscode: setTranscode,
             setEq: setEq,
+            selectedContextMenuId: selectedContextMenuId,
+            setSelectedContextMenuId: setSelectedContextMenuId,
         }}>
             {props.children}
         </UserContext.Provider>

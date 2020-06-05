@@ -1,5 +1,5 @@
 import React from 'react';
-import Albums from "./Albums.jsx";
+import Albums from "./Albums";
 import {inject, observer} from "mobx-react";
 import {ArtistCard} from "./ArtistCard";
 

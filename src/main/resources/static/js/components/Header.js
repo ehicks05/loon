@@ -1,11 +1,16 @@
-import React, {useEffect} from 'react';
+import React, {useContext, useEffect} from 'react';
 import {NavLink} from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faServer, faUser, faSignOutAlt, faSlidersH, faMusic, faUserCog, faInfoCircle} from '@fortawesome/free-solid-svg-icons'
 import superFetch from "./SuperFetch";
 import {useMediaQuery} from "./MediaQuery";
+import {UserContext} from "./UserContextProvider";
+import {AppContext} from "./AppContextProvider";
 
 export default function Header(props) {
+    const userContext = useContext(UserContext);
+    const appContext = useContext(AppContext);
+
     useEffect(() => {
         // Get all "navbar-burger" elements
         var $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
@@ -56,10 +61,10 @@ export default function Header(props) {
         )
     }
 
-    const isAdmin = props.admin;
-    const playlists = props.playlists
+    const isAdmin = userContext.user.admin;
+    const playlists = appContext.playlists
         .filter(playlist => !playlist.favorites && !playlist.queue)
-        .map(playlistToNavLink);
+        .map(playlist => {return playlistToNavLink(playlist)});
 
     const isLessThan1024Width = useMediaQuery('(max-width: 1024px)');
 

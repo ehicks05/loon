@@ -5,6 +5,9 @@ import {UserContext} from "./UserContextProvider";
 export default function Eq() {
     const userContext = useContext(UserContext);
 
+    if (!userContext || !userContext.user)
+        return <div>Loading...</div>
+
     function handleEqChange(e)
     {
         const eqNum = e.target.name.substring(2, 3);

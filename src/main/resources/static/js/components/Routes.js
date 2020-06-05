@@ -1,5 +1,6 @@
-import React, { Suspense, lazy } from 'react';
+import React, {Suspense, lazy, useContext} from 'react';
 import {Redirect, Route, Switch} from 'react-router-dom'
+import {UserContext} from "./UserContextProvider";
 
 const SystemSettings = lazy(() => import('./SystemSettings'));
 const Playlist = lazy(() => import('./Playlist.jsx'));
@@ -17,7 +18,9 @@ const Search = lazy(() => import('./Search.jsx'));
 const Album = lazy(() => import('./Album'));
 
 export default function Routes(props) {
-    const isAdmin = props.admin;
+    const userContext = useContext(UserContext);
+    const isAdmin = userContext.user.admin;
+
     return (
         <Suspense fallback={<div>Loading...</div>}>
             <Route exact path='/'                               render={() => <Redirect to='/search' /> } />

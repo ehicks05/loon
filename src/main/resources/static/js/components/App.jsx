@@ -9,6 +9,7 @@ import MyHelmet from "./MyHelmet";
 import Player from "./Player.jsx";
 import Routes from "./Routes";
 import {UserContextProvider} from "./UserContextProvider";
+import {AppContextProvider} from "./AppContextProvider";
 
 const SidePanel = lazy(() => import('./SidePanel'));
 
@@ -53,6 +54,7 @@ export default class App extends React.Component {
 
         return (
             <UserContextProvider>
+            <AppContextProvider>
             <Router history={this.state.history}>
                 <>
                     <MyHelmet selectedTrack={store.uiState.selectedTrack} />
@@ -87,6 +89,7 @@ export default class App extends React.Component {
                     />
                 </>
             </Router>
+            </AppContextProvider>
             </UserContextProvider>
         );
     }

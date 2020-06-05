@@ -1,9 +1,12 @@
-import React from 'react';
+import React, {useContext, useEffect} from 'react';
 import {NavLink} from "react-router-dom";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faSearch, faMusic, faUsers, faFolderOpen, faHeart, faList, faCompactDisc} from '@fortawesome/free-solid-svg-icons'
+import {AppContext} from "./AppContextProvider";
 
 export default function SidePanel(props) {
+    const appContext = useContext(AppContext);
+
     const defaultLinks = [
         {path: '/search', icon: faSearch, text: 'Search'},
         {path: '/favorites', icon: faHeart, text: 'Favorites'},
@@ -15,7 +18,10 @@ export default function SidePanel(props) {
 
     const links = defaultLinks.map(link => linkToNavLink(link));
 
-    const playlists = props.playlists
+    if (!appContext || !appContext.playlists)
+        return <div>Loading...</div>;
+
+    let playlists = appContext.playlists
         .filter(playlist => !playlist.favorites && !playlist.queue)
         .map((playlist) => playlistToLink(playlist))
         .map((link) => linkToNavLink(link));

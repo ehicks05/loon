@@ -36,7 +36,7 @@ function UserContextProvider(props) {
 
     function setSelectedTrackId(selectedTrackId) {
         const formData = new FormData();
-        formData.append('lastPlaylistId', user.selectedPlaylistId);
+        formData.append('lastPlaylistId', user.userState.lastPlaylistId);
         formData.append('lastTrackId', selectedTrackId);
         updateUser('/api/users/' + this.user.id + '/saveProgress', formData);
     }

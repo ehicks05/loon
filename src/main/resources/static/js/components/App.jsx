@@ -1,96 +1,89 @@
-import React, {lazy} from 'react';
+import React, {lazy, useContext, useEffect, useState} from 'react';
 import {Router} from 'react-router-dom'
 import {createBrowserHistory} from 'history'
 import 'bulma-extensions/bulma-pageloader/dist/css/bulma-pageloader.min.css'
-import {inject, observer} from "mobx-react";
 
 import Header from "./Header";
 import MyHelmet from "./MyHelmet";
 import Player from "./Player.jsx";
 import Routes from "./Routes";
-import {UserContextProvider} from "./UserContextProvider";
-import {AppContextProvider} from "./AppContextProvider";
+import {UserContext} from "./UserContextProvider";
+import {AppContext} from "./AppContextProvider";
+import useWindowSize from "./WindowSizeHook";
 
 const SidePanel = lazy(() => import('./SidePanel'));
 
-@inject('store')
-@observer
-export default class App extends React.Component {
+export default function App(props) {
+    const [history, setHistory] = useState({})
 
-    constructor(props) {
-        super(props);
-        this.state = {history: createBrowserHistory({ basename: '/' })};
-    }
+    const userContext = useContext(UserContext);
+    const appContext = useContext(AppContext);
+    const windowSize = useWindowSize();
 
-    componentDidMount() {
+    useEffect(() => {
+        setHistory(createBrowserHistory({ basename: '/' }));
+
         const pollIntervalId = setInterval(function () {
             fetch('/api/poll', {method: 'GET'})
-                .then(response => response.text()).then(text => console.log("poll result: " + text));
+                .then(response => response.text())
+                .then(text => console.log("poll result: " + text));
         }, 60 * 60 * 1000); // once an hour
 
-        this.props.store.uiState.getScreenDimensions();
-        this.props.store.uiState.getWindowDimensions();
-    }
+        return function cleanup() {
+            clearInterval(pollIntervalId);
+        };
+    }, []);
 
-    render() {
-        const store = this.props.store;
-
-        if (!store.dataLoaded)
-        {
-            return (
-                <>
-                    <MyHelmet/>
-                    <div className={"pageloader is-active is-success"}><span className="title">Loading...</span></div>
-                </>
-            );
-        }
-
-        const innerHeight = this.props.store.uiState.windowDimensions.height;
-        const footerHeight = this.props.store.uiState.windowDimensions.width <= 768 ? 103 : 54;
-        // const columnHeight = 'calc(' + innerHeight + 'px - (52px + 23px + ' + footerHeight + '))';
-        const ch = Number(innerHeight) - (52 + 23 + Number(footerHeight));
-        const columnHeight = '' + ch + 'px';
-        console.log('New columnHeight: ' + columnHeight + '... window height('+innerHeight+') - (header height('+52+') + footer height(23 + '+footerHeight+'))):');
-
+    const dataLoaded = userContext && userContext.user && appContext && appContext.tracks && appContext.playlists;
+    if (!dataLoaded)
+    {
         return (
-            <UserContextProvider>
-            <AppContextProvider>
-            <Router history={this.state.history}>
-                <>
-                    <MyHelmet selectedTrack={store.uiState.selectedTrack} />
-                    <Header admin={store.uiState.user.admin} playlists ={store.appState.playlists} />
-
-                    <div className={'columns is-gapless'}>
-                        <div id='left-column' style={{height: columnHeight, overflow: 'hidden auto'}} className={"column is-narrow is-hidden-touch"}>
-                            <div style={{height: '98%', display: 'flex', flexDirection: 'column'}}>
-                                <div style={{overflowY: 'auto'}}><SidePanel /></div>
-                                <div style={{flex: '1 1 auto'}}> </div>
-                                <div style={{height: '100px'}}>
-                                    <canvas id='spectrumCanvas' height={100} width={150}> </canvas>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="column" style={{height: columnHeight, overflow: 'hidden auto'}}>
-                            <Routes admin={store.uiState.user.admin} />
-                        </div>
-                    </div>
-
-                    <Player muted={store.uiState.user.userState.muted}
-                            volume={store.uiState.user.userState.volume}
-                            selectedTrackId={store.uiState.selectedTrackId}
-                            eq1Freq={store.uiState.user.userState.eq1Frequency}
-                            eq1Gain={store.uiState.user.userState.eq1Gain}
-                            eq2Freq={store.uiState.user.userState.eq2Frequency}
-                            eq2Gain={store.uiState.user.userState.eq2Gain}
-                            eq3Freq={store.uiState.user.userState.eq3Frequency}
-                            eq3Gain={store.uiState.user.userState.eq3Gain}
-                            eq4Freq={store.uiState.user.userState.eq4Frequency}
-                            eq4Gain={store.uiState.user.userState.eq4Gain}
-                    />
-                </>
-            </Router>
-            </AppContextProvider>
-            </UserContextProvider>
+            <>
+                <MyHelmet/>
+                <div className={"pageloader is-active is-success"}><span className="title">Loading...</span></div>
+            </>
         );
     }
+
+    const innerHeight = windowSize.height;
+    const footerHeight = windowSize.width <= 768 ? 103 : 54;
+    // const columnHeight = 'calc(' + innerHeight + 'px - (52px + 23px + ' + footerHeight + '))';
+    const ch = Number(innerHeight) - (52 + 23 + Number(footerHeight));
+    const columnHeight = '' + ch + 'px';
+    console.log('New columnHeight: ' + columnHeight + '... window height('+innerHeight+') - (header height('+52+') + footer height(23 + '+footerHeight+'))):');
+
+    return (
+        <Router history={history}>
+            <MyHelmet />
+            <Header />
+
+            <div className={'columns is-gapless'}>
+                <div id='left-column' style={{height: columnHeight, overflow: 'hidden auto'}} className={"column is-narrow is-hidden-touch"}>
+                    <div style={{height: '98%', display: 'flex', flexDirection: 'column'}}>
+                        <div style={{overflowY: 'auto'}}><SidePanel /></div>
+                        <div style={{flex: '1 1 auto'}}> </div>
+                        <div style={{height: '100px'}}>
+                            <canvas id='spectrumCanvas' height={100} width={150}> </canvas>
+                        </div>
+                    </div>
+                </div>
+                <div className="column" style={{height: columnHeight, overflow: 'hidden auto'}}>
+                    <Routes />
+                </div>
+            </div>
+
+            <Player muted={userContext.user.userState.muted}
+                    volume={userContext.user.userState.volume}
+                    selectedTrackId={userContext.user.userState.lastTrackId}  // todo rename this on back end
+                    eq1Freq={userContext.user.userState.eq1Frequency}
+                    eq1Gain={userContext.user.userState.eq1Gain}
+                    eq2Freq={userContext.user.userState.eq2Frequency}
+                    eq2Gain={userContext.user.userState.eq2Gain}
+                    eq3Freq={userContext.user.userState.eq3Frequency}
+                    eq3Gain={userContext.user.userState.eq3Gain}
+                    eq4Freq={userContext.user.userState.eq4Frequency}
+                    eq4Gain={userContext.user.userState.eq4Gain}
+            />
+        </Router>
+    );
 }

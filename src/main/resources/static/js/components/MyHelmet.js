@@ -1,9 +1,18 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { Helmet } from 'react-helmet';
+import {UserContext} from "./UserContextProvider";
+import {AppContext} from "./AppContextProvider";
 
 export default function MyHelmet(props) {
+    const userContext = useContext(UserContext);
+    const appContext = useContext(AppContext);
 
-    const selectedTrack = props.selectedTrack;
+    function getSelectedTrack() {
+        return appContext.tracks && typeof appContext.tracks === 'object' ?
+            appContext.tracks.find(track => track.id === userContext.user.userState.lastTrackId) : null; // todo rename lastTrackId
+    }
+
+    const selectedTrack = getSelectedTrack();
     const title = selectedTrack ? selectedTrack.title + ' by ' + selectedTrack.artist : 'Loon';
     const transparentPixel = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
 

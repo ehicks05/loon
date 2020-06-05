@@ -39,7 +39,7 @@ export default function PlaybackControls(props) {
 
     function formatTime(secs) {
         const minutes = Math.floor(secs / 60) || 0;
-        const seconds = (secs - minutes * 60) || 0;
+        const seconds = Math.round(secs - minutes * 60) || 0;
 
         return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
     }
@@ -73,7 +73,7 @@ export default function PlaybackControls(props) {
                                railStyle={{backgroundColor: '#ddd'}}
                                handleStyle={{borderColor: 'hsl(141, 71%, 48%)'}}
                                tipFormatter={formatTime}
-                               type="range" value={timeElapsed} max={duration} step={1} onChange={handleProgressChange}/>
+                               type="range" value={timeElapsed} max={duration} step={0.1} onChange={handleProgressChange}/>
             <span id="duration" style={{fontSize: '.875rem', marginLeft: '8px'}}>{formattedDuration}</span>
         </div>;
 

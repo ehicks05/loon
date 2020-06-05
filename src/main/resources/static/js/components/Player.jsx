@@ -423,7 +423,7 @@ export default class Player extends React.Component {
         if (self.audio)
         {
             self.audio.currentTime = progress;
-            this.lastAnimationFrame = Date.now() - 1000; // force the progress bar to update
+            this.lastAnimationFrame = Date.now() - 200; // force the progress bar to update
             self.step();
         }
     }
@@ -433,7 +433,7 @@ export default class Player extends React.Component {
         let self = this;
 
         let elapsed = Date.now() - this.lastAnimationFrame;
-        if (elapsed > 1000) // update 1 time a second
+        if (elapsed > 200) // update 5 times a second
         {
             if (typeof self.audio.currentTime === 'number')
                 this.setState({timeElapsed: self.audio.currentTime});

@@ -36,9 +36,6 @@ export default class Playlist extends React.Component {
         const self = this;
         this.cache.clearAll();
         this.disposer = mobx.autorun(() => {
-            const width = self.props.store.uiState.windowDimensions.width;
-            const height = self.props.store.uiState.windowDimensions.height;
-
             // wait 1 second, otherwise sometimes there are huge gaps between rows, especially when toggling light/dark mode.
             setTimeout(function () {
                 self.cache.clearAll();

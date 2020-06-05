@@ -8,11 +8,6 @@ export class UiState {
 
     // .struct makes sure observer won't be signaled unless the
     // dimensions object changed in a deepEqual manner
-    @observable screenDimensions = {
-        width: 0,
-        height: 0
-    };
-
     @observable windowDimensions = {
         width: 0,
         height: 0
@@ -22,13 +17,6 @@ export class UiState {
         this.rootStore = rootStore;
 
         const self = this;
-        this.getScreenDimensions();
-        window.addEventListener('resize', function(e) {
-            if (typeof window === 'object') {
-                self.screenDimensions.width = window.screen.availWidth;
-                self.screenDimensions.height = window.screen.availHeight;
-            }
-        });
 
         this.getWindowDimensions();
         window.addEventListener('resize', function(e) {
@@ -39,14 +27,6 @@ export class UiState {
         });
 
         this.loadUser();
-    }
-
-    @action
-    getScreenDimensions(e) {
-        if (typeof window === 'object') {
-            this.screenDimensions.width = window.screen.availWidth;
-            this.screenDimensions.height = window.screen.availHeight;
-        }
     }
 
     @action

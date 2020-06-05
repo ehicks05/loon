@@ -1,5 +1,5 @@
 import React from 'react';
-import PlaybackControls from "./PlaybackControls.jsx";
+import PlaybackControls from "./PlaybackControls";
 import {inject, observer} from "mobx-react";
 
 function isScrolledIntoView(el) {

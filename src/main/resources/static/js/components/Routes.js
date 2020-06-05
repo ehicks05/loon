@@ -14,7 +14,7 @@ const Artists = lazy(() => import('./Artists.jsx'));
 const Albums = lazy(() => import('./Albums.jsx'));
 const Artist = lazy(() => import('./Artist.jsx'));
 const Search = lazy(() => import('./Search.jsx'));
-const Album = lazy(() => import('./Album.jsx'));
+const Album = lazy(() => import('./Album'));
 
 export default function Routes(props) {
     const isAdmin = props.admin;

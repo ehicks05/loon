@@ -13,6 +13,7 @@ const SliderWithTooltip = createSliderWithTooltip(Slider);
 
 export default function PlaybackControls(props) {
     const userContext = useContext(UserContext);
+    const isWidthOver768 = useMediaQuery('(min-width: 768px)');
 
     function handlePlayerStateChange(e, newState) {
         console.log('handlePlayerStateChange: ' + newState);
@@ -62,7 +63,6 @@ export default function PlaybackControls(props) {
     const formattedTimeElapsed = formatTime(Math.round(timeElapsed));
     const formattedDuration = formatTime(Math.round(duration));
 
-    const isWidthOver768 = useMediaQuery('(min-width: 768px)');
     const textWidth = isWidthOver768 ? 'calc(100vw - 408px)' : '100%';
 
     const trackProgressBar =

@@ -4,7 +4,7 @@ import {createBrowserHistory} from 'history'
 import 'bulma-extensions/bulma-pageloader/dist/css/bulma-pageloader.min.css'
 import {inject, observer} from "mobx-react";
 
-import Header from "./Header.jsx";
+import Header from "./Header";
 import MyHelmet from "./MyHelmet";
 import Player from "./Player.jsx";
 import Routes from "./Routes";
@@ -58,7 +58,7 @@ export default class App extends React.Component {
             <Router history={this.state.history}>
                 <>
                     <MyHelmet selectedTrack={store.uiState.selectedTrack} />
-                    <Header />
+                    <Header admin={store.uiState.user.admin} playlists ={store.appState.playlists} />
 
                     <div className={'columns is-gapless'}>
                         <div id='left-column' style={{height: columnHeight, overflow: 'hidden auto'}} className={"column is-narrow is-hidden-touch"}>

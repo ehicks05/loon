@@ -124,6 +124,11 @@ function AppContextProvider(props) {
             .then(data => {loadPlaylists();});
     }
 
+    function getPlaylistById(id)
+    {
+        return playlists.find(playlist => playlist.id === id);
+    }
+
     return (
         <AppContext.Provider value={{
             tracks: tracks,
@@ -138,6 +143,7 @@ function AppContextProvider(props) {
             deletePlaylist: deletePlaylist,
             dragAndDrop: dragAndDrop,
             clearPlaylist: clearPlaylist,
+            getPlaylistById: getPlaylistById,
         }}>
             {props.children}
         </AppContext.Provider>

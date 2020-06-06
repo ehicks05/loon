@@ -8,6 +8,9 @@ export default function Artist(props) {
     const appContext = useContext(AppContext);
     const windowSize = useWindowSize();
 
+    if (!appContext || !appContext.tracks)
+        return <div>Loading...</div>;
+
     const artistParam = props.match.params.artist;
     const tracks = appContext.tracks;
 

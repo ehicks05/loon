@@ -36,11 +36,9 @@ export default function Playlist(props) {
         }
     }, []);
 
-    // componentDidUpdate(prevProps, prevState, snapshot)
-    // {
-    //     if (prevState.playlistId !== parsePlaylistId())
-    //         setPlaylistId(parsePlaylistId());
-    // }
+    useEffect(() => {
+        setPlaylistId(parsePlaylistId())
+    }, [props.match]);
 
     function parsePlaylistId()
     {

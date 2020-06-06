@@ -4,10 +4,10 @@ import {UserContext} from "./UserContextProvider";
 
 const SystemSettings = lazy(() => import('./SystemSettings'));
 const Playlist = lazy(() => import('./Playlist.jsx'));
-const Playlists = lazy(() => import('./Playlists.jsx'));
+const Playlists = lazy(() => import('./Playlists'));
 const GeneralSettings = lazy(() => import('./GeneralSettings'));
 const Eq = lazy(() => import('./Eq'));
-const PlaylistBuilder = lazy(() => import('./PlaylistBuilder.jsx'));
+const PlaylistBuilder = lazy(() => import('./PlaylistBuilder'));
 
 const UserSettings = lazy(() => import('./UserSettings'));
 const About = lazy(() => import('./About'));

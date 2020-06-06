@@ -1,27 +1,22 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {Link} from "react-router-dom";
-import {inject, observer} from "mobx-react";
+import {AppContext} from "./AppContextProvider";
+import {UserContext} from "./UserContextProvider";
 
-@inject('store')
-@observer
-export default class Playlists extends React.Component {
-    constructor(props) {
-        super(props);
-        this.delete = this.delete.bind(this);
-    }
+export default function Playlists(props) {
+    const appContext = useContext(AppContext);
+    const userContext = useContext(UserContext);
 
-    delete(playlistId)
+    function deletePlaylist(playlistId)
     {
         if (window.confirm("Do you really want to delete this playlist?"))
-            return this.props.store.appState.deletePlaylist(playlistId);
+            return appContext.deletePlaylist(playlistId);
     }
 
-    render()
-    {
-        const playlists = this.props.store.appState.playlists
-            .filter(playlist => !playlist.favorites && !playlist.queue)
-            .map((playlist, index) => {
-                const highlightClass = playlist.id === this.props.store.uiState.selectedPlaylistId ? ' playingHighlight' : '';
+    const playlists = appContext.playlists
+        .filter(playlist => !playlist.favorites && !playlist.queue)
+        .map((playlist, index) => {
+                const highlightClass = playlist.id === userContext.user.userState.lastPlaylistId ? ' playingHighlight' : '';
 
                 return (<tr key={playlist.id} className={highlightClass}>
                     <td> {index + 1} </td>
@@ -37,7 +32,7 @@ export default class Playlists extends React.Component {
                                 Edit
                             </Link>
 
-                            <button className={"button is-small is-danger"} onClick={(e) => this.delete(playlist.id)}>
+                            <button className={"button is-small is-danger"} onClick={(e) => deletePlaylist(playlist.id)}>
                                 Delete
                             </button>
                         </span>
@@ -46,30 +41,30 @@ export default class Playlists extends React.Component {
             }
         );
 
-        return (
-            <div>
-                <section className={"section"}>
-                    <h1 className="title">Playlists</h1>
-                </section>
+    return (
+        <div>
+            <section className={"section"}>
+                <h1 className="title">Playlists</h1>
+            </section>
 
-                <section className="section">
-                    <table className={'table is-hoverable is-narrow is-striped'}>
-                        <tbody>
-                            <tr>
-                                <td> </td>
-                                <td>Name</td>
-                                <td className={'has-text-right'}>Tracks</td>
-                                <td> </td>
-                            </tr>
-                        {
-                            playlists
-                        }
-                        </tbody>
-                    </table>
-                    <Link className={"button is-primary"} to={'/playlists/new'}>
-                        New Playlist
-                    </Link>
-                </section>
-            </div>);
-    }
+            <section className="section">
+                <table className={'table is-hoverable is-narrow is-striped'}>
+                    <tbody>
+                    <tr>
+                        <td> </td>
+                        <td>Name</td>
+                        <td className={'has-text-right'}>Tracks</td>
+                        <td> </td>
+                    </tr>
+                    {
+                        playlists
+                    }
+                    </tbody>
+                </table>
+                <Link className={"button is-primary"} to={'/playlists/new'}>
+                    New Playlist
+                </Link>
+            </section>
+        </div>
+    );
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {Redirect} from 'react-router-dom'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -8,109 +8,98 @@ import {faCheckSquare, faPlusSquare, faMinusSquare, faSquare, faFolder, faFolder
 import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 import TextInput from "./TextInput";
-import {inject, observer} from "mobx-react";
+import {AppContext} from "./AppContextProvider";
 
-@inject('store')
-@observer
-export default class PlaylistBuilder extends React.Component {
-    constructor(props) {
-        super(props);
-        this.onCheck = this.onCheck.bind(this);
-        this.onExpand = this.onExpand.bind(this);
-        this.save = this.save.bind(this);
+export default function PlaylistBuilder(props) {
+    const [checked, setChecked] = useState([]);
+    const [expanded, setExpanded] = useState(['0', '-1', '-2']);
+    const [redirectToPlaylists, setRedirectToPlaylists] = useState(false);
+    const [playlist, setPlaylist] = useState(null);
+    const [treeData, setTreeData] = useState(null);
 
-        this.state = {redirectToPlaylists: false,
-            checked: [],
-            expanded: ['0', '-1', '-2']
-        };
-    }
+    const appContext = useContext(AppContext);
 
-    componentDidMount()
-    {
-        const self = this;
+    useEffect(() => {
         fetch('/api/library/getLibraryTrackPaths', {method: 'GET'})
             .then(response => response.json())
-            .then(json => self.setState({treeData: json}));
+            .then(json => setTreeData(json));
 
-        let playlistId = this.props.match.params.id ? Number(this.props.match.params.id) : 0;
+        let playlistId = props.match.params.id ? Number(props.match.params.id) : 0;
         if (playlistId)
         {
-            const playlist = this.props.store.appState.playlists.find(playlist => playlist.id === playlistId);
-            this.setState({playlist: playlist, checked: playlist.playlistTracks.map(playlistTrack => playlistTrack.track.id)});
+            const playlist = appContext.playlists.find(playlist => playlist.id === playlistId);
+            setPlaylist(playlist);
+            setChecked(playlist.playlistTracks.map(playlistTrack => playlistTrack.track.id));
         }
-    }
+    }, []);
 
-    save()
+    function save()
     {
-        const self = this;
-
         const formData = new FormData();
-        formData.append("action", this.state.playlist ? 'modify' : 'add');
-        formData.append("playlistId", this.state.playlist ? this.state.playlist.id : 0);
+        formData.append("action", playlist ? 'modify' : 'add');
+        formData.append("playlistId", playlist ? playlist.id : 0);
         formData.append("name", document.getElementById('name').value);
-        formData.append("trackIds", this.state.checked.toString());
+        formData.append("trackIds", checked.toString());
 
-        self.props.store.appState.addOrModifyPlaylist(formData)
-            .then(data => self.setState({redirectToPlaylists: true}));
+        appContext.addOrModifyPlaylist(formData)
+            .then(data => setRedirectToPlaylists(true));
     }
 
-    onCheck(checked) {
-        this.setState({ checked });
+    function onCheck(checked) {
+        setChecked(checked);
     }
 
-    onExpand(expanded) {
-        this.setState({ expanded });
+    function onExpand(expanded) {
+        setExpanded(expanded);
     }
 
-    render()
-    {
-        if (!this.state.treeData)
-            return <div>Loading...</div>;
+    if (!treeData)
+        return <div>Loading...</div>;
 
-        if (this.state.redirectToPlaylists)
-            return <Redirect to={'/playlists'} />;
+    if (redirectToPlaylists)
+        return <Redirect to={'/playlists'} />;
 
-        return (
-            <div>
-                <section className={"section"}>
-                        <h1 className="title">Playlist Builder</h1>
-                        <h2 className="subtitle">{this.state.playlist ? this.state.playlist.name : 'New Playlist'}</h2>
-                </section>
+    return (
+        <div>
+            <section className={"section"}>
+                <h1 className="title">Playlist Builder</h1>
+                <h2 className="subtitle">{playlist ? playlist.name : 'New Playlist'}</h2>
+            </section>
 
-                <section className="section">
-                    <TextInput
-                        id={"name"}
-                        label={"Name"}
-                        value={this.state.playlist ? this.state.playlist.name : 'New Playlist'}
-                        required={true}
-                        size={50}
-                    />
+            <section className="section">
+                <TextInput
+                    id={"name"}
+                    label={"Name"}
+                    value={playlist ? playlist.name : 'New Playlist'}
+                    required={true}
+                    size={50}
+                />
 
-                    <label className="label">Tracks</label>
-                    <CheckboxTree
-                        nodes={this.state.treeData}
-                        checked={this.state.checked}
-                        expanded={this.state.expanded}
-                        onCheck={this.onCheck}
-                        onExpand={this.onExpand}
-                        icons={{
-                            check: <FontAwesomeIcon className='rct-icon rct-icon-check' icon={faCheckSquare} />,
-                            uncheck: <FontAwesomeIcon className='rct-icon rct-icon-uncheck' icon={faSquare} />,
-                            halfCheck: <FontAwesomeIcon className='rct-icon rct-icon-half-check' icon={faCheckSquare} />,
-                            expandClose: <FontAwesomeIcon className='rct-icon rct-icon-expand-close' icon={faChevronRight} />,
-                            expandOpen: <FontAwesomeIcon className='rct-icon rct-icon-expand-open' icon={faChevronDown} />,
-                            expandAll: <FontAwesomeIcon className='rct-icon rct-icon-expand-all' icon={faPlusSquare} />,
-                            collapseAll: <FontAwesomeIcon className='rct-icon rct-icon-collapse-all' icon={faMinusSquare} />,
-                            parentClose: <FontAwesomeIcon className='rct-icon rct-icon-parent-close' icon={faFolder} />,
-                            parentOpen: <FontAwesomeIcon className='rct-icon rct-icon-parent-open' icon={faFolderOpen} />,
-                            leaf: <FontAwesomeIcon className='rct-icon rct-icon-leaf-close' icon={faFile} />
-                        }}
-                    />
+                <label className="label">Tracks</label>
+                <CheckboxTree
+                    nodes={treeData}
+                    checked={checked}
+                    expanded={expanded}
+                    onCheck={onCheck}
+                    onExpand={onExpand}
+                    icons={{
+                        check: <FontAwesomeIcon className='rct-icon rct-icon-check' icon={faCheckSquare} />,
+                        uncheck: <FontAwesomeIcon className='rct-icon rct-icon-uncheck' icon={faSquare} />,
+                        halfCheck: <FontAwesomeIcon className='rct-icon rct-icon-half-check' icon={faCheckSquare} />,
+                        expandClose: <FontAwesomeIcon className='rct-icon rct-icon-expand-close' icon={faChevronRight} />,
+                        expandOpen: <FontAwesomeIcon className='rct-icon rct-icon-expand-open' icon={faChevronDown} />,
+                        expandAll: <FontAwesomeIcon className='rct-icon rct-icon-expand-all' icon={faPlusSquare} />,
+                        collapseAll: <FontAwesomeIcon className='rct-icon rct-icon-collapse-all' icon={faMinusSquare} />,
+                        parentClose: <FontAwesomeIcon className='rct-icon rct-icon-parent-close' icon={faFolder} />,
+                        parentOpen: <FontAwesomeIcon className='rct-icon rct-icon-parent-open' icon={faFolderOpen} />,
+                        leaf: <FontAwesomeIcon className='rct-icon rct-icon-leaf-close' icon={faFile} />
+                    }}
+                />
 
-                    <button className={"button is-primary"} onClick={this.save}>
-                        Save
-                    </button>
-                </section>
-            </div>);
-    }
+                <button className={"button is-primary"} onClick={save}>
+                    Save
+                </button>
+            </section>
+        </div>
+    );
 }

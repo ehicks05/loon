@@ -1,13 +1,25 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
+import {AppContext} from "./AppContextProvider";
+import {UserContext} from "./UserContextProvider";
 
 export default function About() {
     const [systemInfo, setSystemInfo] = useState({});
     const [versionInfo, setVersionInfo] = useState({});
 
+    const appContext = useContext(AppContext);
+    const userContext = useContext(UserContext);
+
     useEffect(() => {
         loadSystemInfo();
         loadVersionInfo();
     }, [])
+
+    function getSelectedTrack() {
+        return appContext.tracks && typeof appContext.tracks === 'object' ?
+            appContext.tracks.find(track => track.id === userContext.user.userState.lastTrackId) : null; // todo rename lastTrackId
+    }
+
+    const selectedTrack = getSelectedTrack();
 
     function loadSystemInfo()
     {
@@ -37,7 +49,6 @@ export default function About() {
         </tr>
     );
 
-    const selectedTrack = {}; // todo get selected track
     const selectedTrackInfoRows = selectedTrack ? Object.entries(selectedTrack).map(value =>
             <tr>
                 <td>{value[0]}</td>
@@ -52,33 +63,33 @@ export default function About() {
             <div className={'subtitle'}>Git Info</div>
             <table className={'table is-narrow'}>
                 <thead>
-                <th>Field</th>
-                <th>Value</th>
+                    <th>Field</th>
+                    <th>Value</th>
                 </thead>
                 <tbody>
-                {versionInfoRows}
+                    {versionInfoRows}
                 </tbody>
             </table>
 
             <div className={'subtitle'}>System Info</div>
             <table className={'table is-narrow'}>
                 <thead>
-                <th>Field</th>
-                <th>Value</th>
+                    <th>Field</th>
+                    <th>Value</th>
                 </thead>
                 <tbody>
-                {systemInfoRows}
+                    {systemInfoRows}
                 </tbody>
             </table>
 
             <div className={'subtitle'}>Selected Track Info</div>
             <table className={'table is-narrow'}>
                 <thead>
-                <th>Field</th>
-                <th>Value</th>
+                    <th>Field</th>
+                    <th>Value</th>
                 </thead>
                 <tbody>
-                {selectedTrackInfoRows}
+                    {selectedTrackInfoRows}
                 </tbody>
             </table>
         </section>

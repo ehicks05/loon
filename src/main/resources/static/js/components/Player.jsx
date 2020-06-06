@@ -1,353 +1,212 @@
-import React from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import PlaybackControls from "./PlaybackControls";
-import {inject, observer} from "mobx-react";
+import {UserContext} from "./UserContextProvider";
+import {AppContext} from "./AppContextProvider";
+import {scaleVolume, getMaxSafeGain, scrollIntoView} from "./PlayerUtil";
 
-function isScrolledIntoView(el) {
-    const rect = el.getBoundingClientRect();
-    const elemTop = rect.top;
-    const elemBottom = rect.bottom;
+export default function Player(props) {
+    const userContext = useContext(UserContext);
+    const appContext = useContext(AppContext);
 
-    // Partially visible elements return true:
-    return elemTop < window.innerHeight && elemBottom >= 0;
-}
+    const [playerState, setPlayerState] = useState('stopped');
+    const [duration, setDuration] = useState(0);
+    const [timeElapsed, setTimeElapsed] = useState(0);
 
-@inject('store')
-@observer
-export default class Player extends React.Component {
+    let audioCtx = useRef(new window.AudioContext());
+    let audio = useRef(initAudio());
+    let trackGainNode = useRef(audioCtx.current.createGain());
+    let gainNode = useRef(audioCtx.current.createGain());
+    let band1 = useRef(audioCtx.current.createBiquadFilter());
+    let band2 = useRef(audioCtx.current.createBiquadFilter());
+    let band3 = useRef(audioCtx.current.createBiquadFilter());
+    let band4 = useRef(audioCtx.current.createBiquadFilter());
+    let analyser = useRef(audioCtx.current.createAnalyser());
+    let audioBufferSourceNode = useRef({});
 
-    constructor(props) {
-        super(props);
-
-        this.handlePlayerStateChange = this.handlePlayerStateChange.bind(this);
-        this.handleTrackChange = this.handleTrackChange.bind(this);
-        this.handleProgressChange = this.handleProgressChange.bind(this);
-        this.renderSpectrumFrame = this.renderSpectrumFrame.bind(this);
-        this.getMergedFrequencyBins = this.getMergedFrequencyBins.bind(this);
-        this.getCurrentPlaylistTrackIds = this.getCurrentPlaylistTrackIds.bind(this);
-        this.getNewTrackId = this.getNewTrackId.bind(this);
-
-        this.lastAnimationFrame = Date.now();
-
-        this.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); // todo: do we still need the webkit one?
-
-        this.audio = new Audio();
-        this.audio.controls = false;
-        this.audio.autoplay = false;
-        const self = this;
-        this.audio.onended = function () {
-            self.handleTrackChange('next');
-        };
-        this.audio.ondurationchange = function () {
-            self.setState({duration: self.audio.duration});
-        };
-        this.audio.onerror = function () {
-            console.log(self.audio.error);
-        };
-
-        document.body.appendChild(this.audio);
-
-        this.trackGainNode = this.audioCtx.createGain();
-        // this.trackGainNode.connect(this.audioCtx.destination);
-
-        this.gainNode = this.audioCtx.createGain();
-        this.gainNode.gain.value = Player.scaleVolume(this.props.store.uiState.user.userState.volume);
-        this.gainNode.connect(this.trackGainNode);
-
-        const userState = this.props.store.uiState.user.userState;
-        this.band1 = this.audioCtx.createBiquadFilter();
-        this.band1.type = "lowshelf";
-        this.band1.frequency.value = userState.eq1Frequency;
-        this.band1.gain.value = userState.eq1Gain;
-        this.band2 = this.audioCtx.createBiquadFilter();
-        this.band2.type = "peaking";
-        this.band2.frequency.value = userState.eq2Frequency;
-        this.band2.gain.value = userState.eq2Gain;
-        this.band3 = this.audioCtx.createBiquadFilter();
-        this.band3.type = "peaking";
-        this.band3.frequency.value = userState.eq3Frequency;
-        this.band3.gain.value = userState.eq3Gain;
-        this.band4 = this.audioCtx.createBiquadFilter();
-        this.band4.type = "highshelf";
-        this.band4.frequency.value = userState.eq4Frequency;
-        this.band4.gain.value = userState.eq4Gain;
-
-        this.analyser = this.audioCtx.createAnalyser();
-        this.analyser.fftSize = 4096;
-
-        this.trackGainNode.connect(this.band1);
-        this.band1.connect(this.band2);
-        this.band2.connect(this.band3);
-        this.band3.connect(this.band4);
-        this.band4.connect(this.analyser);
-
-        this.analyser.connect(this.audioCtx.destination);
-
-        this.audioBufferSourceNode = this.audioCtx.createMediaElementSource(this.audio);
-        this.audioBufferSourceNode.connect(this.gainNode);
-
-        this.state = {
-            playerState: 'stopped',
-            timeElapsed: 0,
-            duration: 0
-        };
+    function initAudio() {
+        let audio = new Audio();
+        audio.controls = false;
+        audio.autoplay = false;
+        audio.onended = function () {handleTrackChange('next');};
+        audio.ondurationchange = function () {setDuration(audio.duration);};
+        audio.onerror = function () {console.log(audio.error);};
+        document.body.appendChild(audio);
+        return audio;
     }
 
-    componentDidMount()
-    {
-        Player.scrollIntoView(this.props.selectedTrackId);
-        requestAnimationFrame(this.step.bind(this));
+    useEffect(() => {
+        const userState = userContext.user.userState;
+
+        gainNode.current.gain.value = scaleVolume(userState.volume);
+        gainNode.current.connect(trackGainNode.current);
+
+        band1.current.type = "lowshelf";
+        band1.current.frequency.value = userState.eq1Frequency;
+        band1.current.gain.value = userState.eq1Gain;
+        band2.current.type = "peaking";
+        band2.current.frequency.value = userState.eq2Frequency;
+        band2.current.gain.value = userState.eq2Gain;
+        band3.current.type = "peaking";
+        band3.current.frequency.value = userState.eq3Frequency;
+        band3.current.gain.value = userState.eq3Gain;
+        band4.current.type = "highshelf";
+        band4.current.frequency.value = userState.eq4Frequency;
+        band4.current.gain.value = userState.eq4Gain;
+
+        analyser.current.fftSize = 4096;
+
+        trackGainNode.current.connect(band1.current);
+        band1.current.connect(band2.current);
+        band2.current.connect(band3.current);
+        band3.current.connect(band4.current);
+        band4.current.connect(analyser.current);
+
+        analyser.current.connect(audioCtx.current.destination);
+
+        audioBufferSourceNode.current = audioCtx.current.createMediaElementSource(audio.current);
+        audioBufferSourceNode.current.connect(gainNode.current);
+
+        scrollIntoView(userState.lastTrackId) //todo rename
+
+        setInterval(step, 200)
+    }, []);
+
+    useEffect(() => {
+        handlePlayerStateChange(null, props.selectedTrackId);
+    }, [props.selectedTrackId]);
+    useEffect(() => {
+        if (gainNode.current)
+            gainNode.current.gain.value = scaleVolume(props.volume);
+    }, [props.volume]);
+    useEffect(() => {
+        if (audio.current)
+            audio.current.muted = props.muted;
+    }, [props.muted]);
+    useEffect(() => {
+        if (!band1.current)
+            return;
+        band1.current.frequency.value = props.eq1Freq;
+        band1.current.gain.value = props.eq1Gain;
+    }, [props.eq1Freq, props.eq1Gain]);
+    useEffect(() => {
+        if (!band2.current)
+            return;
+        band2.current.frequency.value = props.eq2Freq;
+        band2.current.gain.value = props.eq2Gain;
+    }, [props.eq2Freq, props.eq2Gain]);
+    useEffect(() => {
+        if (!band3.current)
+            return;
+        band3.current.frequency.value = props.eq3Freq;
+        band3.current.gain.value = props.eq3Gain;
+    }, [props.eq3Freq, props.eq3Gain]);
+    useEffect(() => {
+        if (!band4.current)
+            return;
+        band4.current.frequency.value = props.eq4Freq;
+        band4.current.gain.value = props.eq4Gain;
+    }, [props.eq4Freq, props.eq4Gain]);
+
+    function getSelectedTrack() {
+        return appContext.tracks && typeof appContext.tracks === 'object' ?
+            appContext.tracks.find(track => track.id === userContext.user.userState.lastTrackId) : null; // todo rename lastTrackId
     }
 
-    componentDidUpdate(prevProps, prevState)
-    {
-        if (prevProps.selectedTrackId !== this.props.selectedTrackId)
-        {
-            this.handlePlayerStateChange(null, this.props.selectedTrackId);
-        }
+    const selectedTrack = getSelectedTrack();
 
-        if (prevProps.volume !== this.props.volume)
-        {
-            this.gainNode.gain.value = Player.scaleVolume(this.props.volume);
-        }
-        if (prevProps.muted !== this.props.muted)
-        {
-            if (this.audio)
-                this.audio.muted = this.props.muted;
-        }
-        if (prevProps.eq1Freq !== this.props.eq1Freq || prevProps.eq1Gain !== this.props.eq1Gain)
-        {
-            this.band1.frequency.value = this.props.eq1Freq;
-            this.band1.gain.value = this.props.eq1Gain;
-        }
-        if (prevProps.eq2Freq !== this.props.eq2Freq || prevProps.eq2Gain !== this.props.eq2Gain)
-        {
-            this.band2.frequency.value = this.props.eq2Freq;
-            this.band2.gain.value = this.props.eq2Gain;
-        }
-        if (prevProps.eq3Freq !== this.props.eq3Freq || prevProps.eq3Gain !== this.props.eq3Gain)
-        {
-            this.band3.frequency.value = this.props.eq3Freq;
-            this.band3.gain.value = this.props.eq3Gain;
-        }
-        if (prevProps.eq4Freq !== this.props.eq4Freq || prevProps.eq4Gain !== this.props.eq4Gain)
-        {
-            this.band4.frequency.value = this.props.eq4Freq;
-            this.band4.gain.value = this.props.eq4Gain;
-        }
-    }
-
-    handlePlayerStateChange(newPlayerState, newTrackId) {
+    function handlePlayerStateChange(newPlayerState, newTrackId) {
         console.log('in Player.handlePlayerStateChange(' + newPlayerState + ', ' + newTrackId + ')');
-        const self = this;
 
         if (newPlayerState === 'paused')
-        {
-            this.audioCtx.suspend();
-        }
+            audioCtx.current.suspend();
         if (newPlayerState === 'playing' || !newPlayerState)
         {
-
             // resume
-            if (!newTrackId && self.audio.currentSrc && self.audioCtx.state === 'suspended')
+            if (!newTrackId && audio.current.currentSrc && audioCtx.current.state === 'suspended')
             {
-                this.audio.play();
-                this.audioCtx.resume();
-
-                this.setState({playerState: newPlayerState});
+                audio.current.play();
+                audioCtx.current.resume();
+                setPlayerState(newPlayerState)
 
                 return;
             }
 
             // resume if suspended because of Autoplay Policy
-            if (newPlayerState === 'playing' && self.audioCtx.state === 'suspended')
-                this.audioCtx.resume();
+            if (newPlayerState === 'playing' && audioCtx.current.state === 'suspended')
+                audioCtx.current.resume();
 
-            this.setState({timeElapsed: 0});
+            setTimeElapsed(0);
 
             if (!newTrackId)
-                newTrackId = this.props.selectedTrackId;
+                newTrackId = props.selectedTrackId;
 
-            let track = this.props.store.appState.tracks.find(track => track.id === newTrackId);
+            let track = appContext.tracks.find(track => track.id === newTrackId);
             if (!track)
             {
                 console.log('no track found...');
-                this.handleTrackChange('next');
+                handleTrackChange('next');
                 return;
             }
             if (track.missingFile)
             {
                 console.log('attempted to play a track with missing file...');
-                this.handleTrackChange('next');
+                handleTrackChange('next');
                 return;
             }
 
-            if (self.audio && self.audioCtx.state === 'running')
+            if (audio.current && audioCtx.current.state === 'running')
             {
-                if (self.audio.src === '/media?id=' + track.id)
+                if (audio.current.src === '/media?id=' + track.id)
                 {
                     // we need to pause
-                    this.audioCtx.suspend();
-                    this.setState({playerState: 'paused'}); // do this since we're exiting early
+                    audioCtx.current.suspend();
+                    setPlayerState('paused'); // do this since we're exiting early
                     return;
                 }
             }
 
-            self.audio.volume = 0;
-            self.audio.src = '/media?id=' + track.id;
-            self.trackGainNode.gain.value = Player.getMaxSafeGain(track.trackGainLinear, track.trackPeak);
+            if (audio.current) {
+                audio.current.volume = 0;
+                audio.current.src = '/media?id=' + track.id;
+            }
+            if (trackGainNode.current)
+                trackGainNode.current.gain.value = getMaxSafeGain(track.trackGainLinear, track.trackPeak);
 
-            const playPromise = self.audio.play();
+            const playPromise = audio.current ? audio.current.play() : null;
             if (playPromise !== null) {
                 playPromise
                     .then(() => {
-                        self.audio.volume = 1;
+                        audio.current.volume = 1;
 
                         // This triggers when we hit 'next track' button while playback is paused.
                         // The player will go to start playing the new track and immediately pause.
-                        if (!newPlayerState && (this.state.playerState === 'paused' || this.state.playerState === 'stopped'))
+                        if (!newPlayerState && (playerState === 'paused' || playerState === 'stopped'))
                         {
-                            this.audioCtx.suspend();
+                            audioCtx.current.suspend();
                         }
                     })
-                    .catch(() => { self.audio.play(); })
+                    .catch(() => { audio.current.play(); })
             }
 
-            Player.scrollIntoView(track.id);
-
-            this.renderSpectrumFrame();
+            scrollIntoView(track.id);
         }
 
         if (newPlayerState)
-            this.setState({playerState: newPlayerState});
+            setPlayerState(newPlayerState);
     }
 
-    getFrequencyTiltAdjustment(binStartingFreq) {
-        let temp = binStartingFreq;
-        if (temp === 0) temp = 20;
-
-        let isAbove = temp >= 1000;
-        let octavesFrom1000 = 0;
-        while (true)
-        {
-            if (isAbove)
-            {
-                temp /= 2;
-                if (temp < 1000)
-                    break;
-            }
-            if (!isAbove)
-            {
-                temp *= 2;
-                if (temp > 1000)
-                    break;
-            }
-            octavesFrom1000++;
-        }
-
-        let dBAdjustment = (isAbove ? 1 : -1) * octavesFrom1000 * 1.1;
-        let linearAdjustment = Math.pow(10, (dBAdjustment / 20));
-        return linearAdjustment;
-    }
-
-    getMergedFrequencyBins() {
-        const dataArray = new Uint8Array(this.analyser.frequencyBinCount);
-        const binWidth = this.audioCtx.sampleRate / this.analyser.frequencyBinCount;
-        this.analyser.getByteFrequencyData(dataArray);
-
-        const mergedData = [];
-        let i = 0;
-        let size = 1;
-        while (true)
-        {
-            let bins = Math.floor(size);
-
-            let linearAdjustment = this.getFrequencyTiltAdjustment(i * binWidth);
-
-            if (i === dataArray.length || i * binWidth > 22000)
-                break;
-
-            if (i + bins > dataArray.length)
-                bins = dataArray.length - i;
-
-            let slice = dataArray.slice(i, i + bins);
-            let average = (array) => array.reduce((o1, o2) => o1 + o2) / array.length;
-            const avg = average(slice);
-
-            mergedData.push(avg * linearAdjustment);
-            // console.log('i:' + i + '. bins:' + bins + '. db adjust:' + linearAdjustment + '. ' + (i * binWidth) + ' - ' + (i * binWidth + (bins * binWidth) - 1));
-            i += bins;
-            size *= 1.3;
-        }
-
-        return mergedData.slice(2); // the first 2 frequency bins tend to have very little energy
-    }
-
-    renderSpectrumFrame() {
-        requestAnimationFrame(this.renderSpectrumFrame);
-
-        const canvas = document.getElementById("spectrumCanvas");
-        if (!canvas)
-            return;
-
-        const ctx = canvas.getContext("2d");
-
-        // Make it visually fill the positioned parent
-        canvas.style.width ='100%';
-        canvas.style.height='100%';
-        // ...then set the internal size to match
-        canvas.width  = canvas.offsetWidth;
-        canvas.height = canvas.offsetHeight;
-
-        const WIDTH = canvas.width;
-        const HEIGHT = canvas.height;
-
-        const mergedData = this.getMergedFrequencyBins();
-        const bufferLength = mergedData.length;
-
-        // ctx.fillStyle = "#000";
-        // ctx.fillRect(0, 0, WIDTH, HEIGHT);
-        let x = 0;
-        const barWidth = (WIDTH / bufferLength) - 1;
-
-        for (let i = 0; i < bufferLength; i++) {
-            const barHeight = mergedData[i] / (255 / HEIGHT);
-
-            const red = (barHeight / HEIGHT) * 255;
-
-            const r = red + (25 * (i/bufferLength));
-            const g = 250 * (i/bufferLength);
-            const b = 50;
-
-            ctx.fillStyle = "rgb(" + r + "," + g + "," + b + ")";
-            ctx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
-
-            x += barWidth + 1;
-        }
-    }
-
-    // scroll to the now-playing track (if it isn't already in view)
-    static scrollIntoView(trackId)
-    {
-        const el = document.getElementById('track' + trackId);
-        if (el && !isScrolledIntoView(el))
-        {
-            location.href = '#track' + trackId;
-            window.scrollBy(0, -50);
-        }
-    }
-
-    getCurrentPlaylistTrackIds() {
-        const currentPlaylist = this.props.store.appState.playlists.find(playlist => playlist.id === this.props.store.uiState.selectedPlaylistId);
+    function getCurrentPlaylistTrackIds() {
+        const currentPlaylist = appContext.getPlaylistById(userContext.user.userState.lastPlaylistId); //todo rename
         if (currentPlaylist)
             return currentPlaylist.playlistTracks.map((playlistTrack) => playlistTrack.track.id);
         else
-            return this.props.store.appState.tracks.map(track => track.id);
+            return appContext.tracks.map(track => track.id);
     }
 
-    getNewTrackId(input) {
-        const currentPlaylistTrackIds = this.getCurrentPlaylistTrackIds();
+    function getNewTrackId(input) {
+        const currentPlaylistTrackIds = getCurrentPlaylistTrackIds();
         let newTrackId = -1;
-        const shuffle = this.props.store.uiState.user.userState.shuffle;
+        const shuffle = userContext.user.userState.shuffle;
         if (shuffle)
         {
             let newPlaylistTrackIndex = Math.floor (Math.random() * currentPlaylistTrackIds.length);
@@ -356,7 +215,7 @@ export default class Player extends React.Component {
         }
         else
         {
-            const currentTrackIndex = currentPlaylistTrackIds.indexOf(this.props.selectedTrackId);
+            const currentTrackIndex = currentPlaylistTrackIds.indexOf(userContext.user.userState.lastTrackId); //todo rename
 
             let newIndex;
             if (input === 'prev') {
@@ -381,81 +240,37 @@ export default class Player extends React.Component {
         return newTrackId;
     }
 
-    handleTrackChange(input) {
-        const newTrackId = this.getNewTrackId(input);
+    function handleTrackChange(input) {
+        const newTrackId = getNewTrackId(input);
 
-        this.props.store.uiState.handleSelectedTrackIdChange(newTrackId);
+        userContext.setSelectedTrackId(newTrackId);
     }
 
-    static scaleVolume(dB)
-    {
-        if (dB > 0) dB = 0;
-        if (dB < -60) dB = -60;
-
-        let level = Math.pow(10, (dB / 20));
-        if (dB === -60)
-            level = 0;
-
-        return level;
-    }
-
-    static getMaxSafeGain(trackGainLinear, trackPeak)
-    {
-        if (!trackPeak)
-            return trackGainLinear;
-
-        let maxSafeGain = 1 / trackPeak;
-
-        if (maxSafeGain < trackGainLinear)
+    function handleProgressChange(progress) {
+        if (audio)
         {
-            console.log('Whoa there! Track replaygain is ' + trackGainLinear +
-                ', but with a track peak of ' + trackPeak + ', we can only adjust gain by ' + maxSafeGain + '.');
-
-            return maxSafeGain;
-        }
-
-        return trackGainLinear;
-    }
-
-    handleProgressChange(progress) {
-        let self = this;
-
-        if (self.audio)
-        {
-            self.audio.currentTime = progress;
-            this.lastAnimationFrame = Date.now() - 200; // force the progress bar to update
-            self.step();
+            audio.current.currentTime = progress;
+            step();
         }
     }
 
-    /** The step called within requestAnimationFrame to update the playback position. */
-    step() {
-        let self = this;
-
-        let elapsed = Date.now() - this.lastAnimationFrame;
-        if (elapsed > 200) // update 5 times a second
-        {
-            if (typeof self.audio.currentTime === 'number')
-                this.setState({timeElapsed: self.audio.currentTime});
-
-            this.lastAnimationFrame = Date.now();
-        }
-
-        requestAnimationFrame(self.step.bind(self));
+    function step() {
+        if (audio)
+            setTimeElapsed(audio.current.currentTime);
     }
 
-    render()
-    {
-        return (
-            <PlaybackControls
-                    playerState={this.state.playerState}
-                    selectedTrack={this.props.store.uiState.selectedTrack}
-                    timeElapsed={this.state.timeElapsed}
-                    duration={this.state.duration}
+    if (!audio)
+        return <div>Loading...</div>
 
-                    onPlayerStateChange={this.handlePlayerStateChange}
-                    onTrackChange={this.handleTrackChange}
-                    onProgressChange={this.handleProgressChange}
-            />);
-    }
+    return (
+        <PlaybackControls
+            playerState={playerState}
+            selectedTrack={selectedTrack}
+            timeElapsed={timeElapsed}
+            duration={duration}
+
+            onPlayerStateChange={handlePlayerStateChange}
+            onTrackChange={handleTrackChange}
+            onProgressChange={handleProgressChange}
+        />);
 }

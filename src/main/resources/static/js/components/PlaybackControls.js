@@ -73,7 +73,7 @@ export default function PlaybackControls(props) {
                                railStyle={{backgroundColor: '#ddd'}}
                                handleStyle={{borderColor: 'hsl(141, 71%, 48%)'}}
                                tipFormatter={formatTime}
-                               type="range" value={timeElapsed} max={duration} step={0.1} onChange={handleProgressChange}/>
+                               type="range" value={timeElapsed} max={duration} step={0.01} onChange={handleProgressChange}/>
             <span id="duration" style={{fontSize: '.875rem', marginLeft: '8px'}}>{formattedDuration}</span>
         </div>;
 

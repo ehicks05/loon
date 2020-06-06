@@ -1,227 +1,194 @@
-import React from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import ReactDOM from 'react-dom'
 import MediaItem from "./MediaItem";
-import {DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd';
-import {inject, observer} from "mobx-react";
+import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd';
 import TextInput from "./TextInput";
 import {Link, Redirect} from "react-router-dom";
 import {AutoSizer, CellMeasurer, CellMeasurerCache, List} from "react-virtualized";
 import DraggingMediaItem from "./DraggingMediaItem";
-import * as mobx from "mobx";
+import {UserContext} from "./UserContextProvider";
+import {AppContext} from "./AppContextProvider";
 
-@inject('store')
-@observer
-export default class Playlist extends React.Component {
-    constructor(props)
-    {
-        super(props);
+export default function Playlist(props) {
+    const [playlistId, setPlaylistId] = useState(parsePlaylistId());
+    const [redirectTo, setRedirectTo] = useState(null);
 
-        this.parsePlaylistId = this.parsePlaylistId.bind(this);
-        this.renderRow = this.renderRow.bind(this);
+    const userContext = useContext(UserContext);
+    const appContext = useContext(AppContext);
 
-        this.onDragEnd = this.onDragEnd.bind(this);
-        this.persistDragAndDrop = this.persistDragAndDrop.bind(this);
-        this.saveAsPlaylist = this.saveAsPlaylist.bind(this);
-        this.clearPlaylist = this.clearPlaylist.bind(this);
-        this.toggleSaveAsPlaylistForm = this.toggleSaveAsPlaylistForm.bind(this);
-        this.getPlaylist = this.getPlaylist.bind(this);
-        this.renderDraggingMediaItem = this.renderDraggingMediaItem.bind(this);
+    const cache = new CellMeasurerCache({fixedWidth: true, defaultHeight: 58});
+    let listRef = null;
 
-        this.state = {playlistId: this.parsePlaylistId(), redirectTo: null};
-        this.cache = new CellMeasurerCache({fixedWidth: true, defaultHeight: 58});
-    }
+    useEffect(() => {
+        cache.clearAll();
 
-    componentDidMount()
-    {
-        const self = this;
-        this.cache.clearAll();
-        this.disposer = mobx.autorun(() => {
-            // wait 1 second, otherwise sometimes there are huge gaps between rows, especially when toggling light/dark mode.
-            setTimeout(function () {
-                self.cache.clearAll();
-                self.listRef.recomputeRowHeights();
-                self.listRef.forceUpdateGrid();
-            }, 1000)
-        });
+        // setTimeout(function () {
+        //     cache.clearAll();
+        //     listRef.recomputeRowHeights();
+        //     listRef.forceUpdateGrid();
+        // }, 1000)
 
-        this.setState({
-            playlistId: this.parsePlaylistId(),
-        });
-    }
+        setPlaylistId(parsePlaylistId());
 
-    componentWillUnmount()
-    {
-        this.disposer();
-        this.props.store.uiState.selectedContextMenuId = '';
-    }
+        return function cleanup() {
+            // this.disposer();
+            userContext.selectedContextMenuId = '';
+        }
+    }, []);
 
-    componentDidUpdate(prevProps, prevState, snapshot)
-    {
-        if (prevState.playlistId !== this.parsePlaylistId())
-            this.setState({playlistId: this.parsePlaylistId()});
-    }
+    // componentDidUpdate(prevProps, prevState, snapshot)
+    // {
+    //     if (prevState.playlistId !== parsePlaylistId())
+    //         setPlaylistId(parsePlaylistId());
+    // }
 
-    parsePlaylistId()
+    function parsePlaylistId()
     {
         let playlistId = 0;
-        if (this.props.match.path === '/playlists/:id')
-            playlistId = this.props.match.params.id ? Number(this.props.match.params.id) : 0;
-        if (this.props.match.path === '/favorites')
+        if (props.match.path === '/playlists/:id')
+            playlistId = props.match.params.id ? Number(props.match.params.id) : 0;
+        if (props.match.path === '/favorites')
         {
-            const favorites = this.props.store.appState.playlists.filter(playlist => playlist.favorites);
+            const favorites = appContext.playlists.filter(playlist => playlist.favorites);
             playlistId = favorites && favorites.length > 0 ? favorites[0].id : 0;
         }
-        if (this.props.match.path === '/queue')
+        if (props.match.path === '/queue')
         {
-            const queue = this.props.store.appState.playlists.filter(playlist => playlist.queue);
+            const queue = appContext.playlists.filter(playlist => playlist.queue);
             playlistId = queue && queue.length > 0 ? queue[0].id : 0;
         }
 
         return playlistId;
     }
 
-    getPlaylist(playlistId)
-    {
-        return this.props.store.appState.getPlaylistById(playlistId);
-    }
-
-    onDragEnd(result)
+    function onDragEnd(result)
     {
         // dropped outside the list
         if (!result.destination)
             return;
 
         if (result.source.index !== result.destination.index)
-            this.persistDragAndDrop(this.state.playlistId, result.source.index, result.destination.index);
+            persistDragAndDrop(playlistId, result.source.index, result.destination.index);
     }
 
-    persistDragAndDrop(playlistId, oldIndex, newIndex)
+    function persistDragAndDrop(playlistId, oldIndex, newIndex)
     {
         const formData = new FormData();
         formData.append("playlistId", playlistId);
         formData.append("oldIndex", oldIndex);
         formData.append("newIndex", newIndex);
-        this.props.store.appState.dragAndDrop(formData);
+        appContext.dragAndDrop(formData);
     }
 
-    saveAsPlaylist()
+    function saveAsPlaylist()
     {
-        const self = this;
-        const queueId = this.props.store.appState.playlists.find(playlist => playlist.queue).id;
+        const queueId = appContext.playlists.find(playlist => playlist.queue).id;
 
         const formData = new FormData();
         formData.append("fromPlaylistId", queueId);
         formData.append("name", document.getElementById('playlistName').value);
 
-        this.props.store.appState.copyPlaylist(formData)
-            .then(data => self.setState({redirectTo: '/playlists/' + data.id}));
+        appContext.copyPlaylist(formData)
+            .then(data => setRedirectTo('/playlists/' + data.id));
     }
 
-    clearPlaylist()
+    function clearPlaylist()
     {
-        this.props.store.appState.clearPlaylist(this.state.playlistId);
+        appContext.clearPlaylist(playlistId);
     }
 
-    toggleSaveAsPlaylistForm()
+    function toggleSaveAsPlaylistForm()
     {
         const el = document.getElementById('saveAsPlaylistForm');
         if (el)
             el.classList.toggle('is-invisible');
     }
 
-    render()
-    {
-        if (this.state.redirectTo)
-            return <Redirect to={this.state.redirectTo}/>;
+    if (redirectTo)
+        return <Redirect to={redirectTo}/>;
 
-        const self = this;
+    const selectedTrackId = userContext.user.userState.lastTrackId;
+    const playlist = appContext.getPlaylistById(playlistId);
 
-        const selectedTrackId = this.props.store.uiState.selectedTrackId;
-        const playlist = this.getPlaylist(this.state.playlistId);
+    if (playlistId && !playlist)
+        return <div>Loading...</div>;
 
-        if (this.state.playlistId && !playlist)
-            return <div>Loading...</div>;
+    const scrollToIndex = playlist.playlistTracks.indexOf(playlist.playlistTracks.find(playlistTrack => playlistTrack.track.id === selectedTrackId));
 
-        this.props.store.appState.playlists.length;
-        this.props.store.appState.playlists.forEach(playlist => playlist.playlistTracks.length);
-
-        const scrollToIndex = playlist.playlistTracks.indexOf(playlist.playlistTracks.find(playlistTrack => playlistTrack.track.id === selectedTrackId));
-
-        const mediaList = (
-            <DragDropContext onDragEnd={this.onDragEnd}>
-                <Droppable droppableId="droppable"
-                           mode="virtual"
-                           renderClone={(provided, snapshot, rubric) => (
-                               <div
-                                   {...provided.draggableProps}
-                                   {...provided.dragHandleProps}
-                                   ref={provided.innerRef}
-                               >
-                                   {self.renderDraggingMediaItem(rubric.source.index, provided)}
-                               </div>
-                           )}
-                >
-                    {(provided, snapshot) => (
-                        <div id="list" ref={provided.innerRef} style={{display: 'flex', flexDirection: 'column', height: '100%', flex: '1', flexGrow: '1'}}>
-                            <AutoSizer style={{outline: 0}}>
-                                {
-                                    ({width, height}) => {
-                                        return <List
-                                            width={width}
-                                            height={height}
-                                            rowHeight={this.cache.rowHeight}
-                                            rowRenderer={({ index, key, style, parent }) => (
-                                                this.renderRow({ index, key, style, parent, playlistTracks: mobx.toJS(self.props.store.appState.getPlaylistById(self.state.playlistId).playlistTracks.slice()) })
-                                            )}
-                                            rowCount={playlist.playlistTracks.length}
-                                            scrollToAlignment={'auto'}
-                                            scrollToIndex={scrollToIndex}
-                                            overscanRowCount={3}
-                                            deferredMeasurementCache={this.cache}
-                                            estimatedRowSize={58}
-                                            ref={ref => {
-                                                // from https://github.com/atlassian/react-beautiful-dnd/blob/master/stories/src/virtual/react-virtualized/list.jsx
-                                                // react-virtualized has no way to get the list's ref that I can so
-                                                // So we use the `ReactDOM.findDOMNode(ref)` escape hatch to get the ref
-                                                if (ref) {
-                                                    // eslint-disable-next-line react/no-find-dom-node
-                                                    const whatHasMyLifeComeTo = ReactDOM.findDOMNode(ref);
-                                                    if (whatHasMyLifeComeTo instanceof HTMLElement) {
-                                                        provided.innerRef(whatHasMyLifeComeTo);
-                                                        self.listRef = ref;
-                                                    }
+    const mediaList = (
+        <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable droppableId="droppable"
+                       mode="virtual"
+                       renderClone={(provided, snapshot, rubric) => (
+                           <div
+                               {...provided.draggableProps}
+                               {...provided.dragHandleProps}
+                               ref={provided.innerRef}
+                           >
+                               {renderDraggingMediaItem(rubric.source.index, provided)}
+                           </div>
+                       )}
+            >
+                {(provided, snapshot) => (
+                    <div id="list" ref={provided.innerRef} style={{display: 'flex', flexDirection: 'column', height: '100%', flex: '1', flexGrow: '1'}}>
+                        <AutoSizer style={{outline: 0}}>
+                            {
+                                ({width, height}) => {
+                                    return <List
+                                        width={width}
+                                        height={height}
+                                        rowHeight={cache.rowHeight}
+                                        rowRenderer={({ index, key, style, parent }) => (
+                                            renderRow({ index, key, style, parent, playlistTracks: appContext.getPlaylistById(playlistId).playlistTracks.slice() })
+                                        )}
+                                        rowCount={playlist.playlistTracks.length}
+                                        scrollToAlignment={'auto'}
+                                        scrollToIndex={scrollToIndex}
+                                        overscanRowCount={3}
+                                        deferredMeasurementCache={cache}
+                                        estimatedRowSize={58}
+                                        ref={ref => {
+                                            // from https://github.com/atlassian/react-beautiful-dnd/blob/master/stories/src/virtual/react-virtualized/list.jsx
+                                            // react-virtualized has no way to get the list's ref that I can so
+                                            // So we use the `ReactDOM.findDOMNode(ref)` escape hatch to get the ref
+                                            if (ref) {
+                                                // eslint-disable-next-line react/no-find-dom-node
+                                                const whatHasMyLifeComeTo = ReactDOM.findDOMNode(ref);
+                                                if (whatHasMyLifeComeTo instanceof HTMLElement) {
+                                                    provided.innerRef(whatHasMyLifeComeTo);
+                                                    listRef = ref;
                                                 }
-                                            }}
-                                        />
-                                    }
+                                            }
+                                        }}
+                                    />
                                 }
-                            </AutoSizer>
-                        </div>
-                    )}
-                </Droppable>
-            </DragDropContext>
-        );
+                            }
+                        </AutoSizer>
+                    </div>
+                )}
+            </Droppable>
+        </DragDropContext>
+    );
 
-        let actions = this.renderActions(playlist);
+    let actions = renderActions(playlist);
 
-        const title = playlist ? playlist.name : 'Library';
-        return (
-            <div style={{display: 'flex', flexDirection: 'column', height: '100%', flex: '1'}}>
-                <section className={'section'} style={{display: 'flex', flexDirection: 'column'}}>
-                    <h1 className="title">{title}</h1>
-                    {actions}
-                </section>
+    const title = playlist ? playlist.name : 'Library';
+    return (
+        <div style={{display: 'flex', flexDirection: 'column', height: '100%', flex: '1'}}>
+            <section className={'section'} style={{display: 'flex', flexDirection: 'column'}}>
+                <h1 className="title">{title}</h1>
+                {actions}
+            </section>
 
-                {mediaList}
-            </div>
-        );
-    }
+            {mediaList}
+        </div>
+    );
 
-    renderRow({index, key, style, parent, playlistTracks})
+    function renderRow({index, key, style, parent, playlistTracks})
     {
         // const playlistTrack = this.props.store.appState.getPlaylistById(this.state.playlistId).playlistTracks.find(track => track.index === index);
         const playlistTrack = playlistTracks[index];
-        const track = this.props.store.appState.trackMap.get(playlistTrack.track.id);
+        const track = appContext.trackMap.get(playlistTrack.track.id);
 
         return (
             <Draggable
@@ -234,12 +201,12 @@ export default class Playlist extends React.Component {
                     <CellMeasurer
                         style={style}
                         key={track.id}
-                        cache={this.cache}
+                        cache={cache}
                         parent={parent}
                         columnIndex={0}
                         rowIndex={index}>
                         <div key={track.id + index} style={style}>
-                            <MediaItem provided={provided} snapshot={snapshot} playlistId={this.state.playlistId}
+                            <MediaItem provided={provided} snapshot={snapshot} playlistId={playlistId}
                                        track={track} trackNumber={index + 1}
                             />
                         </div>
@@ -249,7 +216,7 @@ export default class Playlist extends React.Component {
         );
     }
 
-    renderActions(playlist)
+    function renderActions(playlist)
     {
         let actions = null;
 
@@ -259,8 +226,8 @@ export default class Playlist extends React.Component {
             actions =
                 <div className={'subtitle'}>
                     <span className="buttons">
-                        <button className="button is-small is-success" disabled={disabled} onClick={this.toggleSaveAsPlaylistForm}>Save as Playlist</button>
-                        <button className="button is-small is-danger" disabled={disabled} onClick={this.clearPlaylist}>Clear</button>
+                        <button className="button is-small is-success" disabled={disabled} onClick={toggleSaveAsPlaylistForm}>Save as Playlist</button>
+                        <button className="button is-small is-danger" disabled={disabled} onClick={clearPlaylist}>Clear</button>
 
                         <form id="saveAsPlaylistForm" className="is-invisible">
                             <div className="field has-addons">
@@ -270,7 +237,7 @@ export default class Playlist extends React.Component {
                                     </span>
                                 </div>
                                 <div className="control">
-                                    <a className="button is-primary" onClick={this.saveAsPlaylist}>
+                                    <a className="button is-primary" onClick={saveAsPlaylist}>
                                         Ok
                                     </a>
                                 </div>
@@ -292,9 +259,9 @@ export default class Playlist extends React.Component {
         return actions;
     }
 
-    renderDraggingMediaItem(index, provided) {
-        const playlistTrack = this.props.store.appState.getPlaylistById(this.state.playlistId).playlistTracks[index];
-        const track = this.props.store.appState.trackMap.get(playlistTrack.track.id);
+    function renderDraggingMediaItem(index, provided) {
+        const playlistTrack = appContext.getPlaylistById(playlistId).playlistTracks[index];
+        const track = appContext.trackMap.get(playlistTrack.track.id);
 
         return <DraggingMediaItem provided={provided} key={track.id} track={track} trackNumber={playlistTrack.index + 1} />;
     }

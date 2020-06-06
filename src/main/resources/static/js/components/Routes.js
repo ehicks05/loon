@@ -3,7 +3,7 @@ import {Redirect, Route, Switch} from 'react-router-dom'
 import {UserContext} from "./UserContextProvider";
 
 const SystemSettings = lazy(() => import('./SystemSettings'));
-const Playlist = lazy(() => import('./Playlist.jsx'));
+const Playlist = lazy(() => import('./Playlist'));
 const Playlists = lazy(() => import('./Playlists'));
 const GeneralSettings = lazy(() => import('./GeneralSettings'));
 const Eq = lazy(() => import('./Eq'));

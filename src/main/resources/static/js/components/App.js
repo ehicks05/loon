@@ -5,7 +5,7 @@ import 'bulma-extensions/bulma-pageloader/dist/css/bulma-pageloader.min.css'
 
 import Header from "./Header";
 import MyHelmet from "./MyHelmet";
-import Player from "./Player.jsx";
+import Player from "./Player";
 import Routes from "./Routes";
 import {UserContext} from "./UserContextProvider";
 import {AppContext} from "./AppContextProvider";

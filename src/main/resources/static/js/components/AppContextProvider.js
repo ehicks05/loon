@@ -46,7 +46,7 @@ function AppContextProvider(props) {
             });
         }
 
-        return fetch('/api/playlists/getPlaylists', {method: 'GET'})
+        fetch('/api/playlists/getPlaylists', {method: 'GET'})
             .then(response => response.json())
             .then(data => {
                 data.forEach(playlist => sort(playlist));

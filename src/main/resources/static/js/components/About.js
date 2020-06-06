@@ -36,21 +36,21 @@ export default function About() {
     }
 
     const versionInfoRows = Object.entries(versionInfo).map(value =>
-        <tr>
+        <tr key={value[0]}>
             <td>{value[0]}</td>
             <td>{value[1]}</td>
         </tr>
     );
 
     const systemInfoRows = Object.entries(systemInfo).map(value =>
-        <tr>
+        <tr key={value[0]}>
             <td>{value[0]}</td>
             <td>{value[1]}</td>
         </tr>
     );
 
     const selectedTrackInfoRows = selectedTrack ? Object.entries(selectedTrack).map(value =>
-            <tr>
+            <tr key={value[0]}>
                 <td>{value[0]}</td>
                 <td>{value[1]}</td>
             </tr>
@@ -63,8 +63,10 @@ export default function About() {
             <div className={'subtitle'}>Git Info</div>
             <table className={'table is-narrow'}>
                 <thead>
+                <tr>
                     <th>Field</th>
                     <th>Value</th>
+                </tr>
                 </thead>
                 <tbody>
                     {versionInfoRows}
@@ -74,8 +76,10 @@ export default function About() {
             <div className={'subtitle'}>System Info</div>
             <table className={'table is-narrow'}>
                 <thead>
+                <tr>
                     <th>Field</th>
                     <th>Value</th>
+                </tr>
                 </thead>
                 <tbody>
                     {systemInfoRows}
@@ -85,8 +89,10 @@ export default function About() {
             <div className={'subtitle'}>Selected Track Info</div>
             <table className={'table is-narrow'}>
                 <thead>
+                <tr>
                     <th>Field</th>
                     <th>Value</th>
+                </tr>
                 </thead>
                 <tbody>
                     {selectedTrackInfoRows}

@@ -72,18 +72,7 @@ export default function App(props) {
                 </div>
             </div>
 
-            <Player muted={userContext.user.userState.muted}
-                    volume={userContext.user.userState.volume}
-                    selectedTrackId={userContext.user.userState.lastTrackId}  // todo rename this on back end
-                    eq1Freq={userContext.user.userState.eq1Frequency}
-                    eq1Gain={userContext.user.userState.eq1Gain}
-                    eq2Freq={userContext.user.userState.eq2Frequency}
-                    eq2Gain={userContext.user.userState.eq2Gain}
-                    eq3Freq={userContext.user.userState.eq3Frequency}
-                    eq3Gain={userContext.user.userState.eq3Gain}
-                    eq4Freq={userContext.user.userState.eq4Frequency}
-                    eq4Gain={userContext.user.userState.eq4Gain}
-            />
+            <Player />
         </Router>
     );
 }

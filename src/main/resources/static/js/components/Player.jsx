@@ -72,40 +72,40 @@ export default function Player(props) {
     }, []);
 
     useEffect(() => {
-        handlePlayerStateChange(null, props.selectedTrackId);
-    }, [props.selectedTrackId]);
+        handlePlayerStateChange(null, userContext.user.userState.lastTrackId);
+    }, [userContext.user.userState.lastTrackId]);
     useEffect(() => {
         if (gainNode.current)
-            gainNode.current.gain.value = scaleVolume(props.volume);
-    }, [props.volume]);
+            gainNode.current.gain.value = scaleVolume(userContext.user.userState.volume);
+    }, [userContext.user.userState.volume]);
     useEffect(() => {
         if (audio.current)
-            audio.current.muted = props.muted;
-    }, [props.muted]);
+            audio.current.muted = userContext.user.userState.muted;
+    }, [userContext.user.userState.muted]);
     useEffect(() => {
         if (!band1.current)
             return;
-        band1.current.frequency.value = props.eq1Freq;
-        band1.current.gain.value = props.eq1Gain;
-    }, [props.eq1Freq, props.eq1Gain]);
+        band1.current.frequency.value = userContext.user.userState.eq1Frequency;
+        band1.current.gain.value = userContext.user.userState.eq1Gain;
+    }, [userContext.user.userState.eq1Frequency, userContext.user.userState.eq1Gain]);
     useEffect(() => {
         if (!band2.current)
             return;
-        band2.current.frequency.value = props.eq2Freq;
-        band2.current.gain.value = props.eq2Gain;
-    }, [props.eq2Freq, props.eq2Gain]);
+        band2.current.frequency.value = userContext.user.userState.eq2Frequency;
+        band2.current.gain.value = userContext.user.userState.eq2Gain;
+    }, [userContext.user.userState.eq2Frequency, userContext.user.userState.eq2Gain]);
     useEffect(() => {
         if (!band3.current)
             return;
-        band3.current.frequency.value = props.eq3Freq;
-        band3.current.gain.value = props.eq3Gain;
-    }, [props.eq3Freq, props.eq3Gain]);
+        band3.current.frequency.value = userContext.user.userState.eq3Frequency;
+        band3.current.gain.value = userContext.user.userState.eq3Gain;
+    }, [userContext.user.userState.eq3Frequency, userContext.user.userState.eq3Gain]);
     useEffect(() => {
         if (!band4.current)
             return;
-        band4.current.frequency.value = props.eq4Freq;
-        band4.current.gain.value = props.eq4Gain;
-    }, [props.eq4Freq, props.eq4Gain]);
+        band4.current.frequency.value = userContext.user.userState.eq4Frequency;
+        band4.current.gain.value = userContext.user.userState.eq4Gain;
+    }, [userContext.user.userState.eq4Frequency, userContext.user.userState.eq4Gain]);
 
     function getSelectedTrack() {
         return appContext.tracks && typeof appContext.tracks === 'object' ?
@@ -138,7 +138,7 @@ export default function Player(props) {
             setTimeElapsed(0);
 
             if (!newTrackId)
-                newTrackId = props.selectedTrackId;
+                newTrackId = userContext.user.userState.lastTrackId;
 
             let track = appContext.tracks.find(track => track.id === newTrackId);
             if (!track)

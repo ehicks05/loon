@@ -1,5 +1,5 @@
 import React from 'react';
-import MediaItem from "./MediaItem.jsx";
+import MediaItem from "./MediaItem";
 import {AutoSizer, CellMeasurer, CellMeasurerCache, List} from 'react-virtualized'
 import debounce from "lodash.debounce";
 import TextInput from "./TextInput";

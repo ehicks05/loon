@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import MediaItem from "./MediaItem.jsx";
+import MediaItem from "./MediaItem";
 import 'lazysizes';
 import 'lazysizes/plugins/attrchange/ls.attrchange';
 import {AppContext} from "./AppContextProvider";

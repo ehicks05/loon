@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom'
-import MediaItem from "./MediaItem.jsx";
+import MediaItem from "./MediaItem";
 import {DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd';
 import {inject, observer} from "mobx-react";
 import TextInput from "./TextInput";
 import {Link, Redirect} from "react-router-dom";
 import {AutoSizer, CellMeasurer, CellMeasurerCache, List} from "react-virtualized";
-import DraggingMediaItem from "./DraggingMediaItem.jsx";
+import DraggingMediaItem from "./DraggingMediaItem";
 import * as mobx from "mobx";
 
 @inject('store')

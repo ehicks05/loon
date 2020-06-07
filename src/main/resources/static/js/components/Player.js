@@ -82,7 +82,14 @@ export default function Player(props) {
         setInterval(step, 200)
     }, []);
 
+    const renders = useRef(0);
+
     useEffect(() => {
+        if (renders.current === 0) {
+            renders.current = renders.current + 1;
+            return;
+        }
+        
         handlePlayerStateChange(null, userContext.user.userState.lastTrackId);
     }, [userContext.user.userState.lastTrackId]);
     useEffect(() => {
@@ -196,7 +203,7 @@ export default function Player(props) {
                             audioCtx.current.suspend();
                         }
                     })
-                    .catch(() => { audio.current.play(); })
+                    .catch((e) => { console.log(e) })
             }
 
             scrollIntoView(track.id);

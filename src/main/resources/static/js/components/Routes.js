@@ -14,7 +14,7 @@ const About = lazy(() => import('./About'));
 const Artists = lazy(() => import('./Artists'));
 const Albums = lazy(() => import('./Albums'));
 const Artist = lazy(() => import('./Artist'));
-const Search = lazy(() => import('./Search.jsx'));
+const Search = lazy(() => import('./Search'));
 const Album = lazy(() => import('./Album'));
 
 export default function Routes(props) {

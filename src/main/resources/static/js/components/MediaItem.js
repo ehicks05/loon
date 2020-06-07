@@ -1,5 +1,5 @@
 import React, {useContext, useState} from 'react';
-import ActionMenu from "./ActionMenu.jsx";
+import ActionMenu from "./ActionMenu";
 import {Link} from "react-router-dom";
 import {AppContext} from "./AppContextProvider";
 import {UserContext} from "./UserContextProvider";

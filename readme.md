@@ -17,10 +17,10 @@ Stream your music library from your browser. Support desktop or mobile device.
 * Replaygain support
 * Transcode to various mp3 quality levels
 * Watch your music folder for changes and automatically sync
+* Keyboard shortcuts for playback controls.
 
 ### Known Issues / Todo
 * Fix context menu when search.jsx is showing one item. (it cuts off)
-* Add keyboard shortcuts for playback controls.
 
 ### Getting Started
 

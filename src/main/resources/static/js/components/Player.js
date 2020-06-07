@@ -9,8 +9,13 @@ export default function Player(props) {
     const appContext = useContext(AppContext);
 
     const [playerState, setPlayerState] = useState('stopped');
+    const playerStateRef = useRef(playerState);
     const [duration, setDuration] = useState(0);
     const [timeElapsed, setTimeElapsed] = useState(0);
+
+    useEffect(() => {
+        playerStateRef.current = playerState;
+    }, [playerState])
 
     let audio = useRef({});
     let audioCtx = useRef({});
@@ -80,7 +85,20 @@ export default function Player(props) {
         scrollIntoView(userState.lastTrackId) //todo rename
 
         setInterval(step, 200)
+
+        initKeyboardShortcuts();
+
     }, []);
+
+    function initKeyboardShortcuts() {
+        document.body.addEventListener('keyup', function(e){
+            if (e.target.tagName === 'INPUT') return;
+
+            if(e.key === ' ') handlePlayerStateChange(playerStateRef.current === 'playing' ? 'paused' : 'playing');
+            if(e.key === 'ArrowRight') handleTrackChange('next');
+            if(e.key === 'ArrowLeft') handleTrackChange('prev');
+        });
+    }
 
     const renders = useRef(0);
 

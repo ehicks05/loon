@@ -27,7 +27,7 @@ export default function Search(props) {
         return function cleanup() {
             userContext.selectedContextMenuId = '';
         }
-    });
+    }, []);
 
     useEffect(() => {
         const key = debouncedSearchKey.toLowerCase();
@@ -39,7 +39,6 @@ export default function Search(props) {
         }) : appContext.tracks;
 
         setSearchResults(tracks);
-        console.log(searchResults.length)
 
     }, [debouncedSearchKey])
 

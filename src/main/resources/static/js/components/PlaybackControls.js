@@ -68,11 +68,10 @@ export default function PlaybackControls(props) {
     const trackProgressBar =
         <div className="level-item" style={{marginBottom: '0'}}>
             <span id="timer" style={{fontSize: '.875rem', marginRight: '10px'}}>{formattedTimeElapsed}</span>
-            <SliderWithTooltip name="progress" id="progress" style={{width: '100%', margin: '0'}}
+            <Slider name="progress" id="progress" style={{width: '100%', margin: '0'}}
                                trackStyle={{backgroundColor: 'hsl(141, 71%, 48%)', height: 4}}
                                railStyle={{backgroundColor: '#ddd'}}
                                handleStyle={{borderColor: 'hsl(141, 71%, 48%)'}}
-                               tipFormatter={formatTime}
                                type="range" value={timeElapsed} max={duration} step={0.01} onChange={handleProgressChange}/>
             <span id="duration" style={{fontSize: '.875rem', marginLeft: '8px'}}>{formattedDuration}</span>
         </div>;

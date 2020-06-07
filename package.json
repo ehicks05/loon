@@ -18,7 +18,6 @@
     "@fortawesome/react-fontawesome": "^0.1.10",
     "bulma-extensions": "^6.2.7",
     "bulma-switch": "^2.0.0",
-    "fetch-defaults": "^1.0.0",
     "history": "^4.10.1",
     "lazysizes": "^5.2.2",
     "rc-slider": "^9.3.0",

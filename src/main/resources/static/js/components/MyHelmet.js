@@ -8,8 +8,8 @@ export default function MyHelmet(props) {
     const appContext = useContext(AppContext);
 
     function getSelectedTrack() {
-        return appContext.tracks && typeof appContext.tracks === 'object' ?
-            appContext.tracks.find(track => track.id === userContext.user.userState.lastTrackId) : null; // todo rename lastTrackId
+        const ready = userContext.user && appContext.tracks && typeof appContext.tracks === 'object';
+        return ready ? appContext.getTrackById(userContext.user.userState.lastTrackId) : null; // todo rename lastTrackId
     }
 
     const selectedTrack = getSelectedTrack();
@@ -118,7 +118,7 @@ export default function MyHelmet(props) {
                              // checkbox tree
                              .ignore {}
  
-                             .rct-node-icon {color:lightblue !important;}
+                             .rct-node-icon {color:#23d160 !important;}
                              
                              // problematic with bulma-prefers-dark   
                              .ignore {}

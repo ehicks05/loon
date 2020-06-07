@@ -5,7 +5,7 @@ import {UserContextProvider} from "../components/UserContextProvider";
 import {AppContextProvider} from "../components/AppContextProvider";
 
 ReactDOM.render(
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<div className={"pageloader is-active is-success"} />}>
         <UserContextProvider>
             <AppContextProvider>
                 <App />

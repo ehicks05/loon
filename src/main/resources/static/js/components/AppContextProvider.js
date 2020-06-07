@@ -124,9 +124,14 @@ function AppContextProvider(props) {
             .then(data => {loadPlaylists();});
     }
 
+    function getTrackById(id)
+    {
+        return tracks.find(it => it.id === id);
+    }
+
     function getPlaylistById(id)
     {
-        return playlists.find(playlist => playlist.id === id);
+        return playlists.find(it => it.id === id);
     }
 
     return (
@@ -143,6 +148,7 @@ function AppContextProvider(props) {
             deletePlaylist: deletePlaylist,
             dragAndDrop: dragAndDrop,
             clearPlaylist: clearPlaylist,
+            getTrackById: getTrackById,
             getPlaylistById: getPlaylistById,
         }}>
             {props.children}

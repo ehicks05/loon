@@ -21,7 +21,6 @@ export default function MyHelmet(props) {
             <meta charset="utf-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1" />
             <title>{title}</title>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.8.2/css/bulma.min.css" />
             <link rel="stylesheet" href="/styles/bulma-prefers-dark.min.css" />
             <link rel="shortcut icon" href={"/images/loon2.png"} />
 

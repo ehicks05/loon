@@ -10,7 +10,7 @@ import {UserContext} from "./UserContextProvider";
 import {AppContext} from "./AppContextProvider";
 
 export default function Playlist(props) {
-    const [playlistId, setPlaylistId] = useState(parsePlaylistId());
+    const [playlistId, setPlaylistId] = useState(null);
     const [redirectTo, setRedirectTo] = useState(null);
 
     const userContext = useContext(UserContext);
@@ -21,12 +21,6 @@ export default function Playlist(props) {
 
     useEffect(() => {
         cache.clearAll();
-
-        // setTimeout(function () {
-        //     cache.clearAll();
-        //     listRef.recomputeRowHeights();
-        //     listRef.forceUpdateGrid();
-        // }, 1000)
 
         setPlaylistId(parsePlaylistId());
 
@@ -108,8 +102,8 @@ export default function Playlist(props) {
     const selectedTrackId = userContext.user.userState.lastTrackId;
     const playlist = appContext.getPlaylistById(playlistId);
 
-    if (playlistId && !playlist)
-        return <div>Loading...</div>;
+    if (!appContext || !appContext.playlists || !playlist)
+        return <div>Loading...</div>
 
     const scrollToIndex = playlist.playlistTracks.indexOf(playlist.playlistTracks.find(playlistTrack => playlistTrack.track.id === selectedTrackId));
 

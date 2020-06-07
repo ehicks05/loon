@@ -40,7 +40,7 @@ export default function App(props) {
         return (
             <>
                 <MyHelmet/>
-                <div className={"pageloader is-active is-success"}><span className="title">Loading...</span></div>
+                <div className={"pageloader is-active is-success"} />
             </>
         );
     }
@@ -48,8 +48,7 @@ export default function App(props) {
     const innerHeight = windowSize.height;
     const footerHeight = windowSize.width <= 768 ? 103 : 54;
     // const columnHeight = 'calc(' + innerHeight + 'px - (52px + 23px + ' + footerHeight + '))';
-    const ch = Number(innerHeight) - (52 + 23 + Number(footerHeight));
-    const columnHeight = '' + ch + 'px';
+    const columnHeight = '' + (Number(innerHeight) - (52 + 23 + Number(footerHeight))) + 'px';
     console.log('New columnHeight: ' + columnHeight + '... window height('+innerHeight+') - (header height('+52+') + footer height(23 + '+footerHeight+'))):');
 
     return (

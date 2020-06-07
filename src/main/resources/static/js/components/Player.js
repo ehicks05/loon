@@ -12,15 +12,15 @@ export default function Player(props) {
     const [duration, setDuration] = useState(0);
     const [timeElapsed, setTimeElapsed] = useState(0);
 
-    let audioCtx = useRef(new window.AudioContext());
-    let audio = useRef(initAudio());
-    let trackGainNode = useRef(audioCtx.current.createGain());
-    let gainNode = useRef(audioCtx.current.createGain());
-    let band1 = useRef(audioCtx.current.createBiquadFilter());
-    let band2 = useRef(audioCtx.current.createBiquadFilter());
-    let band3 = useRef(audioCtx.current.createBiquadFilter());
-    let band4 = useRef(audioCtx.current.createBiquadFilter());
-    let analyser = useRef(audioCtx.current.createAnalyser());
+    let audio = useRef({});
+    let audioCtx = useRef({});
+    let trackGainNode = useRef({});
+    let gainNode = useRef({});
+    let band1 = useRef({});
+    let band2 = useRef({});
+    let band3 = useRef({});
+    let band4 = useRef({});
+    let analyser = useRef({});
     let audioBufferSourceNode = useRef({});
 
     function initAudio() {
@@ -36,6 +36,17 @@ export default function Player(props) {
 
     useEffect(() => {
         const userState = userContext.user.userState;
+
+        audio.current = initAudio();
+
+        audioCtx.current = new window.AudioContext();
+        trackGainNode.current = audioCtx.current.createGain();
+        gainNode.current = audioCtx.current.createGain();
+        band1.current = audioCtx.current.createBiquadFilter();
+        band2.current = audioCtx.current.createBiquadFilter();
+        band3.current = audioCtx.current.createBiquadFilter();
+        band4.current = audioCtx.current.createBiquadFilter();
+        analyser.current = audioCtx.current.createAnalyser();
 
         gainNode.current.gain.value = scaleVolume(userState.volume);
         gainNode.current.connect(trackGainNode.current);

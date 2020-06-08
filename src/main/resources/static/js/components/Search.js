@@ -6,6 +6,7 @@ import {faSearch} from "@fortawesome/free-solid-svg-icons";
 import {AppContext} from "./AppContextProvider";
 import {UserContext} from "./UserContextProvider";
 import useDebounce from "./UseDebounce";
+import useWindowSize from "./WindowSizeHook";
 
 export default function Search(props) {
     const [searchResults, setSearchResults] = useState([]);
@@ -13,6 +14,8 @@ export default function Search(props) {
 
     const appContext = useContext(AppContext);
     const userContext = useContext(UserContext);
+    const windowSize = useWindowSize();
+    const windowSizeDebounced = useDebounce(windowSize, 250);
 
     const cache = useRef(new CellMeasurerCache({fixedWidth: true, defaultHeight: 58}))
     const listRef = useRef({});
@@ -28,6 +31,12 @@ export default function Search(props) {
             userContext.selectedContextMenuId = '';
         }
     }, []);
+
+    useEffect(() => {
+        cache.current.clearAll();
+        listRef.current.recomputeRowHeights();
+        listRef.current.forceUpdateGrid();
+    }, [windowSizeDebounced.width])
 
     useEffect(() => {
         const key = debouncedSearchKey.toLowerCase();

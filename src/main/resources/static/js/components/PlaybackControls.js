@@ -11,6 +11,27 @@ import {useMediaQuery} from "./MediaQuery";
 
 const SliderWithTooltip = createSliderWithTooltip(Slider);
 
+const levelItemStyle = {marginBottom: '0'};
+const timeElapsedStyle = {fontSize: '.875rem', marginRight: '10px'};
+const progressStyle = {width: '100%', margin: '0'};
+const durationStyle = {fontSize: '.875rem', marginLeft: '8px'};
+const albumArtStyle = {height: '48px', margin: '0', paddingRight: '8px'};
+// const trackStyle = {maxWidth: textWidth, maxHeight: '48px', overflow: 'auto'};
+const artistAlbumTextStyle = {fontSize: '.875rem'};
+const prevButtonStyle = {height: '36px', width: '36px'};
+const pauseButtonStyle = {height: '45px', width: '45px'};
+const nextButtonStyle = {height: '36px', width: '36px'};
+const shuffleButtonStyle = {marginLeft: '1.5em'};
+const muteButtonStyle = {margin:'0 .75em 0 .5em'};
+const volumeSliderStyle = {width: '120px'};
+const sliderTrackStyle = { backgroundColor: 'hsl(141, 71%, 48%)', height: 4 }
+const sliderRailStyle = {backgroundColor: '#ddd'}
+const sliderHandleStyle = {borderColor: 'hsl(141, 71%, 48%)'}
+
+const levelRightStyle = {marginTop: '4px', marginRight: '8px'}
+const myLevel1Style = {zIndex: '5', position: 'static', padding: '2px 10px 0 10px'}
+const myLevel2Style = {zIndex: '5', position: 'static', padding: '6px', paddingTop: '0'}
+
 export default function PlaybackControls(props) {
     const userContext = useContext(UserContext);
     const isWidthOver768 = useMediaQuery('(min-width: 768px)');
@@ -66,58 +87,56 @@ export default function PlaybackControls(props) {
     const textWidth = isWidthOver768 ? 'calc(100vw - 408px)' : '100%';
 
     const trackProgressBar =
-        <div className="level-item" style={{marginBottom: '0'}}>
-            <span id="timer" style={{fontSize: '.875rem', marginRight: '10px'}}>{formattedTimeElapsed}</span>
-            <Slider name="progress" id="progress" style={{width: '100%', margin: '0'}}
-                               trackStyle={{backgroundColor: 'hsl(141, 71%, 48%)', height: 4}}
-                               railStyle={{backgroundColor: '#ddd'}}
-                               handleStyle={{borderColor: 'hsl(141, 71%, 48%)'}}
+        <div className="level-item" style={levelItemStyle}>
+            <span id="timeElapsed" style={timeElapsedStyle}>{formattedTimeElapsed}</span>
+            <Slider name="progress" id="progress" style={progressStyle}
+                               trackStyle={sliderTrackStyle}
+                               railStyle={sliderRailStyle}
+                               handleStyle={sliderHandleStyle}
                                type="range" value={timeElapsed} max={duration} step={0.01} onChange={handleProgressChange}/>
-            <span id="duration" style={{fontSize: '.875rem', marginLeft: '8px'}}>{formattedDuration}</span>
+            <span id="duration" style={durationStyle}>{formattedDuration}</span>
         </div>;
 
     const placeholder = 'https://via.placeholder.com/48x48.png?text=placeholder';
     const imageUrl = (selectedTrack && selectedTrack.albumThumbnailId) ? '/art/' + selectedTrack.albumThumbnailId : placeholder;
 
     // todo: does this need to be lazyload?
-    const albumArt =
-        <img src={placeholder} data-src={imageUrl} alt="Placeholder image" className='lazyload'
-             style={{height: '48px', margin: '0', paddingRight: '8px'}}/>;
+    const albumArt = <img src={placeholder} data-src={imageUrl} alt="Placeholder image" className='lazyload' style={albumArtStyle}/>;
 
     const trackDescription =
         <div className="level-item">
             {albumArt}
             <span id="track" style={{maxWidth: textWidth, maxHeight: '48px', overflow: 'auto'}}>
-                    <b>{title}</b>
-                    <br/>
-                    <span style={{fontSize: '.875rem'}}>
-                        <Link to={'/artist/' + artist}>{artist}</Link>
-                        &nbsp;-&nbsp;
-                        <Link to={'/artist/' + albumArtist + '/album/' + album}><i>{album}</i></Link>
-                    </span>
+                <b>{title}</b>
+                <br/>
+                <span id='artistAlbumText' style={artistAlbumTextStyle}>
+                    <Link to={'/artist/' + artist}>{artist}</Link>
+                    &nbsp;-&nbsp;
+                    <Link to={'/artist/' + albumArtist + '/album/' + album}><i>{album}</i></Link>
                 </span>
+            </span>
         </div>;
 
     const prevButton =
-        <a className="button" id="prevBtn" style={{height: '36px', width: '36px'}} onClick={(e) => handleTrackChange(e, 'prev')}>
-                <span className="icon">
-                    <FontAwesomeIcon icon={faStepBackward}/>
-                </span>
+        <a className="button" id="prevBtn" style={prevButtonStyle} onClick={(e) => handleTrackChange(e, 'prev')}>
+            <span className="icon">
+                <FontAwesomeIcon icon={faStepBackward}/>
+            </span>
         </a>;
 
     const playButton =
-        <a className="button is-medium" id="pauseBtn" style={{height: '45px', width: '45px'}}
+        <a className="button is-medium" id="pauseBtn" style={pauseButtonStyle}
            onClick={(e) => handlePlayerStateChange(e, props.playerState === 'playing' ? 'paused' : 'playing')}>
-                <span className="icon">
-                    <FontAwesomeIcon icon={props.playerState === 'playing' ? faPause : faPlay}/>
-                </span>
+            <span className="icon">
+                <FontAwesomeIcon icon={props.playerState === 'playing' ? faPause : faPlay}/>
+            </span>
         </a>;
 
     const nextButton =
-        <a className="button" id="nextBtn" style={{height: '36px', width: '36px'}} onClick={(e) => handleTrackChange(e, 'next')}>
-                <span className="icon">
-                    <FontAwesomeIcon icon={faStepForward}/>
-                </span>
+        <a className="button" id="nextBtn" style={nextButtonStyle} onClick={(e) => handleTrackChange(e, 'next')}>
+            <span className="icon">
+                <FontAwesomeIcon icon={faStepForward}/>
+            </span>
         </a>;
 
     const playbackButtons =
@@ -129,24 +148,24 @@ export default function PlaybackControls(props) {
         </Fragment>;
 
     const shuffleButton =
-        <a className={"button is-small" + (shuffle ? " is-success" : "")} style={{marginLeft: '1.5em'}} id="shuffleBtn" onClick={handleShuffleChange}>
-                <span className="icon">
-                    <FontAwesomeIcon icon={faRandom} fixedWidth/>
-                </span>
+        <a className={"button is-small" + (shuffle ? " is-success" : "")} style={shuffleButtonStyle} id="shuffleBtn" onClick={handleShuffleChange}>
+            <span className="icon">
+                <FontAwesomeIcon icon={faRandom} fixedWidth/>
+            </span>
         </a>;
 
     const muteButton =
-        <a className="button is-small" id="volumeBtn" style={{margin:'0 .75em 0 .5em'}} onClick={handleMuteChange}>
-                <span className="icon">
-                    <FontAwesomeIcon icon={muted ? faVolumeOff : faVolumeUp} fixedWidth/>
-                </span>
+        <a className="button is-small" id="muteBtn" style={muteButtonStyle} onClick={handleMuteChange}>
+            <span className="icon">
+                <FontAwesomeIcon icon={muted ? faVolumeOff : faVolumeUp} fixedWidth/>
+            </span>
         </a>;
 
     const volumeSlider =
-        <div style={{width: '120px'}}>
-            <SliderWithTooltip trackStyle={{ backgroundColor: 'hsl(141, 71%, 48%)', height: 4 }}
-                               railStyle={{backgroundColor: '#ddd'}}
-                               handleStyle={{borderColor: 'hsl(141, 71%, 48%)'}}
+        <div style={volumeSliderStyle}>
+            <SliderWithTooltip trackStyle={sliderTrackStyle}
+                               railStyle={sliderRailStyle}
+                               handleStyle={sliderHandleStyle}
                                value={volume} min={-30} max={0} step={1}
                                tipFormatter={v => `${v}dB`}
                                onChange={handleVolumeChange} />
@@ -159,7 +178,7 @@ export default function PlaybackControls(props) {
         </div>;
 
     const levelRight =
-        <div className="level-right" style={{marginTop: '4px', marginRight: '8px'}}>
+        <div className="level-right" style={levelRightStyle}>
             <div className="level-item">
                 {!isWidthOver768 && playbackButtons}
                 {shuffleButton}
@@ -170,13 +189,13 @@ export default function PlaybackControls(props) {
 
     return (
         <>
-            <div className="section myLevel" style={{zIndex: '5', position: 'static', padding: '2px 10px 0 10px'}}>
+            <div className="section myLevel" style={myLevel1Style}>
                 <nav className="level">
                     {trackProgressBar}
                 </nav>
             </div>
 
-            <div className="section myLevel" style={{zIndex: '5', position: 'static', padding: '6px', paddingTop: '0'}}>
+            <div className="section myLevel" style={myLevel2Style}>
                 <nav className="level">
                     {levelLeft}
                     {levelRight}

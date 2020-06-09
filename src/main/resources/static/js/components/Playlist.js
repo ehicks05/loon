@@ -9,6 +9,9 @@ import DraggingMediaItem from "./DraggingMediaItem";
 import {UserContext} from "./UserContextProvider";
 import {AppContext} from "./AppContextProvider";
 
+const autoSizerStyle = {outline: 0};
+const listStyle = {display: 'flex', flexDirection: 'column', height: '100%', flex: '1', flexGrow: '1'};
+
 export default function Playlist(props) {
     const [playlistId, setPlaylistId] = useState(null);
     const [redirectTo, setRedirectTo] = useState(null);
@@ -122,8 +125,8 @@ export default function Playlist(props) {
                        )}
             >
                 {(provided, snapshot) => (
-                    <div id="list" ref={provided.innerRef} style={{display: 'flex', flexDirection: 'column', height: '100%', flex: '1', flexGrow: '1'}}>
-                        <AutoSizer style={{outline: 0}}>
+                    <div id="list" ref={provided.innerRef} style={listStyle}>
+                        <AutoSizer style={autoSizerStyle}>
                             {
                                 ({width, height}) => {
                                     return <List

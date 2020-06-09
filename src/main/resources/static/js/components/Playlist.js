@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import ReactDOM from 'react-dom'
 import MediaItem from "./MediaItem";
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd';
@@ -19,11 +19,11 @@ export default function Playlist(props) {
     const userContext = useContext(UserContext);
     const appContext = useContext(AppContext);
 
-    const cache = new CellMeasurerCache({fixedWidth: true, defaultHeight: 58});
-    let listRef = null;
+    const cache = useRef(new CellMeasurerCache({fixedWidth: true, defaultHeight: 58}));
+    let listRef = useRef({});
 
     useEffect(() => {
-        cache.clearAll();
+        cache.current.clearAll();
 
         setPlaylistId(parsePlaylistId());
 
@@ -132,7 +132,7 @@ export default function Playlist(props) {
                                     return <List
                                         width={width}
                                         height={height}
-                                        rowHeight={cache.rowHeight}
+                                        rowHeight={cache.current.rowHeight}
                                         rowRenderer={({ index, key, style, parent }) => (
                                             renderRow({ index, key, style, parent, playlistTracks: appContext.getPlaylistById(playlistId).playlistTracks.slice() })
                                         )}
@@ -140,7 +140,7 @@ export default function Playlist(props) {
                                         scrollToAlignment={'auto'}
                                         scrollToIndex={scrollToIndex}
                                         overscanRowCount={3}
-                                        deferredMeasurementCache={cache}
+                                        deferredMeasurementCache={cache.current}
                                         estimatedRowSize={58}
                                         ref={ref => {
                                             // from https://github.com/atlassian/react-beautiful-dnd/blob/master/stories/src/virtual/react-virtualized/list.jsx
@@ -151,7 +151,7 @@ export default function Playlist(props) {
                                                 const whatHasMyLifeComeTo = ReactDOM.findDOMNode(ref);
                                                 if (whatHasMyLifeComeTo instanceof HTMLElement) {
                                                     provided.innerRef(whatHasMyLifeComeTo);
-                                                    listRef = ref;
+                                                    listRef.current = ref;
                                                 }
                                             }
                                         }}
@@ -196,15 +196,15 @@ export default function Playlist(props) {
                     <CellMeasurer
                         style={style}
                         key={track.id}
-                        cache={cache}
+                        cache={cache.current}
                         parent={parent}
                         columnIndex={0}
                         rowIndex={index}>
-                        <div key={track.id + index} style={style}>
-                            <MediaItem provided={provided} snapshot={snapshot} playlistId={playlistId}
-                                       track={track} trackNumber={index + 1}
-                            />
-                        </div>
+                            <div key={track.id + index} style={style}>
+                                <MediaItem provided={provided} snapshot={snapshot} playlistId={playlistId}
+                                           track={track} trackNumber={index + 1}
+                                />
+                            </div>
                     </CellMeasurer>
                 )}
             </Draggable>

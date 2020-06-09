@@ -32,20 +32,20 @@ function UserContextProvider(props) {
         const formData = new FormData();
         formData.append('lastPlaylistId', selectedPlaylistId);
         formData.append('lastTrackId', selectedTrackId);
-        updateUser('/api/users/' + this.user.id + '/saveProgress', formData);
+        updateUser('/api/users/' + user.id + '/saveProgress', formData);
     }
 
     function setSelectedTrackId(selectedTrackId) {
         const formData = new FormData();
         formData.append('lastPlaylistId', user.userState.lastPlaylistId);
         formData.append('lastTrackId', selectedTrackId);
-        updateUser('/api/users/' + this.user.id + '/saveProgress', formData);
+        updateUser('/api/users/' + user.id + '/saveProgress', formData);
     }
 
     function setVolume(volume) {
         const formData = new FormData();
         formData.append('volume', volume);
-        updateUser('/api/users/' + this.user.id, formData);
+        updateUser('/api/users/' + user.id, formData);
     }
 
     function setMuted(muted) {

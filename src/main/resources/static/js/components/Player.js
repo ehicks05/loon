@@ -380,6 +380,9 @@ export default function Player(props) {
         if (!audioCtx || !analyser)
             return;
 
+        if (audioCtx.current.state !== 'running' || playerStateRef.current !== 'playing')
+            return;
+
         const ctx = canvas.getContext("2d");
 
         // Make it visually fill the positioned parent

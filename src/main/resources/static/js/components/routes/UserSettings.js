@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import TextInput from "./TextInput";
-import Select from "./Select";
-import superFetch from "./SuperFetch";
+import TextInput from "../TextInput";
+import Select from "../Select";
+import superFetch from "../../common/SuperFetch";
 
 export default function UserSettings(props)  {
 

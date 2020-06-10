@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 import 'bulma-switch/dist/css/bulma-switch.min.css'
-import {UserContext} from "./UserContextProvider";
+import {UserContext} from "../../common/UserContextProvider";
 
 export default function GeneralSettings() {
     const userContext = useContext(UserContext);

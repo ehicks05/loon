@@ -1,5 +1,5 @@
 import React, {useContext} from "react";
-import {TimeContext} from "../TimeContextProvider";
+import {TimeContext} from "../../common/TimeContextProvider";
 import Slider from "rc-slider/es";
 import 'rc-slider/assets/index.css';
 

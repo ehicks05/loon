@@ -1,8 +1,8 @@
 import React, {useContext} from 'react';
 import Albums from "./Albums";
-import {ArtistCard} from "./ArtistCard";
-import {AppContext} from "./AppContextProvider";
-import useWindowSize from "./WindowSizeHook";
+import {ArtistCard} from "../ArtistCard";
+import {AppContext} from "../../common/AppContextProvider";
+import useWindowSize from "../../common/WindowSizeHook";
 
 export default function Artist(props) {
     const appContext = useContext(AppContext);

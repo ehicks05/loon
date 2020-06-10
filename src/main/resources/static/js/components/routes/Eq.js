@@ -1,6 +1,6 @@
 import React, {useContext} from 'react';
-import VerticalSlider from "./VerticalSlider";
-import {UserContext} from "./UserContextProvider";
+import VerticalSlider from "../VerticalSlider";
+import {UserContext} from "../../common/UserContextProvider";
 
 export default function Eq() {
     const userContext = useContext(UserContext);

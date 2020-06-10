@@ -2,7 +2,7 @@ import React, {useContext, useEffect} from 'react';
 import {NavLink} from "react-router-dom";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faSearch, faMusic, faUsers, faFolderOpen, faHeart, faList, faCompactDisc} from '@fortawesome/free-solid-svg-icons'
-import {AppContext} from "./AppContextProvider";
+import {AppContext} from "../../common/AppContextProvider";
 
 export default function SidePanel(props) {
     const appContext = useContext(AppContext);

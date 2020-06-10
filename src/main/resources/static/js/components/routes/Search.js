@@ -1,12 +1,12 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import MediaItem from "./MediaItem";
+import MediaItem from "../MediaItem";
 import {AutoSizer, CellMeasurer, CellMeasurerCache, List} from 'react-virtualized'
-import TextInput from "./TextInput";
+import TextInput from "../TextInput";
 import {faSearch} from "@fortawesome/free-solid-svg-icons";
-import {AppContext} from "./AppContextProvider";
-import {UserContext} from "./UserContextProvider";
-import useDebounce from "./UseDebounce";
-import useWindowSize from "./WindowSizeHook";
+import {AppContext} from "../../common/AppContextProvider";
+import {UserContext} from "../../common/UserContextProvider";
+import useDebounce from "../../common/UseDebounce";
+import useWindowSize from "../../common/WindowSizeHook";
 
 export default function Search(props) {
     const [searchResults, setSearchResults] = useState([]);

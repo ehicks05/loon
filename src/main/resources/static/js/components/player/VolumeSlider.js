@@ -1,5 +1,5 @@
 import React, {useContext} from "react";
-import {VolumeContext} from "../VolumeContextProvider";
+import {VolumeContext} from "../../common/VolumeContextProvider";
 import Slider, {createSliderWithTooltip} from "rc-slider/es";
 import 'rc-slider/assets/index.css';
 

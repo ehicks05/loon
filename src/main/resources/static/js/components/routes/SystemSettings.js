@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import TextInput from "./TextInput";
-import Select from "./Select";
+import TextInput from "../TextInput";
+import Select from "../Select";
 import 'bulma-switch/dist/css/bulma-switch.min.css'
-import superFetch from "./SuperFetch";
+import superFetch from "../../common/SuperFetch";
 
 export default function SystemSettings() {
     const [settings, setSettings] = useState(null);

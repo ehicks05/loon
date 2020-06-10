@@ -1,9 +1,9 @@
 import React, {useContext} from 'react';
 import 'lazysizes';
 import 'lazysizes/plugins/attrchange/ls.attrchange';
-import {ArtistCard} from "./ArtistCard";
-import {AppContext} from "./AppContextProvider";
-import useWindowSize from "./WindowSizeHook";
+import {ArtistCard} from "../ArtistCard";
+import {AppContext} from "../../common/AppContextProvider";
+import useWindowSize from "../../common/WindowSizeHook";
 
 export default function Artists(props) {
     const appContext = useContext(AppContext);

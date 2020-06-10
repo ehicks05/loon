@@ -1,12 +1,12 @@
 import React, {useContext} from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faVolumeUp, faVolumeOff, faRandom } from '@fortawesome/free-solid-svg-icons'
-import {UserContext} from "./UserContextProvider";
-import {useMediaQuery} from "./MediaQuery";
-import TrackProgressBar from "./player/TrackProgressBar";
-import TrackDescription from "./player/TrackDescription";
-import PlaybackButtons from "./player/PlaybackButtons";
-import VolumeSlider from "./player/VolumeSlider";
+import {UserContext} from "../../common/UserContextProvider";
+import {useMediaQuery} from "../../common/MediaQueryHook";
+import TrackProgressBar from "./TrackProgressBar";
+import TrackDescription from "./TrackDescription";
+import PlaybackButtons from "./PlaybackButtons";
+import VolumeSlider from "./VolumeSlider";
 
 const shuffleButtonStyle = {marginLeft: '1.5em'};
 const muteButtonStyle = {margin:'0 .75em 0 .5em'};

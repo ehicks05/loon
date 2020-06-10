@@ -6,11 +6,11 @@ import 'bulma/css/bulma.min.css'
 
 import Header from "./Header";
 import MyHelmet from "./MyHelmet";
-import Player from "./Player";
+import Player from "../player/Player";
 import Routes from "./Routes";
-import {UserContext} from "./UserContextProvider";
-import {AppContext} from "./AppContextProvider";
-import useWindowSize from "./WindowSizeHook";
+import {UserContext} from "../../common/UserContextProvider";
+import {AppContext} from "../../common/AppContextProvider";
+import useWindowSize from "../../common/WindowSizeHook";
 
 const SidePanel = lazy(() => import('./SidePanel'));
 

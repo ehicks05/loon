@@ -1,21 +1,21 @@
 import React, {Suspense, lazy, useContext} from 'react';
 import {Redirect, Route, Switch} from 'react-router-dom'
-import {UserContext} from "./UserContextProvider";
+import {UserContext} from "../../common/UserContextProvider";
 
-const SystemSettings = lazy(() => import('./SystemSettings'));
-const Playlist = lazy(() => import('./Playlist'));
-const Playlists = lazy(() => import('./Playlists'));
-const GeneralSettings = lazy(() => import('./GeneralSettings'));
-const Eq = lazy(() => import('./Eq'));
-const PlaylistBuilder = lazy(() => import('./PlaylistBuilder'));
+const SystemSettings = lazy(() => import('../routes/SystemSettings'));
+const Playlist = lazy(() => import('../routes/Playlist'));
+const Playlists = lazy(() => import('../routes/Playlists'));
+const GeneralSettings = lazy(() => import('../routes/GeneralSettings'));
+const Eq = lazy(() => import('../routes/Eq'));
+const PlaylistBuilder = lazy(() => import('../routes/PlaylistBuilder'));
 
-const UserSettings = lazy(() => import('./UserSettings'));
-const About = lazy(() => import('./About'));
-const Artists = lazy(() => import('./Artists'));
-const Albums = lazy(() => import('./Albums'));
-const Artist = lazy(() => import('./Artist'));
-const Search = lazy(() => import('./Search'));
-const Album = lazy(() => import('./Album'));
+const UserSettings = lazy(() => import('../routes/UserSettings'));
+const About = lazy(() => import('../routes/About'));
+const Artists = lazy(() => import('../routes/Artists'));
+const Albums = lazy(() => import('../routes/Albums'));
+const Artist = lazy(() => import('../routes/Artist'));
+const Search = lazy(() => import('../routes/Search'));
+const Album = lazy(() => import('../routes/Album'));
 
 export default function Routes(props) {
     const userContext = useContext(UserContext);

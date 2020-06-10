@@ -3,8 +3,8 @@ import ActionMenu from "./ActionMenu";
 import {Link} from "react-router-dom";
 import 'lazysizes';
 import 'lazysizes/plugins/attrchange/ls.attrchange';
-import {AppContext} from "./AppContextProvider";
-import {UserContext} from "./UserContextProvider";
+import {AppContext} from "../common/AppContextProvider";
+import {UserContext} from "../common/UserContextProvider";
 
 export function ArtistCard(props) {
     const [hover, setHover] = useState(false);

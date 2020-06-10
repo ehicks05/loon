@@ -1,10 +1,10 @@
-import {useMediaQuery} from "../MediaQuery";
+import {useMediaQuery} from "../../common/MediaQueryHook";
 import {Link} from "react-router-dom";
 import React, {useContext} from "react";
-import {AppContext} from "../AppContextProvider";
+import {AppContext} from "../../common/AppContextProvider";
 import 'lazysizes';
 import 'lazysizes/plugins/attrchange/ls.attrchange';
-import {UserContext} from "../UserContextProvider";
+import {UserContext} from "../../common/UserContextProvider";
 
 const albumArtStyle = {height: '48px', margin: '0', paddingRight: '8px'};
 // const trackStyle = {maxWidth: textWidth, maxHeight: '48px', overflow: 'auto'};

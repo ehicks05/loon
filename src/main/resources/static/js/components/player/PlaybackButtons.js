@@ -1,7 +1,7 @@
 import React, {useContext} from "react";
-import {UserContext} from "../UserContextProvider";
-import {AppContext} from "../AppContextProvider";
-import {useMediaQuery} from "../MediaQuery";
+import {UserContext} from "../../common/UserContextProvider";
+import {AppContext} from "../../common/AppContextProvider";
+import {useMediaQuery} from "../../common/MediaQueryHook";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faPause, faPlay, faStepBackward, faStepForward} from "@fortawesome/free-solid-svg-icons";
 

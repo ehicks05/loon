@@ -1,8 +1,8 @@
 import React, {useContext, useState} from "react";
 import {Link} from "react-router-dom";
 import ActionMenu from "./ActionMenu";
-import {AppContext} from "./AppContextProvider";
-import {UserContext} from "./UserContextProvider";
+import {AppContext} from "../common/AppContextProvider";
+import {UserContext} from "../common/UserContextProvider";
 
 export default function AlbumCard(props) {
     const [hover, setHover] = useState(false);

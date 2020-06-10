@@ -1,9 +1,9 @@
 import React, {useContext, useState} from 'react';
 import ActionMenu from "./ActionMenu";
 import {Link} from "react-router-dom";
-import {AppContext} from "./AppContextProvider";
-import {UserContext} from "./UserContextProvider";
-import useWindowSize from "./WindowSizeHook";
+import {AppContext} from "../common/AppContextProvider";
+import {UserContext} from "../common/UserContextProvider";
+import useWindowSize from "../common/WindowSizeHook";
 
 const getRowStyle = (draggableStyle, isDragging) => ({
     // some basic styles to make the items look a bit nicer

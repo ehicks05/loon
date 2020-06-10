@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {AppContext} from "./AppContextProvider";
-import {UserContext} from "./UserContextProvider";
+import {AppContext} from "../../common/AppContextProvider";
+import {UserContext} from "../../common/UserContextProvider";
 
 export default function About() {
     const [systemInfo, setSystemInfo] = useState({});

@@ -1,6 +1,6 @@
 import React, {useContext, useState} from 'react';
-import {UserContext} from "./UserContextProvider";
-import useWindowSize from "./WindowSizeHook";
+import {UserContext} from "../common/UserContextProvider";
+import useWindowSize from "../common/WindowSizeHook";
 
 function formatTime(secs) {
     const minutes = Math.floor(secs / 60) || 0;

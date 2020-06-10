@@ -1,10 +1,10 @@
 import React, {useContext} from 'react';
-import MediaItem from "./MediaItem";
+import MediaItem from "../MediaItem";
 import 'lazysizes';
 import 'lazysizes/plugins/attrchange/ls.attrchange';
-import {AppContext} from "./AppContextProvider";
-import {useMediaQuery} from "./MediaQuery";
-import AlbumCard from "./AlbumCard";
+import {AppContext} from "../../common/AppContextProvider";
+import {useMediaQuery} from "../../common/MediaQueryHook";
+import AlbumCard from "../AlbumCard";
 
 export default function Album(props) {
     const artist = props.match.params.artist;

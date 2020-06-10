@@ -2,10 +2,10 @@ import React, {useContext, useEffect} from 'react';
 import {NavLink} from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faServer, faUser, faSignOutAlt, faSlidersH, faMusic, faUserCog, faInfoCircle} from '@fortawesome/free-solid-svg-icons'
-import superFetch from "./SuperFetch";
-import {useMediaQuery} from "./MediaQuery";
-import {UserContext} from "./UserContextProvider";
-import {AppContext} from "./AppContextProvider";
+import superFetch from "../../common/SuperFetch";
+import {useMediaQuery} from "../../common/MediaQueryHook";
+import {UserContext} from "../../common/UserContextProvider";
+import {AppContext} from "../../common/AppContextProvider";
 
 export default function Header(props) {
     const userContext = useContext(UserContext);

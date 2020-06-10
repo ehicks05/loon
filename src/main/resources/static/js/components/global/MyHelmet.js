@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 import { Helmet } from 'react-helmet';
-import {UserContext} from "./UserContextProvider";
-import {AppContext} from "./AppContextProvider";
+import {UserContext} from "../../common/UserContextProvider";
+import {AppContext} from "../../common/AppContextProvider";
 
 export default function MyHelmet(props) {
     const userContext = useContext(UserContext);
@@ -21,7 +21,7 @@ export default function MyHelmet(props) {
             <meta charset="utf-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1" />
             <title>{title}</title>
-            <link rel="stylesheet" href="/styles/bulma-prefers-dark.min.css" />
+            <link rel="stylesheet" href="/static/styles/bulma-prefers-dark.min.css" />
             <link rel="shortcut icon" href={"/images/loon2.png"} />
 
             <style>

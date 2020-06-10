@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 import {Link} from "react-router-dom";
-import {AppContext} from "./AppContextProvider";
-import {UserContext} from "./UserContextProvider";
+import {AppContext} from "../../common/AppContextProvider";
+import {UserContext} from "../../common/UserContextProvider";
 
 export default function Playlists(props) {
     const appContext = useContext(AppContext);

@@ -1,10 +1,10 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import PlaybackControls from "./PlaybackControls";
-import {UserContext} from "./UserContextProvider";
-import {AppContext} from "./AppContextProvider";
-import {VolumeContext} from "./VolumeContextProvider";
-import {scaleVolume, getMaxSafeGain, scrollIntoView, getMergedFrequencyBins} from "./PlayerUtil";
-import {TimeContext} from "./TimeContextProvider";
+import {UserContext} from "../../common/UserContextProvider";
+import {AppContext} from "../../common/AppContextProvider";
+import {VolumeContext} from "../../common/VolumeContextProvider";
+import {scaleVolume, getMaxSafeGain, scrollIntoView, getMergedFrequencyBins} from "../../common/PlayerUtil";
+import {TimeContext} from "../../common/TimeContextProvider";
 
 export default function Player(props) {
     const userContext = useContext(UserContext);

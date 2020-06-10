@@ -2,9 +2,9 @@ import React, {useContext} from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faEllipsisH, faHeart as fasHeart, faList, faMinus, faPlus, faSync} from '@fortawesome/free-solid-svg-icons'
 import {faHeart as farHeart} from '@fortawesome/free-regular-svg-icons'
-import {UserContext} from "./UserContextProvider";
-import {AppContext} from "./AppContextProvider";
-import useWindowSize from "./WindowSizeHook";
+import {UserContext} from "../common/UserContextProvider";
+import {AppContext} from "../common/AppContextProvider";
+import useWindowSize from "../common/WindowSizeHook";
 
 export default function ActionMenu(props) {
     const userContext = useContext(UserContext)

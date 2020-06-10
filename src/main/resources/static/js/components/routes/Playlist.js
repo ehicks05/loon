@@ -1,13 +1,13 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import ReactDOM from 'react-dom'
-import MediaItem from "./MediaItem";
+import MediaItem from "../MediaItem";
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd';
-import TextInput from "./TextInput";
+import TextInput from "../TextInput";
 import {Link, Redirect} from "react-router-dom";
 import {AutoSizer, CellMeasurer, CellMeasurerCache, List} from "react-virtualized";
-import DraggingMediaItem from "./DraggingMediaItem";
-import {UserContext} from "./UserContextProvider";
-import {AppContext} from "./AppContextProvider";
+import DraggingMediaItem from "../DraggingMediaItem";
+import {UserContext} from "../../common/UserContextProvider";
+import {AppContext} from "../../common/AppContextProvider";
 
 const autoSizerStyle = {outline: 0};
 const listStyle = {display: 'flex', flexDirection: 'column', height: '100%', flex: '1', flexGrow: '1'};

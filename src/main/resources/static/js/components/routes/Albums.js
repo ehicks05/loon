@@ -1,9 +1,9 @@
 import React, {useContext} from 'react';
 import 'lazysizes';
 import 'lazysizes/plugins/attrchange/ls.attrchange';
-import {AppContext} from "./AppContextProvider";
-import useWindowSize from "./WindowSizeHook";
-import AlbumCard from "./AlbumCard";
+import {AppContext} from "../../common/AppContextProvider";
+import useWindowSize from "../../common/WindowSizeHook";
+import AlbumCard from "../AlbumCard";
 
 export default function Albums(props) {
 

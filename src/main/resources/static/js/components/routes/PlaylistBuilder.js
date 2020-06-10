@@ -7,8 +7,8 @@ import {faCheckSquare, faPlusSquare, faMinusSquare, faSquare, faFolder, faFolder
 
 import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
-import TextInput from "./TextInput";
-import {AppContext} from "./AppContextProvider";
+import TextInput from "../TextInput";
+import {AppContext} from "../../common/AppContextProvider";
 
 export default function PlaylistBuilder(props) {
     const [checked, setChecked] = useState([]);

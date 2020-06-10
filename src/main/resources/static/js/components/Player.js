@@ -2,16 +2,18 @@ import React, {useContext, useEffect, useRef, useState} from 'react';
 import PlaybackControls from "./PlaybackControls";
 import {UserContext} from "./UserContextProvider";
 import {AppContext} from "./AppContextProvider";
-import {scaleVolume, getMaxSafeGain, scrollIntoView} from "./PlayerUtil";
+import {VolumeContext} from "./VolumeContextProvider";
+import {scaleVolume, getMaxSafeGain, scrollIntoView, getMergedFrequencyBins} from "./PlayerUtil";
+import {TimeContext} from "./TimeContextProvider";
 
 export default function Player(props) {
     const userContext = useContext(UserContext);
     const appContext = useContext(AppContext);
+    const volumeContext = useContext(VolumeContext);
+    const timeContext = useContext(TimeContext);
 
     const [playerState, setPlayerState] = useState('stopped');
     const playerStateRef = useRef(playerState);
-    const [duration, setDuration] = useState(0);
-    const [timeElapsed, setTimeElapsed] = useState(0);
 
     useEffect(() => {
         playerStateRef.current = playerState;
@@ -33,7 +35,7 @@ export default function Player(props) {
         audio.controls = false;
         audio.autoplay = false;
         audio.onended = function () {handleTrackChange('next');};
-        audio.ondurationchange = function () {setDuration(audio.duration);};
+        audio.ondurationchange = function () {timeContext.setDuration(audio.duration);};
         audio.onerror = function () {console.log(audio.error);};
         document.body.appendChild(audio);
         return audio;
@@ -53,7 +55,7 @@ export default function Player(props) {
         band4.current = audioCtx.current.createBiquadFilter();
         analyser.current = audioCtx.current.createAnalyser();
 
-        gainNode.current.gain.value = scaleVolume(userState.volume);
+        gainNode.current.gain.value = scaleVolume(volumeContext.volume);
         gainNode.current.connect(trackGainNode.current);
 
         band1.current.type = "lowshelf";
@@ -112,8 +114,8 @@ export default function Player(props) {
     }, [userContext.user.userState.lastTrackId]);
     useEffect(() => {
         if (gainNode.current)
-            gainNode.current.gain.value = scaleVolume(userContext.user.userState.volume);
-    }, [userContext.user.userState.volume]);
+            gainNode.current.gain.value = scaleVolume(volumeContext.volume);
+    }, [volumeContext.volume]);
     useEffect(() => {
         if (audio.current)
             audio.current.muted = userContext.user.userState.muted;
@@ -143,13 +145,6 @@ export default function Player(props) {
         band4.current.gain.value = userContext.user.userState.eq4Gain;
     }, [userContext.user.userState.eq4Frequency, userContext.user.userState.eq4Gain]);
 
-    function getSelectedTrack() {
-        return appContext.tracks && typeof appContext.tracks === 'object' ?
-            appContext.tracks.find(track => track.id === userContext.user.userState.lastTrackId) : null; // todo rename lastTrackId
-    }
-
-    const selectedTrack = getSelectedTrack();
-
     function handlePlayerStateChange(newPlayerState, newTrackId) {
         console.log('in Player.handlePlayerStateChange(' + newPlayerState + ', ' + newTrackId + ')');
 
@@ -171,7 +166,7 @@ export default function Player(props) {
             if (newPlayerState === 'playing' && audioCtx.current.state === 'suspended')
                 audioCtx.current.resume();
 
-            setTimeElapsed(0);
+            timeContext.setElapsedTime(0);
 
             if (!newTrackId)
                 newTrackId = userContext.user.userState.lastTrackId;
@@ -231,57 +226,6 @@ export default function Player(props) {
             setPlayerState(newPlayerState);
     }
 
-    function getCurrentPlaylistTrackIds() {
-        const currentPlaylist = appContext.getPlaylistById(userContext.user.userState.lastPlaylistId); //todo rename
-        if (currentPlaylist)
-            return currentPlaylist.playlistTracks.map((playlistTrack) => playlistTrack.track.id);
-        else
-            return appContext.tracks.map(track => track.id);
-    }
-
-    function getNewTrackId(input) {
-        const currentPlaylistTrackIds = getCurrentPlaylistTrackIds();
-        let newTrackId = -1;
-        const shuffle = userContext.user.userState.shuffle;
-        if (shuffle)
-        {
-            let newPlaylistTrackIndex = Math.floor (Math.random() * currentPlaylistTrackIds.length);
-            newTrackId = currentPlaylistTrackIds[newPlaylistTrackIndex];
-            console.log("new random trackId: " + newTrackId)
-        }
-        else
-        {
-            const currentTrackIndex = currentPlaylistTrackIds.indexOf(userContext.user.userState.lastTrackId); //todo rename
-
-            let newIndex;
-            if (input === 'prev') {
-                newIndex = currentTrackIndex - 1;
-                if (newIndex < 0) {
-                    newIndex = currentPlaylistTrackIds.length - 1;
-                }
-            }
-            if (input === 'next') {
-                newIndex = currentTrackIndex + 1;
-                if (newIndex >= currentPlaylistTrackIds.length) {
-                    newIndex = 0;
-                }
-            }
-
-            newTrackId = currentPlaylistTrackIds[newIndex];
-        }
-
-        if (newTrackId === -1)
-            newTrackId = input;
-
-        return newTrackId;
-    }
-
-    function handleTrackChange(input) {
-        const newTrackId = getNewTrackId(input);
-
-        userContext.setSelectedTrackId(newTrackId);
-    }
-
     function handleProgressChange(progress) {
         if (audio)
         {
@@ -292,7 +236,7 @@ export default function Player(props) {
 
     function step() {
         if (audio)
-            setTimeElapsed(audio.current.currentTime);
+            timeContext.setElapsedTime(audio.current.currentTime);
     }
 
     if (!audio)
@@ -301,74 +245,9 @@ export default function Player(props) {
     return (
         <PlaybackControls
             playerState={playerState}
-            selectedTrack={selectedTrack}
-            timeElapsed={timeElapsed}
-            duration={duration}
-
             onPlayerStateChange={handlePlayerStateChange}
-            onTrackChange={handleTrackChange}
             onProgressChange={handleProgressChange}
         />);
-
-    function getFrequencyTiltAdjustment(binStartingFreq) {
-        let temp = binStartingFreq;
-        if (temp === 0) temp = 20;
-
-        let isAbove = temp >= 1000;
-        let octavesFrom1000 = 0;
-        while (true)
-        {
-            if (isAbove)
-            {
-                temp /= 2;
-                if (temp < 1000)
-                    break;
-            }
-            if (!isAbove)
-            {
-                temp *= 2;
-                if (temp > 1000)
-                    break;
-            }
-            octavesFrom1000++;
-        }
-
-        let dBAdjustment = (isAbove ? 1 : -1) * octavesFrom1000 * 1.1;
-        return Math.pow(10, (dBAdjustment / 20));
-    }
-
-    function getMergedFrequencyBins() {
-        const dataArray = new Uint8Array(analyser.current.frequencyBinCount);
-        const binWidth = audioCtx.current.sampleRate / analyser.current.frequencyBinCount;
-        analyser.current.getByteFrequencyData(dataArray);
-
-        const mergedData = [];
-        let i = 0;
-        let size = 1;
-        while (true)
-        {
-            let bins = Math.floor(size);
-
-            let linearAdjustment = getFrequencyTiltAdjustment(i * binWidth);
-
-            if (i === dataArray.length || i * binWidth > 22000)
-                break;
-
-            if (i + bins > dataArray.length)
-                bins = dataArray.length - i;
-
-            let slice = dataArray.slice(i, i + bins);
-            let average = (array) => array.reduce((o1, o2) => o1 + o2) / array.length;
-            const avg = average(slice);
-
-            mergedData.push(avg * linearAdjustment);
-            // console.log('i:' + i + '. bins:' + bins + '. db adjust:' + linearAdjustment + '. ' + (i * binWidth) + ' - ' + (i * binWidth + (bins * binWidth) - 1));
-            i += bins;
-            size *= 1.3;
-        }
-
-        return mergedData.slice(2); // the first 2 frequency bins tend to have very little energy
-    }
 
     function renderSpectrumFrame() {
         requestAnimationFrame(renderSpectrumFrame);
@@ -395,7 +274,11 @@ export default function Player(props) {
         const WIDTH = canvas.width;
         const HEIGHT = canvas.height;
 
-        const mergedData = getMergedFrequencyBins();
+        const dataArray = new Uint8Array(analyser.current.frequencyBinCount);
+        const binWidth = audioCtx.current.sampleRate / analyser.current.frequencyBinCount;
+        analyser.current.getByteFrequencyData(dataArray);
+
+        const mergedData = getMergedFrequencyBins(dataArray, binWidth);
         const bufferLength = mergedData.length;
 
         let x = 0;

@@ -42,12 +42,6 @@ function UserContextProvider(props) {
         updateUser('/api/users/' + user.id + '/saveProgress', formData);
     }
 
-    function setVolume(volume) {
-        const formData = new FormData();
-        formData.append('volume', volume);
-        updateUser('/api/users/' + user.id, formData);
-    }
-
     function setMuted(muted) {
         const formData = new FormData();
         formData.append('muted', muted);
@@ -78,10 +72,8 @@ function UserContextProvider(props) {
         <UserContext.Provider value={{
             user: user,
             setUser: setUser, // todo this may not be needed if we only intend to update user through fetching it from back end
-            fetchUser: fetchUser,
             setSelectedPlaylistId: setSelectedPlaylistId,
             setSelectedTrackId: setSelectedTrackId,
-            setVolume: setVolume,
             setMuted: setMuted,
             setShuffle: setShuffle,
             setTranscode: setTranscode,

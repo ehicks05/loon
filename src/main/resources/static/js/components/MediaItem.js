@@ -20,18 +20,15 @@ export default function MediaItem(props) {
     const userContext = useContext(UserContext);
     const windowSize = useWindowSize();
 
-    function handleHoverTrue()
-    {
+    function handleHoverTrue() {
         setHover(true);
     }
 
-    function handleHoverFalse()
-    {
+    function handleHoverFalse() {
         setHover(false);
     }
 
-    function handleSelectedTrackIdChange(e, selectedPlaylistId, selectedTrackId)
-    {
+    function handleSelectedTrackIdChange(e, selectedPlaylistId, selectedTrackId) {
         console.log('setSelectedPlaylistId' + selectedPlaylistId + '...' + selectedTrackId);
         userContext.setSelectedPlaylistId(selectedPlaylistId, selectedTrackId);
     }

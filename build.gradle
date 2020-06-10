@@ -31,7 +31,7 @@ dependencies {
     implementation 'net.coobird:thumbnailator:0.4.11'
     implementation 'ws.schild:jave-core:2.7.3'
     implementation 'ws.schild:jave-nativebin-win64:2.7.3'
-    implementation 'se.michaelthelin.spotify:spotify-web-api-java:6.0.0'
+    implementation 'se.michaelthelin.spotify:spotify-web-api-java:6.1.0'
     implementation 'com.twelvemonkeys.imageio:imageio-jpeg:3.5' // adds support for jpegs with cmyk encoding.
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'

@@ -63,7 +63,9 @@ export default function PlaybackButtons(props) {
         }
 
         if (newTrackId === -1)
-            newTrackId = input;
+        {
+            console.error('Unable to select a new track id.')
+        }
 
         return newTrackId;
     }

@@ -8,6 +8,7 @@ import {TimeContext} from "../../common/TimeContextProvider";
 
 export default function Player(props) {
     const userContext = useContext(UserContext);
+    const userContextRef = useRef(userContext);
     const appContext = useContext(AppContext);
     const volumeContext = useContext(VolumeContext);
     const timeContext = useContext(TimeContext);
@@ -18,6 +19,10 @@ export default function Player(props) {
     useEffect(() => {
         playerStateRef.current = playerState;
     }, [playerState])
+
+    useEffect(() => {
+        userContextRef.current = userContext;
+    }, [userContext])
 
     let audio = useRef({});
     let audioCtx = useRef({});
@@ -116,34 +121,21 @@ export default function Player(props) {
         if (gainNode.current)
             gainNode.current.gain.value = scaleVolume(volumeContext.volume);
     }, [volumeContext.volume]);
+
     useEffect(() => {
-        if (audio.current)
-            audio.current.muted = userContext.user.userState.muted;
-    }, [userContext.user.userState.muted]);
-    useEffect(() => {
-        if (!band1.current)
-            return;
-        band1.current.frequency.value = userContext.user.userState.eq1Frequency;
-        band1.current.gain.value = userContext.user.userState.eq1Gain;
-    }, [userContext.user.userState.eq1Frequency, userContext.user.userState.eq1Gain]);
-    useEffect(() => {
-        if (!band2.current)
-            return;
-        band2.current.frequency.value = userContext.user.userState.eq2Frequency;
-        band2.current.gain.value = userContext.user.userState.eq2Gain;
-    }, [userContext.user.userState.eq2Frequency, userContext.user.userState.eq2Gain]);
-    useEffect(() => {
-        if (!band3.current)
-            return;
-        band3.current.frequency.value = userContext.user.userState.eq3Frequency;
-        band3.current.gain.value = userContext.user.userState.eq3Gain;
-    }, [userContext.user.userState.eq3Frequency, userContext.user.userState.eq3Gain]);
-    useEffect(() => {
-        if (!band4.current)
-            return;
-        band4.current.frequency.value = userContext.user.userState.eq4Frequency;
-        band4.current.gain.value = userContext.user.userState.eq4Gain;
-    }, [userContext.user.userState.eq4Frequency, userContext.user.userState.eq4Gain]);
+        if (!audio.current) return;
+
+        const userState = userContext.user.userState;
+        audio.current.muted = userState.muted;
+        band1.current.frequency.value = userState.eq1Frequency;
+        band1.current.gain.value = userState.eq1Gain;
+        band2.current.frequency.value = userState.eq2Frequency;
+        band2.current.gain.value = userState.eq2Gain;
+        band3.current.frequency.value = userState.eq3Frequency;
+        band3.current.gain.value = userState.eq3Gain;
+        band4.current.frequency.value = userState.eq4Frequency;
+        band4.current.gain.value = userState.eq4Gain;
+    }, [userContext])
 
     function handlePlayerStateChange(newPlayerState, newTrackId) {
         console.log('in Player.handlePlayerStateChange(' + newPlayerState + ', ' + newTrackId + ')');

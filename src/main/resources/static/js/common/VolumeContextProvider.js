@@ -6,7 +6,7 @@ const VolumeContext = React.createContext();
 
 function VolumeContextProvider(props) {
     const userIdRef = useRef(0);
-    const [volume, setVolume] = useState(null);
+    const [volume, setVolume] = useState(-30);
     const volumeDebounced = useDebounce(volume, 1000);
 
     useEffect(() => {
@@ -14,12 +14,9 @@ function VolumeContextProvider(props) {
     }, []);
 
     useEffect(() => {
-        if (!volumeDebounced)
-            return;
-
         const formData = new FormData();
         formData.append('volume', volumeDebounced);
-        updateUser('/api/users/' + userIdRef.current, formData, true);
+        superFetch('/api/users/' + userIdRef.current, {method: 'PUT', body: formData});
     }, [volumeDebounced])
 
     function fetchVolume() {
@@ -31,18 +28,10 @@ function VolumeContextProvider(props) {
             });
     }
 
-    function updateUser(url, formData) {
-        superFetch(url, {method: 'PUT', body: formData});
-    }
-
-    function handleSetVolume(volume) {
-        setVolume(volume);
-    }
-
     return (
         <VolumeContext.Provider value={{
             volume: volume,
-            setVolume: handleSetVolume,
+            setVolume: setVolume,
         }}>
             {props.children}
         </VolumeContext.Provider>

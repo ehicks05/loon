@@ -16,6 +16,7 @@ const SidePanel = lazy(() => import('./SidePanel'));
 
 export default function App(props) {
     const [history, setHistory] = useState({})
+    const [columnHeight, setColumnHeight] = useState({})
 
     const userContext = useContext(UserContext);
     const appContext = useContext(AppContext);
@@ -35,6 +36,13 @@ export default function App(props) {
         };
     }, []);
 
+    useEffect(() => {
+        const footerHeight = windowSize.width <= 768 ? 103 : 54;
+        const columnHeight = '' + (windowSize.height - (52 + 23 + footerHeight)) + 'px';
+        console.log(`New columnHeight: ${columnHeight}... window height: ${windowSize.height} - (header height(52) + footer height(23 + ${footerHeight}))`);
+        setColumnHeight(columnHeight);
+    }, [windowSize])
+
     const dataLoaded = userContext && userContext.user && appContext && appContext.tracks && appContext.playlists;
     if (!dataLoaded)
     {
@@ -45,12 +53,6 @@ export default function App(props) {
             </>
         );
     }
-
-    const innerHeight = windowSize.height;
-    const footerHeight = windowSize.width <= 768 ? 103 : 54;
-    // const columnHeight = 'calc(' + innerHeight + 'px - (52px + 23px + ' + footerHeight + '))';
-    const columnHeight = '' + (Number(innerHeight) - (52 + 23 + Number(footerHeight))) + 'px';
-    console.log('New columnHeight: ' + columnHeight + '... window height('+innerHeight+') - (header height('+52+') + footer height(23 + '+footerHeight+'))):');
 
     return (
         <Router history={history}>

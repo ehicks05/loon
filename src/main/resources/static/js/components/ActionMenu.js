@@ -99,7 +99,7 @@ export default function ActionMenu(props) {
                     </span>
                 </div>
                 <div className="control">
-                    <a className="button is-small is-primary" onClick={(e) => addTracksToPlaylist(trackIds)} disabled={!addToPlaylistOptions.length}>
+                    <a className="button is-small is-primary" onClick={() => addTracksToPlaylist(trackIds)} disabled={!addToPlaylistOptions.length}>
                         Ok
                     </a>
                 </div>
@@ -125,7 +125,7 @@ export default function ActionMenu(props) {
                     </span>
                 </div>
                 <div className="control">
-                    <a className="button is-small is-primary" onClick={(e) => removeTracksFromPlaylist(trackIds)} disabled={!removeFromPlaylistOptions.length}>
+                    <a className="button is-small is-primary" onClick={() => removeTracksFromPlaylist(trackIds)} disabled={!removeFromPlaylistOptions.length}>
                         Ok
                     </a>
                 </div>
@@ -149,7 +149,7 @@ export default function ActionMenu(props) {
             </div>
             <div className="dropdown-menu" id="dropdown-menu2" role="menu">
                 <div className="dropdown-content">
-                    <a className="dropdown-item" onClick={(e) => handleToggleTracksInPlaylist(favoritesPlaylist.id, trackIds, isFavorite ? 'remove' : 'add')}>
+                    <a className="dropdown-item" onClick={() => handleToggleTracksInPlaylist(favoritesPlaylist.id, trackIds, isFavorite ? 'remove' : 'add')}>
                         <p>
                             <span className={'icon has-text-success'}>
                                 <FontAwesomeIcon icon={isFavorite ? fasHeart : farHeart}/>
@@ -157,7 +157,7 @@ export default function ActionMenu(props) {
                             {isFavorite ? 'Remove from ' : 'Add to '} Favorites
                         </p>
                     </a>
-                    <a className="dropdown-item" onClick={(e) => handleToggleTracksInPlaylist(queuePlaylist.id, trackIds, isQueued ? 'remove' : 'add')}>
+                    <a className="dropdown-item" onClick={() => handleToggleTracksInPlaylist(queuePlaylist.id, trackIds, isQueued ? 'remove' : 'add')}>
                         <p>
                             <span className={'icon ' + (isQueued ? 'has-text-success' : 'has-text-grey')}>
                                 <FontAwesomeIcon icon={faList}/>
@@ -165,7 +165,7 @@ export default function ActionMenu(props) {
                             {isQueued ? 'Remove from ' : 'Add to '} Queue
                         </p>
                     </a>
-                    <a className="dropdown-item" onClick={(e) => handleToggleTracksInPlaylist(queuePlaylist.id, trackIds, 'add', true)}
+                    <a className="dropdown-item" onClick={() => handleToggleTracksInPlaylist(queuePlaylist.id, trackIds, 'add', true)}
                        disabled={equalsQueue}>
                         <p>
                             <span className={'icon ' + (equalsQueue ? 'has-text-success' : 'has-text-grey')}>

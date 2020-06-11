@@ -57,13 +57,13 @@ function AppContextProvider(props) {
     function addOrModifyPlaylist(formData) {
         return superFetch('/api/playlists/addOrModify', {method: 'POST', body: formData})
             .then(response => response.json())
-            .then(data => { loadPlaylists(); });
+            .then(() => { loadPlaylists(); });
     }
 
     function toggleTracksInPlaylist(playlistId, formData) {
         return superFetch('/api/playlists/' + playlistId, {method: 'POST', body: formData})
             .then(response => response.text())
-            .then(data => { loadPlaylists(); });
+            .then(() => { loadPlaylists(); });
     }
 
     function copyPlaylist(formData) {
@@ -75,7 +75,7 @@ function AppContextProvider(props) {
     function deletePlaylist(playlistId) {
         return superFetch('/api/playlists/' + playlistId, {method: 'DELETE'})
             .then(response => response.text())
-            .then(data => {loadPlaylists();});
+            .then(() => {loadPlaylists();});
     }
 
     // This will will update the playlist indices locally so the change can be rendered immediately,
@@ -110,7 +110,7 @@ function AppContextProvider(props) {
 
         superFetch('/api/playlists/dragAndDrop', {method: 'POST', body: formData})
             .then(response => response.text())
-            .then(data => {loadPlaylists();});
+            .then(() => {loadPlaylists();});
     }
 
     function clearPlaylist(playlistId) {
@@ -121,7 +121,7 @@ function AppContextProvider(props) {
 
         return superFetch('/api/playlists/' + playlistId, {method: 'POST', body: formData})
             .then(response => response.json())
-            .then(data => {loadPlaylists();});
+            .then(() => {loadPlaylists();});
     }
 
     function getTrackById(id)

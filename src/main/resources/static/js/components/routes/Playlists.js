@@ -3,7 +3,7 @@ import {Link} from "react-router-dom";
 import {AppContext} from "../../common/AppContextProvider";
 import {UserContext} from "../../common/UserContextProvider";
 
-export default function Playlists(props) {
+export default function Playlists() {
     const appContext = useContext(AppContext);
     const userContext = useContext(UserContext);
 
@@ -32,7 +32,7 @@ export default function Playlists(props) {
                                 Edit
                             </Link>
 
-                            <button className={"button is-small is-danger"} onClick={(e) => deletePlaylist(playlist.id)}>
+                            <button className={"button is-small is-danger"} onClick={() => deletePlaylist(playlist.id)}>
                                 Delete
                             </button>
                         </span>

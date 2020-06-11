@@ -3,7 +3,7 @@ import TextInput from "../TextInput";
 import Select from "../Select";
 import superFetch from "../../common/SuperFetch";
 
-export default function UserSettings(props)  {
+export default function UserSettings()  {
 
     const [currentUser, setCurrentUser] = useState({});
     const [users, setUsers] = useState([]);
@@ -28,19 +28,19 @@ export default function UserSettings(props)  {
     function createUser(formData) {
         return superFetch('/api/admin/users', {method: 'POST', body: formData})
             .then(response => response.json())
-            .then(json => loadUsers());
+            .then(() => loadUsers());
     }
 
     function updateUser(id, formData) {
         return superFetch('/api/admin/users/' + id, {method: 'PUT', body: formData})
             .then(response => response.json())
-            .then(json => loadUsers());
+            .then(() => loadUsers());
     }
 
     function deleteUserFETCH(id) {
         return superFetch('/api/admin/users/' + id, {method: 'DELETE'})
             .then(response => response.text())
-            .then(json => loadUsers());
+            .then(() => loadUsers());
     }
 
     function loadUsers() {
@@ -91,8 +91,8 @@ export default function UserSettings(props)  {
 
     const usersTable = users.map(user => {
         const isCurrentUser = user.id === currentUser.id;
-        const deleteButton = isCurrentUser ? '' : <button className="button is-danger" onClick={(e) => showDeleteConfirmation(user.id)}>Delete</button>;
-        const saveButton = <button className="button" onClick={(e) => saveUser(user.id)}>Save</button>;
+        const deleteButton = isCurrentUser ? '' : <button className="button is-danger" onClick={() => showDeleteConfirmation(user.id)}>Delete</button>;
+        const saveButton = <button className="button" onClick={() => saveUser(user.id)}>Save</button>;
 
         return (
             <tr key={user.id}>
@@ -146,7 +146,7 @@ export default function UserSettings(props)  {
                     <TextInput id="password" label="Password" value="" />
 
                     <span className="buttons">
-                            <input id="saveButton" type="button" value="Save" className="button is-primary" onClick={(e) => submitForm()} />
+                            <input id="saveButton" type="button" value="Save" className="button is-primary" onClick={() => submitForm()} />
                         </span>
                 </form>
             </section>
@@ -164,7 +164,7 @@ export default function UserSettings(props)  {
                         </div>
                     </section>
                     <footer className="modal-card-foot">
-                        <button className="button is-danger" onClick={(e) => deleteUser(userIdToDelete)}>Delete</button>
+                        <button className="button is-danger" onClick={() => deleteUser(userIdToDelete)}>Delete</button>
                         <button className="button" onClick={toggleModal}>Cancel</button>
                     </footer>
                 </div>

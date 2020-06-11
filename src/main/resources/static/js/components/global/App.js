@@ -59,7 +59,7 @@ export default function App(props) {
 
             <div className={'columns is-gapless'}>
                 <div id='left-column' style={{height: columnHeight, overflow: 'hidden auto'}} className={"column is-narrow is-hidden-touch"}>
-                    <div style={{height: '98%', display: 'flex', flexDirection: 'column'}}>
+                    <div style={{height: '100%', display: 'flex', flexDirection: 'column'}}>
                         <div style={{overflowY: 'auto'}}><SidePanel /></div>
                         <div style={{flex: '1 1 auto'}}> </div>
                         <div style={{height: '100px'}}>

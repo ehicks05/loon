@@ -7,9 +7,7 @@
   "license": "MIT",
   "scripts": {
     "build": "webpack --mode production",
-    "dev": "webpack --mode development",
-    "profile": "webpack --profile --json > stats.json",
-    "analyze": "webpack-bundle-analyzer stats.json -m static"
+    "dev": "webpack --mode development"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.28",

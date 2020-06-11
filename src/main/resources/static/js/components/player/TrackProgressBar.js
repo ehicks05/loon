@@ -5,7 +5,7 @@ import 'rc-slider/assets/index.css';
 
 const timeElapsedLevelItemStyle = {marginBottom: '0'};
 const timeElapsedStyle = {fontSize: '.875rem', marginRight: '10px'};
-const progressStyle = {width: '100%', margin: '0'};
+const progressStyle = {width: '100%', margin: '0', cursor: 'pointer'};
 const durationStyle = {fontSize: '.875rem', marginLeft: '8px'};
 
 const sliderTrackStyle = { backgroundColor: 'hsl(141, 71%, 48%)', height: 4 }

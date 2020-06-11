@@ -1,26 +1,26 @@
 import React, {useEffect, useRef, useState} from "react";
 import superFetch from "./SuperFetch";
-import {useThrottle} from '@react-hook/throttle'
+import useDebounce from "./UseDebounce";
 
 const VolumeContext = React.createContext();
 
 function VolumeContextProvider(props) {
     const userIdRef = useRef(0);
     const [volume, setVolume] = useState(null);
-    const [volumeThrottled, setVolumeThrottled] = useThrottle(false, 1);
+    const volumeDebounced = useDebounce(volume, 1000);
 
     useEffect(() => {
         fetchVolume();
     }, []);
 
     useEffect(() => {
-        if (!volumeThrottled)
+        if (!volumeDebounced)
             return;
 
         const formData = new FormData();
-        formData.append('volume', volumeThrottled);
-        updateUser('/api/users/' + userIdRef, formData, true);
-    }, [volumeThrottled])
+        formData.append('volume', volumeDebounced);
+        updateUser('/api/users/' + userIdRef.current, formData, true);
+    }, [volumeDebounced])
 
     function fetchVolume() {
         fetch('/api/users/current', {method: 'GET'})
@@ -37,7 +37,6 @@ function VolumeContextProvider(props) {
 
     function handleSetVolume(volume) {
         setVolume(volume);
-        setVolumeThrottled(volume);
     }
 
     return (

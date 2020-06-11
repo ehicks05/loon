@@ -56,7 +56,7 @@ export default function Search(props) {
         setSearchKey(e.target.value);
     }
 
-    const selectedTrackId = userContext.user.userState.lastTrackId;
+    const selectedTrackId = userContext.user.userState.selectedTrackId;
     const scrollToIndex = searchResults.indexOf(searchResults.find(track => track.id === selectedTrackId));
 
     return (

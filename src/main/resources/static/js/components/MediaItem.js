@@ -58,7 +58,7 @@ export default function MediaItem(props) {
 
     const formattedDuration = props.track.formattedDuration;
 
-    const highlightClass = trackId === userContext.user.userState.lastTrackId ? ' playingHighlight' : '';
+    const highlightClass = trackId === userContext.user.userState.selectedTrackId ? ' playingHighlight' : '';
 
     const provided = props.provided;
     const snapshot = props.snapshot;

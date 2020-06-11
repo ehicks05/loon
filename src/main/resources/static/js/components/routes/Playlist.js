@@ -102,7 +102,7 @@ export default function Playlist(props) {
     if (redirectTo)
         return <Redirect to={redirectTo}/>;
 
-    const selectedTrackId = userContext.user.userState.lastTrackId;
+    const selectedTrackId = userContext.user.userState.selectedTrackId;
     const playlist = appContext.getPlaylistById(playlistId);
 
     if (!appContext || !appContext.playlists || !playlist)

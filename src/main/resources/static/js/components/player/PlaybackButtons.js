@@ -24,7 +24,7 @@ export default function PlaybackButtons(props) {
     }
 
     function getCurrentPlaylistTrackIds() {
-        const currentPlaylist = appContext.getPlaylistById(userContext.user.userState.lastPlaylistId); //todo rename
+        const currentPlaylist = appContext.getPlaylistById(userContext.user.userState.selectedPlaylistId);
         if (currentPlaylist)
             return currentPlaylist.playlistTracks.map((playlistTrack) => playlistTrack.track.id);
         else
@@ -43,7 +43,7 @@ export default function PlaybackButtons(props) {
         }
         else
         {
-            const currentTrackIndex = currentPlaylistTrackIds.indexOf(userContext.user.userState.lastTrackId); //todo rename
+            const currentTrackIndex = currentPlaylistTrackIds.indexOf(userContext.user.userState.selectedTrackId);
 
             let newIndex;
             if (input === 'prev') {

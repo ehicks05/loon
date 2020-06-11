@@ -84,7 +84,7 @@ export default function Player(props) {
         audioBufferSourceNode.current = audioCtx.current.createMediaElementSource(audio.current);
         audioBufferSourceNode.current.connect(gainNode.current);
 
-        scrollIntoView(userState.lastTrackId) //todo rename
+        scrollIntoView(userState.selectedTrackId)
 
         setInterval(step, 200)
         renderSpectrumFrame(audioCtx, analyser);
@@ -110,8 +110,8 @@ export default function Player(props) {
             return;
         }
         
-        handlePlayerStateChange(null, userContext.user.userState.lastTrackId);
-    }, [userContext.user.userState.lastTrackId]);
+        handlePlayerStateChange(null, userContext.user.userState.selectedTrackId);
+    }, [userContext.user.userState.selectedTrackId]);
     useEffect(() => {
         if (gainNode.current)
             gainNode.current.gain.value = scaleVolume(volumeContext.volume);
@@ -169,7 +169,7 @@ export default function Player(props) {
             timeContext.setElapsedTime(0);
 
             if (!newTrackId)
-                newTrackId = userContext.user.userState.lastTrackId;
+                newTrackId = userContext.user.userState.selectedTrackId;
 
             let track = appContext.tracks.find(track => track.id === newTrackId);
             if (!track)

@@ -16,7 +16,7 @@ export default function Playlists(props) {
     const playlists = appContext.playlists
         .filter(playlist => !playlist.favorites && !playlist.queue)
         .map((playlist, index) => {
-                const highlightClass = playlist.id === userContext.user.userState.lastPlaylistId ? ' playingHighlight' : '';
+                const highlightClass = playlist.id === userContext.user.userState.selectedPlaylistId ? ' playingHighlight' : '';
 
                 return (<tr key={playlist.id} className={highlightClass}>
                     <td> {index + 1} </td>

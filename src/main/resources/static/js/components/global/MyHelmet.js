@@ -9,7 +9,7 @@ export default function MyHelmet(props) {
 
     function getSelectedTrack() {
         const ready = userContext.user && appContext.tracks && typeof appContext.tracks === 'object';
-        return ready ? appContext.getTrackById(userContext.user.userState.lastTrackId) : null; // todo rename lastTrackId
+        return ready ? appContext.getTrackById(userContext.user.userState.selectedTrackId) : null;
     }
 
     const selectedTrack = getSelectedTrack();

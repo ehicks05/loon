@@ -30,15 +30,15 @@ function UserContextProvider(props) {
 
     function setSelectedPlaylistId(selectedPlaylistId, selectedTrackId) {
         const formData = new FormData();
-        formData.append('lastPlaylistId', selectedPlaylistId);
-        formData.append('lastTrackId', selectedTrackId);
+        formData.append('selectedPlaylistId', selectedPlaylistId);
+        formData.append('selectedTrackId', selectedTrackId);
         updateUser('/api/users/' + user.id + '/saveProgress', formData);
     }
 
     function setSelectedTrackId(selectedTrackId) {
         const formData = new FormData();
-        formData.append('lastPlaylistId', user.userState.lastPlaylistId);
-        formData.append('lastTrackId', selectedTrackId);
+        formData.append('selectedPlaylistId', user.userState.selectedPlaylistId);
+        formData.append('selectedTrackId', selectedTrackId);
         updateUser('/api/users/' + user.id + '/saveProgress', formData);
     }
 

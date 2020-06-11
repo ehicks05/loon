@@ -17,7 +17,7 @@ export default function TrackDescription(props) {
 
     function getSelectedTrack() {
         return appContext.tracks && typeof appContext.tracks === 'object' ?
-            appContext.getTrackById(userContext.user.userState.lastTrackId) : null; // todo rename lastTrackId
+            appContext.getTrackById(userContext.user.userState.selectedTrackId) : null;
     }
 
     const selectedTrack = getSelectedTrack();

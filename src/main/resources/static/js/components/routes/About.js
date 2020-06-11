@@ -16,7 +16,7 @@ export default function About() {
 
     function getSelectedTrack() {
         return appContext.tracks && typeof appContext.tracks === 'object' ?
-            appContext.tracks.find(track => track.id === userContext.user.userState.lastTrackId) : null; // todo rename lastTrackId
+            appContext.tracks.find(track => track.id === userContext.user.userState.selectedTrackId) : null;
     }
 
     const selectedTrack = getSelectedTrack();

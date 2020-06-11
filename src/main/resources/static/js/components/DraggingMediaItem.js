@@ -34,7 +34,7 @@ export default function DraggingMediaItem(props) {
     const album = props.track.album ? limitLength(props.track.album, 1.8) : 'Missing!';
     const formattedDuration = track.duration;
 
-    const highlightClass = trackId === userContext.user.userState.lastTrackId ? ' playingHighlight' : '';
+    const highlightClass = trackId === userContext.user.userState.selectedTrackId ? ' playingHighlight' : '';
 
     const innerRef          = provided ? provided.innerRef : null;
     const draggableProps    = provided ? provided.draggableProps : null;

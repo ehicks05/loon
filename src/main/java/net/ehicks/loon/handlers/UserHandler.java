@@ -38,21 +38,21 @@ public class UserHandler
     public User getCurrentUser(@AuthenticationPrincipal User user)
     {
         // check that the user's last played track still exists
-        Track track = trackRepo.findById(user.getUserState().getLastTrackId()).orElse(null);
+        Track track = trackRepo.findById(user.getUserState().getSelectedTrackId()).orElse(null);
 
         boolean playlistTrackMissing = false;
-        if (user.getUserState().getLastPlaylistId() != 0)
+        if (user.getUserState().getSelectedPlaylistId() != 0)
         {
-            PlaylistTrack playlistTrack = playlistTrackRepo.findByPlaylistIdAndTrackId(user.getUserState().getLastPlaylistId(), user.getUserState().getLastTrackId());
+            PlaylistTrack playlistTrack = playlistTrackRepo.findByPlaylistIdAndTrackId(user.getUserState().getSelectedPlaylistId(), user.getUserState().getSelectedTrackId());
             playlistTrackMissing = playlistTrack == null;
         }
 
         if (track == null || playlistTrackMissing)
         {
-            user.getUserState().setLastPlaylistId(0L);
+            user.getUserState().setSelectedPlaylistId(0L);
 
             Track firstTrack = trackRepo.findTopByOrderById().orElse(null);
-            user.getUserState().setLastTrackId(firstTrack != null ? firstTrack.getId() : "");
+            user.getUserState().setSelectedTrackId(firstTrack != null ? firstTrack.getId() : "");
             userRepo.save(user);
         }
 
@@ -60,14 +60,14 @@ public class UserHandler
     }
 
     @PutMapping("/{id}/saveProgress")
-    public User modify(@AuthenticationPrincipal User user, @PathVariable Long id, @RequestParam Long lastPlaylistId, @RequestParam String lastTrackId)
+    public User modify(@AuthenticationPrincipal User user, @PathVariable Long id, @RequestParam Long selectedPlaylistId, @RequestParam String selectedTrackId)
     {
         if (!user.getId().equals(id))
             return null;
 
         UserState userState = user.getUserState();
-        userState.setLastPlaylistId(lastPlaylistId);
-        userState.setLastTrackId(lastTrackId);
+        userState.setSelectedPlaylistId(selectedPlaylistId);
+        userState.setSelectedTrackId(selectedTrackId);
         return userRepo.save(user);
     }
     
@@ -79,14 +79,10 @@ public class UserHandler
         if (!user.getId().equals(id))
             return null;
 
-        if (volume.isPresent())
-            user.getUserState().setVolume(volume.get());
-        if (shuffle.isPresent())
-            user.getUserState().setShuffle(shuffle.get());
-        if (muted.isPresent())
-            user.getUserState().setMuted(muted.get());
-        if (transcode.isPresent())
-            user.getUserState().setTranscode(transcode.get());
+        volume.ifPresent(aDouble -> user.getUserState().setVolume(aDouble));
+        shuffle.ifPresent(aBoolean -> user.getUserState().setShuffle(aBoolean));
+        muted.ifPresent(aBoolean -> user.getUserState().setMuted(aBoolean));
+        transcode.ifPresent(aBoolean -> user.getUserState().setTranscode(aBoolean));
 
         return userRepo.save(user);
     }

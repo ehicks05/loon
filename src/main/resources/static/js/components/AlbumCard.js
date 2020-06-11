@@ -26,7 +26,7 @@ export default function AlbumCard(props) {
     const imageUrl = album.albumImageId ? '/art/' + album.albumImageId : placeholder;
 
     const contextMenuId = 'artist=' + album.albumArtist + ',album=' + album.album;
-    const isContextMenuSelected = userContext.selectedContextMenuId === contextMenuId; //todo
+    const isContextMenuSelected = userContext.selectedContextMenuId === contextMenuId;
 
     const showActionMenu = hover || isContextMenuSelected;
     const tracks = showActionMenu ?

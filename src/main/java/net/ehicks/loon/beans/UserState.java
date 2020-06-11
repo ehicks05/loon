@@ -18,8 +18,8 @@ public class UserState implements Serializable
     @JsonIgnore
     private User user;
 
-    private Long lastPlaylistId = 0L;
-    private String lastTrackId = "";
+    private Long selectedPlaylistId = 0L;
+    private String selectedTrackId = "";
     private boolean shuffle = false;
     private Boolean muted = false;
     private Double volume = 0D;
@@ -77,24 +77,24 @@ public class UserState implements Serializable
         this.user = user;
     }
 
-    public Long getLastPlaylistId()
+    public Long getSelectedPlaylistId()
     {
-        return lastPlaylistId;
+        return selectedPlaylistId;
     }
 
-    public void setLastPlaylistId(Long lastPlaylistId)
+    public void setSelectedPlaylistId(Long selectedPlaylistId)
     {
-        this.lastPlaylistId = lastPlaylistId;
+        this.selectedPlaylistId = selectedPlaylistId;
     }
 
-    public String getLastTrackId()
+    public String getSelectedTrackId()
     {
-        return lastTrackId;
+        return selectedTrackId;
     }
 
-    public void setLastTrackId(String lastTrackId)
+    public void setSelectedTrackId(String selectedTrackId)
     {
-        this.lastTrackId = lastTrackId;
+        this.selectedTrackId = selectedTrackId;
     }
 
     public boolean isShuffle()

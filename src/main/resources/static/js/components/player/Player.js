@@ -137,6 +137,63 @@ export default function Player(props) {
         band4.current.gain.value = userState.eq4Gain;
     }, [userContext])
 
+    // todo next 3 functions are duplicates, also found in PlaybackButtons.js
+    function handleTrackChange(direction) {
+        const newTrackId = getNewTrackId(direction);
+        userContext.setSelectedTrackId(newTrackId);
+    }
+
+    function getCurrentPlaylistTrackIds(selectedPlaylistId) {
+        const currentPlaylist = appContext.getPlaylistById(selectedPlaylistId);
+        if (currentPlaylist)
+            return currentPlaylist.playlistTracks.map((playlistTrack) => playlistTrack.track.id);
+        else
+            return appContext.tracks.map(track => track.id);
+    }
+
+    function getNewTrackId(input) {
+        const selectedTrackId = userContextRef.current.user.userState.selectedTrackId
+        const selectedPlaylistId = userContextRef.current.user.userState.selectedPlaylistId
+        const shuffle = userContextRef.current.user.userState.shuffle;
+
+        const currentPlaylistTrackIds = getCurrentPlaylistTrackIds(selectedPlaylistId);
+
+        const currentTrackIndex = currentPlaylistTrackIds.indexOf(selectedTrackId);
+        let newTrackId = -1;
+        if (shuffle)
+        {
+            let newPlaylistTrackIndex = Math.floor (Math.random() * currentPlaylistTrackIds.length);
+            newTrackId = currentPlaylistTrackIds[newPlaylistTrackIndex];
+            console.log("new random trackId: " + newTrackId)
+        }
+        else
+        {
+
+            let newIndex;
+            if (input === 'prev') {
+                newIndex = currentTrackIndex - 1;
+                if (newIndex < 0) {
+                    newIndex = currentPlaylistTrackIds.length - 1;
+                }
+            }
+            if (input === 'next') {
+                newIndex = currentTrackIndex + 1;
+                if (newIndex >= currentPlaylistTrackIds.length) {
+                    newIndex = 0;
+                }
+            }
+
+            newTrackId = currentPlaylistTrackIds[newIndex];
+        }
+
+        if (newTrackId === -1)
+        {
+            console.error('Unable to select a new track id.')
+        }
+
+        return newTrackId;
+    }
+
     function handlePlayerStateChange(newPlayerState, newTrackId) {
         console.log('in Player.handlePlayerStateChange(' + newPlayerState + ', ' + newTrackId + ')');
 

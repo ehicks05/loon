@@ -65,7 +65,7 @@ public class LibraryLogic
         if (musicFolder.isBlank())
             return null;
 
-        Path libraryPath = Paths.get(musicFolder);
+        Path libraryPath = Paths.get(musicFolder).toAbsolutePath();
 
         AtomicInteger folderId = new AtomicInteger();
         Node root = new Node(libraryPath, libraryPath.getRoot().toString(), String.valueOf(folderId.getAndDecrement()));
@@ -74,7 +74,7 @@ public class LibraryLogic
 
         for (Track track : trackRepo.findAll())
         {
-            Path path = Paths.get(track.getPath());
+            Path path = Paths.get(track.getPath()).toAbsolutePath();
             buildNodesFromPath(root, path, folderId, track.getId());
         }
         return root;

@@ -25,10 +25,8 @@ export default function Search() {
     useEffect(() => {
         cache.current.clearAll();
 
-        setSearchResults(appContext.tracks)
-
         return function cleanup() {
-            userContext.selectedContextMenuId = '';
+            userContext.setSelectedContextMenuId(null);
         }
     }, []);
 

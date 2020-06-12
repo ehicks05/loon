@@ -25,11 +25,8 @@ export default function Playlist(props) {
     useEffect(() => {
         cache.current.clearAll();
 
-        setPlaylistId(parsePlaylistId());
-
         return function cleanup() {
-            // this.disposer();
-            userContext.selectedContextMenuId = '';
+            userContext.setSelectedContextMenuId(null);
         }
     }, []);
 

@@ -41,7 +41,7 @@ export default function SidePanel() {
             : null;
 
         return (
-            <NavLink key={link.path} to={link.path} className={'panel-block'} activeClassName={'is-active'}>
+            <NavLink key={link.path} to={link.path} exact className={'panel-block'} activeClassName={'is-active'}>
                 <span className="panel-icon">
                     <FontAwesomeIcon icon={link.icon} aria-hidden="true"/>
                 </span>

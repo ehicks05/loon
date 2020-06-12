@@ -76,14 +76,11 @@ function getMergedFrequencyBins(dataArray, binWidth) {
     const mergedData = [];
     let i = 0;
     let size = 1;
-    while (true)
+    while (i < dataArray.length && i * binWidth <= 22000)
     {
         let bins = Math.floor(size);
 
         let linearAdjustment = getFrequencyTiltAdjustment(i * binWidth);
-
-        if (i === dataArray.length || i * binWidth > 22000)
-            break;
 
         if (i + bins > dataArray.length)
             bins = dataArray.length - i;

@@ -13,10 +13,6 @@ const sliderHandleStyle = {borderColor: 'hsl(141, 71%, 48%)'}
 export default function VolumeSlider() {
     const volumeContext = useContext(VolumeContext);
 
-    function setVolume(value) {
-        volumeContext.setVolume(value);
-    }
-
     return (
         <div style={volumeSliderStyle}>
             <SliderWithTooltip trackStyle={sliderTrackStyle}
@@ -24,7 +20,7 @@ export default function VolumeSlider() {
                                handleStyle={sliderHandleStyle}
                                value={volumeContext.volume} min={-30} max={0} step={1}
                                tipFormatter={v => `${v}dB`}
-                               onChange={setVolume} />
+                               onChange={volumeContext.setVolume} />
         </div>
     );
 }

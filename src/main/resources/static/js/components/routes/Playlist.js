@@ -34,27 +34,27 @@ export default function Playlist(props) {
     }, []);
 
     useEffect(() => {
+        function parsePlaylistId()
+        {
+            let playlistId = 0;
+            if (props.match.path === '/playlists/:id')
+                playlistId = props.match.params.id ? Number(props.match.params.id) : 0;
+            if (props.match.path === '/favorites')
+            {
+                const favorites = appContext.playlists.filter(playlist => playlist.favorites);
+                playlistId = favorites && favorites.length > 0 ? favorites[0].id : 0;
+            }
+            if (props.match.path === '/queue')
+            {
+                const queue = appContext.playlists.filter(playlist => playlist.queue);
+                playlistId = queue && queue.length > 0 ? queue[0].id : 0;
+            }
+
+            return playlistId;
+        }
+
         setPlaylistId(parsePlaylistId())
     }, [props.match]);
-
-    function parsePlaylistId()
-    {
-        let playlistId = 0;
-        if (props.match.path === '/playlists/:id')
-            playlistId = props.match.params.id ? Number(props.match.params.id) : 0;
-        if (props.match.path === '/favorites')
-        {
-            const favorites = appContext.playlists.filter(playlist => playlist.favorites);
-            playlistId = favorites && favorites.length > 0 ? favorites[0].id : 0;
-        }
-        if (props.match.path === '/queue')
-        {
-            const queue = appContext.playlists.filter(playlist => playlist.queue);
-            playlistId = queue && queue.length > 0 ? queue[0].id : 0;
-        }
-
-        return playlistId;
-    }
 
     function onDragEnd(result)
     {

@@ -23,7 +23,9 @@ export default function PlaylistBuilder(props) {
         fetch('/api/library/getLibraryTrackPaths', {method: 'GET'})
             .then(response => response.json())
             .then(json => setTreeData(json));
+    }, []);
 
+    useEffect(() => {
         let playlistId = props.match.params.id ? Number(props.match.params.id) : 0;
         if (playlistId)
         {
@@ -31,7 +33,7 @@ export default function PlaylistBuilder(props) {
             setPlaylist(playlist);
             setChecked(playlist.playlistTracks.map(playlistTrack => playlistTrack.track.id));
         }
-    }, []);
+    }, [appContext.playlists, props.match.params.id]);
 
     function save()
     {

@@ -49,7 +49,7 @@ export default function Search() {
 
         setSearchResults(tracks);
 
-    }, [debouncedSearchKey])
+    }, [appContext.tracks, debouncedSearchKey])
 
     function handleSearchInput(e)
     {

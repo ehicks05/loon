@@ -35,20 +35,19 @@ export default function Player() {
     let analyser = useRef({});
     let audioBufferSourceNode = useRef({});
 
-    function initAudio() {
-        let audio = new Audio();
-        audio.controls = false;
-        audio.autoplay = false;
-        audio.onended = function () {handleTrackChange('next');};
-        audio.ondurationchange = function () {timeContext.setDuration(audio.duration);};
-        audio.onerror = function () {console.log(audio.error);};
-        document.body.appendChild(audio);
-        return audio;
-    }
-
     useEffect(() => {
         const userState = userContext.user.userState;
 
+        function initAudio() {
+            let audio = new Audio();
+            audio.controls = false;
+            audio.autoplay = false;
+            audio.onended = function () {handleTrackChange('next');};
+            audio.ondurationchange = function () {timeContext.setDuration(audio.duration);};
+            audio.onerror = function () {console.log(audio.error);};
+            document.body.appendChild(audio);
+            return audio;
+        }
         audio.current = initAudio();
 
         audioCtx.current = new window.AudioContext();
@@ -91,21 +90,25 @@ export default function Player() {
 
         scrollIntoView(userState.selectedTrackId)
 
+        function step() {
+            if (audio)
+                timeContext.setElapsedTime(audio.current.currentTime);
+        }
         setInterval(step, 200)
+
         renderSpectrumFrame(audioCtx, analyser);
+
+        function initKeyboardShortcuts() {
+            document.body.addEventListener('keyup', function(e){
+                if (e.target.tagName === 'INPUT') return;
+
+                if(e.key === ' ') handlePlayerStateChange(playerStateRef.current === 'playing' ? 'paused' : 'playing');
+                if(e.key === 'ArrowRight') handleTrackChange('next');
+                if(e.key === 'ArrowLeft') handleTrackChange('prev');
+            });
+        }
         initKeyboardShortcuts();
-
     }, []);
-
-    function initKeyboardShortcuts() {
-        document.body.addEventListener('keyup', function(e){
-            if (e.target.tagName === 'INPUT') return;
-
-            if(e.key === ' ') handlePlayerStateChange(playerStateRef.current === 'playing' ? 'paused' : 'playing');
-            if(e.key === 'ArrowRight') handleTrackChange('next');
-            if(e.key === 'ArrowLeft') handleTrackChange('prev');
-        });
-    }
 
     const renders = useRef(0);
 
@@ -277,15 +280,7 @@ export default function Player() {
 
     function handleProgressChange(progress) {
         if (audio)
-        {
             audio.current.currentTime = progress;
-            step();
-        }
-    }
-
-    function step() {
-        if (audio)
-            timeContext.setElapsedTime(audio.current.currentTime);
     }
 
     if (!audio)

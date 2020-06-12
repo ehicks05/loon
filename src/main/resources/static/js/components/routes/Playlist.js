@@ -8,6 +8,8 @@ import {AutoSizer, CellMeasurer, CellMeasurerCache, List} from "react-virtualize
 import DraggingMediaItem from "../DraggingMediaItem";
 import {UserContext} from "../../common/UserContextProvider";
 import {AppContext} from "../../common/AppContextProvider";
+import useWindowSize from "../../common/WindowSizeHook";
+import useDebounce from "../../common/UseDebounce";
 
 const autoSizerStyle = {outline: 0};
 const listStyle = {display: 'flex', flexDirection: 'column', height: '100%', flex: '1', flexGrow: '1'};
@@ -18,7 +20,9 @@ export default function Playlist(props) {
 
     const userContext = useContext(UserContext);
     const appContext = useContext(AppContext);
-
+    const windowSize = useWindowSize();
+    const windowSizeDebounced = useDebounce(windowSize, 250);
+    
     const cache = useRef(new CellMeasurerCache({fixedWidth: true, defaultHeight: 58}));
     let listRef = useRef({});
 
@@ -29,6 +33,15 @@ export default function Playlist(props) {
             userContext.setSelectedContextMenuId(null);
         }
     }, []);
+
+    useEffect(() => {
+        if (!listRef.current.recomputeRowHeights)
+            return;
+
+        cache.current.clearAll();
+        listRef.current.recomputeRowHeights();
+        listRef.current.forceUpdateGrid();
+    }, [windowSizeDebounced.width])
 
     useEffect(() => {
         function parsePlaylistId()

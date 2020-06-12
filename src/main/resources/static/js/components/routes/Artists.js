@@ -5,7 +5,7 @@ import {ArtistCard} from "../ArtistCard";
 import {AppContext} from "../../common/AppContextProvider";
 import useWindowSize from "../../common/WindowSizeHook";
 
-export default function Artists(props) {
+export default function Artists() {
     const appContext = useContext(AppContext);
     const windowSize = useWindowSize();
 

@@ -17,7 +17,7 @@ const Artist = lazy(() => import('../routes/Artist'));
 const Search = lazy(() => import('../routes/Search'));
 const Album = lazy(() => import('../routes/Album'));
 
-export default function Routes(props) {
+export default function Routes() {
     const userContext = useContext(UserContext);
     const isAdmin = userContext.user.admin;
 

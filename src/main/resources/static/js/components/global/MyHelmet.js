@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet';
 import {UserContext} from "../../common/UserContextProvider";
 import {AppContext} from "../../common/AppContextProvider";
 
-export default function MyHelmet(props) {
+export default function MyHelmet() {
     const userContext = useContext(UserContext);
     const appContext = useContext(AppContext);
 

@@ -29,7 +29,7 @@ export default function Album(props) {
             if (o1.discNumber > o2.discNumber) return 1;
         });
 
-    const mediaItems = albumTracks.map((track, index) => {
+    const mediaItems = albumTracks.map((track) => {
             return <MediaItem key={track.id} playlistId={0} track={track}
                               trackNumber={track.discNumber + '.' + track.trackNumber} />
         }

@@ -10,7 +10,7 @@ const albumArtStyle = {height: '48px', margin: '0', paddingRight: '8px'};
 // const trackStyle = {maxWidth: textWidth, maxHeight: '48px', overflow: 'auto'};
 const artistAlbumTextStyle = {fontSize: '.875rem'};
 
-export default function TrackDescription(props) {
+export default function TrackDescription() {
     const userContext = useContext(UserContext);
     const appContext = useContext(AppContext);
     const isWidthOver768 = useMediaQuery('(min-width: 768px)');

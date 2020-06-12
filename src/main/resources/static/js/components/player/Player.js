@@ -6,7 +6,7 @@ import {VolumeContext} from "../../common/VolumeContextProvider";
 import {scaleVolume, getMaxSafeGain, scrollIntoView, getMergedFrequencyBins} from "../../common/PlayerUtil";
 import {TimeContext} from "../../common/TimeContextProvider";
 
-export default function Player(props) {
+export default function Player() {
     const userContext = useContext(UserContext);
     const userContextRef = useRef(userContext);
     const appContext = useContext(AppContext);

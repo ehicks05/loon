@@ -7,7 +7,7 @@ import {useMediaQuery} from "../../common/MediaQueryHook";
 import {UserContext} from "../../common/UserContextProvider";
 import {AppContext} from "../../common/AppContextProvider";
 
-export default function Header(props) {
+export default function Header() {
     const userContext = useContext(UserContext);
     const appContext = useContext(AppContext);
 
@@ -45,7 +45,7 @@ export default function Header(props) {
     function handleLogout()
     {
         superFetch('/logout', {method: 'POST'})
-            .then(response => location.href = '/');
+            .then(() => location.href = '/');
         return false;
     }
 

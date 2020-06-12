@@ -42,7 +42,7 @@ export default function PlaylistBuilder(props) {
         formData.append("trackIds", checked.toString());
 
         appContext.addOrModifyPlaylist(formData)
-            .then(data => setRedirectToPlaylists(true));
+            .then(() => setRedirectToPlaylists(true));
     }
 
     function onCheck(checked) {

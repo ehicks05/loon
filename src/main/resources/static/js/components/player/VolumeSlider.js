@@ -10,7 +10,7 @@ const sliderTrackStyle = { backgroundColor: 'hsl(141, 71%, 48%)', height: 4 }
 const sliderRailStyle = {backgroundColor: '#ddd'}
 const sliderHandleStyle = {borderColor: 'hsl(141, 71%, 48%)'}
 
-export default function VolumeSlider(props) {
+export default function VolumeSlider() {
     const volumeContext = useContext(VolumeContext);
 
     function setVolume(value) {

@@ -1,7 +1,6 @@
 import React, {useContext, useState} from 'react';
 import ActionMenu from "./ActionMenu";
 import {Link} from "react-router-dom";
-import {AppContext} from "../common/AppContextProvider";
 import {UserContext} from "../common/UserContextProvider";
 import useWindowSize from "../common/WindowSizeHook";
 
@@ -16,7 +15,6 @@ const getRowStyle = (draggableStyle, isDragging) => ({
 export default function MediaItem(props) {
     const [hover, setHover] = useState(false);
     const [limitTextLength, setLimitTextLength] = useState(true);
-    const appContext = useContext(AppContext);
     const userContext = useContext(UserContext);
     const windowSize = useWindowSize();
 

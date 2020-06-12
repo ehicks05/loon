@@ -1,10 +1,10 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useContext} from 'react';
 import {NavLink} from "react-router-dom";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faSearch, faMusic, faUsers, faFolderOpen, faHeart, faList, faCompactDisc} from '@fortawesome/free-solid-svg-icons'
 import {AppContext} from "../../common/AppContextProvider";
 
-export default function SidePanel(props) {
+export default function SidePanel() {
     const appContext = useContext(AppContext);
 
     const defaultLinks = [

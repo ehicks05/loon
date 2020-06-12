@@ -54,10 +54,10 @@ export default function PlaybackControls(props) {
     );
 }
 
-function ShuffleButton(props) {
+function ShuffleButton() {
     const userContext = useContext(UserContext);
 
-    function handleShuffleChange(e) {
+    function handleShuffleChange() {
         userContext.setShuffle(!userContext.user.userState.shuffle);
     }
 
@@ -71,10 +71,10 @@ function ShuffleButton(props) {
     );
 }
 
-function MuteButton(props) {
+function MuteButton() {
     const userContext = useContext(UserContext);
 
-    function handleMuteChange(e) {
+    function handleMuteChange() {
         userContext.setMuted(!userContext.user.userState.muted);
     }
 

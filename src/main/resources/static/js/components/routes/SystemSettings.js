@@ -100,7 +100,7 @@ export default function SystemSettings() {
             </section>
             <section className="section">
                 <form id="frmSystemSettings" method="post" action="">
-                    <span className={'button is-primary'} onClick={(e) => submitForm(false, false, false, false)}>Save</span>
+                    <span className={'button is-primary'} onClick={() => submitForm(false, false, false, false)}>Save</span>
                     <br /><br />
                     <div className={'columns is-multiline'}>
                         <div className={"column is-narrow"}>
@@ -132,26 +132,26 @@ export default function SystemSettings() {
                             <div className={'content'}>
                                 <div className="subtitle">Tasks</div>
                                 <div className={'buttons has-addons'} style={{marginBottom: '0'}}>
-                                    <span className="button" disabled={isTasksRunning} onClick={(e) => submitForm(false, false, false, true)} >Library Sync</span>
+                                    <button className="button" disabled={isTasksRunning} onClick={() => submitForm(false, false, false, true)} >Library Sync</button>
                                     <ProgressText taskStatus={taskStatuses.get('LibrarySyncTask')}/>
                                 </div>
                                 <div className={'buttons has-addons'} style={{marginBottom: '0', marginLeft: '16px'}}>
-                                    <span className="button" disabled={isTasksRunning} onClick={(e) => submitForm(true, false, false, false)} >Scan for Files</span>
+                                    <button className="button" disabled={isTasksRunning} onClick={() => submitForm(true, false, false, false)} >Scan for Files</button>
                                     <ProgressText taskStatus={taskStatuses.get('MusicScanner')}/>
                                 </div>
                                 <div className={'buttons has-addons'} style={{marginBottom: '0', marginLeft: '16px'}}>
-                                    <span className="button" disabled={isTasksRunning} onClick={(e) => doImageScan()} >Scan for Images</span>
+                                    <button className="button" disabled={isTasksRunning} onClick={() => doImageScan()} >Scan for Images</button>
                                     <ProgressText taskStatus={taskStatuses.get('ImageScanner')}/>
                                 </div>
                                 <div className={'buttons has-addons'} style={{marginBottom: '0', marginLeft: '16px'}}>
-                                    <span className="button" disabled={isTasksRunning} onClick={(e) => doTranscodeLibrary()} >Transcode Library</span>
+                                    <button className="button" disabled={isTasksRunning} onClick={() => doTranscodeLibrary()} >Transcode Library</button>
                                     <ProgressText taskStatus={taskStatuses.get('TranscoderTask')}/>
                                 </div>
                                 <div className={'buttons'} style={{marginBottom: '0'}}>
-                                    <span className="button is-danger" disabled={isTasksRunning} onClick={(e) => submitForm(false, true, false, false)} >Delete Tracks Without Files</span>
+                                    <button className="button is-danger" disabled={isTasksRunning} onClick={() => submitForm(false, true, false, false)} >Delete Tracks Without Files</button>
                                 </div>
                                 <div className={'buttons'} style={{marginBottom: '0'}}>
-                                    <span className="button is-danger" disabled={isTasksRunning} onClick={(e) => submitForm(false, false, true, false)} >Delete Library</span>
+                                    <button className="button is-danger" disabled={isTasksRunning} onClick={() => submitForm(false, false, true, false)} >Delete Library</button>
                                 </div>
                             </div>
                         </div>

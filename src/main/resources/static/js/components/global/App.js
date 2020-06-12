@@ -14,7 +14,7 @@ import useWindowSize from "../../common/WindowSizeHook";
 
 const SidePanel = lazy(() => import('./SidePanel'));
 
-export default function App(props) {
+export default function App() {
     const [history, setHistory] = useState({})
     const [columnHeight, setColumnHeight] = useState({})
 

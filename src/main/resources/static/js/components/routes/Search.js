@@ -8,7 +8,7 @@ import {UserContext} from "../../common/UserContextProvider";
 import useDebounce from "../../common/UseDebounce";
 import useWindowSize from "../../common/WindowSizeHook";
 
-export default function Search(props) {
+export default function Search() {
     const [searchResults, setSearchResults] = useState([]);
     const [searchKey, setSearchKey] = useState('');
 

@@ -8,9 +8,6 @@ import TrackDescription from "./TrackDescription";
 import PlaybackButtons from "./PlaybackButtons";
 import VolumeSlider from "./VolumeSlider";
 
-const shuffleButtonStyle = {marginLeft: '1.5em'};
-const muteButtonStyle = {margin:'0 .75em 0 .5em'};
-
 const levelRightStyle = {marginTop: '4px', marginRight: '8px'}
 const myLevel1Style = {zIndex: '5', position: 'static', padding: '2px 10px 0 10px'}
 const myLevel2Style = {zIndex: '5', position: 'static', padding: '6px', paddingTop: '0'}
@@ -54,6 +51,8 @@ export default function PlaybackControls(props) {
     );
 }
 
+const shuffleButtonStyle = {marginLeft: '1.5em'};
+
 function ShuffleButton() {
     const userContext = useContext(UserContext);
 
@@ -70,6 +69,8 @@ function ShuffleButton() {
         </a>
     );
 }
+
+const muteButtonStyle = {margin:'0 .75em 0 .5em'};
 
 function MuteButton() {
     const userContext = useContext(UserContext);

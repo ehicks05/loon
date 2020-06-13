@@ -20,7 +20,9 @@ Stream your music library from your browser. Support desktop or mobile device.
 * Keyboard shortcuts for playback controls.
 
 ### Known Issues / Todo
-* Fix context menu when search.jsx is showing one item. (it cuts off)
+* Consider Redux?
+* Performance, specifically with re-rendering. One example being updating the track's
+  progress bar seems to cause the entire PlaybackControls component to re-render. 
 
 ### Getting Started
 

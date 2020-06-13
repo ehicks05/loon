@@ -136,22 +136,22 @@ export default function SystemSettings() {
                                     <ProgressText taskStatus={taskStatuses.get('LibrarySyncTask')}/>
                                 </div>
                                 <div className={'buttons has-addons'} style={{marginBottom: '0', marginLeft: '16px'}}>
-                                    <button className="button" disabled={isTasksRunning} onClick={() => submitForm(true, false, false, false)} >Scan for Files</button>
+                                    <button type='button' className="button" disabled={isTasksRunning} onClick={() => submitForm(true, false, false, false)} >Scan for Files</button>
                                     <ProgressText taskStatus={taskStatuses.get('MusicScanner')}/>
                                 </div>
                                 <div className={'buttons has-addons'} style={{marginBottom: '0', marginLeft: '16px'}}>
-                                    <button className="button" disabled={isTasksRunning} onClick={() => doImageScan()} >Scan for Images</button>
+                                    <button type='button' className="button" disabled={isTasksRunning} onClick={() => doImageScan()} >Scan for Images</button>
                                     <ProgressText taskStatus={taskStatuses.get('ImageScanner')}/>
                                 </div>
                                 <div className={'buttons has-addons'} style={{marginBottom: '0', marginLeft: '16px'}}>
-                                    <button className="button" disabled={isTasksRunning} onClick={() => doTranscodeLibrary()} >Transcode Library</button>
+                                    <button type='button' className="button" disabled={isTasksRunning} onClick={() => doTranscodeLibrary()} >Transcode Library</button>
                                     <ProgressText taskStatus={taskStatuses.get('TranscoderTask')}/>
                                 </div>
                                 <div className={'buttons'} style={{marginBottom: '0'}}>
-                                    <button className="button is-danger" disabled={isTasksRunning} onClick={() => submitForm(false, true, false, false)} >Delete Tracks Without Files</button>
+                                    <button type='button' className="button is-danger" disabled={isTasksRunning} onClick={() => submitForm(false, true, false, false)} >Delete Tracks Without Files</button>
                                 </div>
                                 <div className={'buttons'} style={{marginBottom: '0'}}>
-                                    <button className="button is-danger" disabled={isTasksRunning} onClick={() => submitForm(false, false, true, false)} >Delete Library</button>
+                                    <button type='button' className="button is-danger" disabled={isTasksRunning} onClick={() => submitForm(false, false, true, false)} >Delete Library</button>
                                 </div>
                             </div>
                         </div>

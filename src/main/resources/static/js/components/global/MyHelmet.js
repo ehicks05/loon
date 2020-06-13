@@ -59,6 +59,8 @@ export default function MyHelmet() {
                         
                         .ReactVirtualized__List:focus{outline: none;}
                         
+                        .panel-block:last-child {border-radius: 0;}
+                        
                         /* SCROLLBAR */
                         ::-webkit-scrollbar {width: 8px;}
                         ::-webkit-scrollbar-track-piece:start {background: transparent url(${transparentPixel}) repeat-y !important;}

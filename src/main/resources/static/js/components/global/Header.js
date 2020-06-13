@@ -42,6 +42,24 @@ export default function Header() {
         }
     }, []);
 
+    // Fix issue where bulma dropdown doesn't close after clicking on a dropdown item
+    // source: https://github.com/jgthms/bulma/issues/2514#issuecomment-614443534
+    useEffect(() => {
+        function toggleMenu(e) {
+            let menu = e.currentTarget.querySelector(".navbar-dropdown");
+            if (e.target.parentElement.classList.contains("navbar-dropdown"))
+                menu.style.display = "none";
+            setTimeout(() => {
+                menu.style.display = "";
+                e.target.blur();
+            }, 100);
+        }
+
+        document.querySelectorAll('.navbar-item').forEach(navbarItem => {
+            navbarItem.addEventListener('click', toggleMenu);
+        })
+    }, []);
+
     function handleLogout()
     {
         superFetch('/logout', {method: 'POST'})

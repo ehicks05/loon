@@ -35,7 +35,7 @@ export default function SidePanel() {
 
     function linkToNavLink(link) {
         const currentlyPlayingIcon = link.currentlyPlaying ?
-            <span className="panel-icon has-text-success" style={{marginLeft: '.75em'}}>
+            <span className="panel-icon has-text-success" style={{marginLeft: '.75em'}} title={'Active Playlist'}>
                 <FontAwesomeIcon icon={faRedo} spin aria-hidden="true"/>
             </span>
             : null;

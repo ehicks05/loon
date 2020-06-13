@@ -61,6 +61,9 @@ export default function MyHelmet() {
                         
                         .panel-block:last-child {border-radius: 0;}
                         
+                        /* Fix issue where the last track in a list would have its action-menu cut off */
+                        .ReactVirtualized__Grid__innerScrollContainer {overflow: visible !important;}
+
                         /* SCROLLBAR */
                         ::-webkit-scrollbar {width: 8px;}
                         ::-webkit-scrollbar-track-piece:start {background: transparent url(${transparentPixel}) repeat-y !important;}
@@ -75,7 +78,6 @@ export default function MyHelmet() {
             <style>
                 {
                     `                        
-                         // table {background-color: #EEE !important}
                          .myLevel {color: #4a4a4a; background-color: #f4f4f4;}
                          #left-column {background-color: #f4f4f4;}
                          .mediaItemDiv:hover {background-color: #f4f4f4;}
@@ -116,14 +118,10 @@ export default function MyHelmet() {
                              .input {color:#eee; background-color:#333;}
                              .select select {color:#eee; background-color:#333;}
                              
-                             // checkbox tree
-                             .ignore {}
- 
+                             /* checkbox tree */
                              .rct-node-icon {color:#23d160 !important;}
                              
-                             // problematic with bulma-prefers-dark   
-                             .ignore {}
-                             
+                             /* problematic with bulma-prefers-dark */
                              .panel-icon {color: white;}
                              .panel-block:not(:last-child), .panel-tabs:not(:last-child) {border-bottom: none !important;}
                              

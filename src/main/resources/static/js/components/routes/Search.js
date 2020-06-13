@@ -26,7 +26,7 @@ export default function Search() {
         return function cleanup() {
             userContext.setSelectedContextMenuId(null);
         }
-    }, [userContext]);
+    }, []);
 
     useEffect(() => {
         cache.current.clearAll();
@@ -96,7 +96,7 @@ export default function Search() {
                 rowIndex={index}>
 
                 <div style={style}>
-                    <MediaItem key={key} playlistId={0} track={track} style={style} trackNumber={index + 1} />
+                    <MediaItem playlistId={0} track={track} trackNumber={index + 1} />
                 </div>
 
             </CellMeasurer>

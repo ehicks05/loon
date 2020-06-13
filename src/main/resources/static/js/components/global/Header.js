@@ -48,9 +48,11 @@ export default function Header() {
         function toggleMenu(e) {
             let menu = e.currentTarget.querySelector(".navbar-dropdown");
             if (e.target.parentElement.classList.contains("navbar-dropdown"))
-                menu.style.display = "none";
+                if (menu)
+                    menu.style.display = "none";
             setTimeout(() => {
-                menu.style.display = "";
+                if (menu)
+                    menu.style.display = "";
                 e.target.blur();
             }, 100);
         }

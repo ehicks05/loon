@@ -9,7 +9,7 @@
             font-size: 14px;
             font-weight: 300;
         }
-        .hero.is-success {
+        .hero {
             background: #F2F6FA;
         }
     </style>
@@ -38,7 +38,7 @@
 </head>
 
 <body>
-<section class="hero is-success is-fullheight">
+<section class="hero is-fullheight">
     <div class="hero-body">
         <div class="container has-text-centered">
             <div class="column is-4 is-offset-4">
@@ -51,27 +51,27 @@
                     <form method="POST" th:action="@{/register}" id="registerForm">
                         <div class="field">
                             <div class="control">
-                                <input class="input is-medium" type="email" placeholder="Your Email" autofocus="" id="username" name="username">
+                                <input class="input" type="email" placeholder="Your Email" autofocus="" id="username" name="username">
                             </div>
                         </div>
 
                         <div class="field">
                             <div class="control">
-                                <input class="input is-medium" type="password" placeholder="Your Password" id="password" name="password">
+                                <input class="input" type="password" placeholder="Your Password" id="password" name="password">
                             </div>
                         </div>
                         <div class="field">
                             <div class="control">
-                                <input class="input is-medium" type="password" placeholder="Confirm Your Password" id="confirm" name="confirm">
+                                <input class="input" type="password" placeholder="Confirm Your Password" id="confirm" name="confirm">
                             </div>
                         </div>
 
                         <div class="field">
                             <div class="control">
-                                <input class="input is-medium" type="text" placeholder="Your Name" id="fullname" name="fullname">
+                                <input class="input" type="text" placeholder="Your Name" id="fullname" name="fullname">
                             </div>
                         </div>
-                        <input type="button" value="Register" class="button is-block is-primary is-medium" onclick="validateRegistrationForm();" />
+                        <input type="button" value="Register" class="button is-block is-primary is-fullwidth" onclick="validateRegistrationForm();" />
                     </form>
                 </div>
             </div>

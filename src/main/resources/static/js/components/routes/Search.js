@@ -23,12 +23,10 @@ export default function Search() {
     const debouncedSearchKey = useDebounce(searchKey, 250);
 
     useEffect(() => {
-        cache.current.clearAll();
-
         return function cleanup() {
             userContext.setSelectedContextMenuId(null);
         }
-    }, []);
+    }, [userContext]);
 
     useEffect(() => {
         cache.current.clearAll();

@@ -45,7 +45,7 @@ export default function SystemSettings() {
         formData.append('librarySync', librarySync ? 'true' : 'false');
 
         updateSystemSettings(formData)
-            .then(data => {
+            .then(() => {
                 if (deleteTracksWithoutFiles || deleteLibrary)
                 {
                     const action = deleteTracksWithoutFiles ? 'deleting tracks without files' : 'deleting library';

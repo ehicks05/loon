@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 import {NavLink} from "react-router-dom";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faSearch, faMusic, faUsers, faFolderOpen, faHeart, faList, faCompactDisc, faRedo} from '@fortawesome/free-solid-svg-icons'
+import {faSearch, faMusic, faUsers, faFolderOpen, faHeart, faList, faCompactDisc, faVolumeUp} from '@fortawesome/free-solid-svg-icons'
 import {AppContext} from "../../common/AppContextProvider";
 import {UserContext} from "../../common/UserContextProvider";
 
@@ -36,7 +36,7 @@ export default function SidePanel() {
     function linkToNavLink(link) {
         const currentlyPlayingIcon = link.currentlyPlaying ?
             <span className="panel-icon has-text-success" style={{marginLeft: '.75em'}} title={'Active Playlist'}>
-                <FontAwesomeIcon icon={faRedo} spin aria-hidden="true"/>
+                <FontAwesomeIcon icon={faVolumeUp} aria-hidden="true"/>
             </span>
             : null;
 

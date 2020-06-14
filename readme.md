@@ -8,8 +8,7 @@ Stream your music library from your browser. Support desktop or mobile device.
 
 ### Feature Summary
 * Stream your music library from any browser
-* Album art support
-* Spotify api support for artist/album art
+* Display album art (and optionally get art via Spotify api)
 * Make playlists
 * Mark songs as your favorites!
 * Drag and drop re-ordering for playlists
@@ -18,6 +17,7 @@ Stream your music library from your browser. Support desktop or mobile device.
 * Transcode to various mp3 quality levels
 * Watch your music folder for changes and automatically sync
 * Keyboard shortcuts for playback controls.
+  * space = play/pause, left arrow = previous track, right arrow = next track
 
 ### Known Issues / Todo
 * Consider Redux?

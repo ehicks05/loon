@@ -21,6 +21,11 @@ export default function UserSettings()  {
         getCurrentUser();
 
         loadUsers();
+
+        document.getElementById('toggle-add-user-form').addEventListener('click', function () {
+            document.getElementById('add-user-form').classList.toggle('is-hidden');
+            document.getElementById('toggle-add-user-form').classList.toggle('is-hidden');
+        });
     }, []);
 
     // USER CALLS //
@@ -67,11 +72,7 @@ export default function UserSettings()  {
         formData.append('username', document.getElementById('username' + id).value);
         formData.append('fullName', document.getElementById('fullName' + id).value);
         formData.append('password', document.getElementById('password' + id).value);
-
-        const selectedRoles = [...document.getElementById('roles' + id).options]
-            .filter(option => option.selected)
-            .map(option => option.value);
-        formData.append('roles', selectedRoles);
+        formData.append('isAdmin', document.getElementById('isAdmin' + id).checked);
 
         updateUser(id, formData);
     }
@@ -100,8 +101,10 @@ export default function UserSettings()  {
                 <td><TextInput id={'fullName' + user.id} value={user.fullName}/></td>
                 <td><TextInput id={'password' + user.id} value={user.password}/></td>
                 <td>
-                    <Select id={'roles' + user.id} required={true} multiple={true} value={user.roles.map(role => role.role)}
-                            items={[{text: 'USER', value: 'ROLE_USER'}, {text: 'ADMIN', value: 'ROLE_ADMIN'}]} size={2}/>
+                    <label className="checkbox">
+                        <input type="checkbox" id={'isAdmin' + user.id} name={'isAdmin' + user.id} value={'ROLE_ADMIN'}
+                               defaultChecked={user.roles.map(role => role.role).includes('ROLE_ADMIN')} /> Admin
+                    </label>
                 </td>
                 <td>
                     <div className="buttons">{saveButton}{deleteButton}</div>
@@ -119,7 +122,7 @@ export default function UserSettings()  {
                 </h2>
             </section>
             <section className="section">
-                <table className="table" style={{display: 'block',overflowX: 'auto'}}>
+                <table className="table is-narrow" style={{display: 'block',overflowX: 'auto'}}>
                     <thead>
                     <tr>
                         <th>Username</th>
@@ -135,20 +138,23 @@ export default function UserSettings()  {
                 </table>
             </section>
 
-            <section className="section">
-                <h2 className="subtitle">
-                    Add User
-                </h2>
+            <section className="section" style={{maxWidth: '400px'}}>
+                <button className='button is-normal' id='toggle-add-user-form'>Add User...</button>
+                <div className='box is-hidden' id='add-user-form'>
+                    <h2 className="subtitle">
+                        Add User
+                    </h2>
 
-                <form id="frmAddUser" method="post" action="">
-                    <TextInput id="username" label="Username" value="" />
-                    <TextInput id="fullname" label="Full Name" value="" />
-                    <TextInput id="password" label="Password" value="" />
+                    <form id="frmAddUser" method="post" action="">
+                        <TextInput id="username" label="Username" value="" />
+                        <TextInput id="fullname" label="Full Name" value="" />
+                        <TextInput id="password" label="Password" value="" />
 
-                    <span className="buttons">
+                        <span className="buttons">
                             <input id="saveButton" type="button" value="Save" className="button is-primary" onClick={() => submitForm()} />
                         </span>
-                </form>
+                    </form>
+                </div>
             </section>
 
             <div id="confirmDelete" className="modal">

@@ -86,7 +86,7 @@ public class AdminUserHandler
 
     @PutMapping("/{id}")
     public User modify(@PathVariable Long id, @RequestParam String username, @RequestParam String password,
-                       @RequestParam String fullName, @RequestParam List<String> roles)
+                       @RequestParam String fullName, @RequestParam Boolean isAdmin)
     {
         User user = userRepo.findById(id).orElse(null);
         if (user == null)
@@ -101,11 +101,13 @@ public class AdminUserHandler
         if (!fullName.isBlank())
             user.setFullName(fullName);
 
-        if (!roles.isEmpty())
+        if (isAdmin != null)
         {
-            Set<Role> newRoles = roles.stream()
-                    .map(role -> roleRepo.findByRole(role))
-                    .collect(Collectors.toSet());
+            Role adminRole = roleRepo.findByRole("ROLE_ADMIN");
+            Set<Role> newRoles = user.getRoles();
+
+            if (isAdmin) newRoles.add(adminRole);
+            else newRoles.remove(adminRole);
 
             user.setRoles(newRoles);
         }

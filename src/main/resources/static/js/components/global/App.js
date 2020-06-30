@@ -37,8 +37,10 @@ export default function App() {
     }, []);
 
     useEffect(() => {
-        const footerHeight = windowSize.width <= 768 ? 103 : 54;
-        const columnHeight = '' + (windowSize.height - (52 + 23 + footerHeight)) + 'px';
+        const headerHeight = 52;
+        const progressBarHeight = 23;
+        const footerHeight = progressBarHeight + (windowSize.width <= 768 ? 111 : 62);
+        const columnHeight = '' + (windowSize.height - (headerHeight + footerHeight)) + 'px';
         console.log(`New columnHeight: ${columnHeight}... window height: ${windowSize.height} - (header height(52) + footer height(23 + ${footerHeight}))`);
         setColumnHeight(columnHeight);
     }, [windowSize])

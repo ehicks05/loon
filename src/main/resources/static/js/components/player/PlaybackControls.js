@@ -9,8 +9,9 @@ import PlaybackButtons from "./PlaybackButtons";
 import VolumeSlider from "./VolumeSlider";
 
 const levelRightStyle = {marginTop: '4px', marginRight: '8px'}
-const myLevel1Style = {zIndex: '5', position: 'static', padding: '2px 10px 0 10px'}
-const myLevel2Style = {zIndex: '5', position: 'static', padding: '6px', paddingTop: '0'}
+const levelRightStyleMobile = {marginTop: '4px', marginRight: '0'}
+const myLevel1Style = {zIndex: '5', position: 'static', padding: '8px', paddingBottom: '0'}
+const myLevel2Style = {zIndex: '5', position: 'static', padding: '8px', paddingTop: '0'}
 
 export default function PlaybackControls(props) {
     const isWidthOver768 = useMediaQuery('(min-width: 768px)');
@@ -24,7 +25,7 @@ export default function PlaybackControls(props) {
         </div>;
 
     const levelRight =
-        <div className="level-right" style={levelRightStyle}>
+        <div className="level-right" style={isWidthOver768 ? levelRightStyle : levelRightStyleMobile}>
             <div className="level-item">
                 {!isWidthOver768 && playbackButtons}
                 <ShuffleButton />

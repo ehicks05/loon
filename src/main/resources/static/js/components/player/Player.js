@@ -94,7 +94,7 @@ export default function Player() {
             if (audio)
                 timeContext.setElapsedTime(audio.current.currentTime);
         }
-        setInterval(step, 200)
+        setInterval(step, 500)
 
         renderSpectrumFrame(audioCtx, analyser);
 

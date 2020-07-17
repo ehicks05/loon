@@ -19,11 +19,7 @@ export default function Albums(props) {
 
     let albums = [...new Set(tracks.map(track => {return JSON.stringify({albumArtist: track.albumArtist, album: track.album, albumImageId: track.albumThumbnailId})}))];
     albums = albums.map(album => JSON.parse(album));
-    albums = albums.sort((a1, a2) => {
-        if (a1.albumArtist.toLowerCase() < a2.albumArtist.toLowerCase()) return -1;
-        if (a1.albumArtist.toLowerCase() > a2.albumArtist.toLowerCase()) return 1;
-        return 0;
-    });
+    albums = albums.sort(sortByAlbumArtistThenAlbum);
 
     const albumItems = albums.map((album) => {
         // const album = JSON.parse(albumJson);
@@ -49,4 +45,13 @@ export default function Albums(props) {
             </div>
         </div>
     );
+}
+
+function sortByAlbumArtistThenAlbum(a1, a2)
+{
+    if (a1.albumArtist.toLowerCase() < a2.albumArtist.toLowerCase()) return -1;
+    if (a1.albumArtist.toLowerCase() > a2.albumArtist.toLowerCase()) return 1;
+    if (a1.album.toLowerCase() < a2.album.toLowerCase()) return -1;
+    if (a1.album.toLowerCase() > a2.album.toLowerCase()) return 1;
+    return 0;
 }

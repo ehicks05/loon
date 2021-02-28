@@ -1,16 +1,10 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext} from 'react';
 import {AppContext} from "../../common/AppContextProvider";
 import {UserContext} from "../../common/UserContextProvider";
 
 export default function About() {
-    const [versionInfo, setVersionInfo] = useState({});
-
     const appContext = useContext(AppContext);
     const userContext = useContext(UserContext);
-
-    useEffect(() => {
-        loadVersionInfo();
-    }, [])
 
     function getSelectedTrack() {
         return appContext.tracks && typeof appContext.tracks === 'object' ?
@@ -19,44 +13,15 @@ export default function About() {
 
     const selectedTrack = getSelectedTrack();
 
-    function loadVersionInfo()
-    {
-        return fetch('/api/commitId', {method: 'GET'})
-            .then(response => response.json())
-            .then(data => setVersionInfo(data));
-    }
-
-    const versionInfoRows = Object.entries(versionInfo).map(value =>
-        <tr key={value[0]}>
-            <td>{value[0]}</td>
-            <td>{value[1]}</td>
-        </tr>
-    );
-
     const selectedTrackInfoRows = selectedTrack ? Object.entries(selectedTrack).map(value =>
             <tr key={value[0]}>
                 <td>{value[0]}</td>
                 <td>{value[1]}</td>
             </tr>
-        )
-        :
-        null;
+        ) : null;
 
     return (
         <section className={'section'}>
-            <div className={'subtitle'}>Git Info</div>
-            <table className={'table is-narrow'}>
-                <thead>
-                <tr>
-                    <th>Field</th>
-                    <th>Value</th>
-                </tr>
-                </thead>
-                <tbody>
-                    {versionInfoRows}
-                </tbody>
-            </table>
-
             <div className={'subtitle'}>Selected Track Info</div>
             <table className={'table is-narrow'}>
                 <thead>

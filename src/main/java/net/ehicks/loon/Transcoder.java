@@ -5,12 +5,11 @@ import net.ehicks.loon.beans.Track;
 import net.ehicks.loon.repos.LoonSystemRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
-import ws.schild.jave.AudioAttributes;
 import ws.schild.jave.Encoder;
-import ws.schild.jave.EncodingAttributes;
 import ws.schild.jave.MultimediaObject;
+import ws.schild.jave.encode.AudioAttributes;
+import ws.schild.jave.encode.EncodingAttributes;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -23,17 +22,11 @@ import java.nio.file.StandardCopyOption;
 public class Transcoder
 {
     private static final Logger log = LoggerFactory.getLogger(Transcoder.class);
-    private LoonSystemRepository loonSystemRepo;
+    private final LoonSystemRepository loonSystemRepo;
 
     public Transcoder(LoonSystemRepository loonSystemRepo)
     {
         this.loonSystemRepo = loonSystemRepo;
-    }
-
-    @Bean
-    public Encoder javeEncoder()
-    {
-        return new Encoder();
     }
 
     public void transcode(Track track, int quality)
@@ -58,7 +51,7 @@ public class Transcoder
             Files.createDirectories(Paths.get(loonSystem.getTranscodeFolder(), String.valueOf(quality)));
 
             long start = System.currentTimeMillis();
-            javeEncoder().encode(new MultimediaObject(source.toFile()), temp.toFile(), getEncodingAttributes(quality));
+            new Encoder().encode(new MultimediaObject(source.toFile()), temp.toFile(), getEncodingAttributes(quality));
 
             Files.move(temp, target, StandardCopyOption.ATOMIC_MOVE);
 
@@ -85,7 +78,7 @@ public class Transcoder
         audio.setQuality(quality);
 
         EncodingAttributes attrs = new EncodingAttributes();
-        attrs.setFormat("mp3");
+        attrs.setOutputFormat("mp3");
         attrs.setAudioAttributes(audio);
         return attrs;
     }

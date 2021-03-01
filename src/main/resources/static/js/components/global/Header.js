@@ -112,6 +112,10 @@ export default function Header() {
                     <NavLink to='/queue' activeClassName='is-active' className="navbar-item">Queue</NavLink>
                     <NavLink to='/artists' activeClassName='is-active' className="navbar-item">Artists</NavLink>
                     <NavLink to='/albums' activeClassName='is-active' className="navbar-item">Albums</NavLink>
+                    {playlists.length === 0 && <NavLink to='/playlists' activeClassName='is-active' className="navbar-item">
+                        Playlists
+                    </NavLink>}
+                    {playlists.length !== 0 &&
                     <div className={"navbar-item has-dropdown is-hoverable"}>
                         <NavLink to='/playlists' activeClassName='is-active' className="navbar-link">
                             Playlists
@@ -119,7 +123,7 @@ export default function Header() {
                         <div className="navbar-dropdown">
                             {playlists}
                         </div>
-                    </div>
+                    </div>}
 
                     {
                         isAdmin &&

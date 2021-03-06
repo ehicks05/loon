@@ -47,6 +47,11 @@ springBoot {
     buildInfo()
 }
 
+node {
+    download = true
+    version = "12.18.3"
+}
+
 tasks.named('npmInstall') { dependsOn(npmSetup) }
 tasks.named('npm_run_build') { dependsOn(npmInstall) }
 tasks.named('compileJava') { dependsOn('npm_run_build') }

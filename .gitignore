@@ -8,3 +8,4 @@ package-lock.json
 src/main/resources/static/js/dist/
 static/
 transcode/
+src/main/resources/application-dev.properties

@@ -28,11 +28,11 @@ public class Seeder
     private LoonSystemRepository loonSystemRepo;
     private UserLogic userLogic;
 
-    @Value("${seeder.default.username}")
-    private String defaultUsername;
+    @Value("${admin_username}")
+    private String adminUsername;
 
-    @Value("${seeder.default.password}")
-    private String defaultPassword;
+    @Value("${admin_password}")
+    private String adminPassword;
 
     public Seeder(UserRepository userRepo, RoleRepository roleRepo, PasswordEncoder passwordEncoder,
                   LoonSystemRepository loonSystemRepo, UserLogic userLogic)
@@ -70,7 +70,7 @@ public class Seeder
             return;
 
         List<List<String>> defaultUsers = Arrays.asList(
-                Arrays.asList(defaultUsername, defaultPassword, "Admin")
+                Arrays.asList(adminUsername, adminPassword, "Admin")
         );
 
         defaultUsers.forEach((userData) -> {

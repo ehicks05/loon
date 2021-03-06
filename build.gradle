@@ -47,6 +47,7 @@ springBoot {
     buildInfo()
 }
 
+tasks.named('npmInstall') { dependsOn(npmSetup) }
 tasks.named('npm_run_build') { dependsOn(npmInstall) }
 tasks.named('compileJava') { dependsOn('npm_run_build') }
 

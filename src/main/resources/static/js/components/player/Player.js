@@ -6,7 +6,7 @@ import {VolumeContext} from "../../common/VolumeContextProvider";
 import {scaleVolume, getMaxSafeGain, scrollIntoView, getMergedFrequencyBins} from "../../common/PlayerUtil";
 import {TimeContext} from "../../common/TimeContextProvider";
 
-export default function Player() {
+const Player = () => {
     const userContext = useContext(UserContext);
     const userContextRef = useRef(userContext);
     const appContext = useContext(AppContext);
@@ -36,7 +36,7 @@ export default function Player() {
     let audioBufferSourceNode = useRef({});
 
     useEffect(() => {
-        const userState = userContext.user.userState;
+        const userState = userContextRef.current.user.userState;
 
         function initAudio() {
             let audio = new Audio();
@@ -118,7 +118,7 @@ export default function Player() {
             return;
         }
         
-        handlePlayerStateChange(null, userContext.user.userState.selectedTrackId);
+        handlePlayerStateChange(null, userContextRef.current.user.userState.selectedTrackId);
     }, [userContext.user.userState.selectedTrackId]);
     useEffect(() => {
         if (gainNode.current)
@@ -128,7 +128,7 @@ export default function Player() {
     useEffect(() => {
         if (!audio.current) return;
 
-        const userState = userContext.user.userState;
+        const userState = userContextRef.current.user.userState;
         audio.current.muted = userState.muted;
         band1.current.frequency.value = userState.eq1Frequency;
         band1.current.gain.value = userState.eq1Gain;
@@ -143,7 +143,7 @@ export default function Player() {
     // todo next 3 functions are duplicates, also found in PlaybackButtons.js
     function handleTrackChange(direction) {
         const newTrackId = getNewTrackId(direction);
-        userContext.setSelectedTrackId(newTrackId);
+        userContextRef.current.setSelectedTrackId(newTrackId);
     }
 
     function getCurrentPlaylistTrackIds(selectedPlaylistId) {
@@ -221,7 +221,7 @@ export default function Player() {
             timeContext.setElapsedTime(0);
 
             if (!newTrackId)
-                newTrackId = userContext.user.userState.selectedTrackId;
+                newTrackId = userContextRef.current.user.userState.selectedTrackId;
 
             let track = appContext.tracks.find(track => track.id === newTrackId);
             if (!track)
@@ -344,3 +344,5 @@ export default function Player() {
         }
     }
 }
+
+export default Player;

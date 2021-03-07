@@ -2,6 +2,7 @@ import React, {lazy, useContext, useEffect, useState} from 'react';
 import {Router} from 'react-router-dom'
 import {createBrowserHistory} from 'history'
 import 'bulma/css/bulma.min.css'
+import { Audio } from "@agney/react-loading";
 
 import Header from "./Header";
 import MyHelmet from "./MyHelmet";
@@ -50,7 +51,7 @@ export default function App() {
         return (
             <>
                 <MyHelmet/>
-                <div className={"pageloader is-active is-success"}>Loading...</div>
+                <div style={{width: '100vw', height: '100vh'}}><Audio width="50" /></div>
             </>
         );
     }

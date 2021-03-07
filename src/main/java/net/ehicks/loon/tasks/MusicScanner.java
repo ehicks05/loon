@@ -63,7 +63,7 @@ public class MusicScanner extends Task
      * */
     public void performTask(Map<String, Object> options)
     {
-        java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(Level.WARNING);
+        AudioFileIO.logger.setLevel(Level.WARNING);
 
         try
         {

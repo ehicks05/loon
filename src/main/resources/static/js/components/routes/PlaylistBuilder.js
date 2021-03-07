@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {Redirect} from 'react-router-dom'
 
-import {FaCheckSquare, FaPlusSquare, FaChevronRight, FaChevronDown, FaMinusSquare, FaSquare, FaFolder, FaFolderOpen, FaFile} from 'react-icons/fa'
+import {FaRegCheckSquare, FaRegPlusSquare, FaChevronRight, FaChevronDown, FaRegMinusSquare, FaRegSquare, FaRegFolder, FaRegFolderOpen, FaRegFile} from 'react-icons/fa'
 
 import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
@@ -83,16 +83,16 @@ export default function PlaylistBuilder(props) {
                     onCheck={onCheck}
                     onExpand={onExpand}
                     icons={{
-                        check: <FaCheckSquare className='rct-icon rct-icon-check' />,
-                        uncheck: <FaSquare className='rct-icon rct-icon-uncheck' />,
-                        halfCheck: <FaCheckSquare className='rct-icon rct-icon-half-check' />,
+                        check: <FaRegCheckSquare className='rct-icon rct-icon-check' />,
+                        uncheck: <FaRegSquare className='rct-icon rct-icon-uncheck' />,
+                        halfCheck: <FaRegCheckSquare className='rct-icon rct-icon-half-check' />,
                         expandClose: <FaChevronRight className='rct-icon rct-icon-expand-close' />,
                         expandOpen: <FaChevronDown className='rct-icon rct-icon-expand-open' />,
-                        expandAll: <FaPlusSquare className='rct-icon rct-icon-expand-all' />,
-                        collapseAll: <FaMinusSquare className='rct-icon rct-icon-collapse-all' />,
-                        parentClose: <FaFolder className='rct-icon rct-icon-parent-close' />,
-                        parentOpen: <FaFolderOpen className='rct-icon rct-icon-parent-open' />,
-                        leaf: <FaFile className='rct-icon rct-icon-leaf-close' />
+                        expandAll: <FaRegPlusSquare className='rct-icon rct-icon-expand-all' />,
+                        collapseAll: <FaRegMinusSquare className='rct-icon rct-icon-collapse-all' />,
+                        parentClose: <FaRegFolder className='rct-icon rct-icon-parent-close' />,
+                        parentOpen: <FaRegFolderOpen className='rct-icon rct-icon-parent-open' />,
+                        leaf: <FaRegFile className='rct-icon rct-icon-leaf-close' />
                     }}
                 />
 

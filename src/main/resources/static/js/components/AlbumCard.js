@@ -23,7 +23,7 @@ export default function AlbumCard(props) {
     const displayArtist = album.albumArtist.length > 15 ? album.albumArtist.substring(0, 32) : album.albumArtist;
     const displayAlbum = album.album.length > 15 ? album.album.substring(0, 32) : album.album;
     const placeholder = 'https://via.placeholder.com/600x600.png?text=placeholder';
-    const imageUrl = album.albumImageId ? '/art/' + album.albumImageId : placeholder;
+    const imageUrl = album.albumImageId ? `https://res.cloudinary.com/ehicks/image/upload/${album.albumImageId}` : placeholder;
 
     const contextMenuId = 'artist=' + album.albumArtist + ',album=' + album.album;
     const isContextMenuSelected = userContext.selectedContextMenuId === contextMenuId;

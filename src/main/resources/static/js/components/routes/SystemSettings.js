@@ -123,11 +123,6 @@ export default function SystemSettings() {
                             <TextInput id="transcodeFolder" label="Transcode Folder" value={settings.transcodeFolder} />
                             <TextInput id="dataFolder" label="Data Folder" value={settings.dataFolder} />
                         </div>
-                        <div className={"column is-narrow"}>
-                            <div className="subtitle">API Keys</div>
-                            <TextInput id="spotifyClientId" label="Spotify Client Id" value={settings.spotifyClientId} size={50} />
-                            <TextInput id="spotifyClientSecret" label="Spotify Client Secret" value={settings.spotifyClientSecret} size={50} />
-                        </div>
                         <div className="column">
                             <div className={'content'}>
                                 <div className="subtitle">Tasks</div>

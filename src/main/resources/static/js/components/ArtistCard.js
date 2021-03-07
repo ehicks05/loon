@@ -23,7 +23,7 @@ export function ArtistCard(props) {
 
     const artist = props.artist;
     const placeholder = 'https://via.placeholder.com/300x300.png?text=placeholder';
-    const imageUrl = artist.artistImageId ? '/art/' + artist.artistImageId : placeholder;
+    const imageUrl = artist.artistImageId ? `https://res.cloudinary.com/ehicks/image/upload/${artist.artistImageId}` : placeholder;
 
     const contextMenuId = 'artist=' + artist.artistName;
     const isContextMenuSelected = userContext.selectedContextMenuId === contextMenuId;

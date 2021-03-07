@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import static net.ehicks.loon.tasks.ImageUtil.getThumb;
@@ -67,6 +68,7 @@ public class ImageScanner extends Task
 
     public void performTask(Map<String, Object> options)
     {
+        java.util.logging.Logger.getLogger("org.jaudiotagger").setLevel(Level.WARNING);
         imagesAdded.set(0);
 
         try
@@ -129,7 +131,7 @@ public class ImageScanner extends Task
             track.setArtistThumbnailId(thumbFileId);
             imagesAdded.incrementAndGet();
         }
-        if (bytes.length != 0 || thumbBytes != null)
+        if (bytes != null)
             trackRepo.save(track);
     }
 

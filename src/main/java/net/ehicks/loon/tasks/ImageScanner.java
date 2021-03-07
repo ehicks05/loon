@@ -177,7 +177,7 @@ public class ImageScanner extends Task
             track.setAlbumThumbnailId(thumbFileId);
             imagesAdded.incrementAndGet();
         }
-        if (bytes != null || thumbBytes != null)
+        if (bytes != null)
             trackRepo.save(track);
     }
 

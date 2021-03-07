@@ -19,6 +19,7 @@ public class ImageUtil
     private static final String outputFormat = "png";
 
     public static byte[] getThumb(byte[] original) {
+        if (original == null) return null;
         try {
             ByteArrayOutputStream thumbOs = new ByteArrayOutputStream();
             Thumbnails.of(new ByteArrayInputStream(original)).size(thumbSize, thumbSize)

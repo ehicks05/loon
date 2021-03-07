@@ -118,7 +118,7 @@ public class ImageScanner extends Task
 
         // upload
         String outputName = getSafeName("art", track.getArtist(), track.getArtist());
-        if (bytes.length != 0) {
+        if (bytes != null) {
             String fileId = cloudinaryService.upload(bytes, outputName);
             track.setArtistImageId(fileId);
             imagesAdded.incrementAndGet();

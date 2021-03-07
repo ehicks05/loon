@@ -40,30 +40,6 @@ public class Startup
             return;
         }
 
-        createSystemFolders(loonSystem);
-
         directoryWatcher.watch();
-    }
-
-    private void createSystemFolders(LoonSystem loonSystem)
-    {
-        List<Path> paths = Arrays.asList(
-                Paths.get(loonSystem.getDataFolder(), "art").toAbsolutePath(),
-                Paths.get(loonSystem.getTranscodeFolder()).toAbsolutePath()
-        );
-
-        paths.forEach(path -> {
-            if (!path.toFile().exists())
-            {
-                try
-                {
-                    Files.createDirectories(path);
-                }
-                catch (Exception e)
-                {
-                    log.info(e.getMessage(), e);
-                }
-            }
-        });
     }
 }

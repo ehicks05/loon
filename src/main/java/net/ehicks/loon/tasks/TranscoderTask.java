@@ -1,6 +1,7 @@
 package net.ehicks.loon.tasks;
 
 import net.ehicks.loon.Transcoder;
+import net.ehicks.loon.beans.LoonSystem;
 import net.ehicks.loon.beans.Track;
 import net.ehicks.loon.repos.LoonSystemRepository;
 import net.ehicks.loon.repos.TrackRepository;
@@ -8,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -40,8 +43,21 @@ public class TranscoderTask extends Task
 
     public void performTask(Map<String, Object> options)
     {
+        LoonSystem loonSystem = loonSystemRepo.findById(1L).orElse(null);
+        if (loonSystem == null)
+            return;
+
+        try
+        {
+            Files.createDirectories(Paths.get(loonSystem.getTranscodeFolder()).toAbsolutePath());
+        }
+        catch (Exception e)
+        {
+            log.info(e.getMessage(), e);
+        }
+
         List<Track> tracks = trackRepo.findAll();
-        int quality = Integer.valueOf(loonSystemRepo.findById(1L).orElse(null).getTranscodeQuality());
+        int quality = Integer.parseInt(loonSystem.getTranscodeQuality());
 
         try
         {

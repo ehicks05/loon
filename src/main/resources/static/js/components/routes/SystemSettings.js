@@ -121,7 +121,6 @@ export default function SystemSettings() {
                             <div className="subtitle">Locations</div>
                             <TextInput id="musicFolder" label="Music Folder" value={settings.musicFolder} />
                             <TextInput id="transcodeFolder" label="Transcode Folder" value={settings.transcodeFolder} />
-                            <TextInput id="dataFolder" label="Data Folder" value={settings.dataFolder} />
                         </div>
                         <div className="column">
                             <div className={'content'}>

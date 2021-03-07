@@ -16,10 +16,6 @@ public class LoonSystem implements Serializable
     private String logonMessage = "Welcome to Loon.";
     private String musicFolder = "";
     private String transcodeFolder = "transcode";
-    private String dataFolder = "static";
-    private String lastFmApiKey = "";
-    private String spotifyClientId = "";
-    private String spotifyClientSecret = "";
     private boolean registrationEnabled = false;
     private boolean directoryWatcherEnabled = false;
     private String transcodeQuality = "4";
@@ -97,42 +93,6 @@ public class LoonSystem implements Serializable
     public void setTranscodeFolder(String transcodeFolder)
     {
         this.transcodeFolder = transcodeFolder;
-    }
-
-    public String getDataFolder()
-    {
-        return dataFolder;
-    }
-
-    public void setDataFolder(String dataFolder)
-    {
-        this.dataFolder = dataFolder;
-    }
-
-    public String getLastFmApiKey()
-    {
-        return lastFmApiKey;
-    }
-
-    public void setLastFmApiKey(String lastFmApiKey)
-    {
-        this.lastFmApiKey = lastFmApiKey;
-    }
-
-    public String getSpotifyClientId() {
-        return spotifyClientId;
-    }
-
-    public void setSpotifyClientId(String spotifyClientId) {
-        this.spotifyClientId = spotifyClientId;
-    }
-
-    public String getSpotifyClientSecret() {
-        return spotifyClientSecret;
-    }
-
-    public void setSpotifyClientSecret(String spotifyClientSecret) {
-        this.spotifyClientSecret = spotifyClientSecret;
     }
 
     public boolean isRegistrationEnabled()

@@ -1,6 +1,5 @@
 const path = require('path');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 module.exports = {
     entry: './src/main/resources/static/js/dev/index.js',
@@ -40,16 +39,9 @@ module.exports = {
             }
         ]
     },
-    optimization: {
-        splitChunks: {
-            chunks: 'all',
-            automaticNameDelimiter: "-",
-        }
-    },
     plugins: [
         new BundleAnalyzerPlugin({analyzerMode: 'disabled', openAnalyzer: false}),
         // new BundleAnalyzerPlugin({analyzerMode: 'static', openAnalyzer: false}),
-        new HardSourceWebpackPlugin()
     ],
     resolve: {
         extensions: ['.wasm', '.mjs', '.js', '.jsx', '.json']

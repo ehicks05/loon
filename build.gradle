@@ -8,8 +8,8 @@ buildscript {
 }
 
 plugins {
-    id "com.github.ben-manes.versions" version "0.36.0"
-    id "com.github.node-gradle.node" version "3.0.0"
+    id "com.github.ben-manes.versions" version "0.38.0"
+    id "com.github.node-gradle.node" version "3.0.1"
 }
 
 apply plugin: 'java'
@@ -31,6 +31,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
+    implementation 'com.cloudinary:cloudinary-http44:1.29.0'
     implementation 'com.github.goxr3plus:jaudiotagger:V2.2.6'
     implementation 'net.coobird:thumbnailator:0.4.13'
     implementation 'ws.schild:jave-core:3.0.1'

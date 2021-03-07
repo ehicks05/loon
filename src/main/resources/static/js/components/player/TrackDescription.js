@@ -29,7 +29,7 @@ export default function TrackDescription() {
 
     const textWidth = isWidthOver768 ? 'calc(100vw - 408px)' : '100%';
 
-    const placeholder = 'https://via.placeholder.com/48x48.png?text=placeholder';
+    const placeholder = `https://images.unsplash.com/photo-1609667083964-f3dbecb7e7a5?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=48&q=80`;
     const imageUrl = (selectedTrack && selectedTrack.albumThumbnailId) ? `https://res.cloudinary.com/ehicks/image/upload/${selectedTrack.albumThumbnailId}` : placeholder;
 
     // todo: does this need to be lazyload?

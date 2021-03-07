@@ -2,8 +2,7 @@ import React, {useContext} from "react";
 import {UserContext} from "../../common/UserContextProvider";
 import {AppContext} from "../../common/AppContextProvider";
 import {useMediaQuery} from "../../common/MediaQueryHook";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faPause, faPlay, faStepBackward, faStepForward} from "@fortawesome/free-solid-svg-icons";
+import {FaPause, FaPlay, FaStepBackward, FaStepForward} from "react-icons/fa";
 
 const prevButtonStyle = {height: '36px', width: '36px'};
 const pauseButtonStyle = {height: '45px', width: '45px'};
@@ -73,7 +72,7 @@ export default function PlaybackButtons(props) {
     const prevButton =
         <a className="button" id="prevBtn" style={prevButtonStyle} onClick={(e) => handleTrackChange(e, 'prev')}>
             <span className="icon">
-                <FontAwesomeIcon icon={faStepBackward}/>
+                <FaStepBackward />
             </span>
         </a>;
 
@@ -81,14 +80,14 @@ export default function PlaybackButtons(props) {
         <a className="button is-medium" id="pauseBtn" style={pauseButtonStyle}
            onClick={(e) => handlePlayerStateChange(e, props.playerState === 'playing' ? 'paused' : 'playing')}>
             <span className="icon">
-                <FontAwesomeIcon icon={props.playerState === 'playing' ? faPause : faPlay}/>
+                {props.playerState === 'playing' ? <FaPause /> : <FaPlay/>}
             </span>
         </a>;
 
     const nextButton =
         <a className="button" id="nextBtn" style={nextButtonStyle} onClick={(e) => handleTrackChange(e, 'next')}>
             <span className="icon">
-                <FontAwesomeIcon icon={faStepForward}/>
+                <FaStepForward />
             </span>
         </a>;
 

@@ -1,5 +1,4 @@
 import React from 'react';
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 export default function TextInput(props) {
 
@@ -39,7 +38,7 @@ export default function TextInput(props) {
 
     const leftIconEl = leftIcon ? (
         <span className="icon is-small is-left">
-            <FontAwesomeIcon icon={leftIcon} aria-hidden="true" />
+            {leftIcon}
         </span>
     ) : '';
 

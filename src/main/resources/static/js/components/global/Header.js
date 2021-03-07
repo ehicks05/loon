@@ -1,7 +1,6 @@
 import React, {useContext, useEffect} from 'react';
 import {NavLink} from "react-router-dom";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faServer, faUser, faSignOutAlt, faSlidersH, faMusic, faUserCog, faInfoCircle} from '@fortawesome/free-solid-svg-icons'
+import {FaServer, FaUser, FaSignOutAlt, FaSlidersH, FaMusic, FaUserCog, FaInfoCircle} from 'react-icons/fa'
 import superFetch from "../../common/SuperFetch";
 import {useMediaQuery} from "../../common/MediaQueryHook";
 import {UserContext} from "../../common/UserContextProvider";
@@ -74,7 +73,7 @@ export default function Header() {
         return (
             <NavLink key={playlist.id} to={'/playlists/' + playlist.id} className={'navbar-item'} activeClassName={'is-active'}>
                 <span className="panel-icon">
-                    <FontAwesomeIcon icon={faMusic} aria-hidden="true"/>
+                    <FaMusic aria-hidden="true"/>
                 </span>
                 {playlist.name}
             </NavLink>
@@ -132,19 +131,19 @@ export default function Header() {
                             <div className="navbar-dropdown">
                                 <NavLink to={'/admin/systemSettings'} className="navbar-item" activeClassName='is-active'>
                                         <span className="panel-icon">
-                                            <FontAwesomeIcon icon={faServer}/>
+                                            <FaServer />
                                         </span>
                                     Manage System
                                 </NavLink>
                                 <NavLink to={'/admin/users'} className="navbar-item" activeClassName='is-active'>
                                         <span className="panel-icon">
-                                            <FontAwesomeIcon icon={faUser}/>
+                                            <FaUser />
                                         </span>
                                     Manage Users
                                 </NavLink>
                                 <NavLink to={'/admin/about'} className="navbar-item" activeClassName='is-active'>
                                         <span className="panel-icon">
-                                            <FontAwesomeIcon icon={faInfoCircle}/>
+                                            <FaInfoCircle />
                                         </span>
                                     About
                                 </NavLink>
@@ -157,13 +156,13 @@ export default function Header() {
                         <div className="navbar-dropdown">
                             <NavLink to={'/settings/general'} className="navbar-item" activeClassName='is-active'>
                                     <span className="panel-icon">
-                                        <FontAwesomeIcon icon={faUserCog} />
+                                        <FaUserCog />
                                     </span>
                                 General
                             </NavLink>
                             <NavLink to={'/settings/eq'} className="navbar-item" activeClassName='is-active'>
                                     <span className="panel-icon">
-                                        <FontAwesomeIcon icon={faSlidersH} rotation={90}/>
+                                        <FaSlidersH rotation={90}/>
                                     </span>
                                 Equalizer
                             </NavLink>
@@ -174,7 +173,7 @@ export default function Header() {
                     <a onClick={handleLogout} href={null} className="navbar-item">
                         <span style={{marginRight: '4px'}}>Sign Out</span>
                         <span className="icon is-medium">
-                                <FontAwesomeIcon icon={faSignOutAlt}/>
+                                <FaSignOutAlt />
                             </span>
                     </a>
                 </div>

@@ -1,7 +1,5 @@
 import React, {useContext} from 'react';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faEllipsisH, faHeart as fasHeart, faList, faMinus, faPlus, faSync} from '@fortawesome/free-solid-svg-icons'
-import {faHeart as farHeart} from '@fortawesome/free-regular-svg-icons'
+import {FaEllipsisH, FaHeart, FaRegHeart, FaList, FaMinus, FaPlus, FaSync} from 'react-icons/fa'
 import {UserContext} from "../common/UserContextProvider";
 import {AppContext} from "../common/AppContextProvider";
 import useWindowSize from "../common/WindowSizeHook";
@@ -87,7 +85,7 @@ export default function ActionMenu(props) {
                 <div className="control">
                     <a className="button is-static is-small">
                         <span className="icon is-small">
-                            <FontAwesomeIcon icon={faPlus}/>
+                            <FaPlus />
                         </span>
                     </a>
                 </div>
@@ -113,7 +111,7 @@ export default function ActionMenu(props) {
                 <div className="control">
                     <a className="button is-static is-small">
                         <span className="icon is-small">
-                            <FontAwesomeIcon icon={faMinus}/>
+                            <FaMinus />
                         </span>
                     </a>
                 </div>
@@ -143,7 +141,7 @@ export default function ActionMenu(props) {
                 <button className="button is-small" aria-haspopup="true" id={contextMenuId + 'Button'}
                         onClick={toggleDropdown}>
                         <span className="icon is-small">
-                            <FontAwesomeIcon icon={faEllipsisH}/>
+                            <FaEllipsisH />
                         </span>
                 </button>
             </div>
@@ -152,7 +150,7 @@ export default function ActionMenu(props) {
                     <a className="dropdown-item" onClick={() => handleToggleTracksInPlaylist(favoritesPlaylist.id, trackIds, isFavorite ? 'remove' : 'add')}>
                         <p>
                             <span className={'icon has-text-success'}>
-                                <FontAwesomeIcon icon={isFavorite ? fasHeart : farHeart}/>
+                                {isFavorite ? <FaHeart /> : <FaRegHeart />}
                             </span>
                             {isFavorite ? 'Remove from ' : 'Add to '} Favorites
                         </p>
@@ -160,7 +158,7 @@ export default function ActionMenu(props) {
                     <a className="dropdown-item" onClick={() => handleToggleTracksInPlaylist(queuePlaylist.id, trackIds, isQueued ? 'remove' : 'add')}>
                         <p>
                             <span className={'icon ' + (isQueued ? 'has-text-success' : 'has-text-grey')}>
-                                <FontAwesomeIcon icon={faList}/>
+                                <FaList />
                             </span>
                             {isQueued ? 'Remove from ' : 'Add to '} Queue
                         </p>
@@ -169,7 +167,7 @@ export default function ActionMenu(props) {
                        disabled={equalsQueue}>
                         <p>
                             <span className={'icon ' + (equalsQueue ? 'has-text-success' : 'has-text-grey')}>
-                                <FontAwesomeIcon icon={faSync}/>
+                                <FaSync />
                             </span>
                             Replace Queue
                         </p>

@@ -1,7 +1,6 @@
 import React, {lazy, useContext, useEffect, useState} from 'react';
 import {Router} from 'react-router-dom'
 import {createBrowserHistory} from 'history'
-import 'bulma-extensions/bulma-pageloader/dist/css/bulma-pageloader.min.css'
 import 'bulma/css/bulma.min.css'
 
 import Header from "./Header";
@@ -51,7 +50,7 @@ export default function App() {
         return (
             <>
                 <MyHelmet/>
-                <div className={"pageloader is-active is-success"} />
+                <div className={"pageloader is-active is-success"}>Loading...</div>
             </>
         );
     }

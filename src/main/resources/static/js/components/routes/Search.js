@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useRef, useState} from 'react';
 import MediaItem from "../MediaItem";
 import {AutoSizer, CellMeasurer, CellMeasurerCache, List} from 'react-virtualized'
 import TextInput from "../TextInput";
-import {faSearch} from "@fortawesome/free-solid-svg-icons";
+import {FaSearch} from "react-icons/fa";
 import {AppContext} from "../../common/AppContextProvider";
 import {UserContext} from "../../common/UserContextProvider";
 import useDebounce from "../../common/UseDebounce";
@@ -58,7 +58,7 @@ export default function Search() {
     return (
         <div style={{display: 'flex', flexDirection: 'column', height: '100%', flex: '1', overflow: 'hidden'}}>
             <section className={'section'} style={{display: 'flex', flexDirection: 'column'}}>
-                <form><TextInput id={'searchInput'} label={'Search'} leftIcon={faSearch} value={searchKey}
+                <form><TextInput id={'searchInput'} label={'Search'} leftIcon={<FaSearch color={'gray'} />} value={searchKey}
                                  onChange={handleSearchInput} horizontal={false} hideLabel={true} autoComplete='off' /></form>
             </section>
 

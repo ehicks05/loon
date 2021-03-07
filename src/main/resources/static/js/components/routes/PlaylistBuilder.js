@@ -1,9 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {Redirect} from 'react-router-dom'
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faChevronRight,faChevronDown} from '@fortawesome/free-solid-svg-icons'
-import {faCheckSquare, faPlusSquare, faMinusSquare, faSquare, faFolder, faFolderOpen, faFile} from '@fortawesome/free-regular-svg-icons'
+import {FaCheckSquare, FaPlusSquare, FaChevronRight, FaChevronDown, FaMinusSquare, FaSquare, FaFolder, FaFolderOpen, FaFile} from 'react-icons/fa'
 
 import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
@@ -85,16 +83,16 @@ export default function PlaylistBuilder(props) {
                     onCheck={onCheck}
                     onExpand={onExpand}
                     icons={{
-                        check: <FontAwesomeIcon className='rct-icon rct-icon-check' icon={faCheckSquare} />,
-                        uncheck: <FontAwesomeIcon className='rct-icon rct-icon-uncheck' icon={faSquare} />,
-                        halfCheck: <FontAwesomeIcon className='rct-icon rct-icon-half-check' icon={faCheckSquare} />,
-                        expandClose: <FontAwesomeIcon className='rct-icon rct-icon-expand-close' icon={faChevronRight} />,
-                        expandOpen: <FontAwesomeIcon className='rct-icon rct-icon-expand-open' icon={faChevronDown} />,
-                        expandAll: <FontAwesomeIcon className='rct-icon rct-icon-expand-all' icon={faPlusSquare} />,
-                        collapseAll: <FontAwesomeIcon className='rct-icon rct-icon-collapse-all' icon={faMinusSquare} />,
-                        parentClose: <FontAwesomeIcon className='rct-icon rct-icon-parent-close' icon={faFolder} />,
-                        parentOpen: <FontAwesomeIcon className='rct-icon rct-icon-parent-open' icon={faFolderOpen} />,
-                        leaf: <FontAwesomeIcon className='rct-icon rct-icon-leaf-close' icon={faFile} />
+                        check: <FaCheckSquare className='rct-icon rct-icon-check' />,
+                        uncheck: <FaSquare className='rct-icon rct-icon-uncheck' />,
+                        halfCheck: <FaCheckSquare className='rct-icon rct-icon-half-check' />,
+                        expandClose: <FaChevronRight className='rct-icon rct-icon-expand-close' />,
+                        expandOpen: <FaChevronDown className='rct-icon rct-icon-expand-open' />,
+                        expandAll: <FaPlusSquare className='rct-icon rct-icon-expand-all' />,
+                        collapseAll: <FaMinusSquare className='rct-icon rct-icon-collapse-all' />,
+                        parentClose: <FaFolder className='rct-icon rct-icon-parent-close' />,
+                        parentOpen: <FaFolderOpen className='rct-icon rct-icon-parent-open' />,
+                        leaf: <FaFile className='rct-icon rct-icon-leaf-close' />
                     }}
                 />
 

@@ -1,6 +1,5 @@
 import React, {useContext} from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faVolumeUp, faVolumeOff, faRandom } from '@fortawesome/free-solid-svg-icons'
+import { FaVolumeUp, FaVolumeOff, FaRandom } from 'react-icons/fa'
 import {UserContext} from "../../common/UserContextProvider";
 import {useMediaQuery} from "../../common/MediaQueryHook";
 import TrackProgressBar from "./TrackProgressBar";
@@ -65,7 +64,7 @@ function ShuffleButton() {
         <a className={"button is-small" + (userContext.user.userState.shuffle ? " is-success" : "")}
            style={shuffleButtonStyle} id="shuffleBtn" onClick={handleShuffleChange}>
             <span className="icon">
-                <FontAwesomeIcon icon={faRandom} fixedWidth/>
+                <FaRandom fixedWidth/>
             </span>
         </a>
     );
@@ -83,7 +82,7 @@ function MuteButton() {
     return (
         <a className="button is-small" id="muteBtn" style={muteButtonStyle} onClick={handleMuteChange}>
             <span className="icon">
-                <FontAwesomeIcon icon={userContext.user.userState.muted ? faVolumeOff : faVolumeUp} fixedWidth/>
+                {userContext.user.userState.muted ? <FaVolumeOff fixedWidth /> : <FaVolumeUp fixedWidth />}
             </span>
         </a>
     );

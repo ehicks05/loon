@@ -1,7 +1,6 @@
 import React, {useContext} from 'react';
 import {NavLink} from "react-router-dom";
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faSearch, faMusic, faUsers, faFolderOpen, faHeart, faList, faCompactDisc, faVolumeUp} from '@fortawesome/free-solid-svg-icons'
+import {FaSearch, FaMusic, FaUsers, FaFolderOpen, FaHeart, FaList, FaCompactDisc, FaVolumeUp} from 'react-icons/fa'
 import {AppContext} from "../../common/AppContextProvider";
 import {UserContext} from "../../common/UserContextProvider";
 
@@ -14,12 +13,12 @@ export default function SidePanel() {
         return <div>Loading...</div>;
 
     const defaultLinks = [
-        {path: '/search', icon: faSearch, text: 'Search', currentlyPlaying: selectedPlaylistId === 0},
-        {path: '/favorites', icon: faHeart, text: 'Favorites', currentlyPlaying: selectedPlaylistId === appContext.playlists.find(playlist => playlist.favorites).id},
-        {path: '/queue', icon: faList, text: 'Queue', currentlyPlaying: selectedPlaylistId === appContext.playlists.find(playlist => playlist.queue).id},
-        {path: '/artists', icon: faUsers, text: 'Artists'},
-        {path: '/albums', icon: faCompactDisc, text: 'Albums'},
-        {path: '/playlists', icon: faFolderOpen, text: 'Playlists'},
+        {path: '/search',       icon: <FaSearch />, text: 'Search', currentlyPlaying: selectedPlaylistId === 0},
+        {path: '/favorites',    icon: <FaHeart />, text: 'Favorites', currentlyPlaying: selectedPlaylistId === appContext.playlists.find(playlist => playlist.favorites).id},
+        {path: '/queue',        icon: <FaList />, text: 'Queue', currentlyPlaying: selectedPlaylistId === appContext.playlists.find(playlist => playlist.queue).id},
+        {path: '/artists',      icon: <FaUsers />, text: 'Artists'},
+        {path: '/albums',       icon: <FaCompactDisc />, text: 'Albums'},
+        {path: '/playlists',    icon: <FaFolderOpen />, text: 'Playlists'},
     ];
 
     const links = defaultLinks.map(link => linkToNavLink(link));
@@ -30,20 +29,20 @@ export default function SidePanel() {
         .map((link) => linkToNavLink(link));
 
     function playlistToLink(playlist) {
-        return {path: '/playlists/' + playlist.id, icon: faMusic, text: playlist.name, currentlyPlaying: playlist.id === selectedPlaylistId}
+        return {path: '/playlists/' + playlist.id, icon: <FaMusic />, text: playlist.name, currentlyPlaying: playlist.id === selectedPlaylistId}
     }
 
     function linkToNavLink(link) {
         const currentlyPlayingIcon = link.currentlyPlaying ?
             <span className="panel-icon has-text-success" style={{marginLeft: '.75em'}} title={'Active Playlist'}>
-                <FontAwesomeIcon icon={faVolumeUp} aria-hidden="true"/>
+                <FaVolumeUp aria-hidden="true"/>
             </span>
             : null;
 
         return (
             <NavLink key={link.path} to={link.path} exact className={'panel-block'} activeClassName={'is-active'}>
                 <span className="panel-icon">
-                    <FontAwesomeIcon icon={link.icon} aria-hidden="true"/>
+                    {link.icon}
                 </span>
                 {link.text}
                 {currentlyPlayingIcon}

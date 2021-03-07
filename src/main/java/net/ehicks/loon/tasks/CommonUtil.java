@@ -6,6 +6,7 @@ public class CommonUtil
     {
         String escaped = input.replaceAll("[\\?\"#:/;|*\\\\]", "-"); // replace ?"#:/;|*\
         escaped = escaped.replaceAll("[\\\\?\"\\]\\[<>]", ""); // replace \][<>
+        escaped = escaped.replaceAll(" & ", " and ");
 
         while (escaped.endsWith("."))
             escaped = escaped.substring(0, escaped.length() - 1);

@@ -30,7 +30,7 @@ export default function TrackDescription() {
     const textWidth = isWidthOver768 ? 'calc(100vw - 408px)' : '100%';
 
     const placeholder = 'https://via.placeholder.com/48x48.png?text=placeholder';
-    const imageUrl = (selectedTrack && selectedTrack.albumThumbnailId) ? '/art/' + selectedTrack.albumThumbnailId : placeholder;
+    const imageUrl = (selectedTrack && selectedTrack.albumThumbnailId) ? `https://res.cloudinary.com/ehicks/image/upload/${selectedTrack.albumThumbnailId}` : placeholder;
 
     // todo: does this need to be lazyload?
     const albumArt = <img src={placeholder} data-src={imageUrl} alt="Placeholder image" className='lazyload' style={albumArtStyle}/>;

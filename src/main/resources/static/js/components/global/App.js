@@ -2,7 +2,7 @@ import React, {lazy, useContext, useEffect, useState} from 'react';
 import {Router} from 'react-router-dom'
 import {createBrowserHistory} from 'history'
 import 'bulma/css/bulma.min.css'
-import { Audio } from "@agney/react-loading";
+import { Oval } from "@agney/react-loading";
 
 import Header from "./Header";
 import MyHelmet from "./MyHelmet";
@@ -51,7 +51,11 @@ export default function App() {
         return (
             <>
                 <MyHelmet/>
-                <div style={{width: '100vw', height: '100vh'}}><Audio width="50" /></div>
+                <div style={{width: '100vw', height: '100vh', display: 'flex', backgroundColor: 'black'}}>
+                    <div style={{margin: 'auto'}}>
+                        <Oval width="100" color={'#44CC44'} />
+                    </div>
+                </div>
             </>
         );
     }

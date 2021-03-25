@@ -34,8 +34,8 @@ public class UserHandler
         this.playlistTrackRepo = playlistTrackRepo;
     }
 
-    @GetMapping("/current")
-    public User getCurrentUser(@AuthenticationPrincipal User user)
+    @GetMapping("/currentUserState")
+    public UserState getCurrentUserState(@AuthenticationPrincipal User user)
     {
         // check that the user's last played track still exists
         Track track = trackRepo.findById(user.getUserState().getSelectedTrackId()).orElse(null);
@@ -43,7 +43,8 @@ public class UserHandler
         boolean playlistTrackMissing = false;
         if (user.getUserState().getSelectedPlaylistId() != 0)
         {
-            PlaylistTrack playlistTrack = playlistTrackRepo.findByPlaylistIdAndTrackId(user.getUserState().getSelectedPlaylistId(), user.getUserState().getSelectedTrackId());
+            PlaylistTrack playlistTrack = playlistTrackRepo.findByPlaylistIdAndTrackId(
+                    user.getUserState().getSelectedPlaylistId(), user.getUserState().getSelectedTrackId());
             playlistTrackMissing = playlistTrack == null;
         }
 
@@ -56,7 +57,7 @@ public class UserHandler
             userRepo.save(user);
         }
 
-        return user;
+        return user.getUserState();
     }
 
     @PutMapping("/{id}/saveProgress")

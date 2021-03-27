@@ -3,7 +3,6 @@ package net.ehicks.loon.handlers;
 import net.ehicks.loon.PlaylistLogic;
 import net.ehicks.loon.beans.Playlist;
 import net.ehicks.loon.beans.PlaylistTrack;
-import net.ehicks.loon.beans.Track;
 import net.ehicks.loon.beans.User;
 import net.ehicks.loon.repos.PlaylistRepository;
 import net.ehicks.loon.repos.PlaylistTrackRepository;
@@ -16,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/playlists")
@@ -48,16 +46,6 @@ public class PlaylistHandler
             return null;
 
         return playlist;
-    }
-
-    @GetMapping("/ajaxGetInitialTracks")
-    public List<Track> ajaxGetInitialTracks(@AuthenticationPrincipal User user, @RequestParam long playlistId)
-    {
-        Playlist playlist = playlistRepo.findById(playlistId).orElse(null);
-        if (playlist == null || !playlist.getUserId().equals(user.getId()))
-            return null;
-
-        return playlist.getPlaylistTracks().stream().map(PlaylistTrack::getTrack).collect(Collectors.toList());
     }
 
     @PostMapping("/copyFrom")
@@ -123,7 +111,7 @@ public class PlaylistHandler
     }
 
     @DeleteMapping("/{playlistId}")
-    public ResponseEntity delete(@AuthenticationPrincipal User user, @PathVariable long playlistId)
+    public ResponseEntity<HttpStatus> delete(@AuthenticationPrincipal User user, @PathVariable long playlistId)
     {
         Playlist playlist = playlistRepo.findById(playlistId).orElse(null);
         if (playlist != null && playlist.getUserId().equals(user.getId()) && !playlist.getFavorites() && !playlist.getQueue())
@@ -132,7 +120,7 @@ public class PlaylistHandler
             playlistRepo.delete(playlist);
         }
 
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping("/dragAndDrop")

@@ -16,6 +16,7 @@ public class SystemSettingsHandler {
         this.loonSystemRepo = loonSystemRepo;
     }
 
+    // exists so we can show non-admins the quality setting
     @GetMapping("/transcodeQuality")
     public String getTranscodeQuality() {
         LoonSystem loonSystem = loonSystemRepo.findById(1L).orElse(null);

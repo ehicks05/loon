@@ -12,12 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/me")
 public class MeController
 {
-    private static final Logger log = LoggerFactory.getLogger(UserHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(MeController.class);
 
     @GetMapping()
     public User getCurrentUser(@AuthenticationPrincipal User user)
     {
-        log.info("/me - " + user);
         return user;
     }
 }

@@ -75,7 +75,8 @@ public class UserHandler
     @PutMapping("/{id}")
     public User modify(@AuthenticationPrincipal User user, @PathVariable Long id, @RequestParam Optional<Double> volume,
                        @RequestParam Optional<Boolean> shuffle, @RequestParam Optional<Boolean> muted,
-                       @RequestParam Optional<Boolean> transcode)
+                       @RequestParam Optional<Boolean> transcode, @RequestParam Optional<Integer> eqNum,
+                       @RequestParam Optional<String> eqField, @RequestParam Optional<Integer> eqValue)
     {
         if (!user.getId().equals(id))
             return null;
@@ -84,6 +85,20 @@ public class UserHandler
         shuffle.ifPresent(aBoolean -> user.getUserState().setShuffle(aBoolean));
         muted.ifPresent(aBoolean -> user.getUserState().setMuted(aBoolean));
         transcode.ifPresent(aBoolean -> user.getUserState().setTranscode(aBoolean));
+        if (eqNum.isPresent() && eqField.isPresent() && eqValue.isPresent()) {
+            if (eqField.get().equals("Frequency")) {
+                if (eqNum.get().equals(1)) user.getUserState().setEq1Frequency(eqValue.get());
+                if (eqNum.get().equals(2)) user.getUserState().setEq2Frequency(eqValue.get());
+                if (eqNum.get().equals(3)) user.getUserState().setEq3Frequency(eqValue.get());
+                if (eqNum.get().equals(4)) user.getUserState().setEq4Frequency(eqValue.get());
+            }
+            if (eqField.get().equals("Gain")) {
+                if (eqNum.get().equals(1)) user.getUserState().setEq1Gain(eqValue.get());
+                if (eqNum.get().equals(2)) user.getUserState().setEq2Gain(eqValue.get());
+                if (eqNum.get().equals(3)) user.getUserState().setEq3Gain(eqValue.get());
+                if (eqNum.get().equals(4)) user.getUserState().setEq4Gain(eqValue.get());
+            }
+        }
 
         return userRepo.save(user);
     }
@@ -101,31 +116,6 @@ public class UserHandler
         }
 
         return user;
-    }
-
-    @PutMapping("/{id}/eq")
-    public User changeEq(@AuthenticationPrincipal User user, @PathVariable Long id, @RequestParam Integer eqNum,
-                         @RequestParam String field, @RequestParam Integer value)
-    {
-        if (!user.getId().equals(id))
-            return null;
-
-        if (field.equals("Frequency"))
-        {
-            if (eqNum.equals(1)) user.getUserState().setEq1Frequency(value);
-            if (eqNum.equals(2)) user.getUserState().setEq2Frequency(value);
-            if (eqNum.equals(3)) user.getUserState().setEq3Frequency(value);
-            if (eqNum.equals(4)) user.getUserState().setEq4Frequency(value);
-        }
-        if (field.equals("Gain"))
-        {
-            if (eqNum.equals(1)) user.getUserState().setEq1Gain(value);
-            if (eqNum.equals(2)) user.getUserState().setEq2Gain(value);
-            if (eqNum.equals(3)) user.getUserState().setEq3Gain(value);
-            if (eqNum.equals(4)) user.getUserState().setEq4Gain(value);
-        }
-
-        return userRepo.save(user);
     }
 
     @PutMapping("/{id}/toggleDarkTheme")

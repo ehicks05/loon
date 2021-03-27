@@ -1,6 +1,5 @@
 package net.ehicks.loon.handlers;
 
-import net.ehicks.loon.Transcoder;
 import net.ehicks.loon.beans.LoonSystem;
 import net.ehicks.loon.beans.Track;
 import net.ehicks.loon.beans.User;
@@ -23,26 +22,25 @@ public class MediaController
 {
     private static final Logger log = LoggerFactory.getLogger(MediaController.class);
 
-    private TrackRepository trackRepo;
-    private MyResourceHttpRequestHandler handler;
-    private Transcoder transcoder;
-    private LoonSystemRepository loonSystemRepo;
+    private final TrackRepository trackRepo;
+    private final MyResourceHttpRequestHandler handler;
+    private final LoonSystemRepository loonSystemRepo;
 
-    public MediaController(TrackRepository trackRepo, MyResourceHttpRequestHandler handler, Transcoder transcoder,
+    public MediaController(TrackRepository trackRepo, MyResourceHttpRequestHandler handler,
                            LoonSystemRepository loonSystemRepo)
     {
         this.trackRepo = trackRepo;
         this.handler = handler;
-        this.transcoder = transcoder;
         this.loonSystemRepo = loonSystemRepo;
     }
 
     @GetMapping("/media")
-    protected void getMedia(@AuthenticationPrincipal User user, HttpServletRequest request, HttpServletResponse response, @RequestParam String id)
+    protected void getMedia(@AuthenticationPrincipal User user, HttpServletRequest request,
+                            HttpServletResponse response, @RequestParam String id)
     {
         LoonSystem loonSystem = loonSystemRepo.findById(1L).orElse(null);
         Track track = trackRepo.findById(id).orElse(null);
-        if (track == null)
+        if (loonSystem == null || track == null)
             return;
 
         try
@@ -55,9 +53,8 @@ public class MediaController
                         .resolve(loonSystem.getTranscodeQuality())
                         .resolve(track.getId() + ".mp3");
 
-                if (!transcodedFile.toFile().exists())
-                    transcoder.transcode(track, Integer.valueOf(loonSystem.getTranscodeQuality()));
-                output = transcodedFile;
+                output = transcodedFile.toFile().exists()
+                        ? transcodedFile : Paths.get(track.getPath());
             }
             else
                 output = Paths.get(track.getPath());

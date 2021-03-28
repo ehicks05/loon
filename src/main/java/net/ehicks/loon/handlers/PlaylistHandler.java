@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/api/playlists")
+@RequestMapping("/playlists")
 public class PlaylistHandler
 {
     private PlaylistRepository playlistRepo;

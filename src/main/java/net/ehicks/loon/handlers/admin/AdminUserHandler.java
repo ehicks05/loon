@@ -22,7 +22,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/admin/users")
+@RequestMapping("/admin/users")
 public class AdminUserHandler
 {
     private static final Logger log = LoggerFactory.getLogger(AdminUserHandler.class);

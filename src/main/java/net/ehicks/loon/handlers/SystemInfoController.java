@@ -15,7 +15,7 @@ public class SystemInfoController
         this.loonSystemRepo = loonSystemRepo;
     }
 
-    @RequestMapping("/api/admin/systemInfo")
+    @RequestMapping("/admin/systemInfo")
     public LoonSystem getCommitId() {
         LoonSystem loonSystem = loonSystemRepo.findById(1L).orElse(null);
         return loonSystem;

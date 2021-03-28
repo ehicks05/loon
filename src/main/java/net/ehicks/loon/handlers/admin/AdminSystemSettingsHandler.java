@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/admin/systemSettings")
+@RequestMapping("/admin/systemSettings")
 public class AdminSystemSettingsHandler
 {
     private static final Logger log = LoggerFactory.getLogger(AdminSystemSettingsHandler.class);

@@ -50,7 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
             http
                     .cors().and()
                     .authorizeRequests()
-                    .antMatchers("/login", "/me", "/poll", "/register").permitAll()
+                    .antMatchers("/login/**", "/me", "/poll", "/register").permitAll()
                     .antMatchers("/admin/**").hasRole("ADMIN")
                     .antMatchers("/**").hasRole("USER")
                     .and()

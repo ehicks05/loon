@@ -17,6 +17,7 @@ public class MeController
     @GetMapping()
     public User getCurrentUser(@AuthenticationPrincipal User user)
     {
+        log.info("found: " + user);
         return user;
     }
 }

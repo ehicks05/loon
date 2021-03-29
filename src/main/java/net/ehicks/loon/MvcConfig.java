@@ -24,7 +24,7 @@ public class MvcConfig implements WebMvcConfigurer
         registry.addMapping("/**")
                 .allowedOrigins("https://loon.ehicks.net")
                 .allowedMethods("*")
-                .exposedHeaders("*")
+//                .exposedHeaders("Authorization", "Cache-Control", "Content-Type")
                 .allowCredentials(true);
     }
 }

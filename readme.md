@@ -1,3 +1,5 @@
+### note: in the process of being split into backend/frontend repos
+
 ## Loon
 Music Player
 ![Screenshot](https://i.imgur.com/GQD7KeL.jpg)

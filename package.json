@@ -25,6 +25,7 @@
     "react-spinners": "^0.14.1",
     "react-use": "^17.2.1",
     "react-virtualized": "^9.22.5",
+    "react-window": "^1.8.10",
     "zustand": "^3.3.3"
   },
   "devDependencies": {
@@ -33,7 +34,6 @@
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.19",
-    "esbuild-plugin-react-virtualized": "^1.0.4",
     "postcss": "^8.4.39",
     "tailwindcss": "^3.4.4",
     "typescript": "^5.2.2",

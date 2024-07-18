@@ -1,11 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
+import { FixedSizeList as List } from 'react-window';
 import MediaItem from "../MediaItem";
-// import {
-//   AutoSizer,
-//   CellMeasurer,
-//   CellMeasurerCache,
-//   List,
-// } from "react-virtualized";
 import TextInput from "../TextInput";
 import { FaSearch } from "react-icons/fa";
 import { useAppStore } from "../../common/AppContextProvider";
@@ -15,7 +10,16 @@ import {
 } from "../../common/UserContextProvider";
 import _ from "lodash";
 
+const Row = ({ data, index, style }) => {
+  const track = data[index];
+
+  return <div style={style}>
+    <MediaItem playlistId={0} track={track} trackNumber={index + 1} />
+  </div>
+}
+
 export default function Search() {
+  const listRef = useRef();
   const [searchResults, setSearchResults] = useState([]);
   const [searchKey, setSearchKey] = useState("");
   const setSearchKeyDebounced = _.debounce(setSearchKey, 200);
@@ -24,10 +28,6 @@ export default function Search() {
   const selectedTrackId = useUserStore(
     (state) => state.userState.selectedTrackId
   );
-  // const cache = useRef(
-  //   new CellMeasurerCache({ fixedWidth: true, defaultHeight: 58 })
-  // );
-  // const listRef = useRef({});
 
   useEffect(() => {
     return function cleanup() {
@@ -56,9 +56,11 @@ export default function Search() {
     setSearchKeyDebounced(e.target.value);
   }
 
-  const scrollToIndex = searchResults.indexOf(
+  const getIndex = searchResults.indexOf(
     searchResults.find((track) => track.id === selectedTrackId)
   );
+
+  const scrollToIndex = () => listRef.current.scrollToItem(getIndex(), "center");
 
   return (
     <div
@@ -89,7 +91,6 @@ export default function Search() {
       </section>
 
       <div
-        id="list"
         style={{
           display: "flex",
           flexDirection: "column",
@@ -98,50 +99,18 @@ export default function Search() {
           flexGrow: 1,
         }}
       >
-        {searchResults.map((track, index) => <div>
-          <MediaItem playlistId={0} track={track} trackNumber={index + 1} />
-        </div>)}
-        {/* <AutoSizer style={{ outline: 0 }}>
-          {({ width, height }) => {
-            return (
-              <List
-                ref={setListRef}
-                width={width}
-                height={height}
-                deferredMeasurementCache={cache.current}
-                rowHeight={cache.current.rowHeight}
-                rowRenderer={renderRow}
-                rowCount={searchResults.length}
-                scrollToAlignment={"auto"}
-                scrollToIndex={scrollToIndex}
-                estimatedRowSize={58}
-                overscanRowCount={3}
-              />
-            );
-          }}
-        </AutoSizer> */}
+        <List
+          ref={listRef}
+          width={'100%'}
+          height={800}
+          itemCount={searchResults.length}
+          itemData={searchResults}
+          itemKey={(_index, data) => data.id}
+          itemSize={60}
+        >
+          {Row}
+        </List>
       </div>
     </div>
   );
-
-  // function renderRow({ index, key, style, parent }) {
-  //   const track = searchResults[index];
-  //   return (
-  //     <CellMeasurer
-  //       key={key}
-  //       cache={cache.current}
-  //       parent={parent}
-  //       columnIndex={0}
-  //       rowIndex={index}
-  //     >
-  //       <div style={style}>
-  //         <MediaItem playlistId={0} track={track} trackNumber={index + 1} />
-  //       </div>
-  //     </CellMeasurer>
-  //   );
-  // }
-
-  // function setListRef(ref) {
-  //   listRef.current = ref;
-  // }
 }

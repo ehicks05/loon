@@ -1,18 +1,18 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
 import {
+  FaInfoCircle,
+  FaMusic,
   FaServer,
-  FaUser,
   FaSignOutAlt,
   FaSlidersH,
-  FaMusic,
+  FaUser,
   FaUserCog,
-  FaInfoCircle,
 } from "react-icons/fa";
+import { NavLink } from "react-router-dom";
+import { useWindowSize } from "react-use";
+import { useAppStore } from "./common/AppContextProvider";
 import superFetch from "./common/SuperFetch";
 import { useUserStore } from "./common/UserContextProvider";
-import { useAppStore } from "./common/AppContextProvider";
-import { useWindowSize } from "react-use";
 
 export default function Header() {
   const user = useUserStore((state) => state.user);
@@ -26,9 +26,9 @@ export default function Header() {
   };
 
   function handleLogout() {
-    superFetch("/logout", { method: "POST" }).then(
-      () => (window.location.href = "/")
-    );
+    superFetch("/logout", { method: "POST" }).then(() => {
+      window.location.href = "/";
+    });
     return false;
   }
 
@@ -36,7 +36,7 @@ export default function Header() {
     return (
       <NavLink
         key={playlist.id}
-        to={"/playlists/" + playlist.id}
+        to={`/playlists/${playlist.id}`}
         className={"navbar-item"}
         activeClassName={"is-active"}
         onClick={handleClickNavbarItem}
@@ -61,11 +61,7 @@ export default function Header() {
     width < 1024 ? { overflowY: "auto", height: "calc(100vh - 52px)" } : null;
 
   return (
-    <nav
-      className={"navbar is-success"}
-      role="navigation"
-      aria-label="main navigation"
-    >
+    <nav className={"navbar is-success"} aria-label="main navigation">
       <div className="navbar-brand">
         <div className="navbar-item">
           <img
@@ -83,6 +79,7 @@ export default function Header() {
           aria-label="menu"
           aria-expanded="false"
           onClick={() => setIsActive(!isActive)}
+          onKeyUp={() => setIsActive(!isActive)}
         >
           <span aria-hidden="true" />
           <span aria-hidden="true" />
@@ -231,7 +228,11 @@ export default function Header() {
         </div>
         <div className="navbar-end">
           <span className="navbar-item">
-            <button onClick={handleLogout} className="button is-success">
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="button is-success"
+            >
               <span style={{ marginRight: "4px" }}>Sign Out</span>
               <span className="icon is-medium">
                 <FaSignOutAlt />

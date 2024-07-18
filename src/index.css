@@ -3,7 +3,11 @@
 @tailwind utilities;
 
 html {
-  overflow-y: hidden;
+  overflow: auto;
+}
+
+section {
+  padding: 10px !important;
 }
 
 #level {
@@ -12,57 +16,19 @@ html {
   width: 100%;
 }
 
-section {
-  padding: 10px !important;
+.columns {
+  margin-bottom: 0 !important;
 }
 
-.playingHighlight {
-  color: #23d160;
+/* SCROLLBAR */
+::-webkit-scrollbar {
+  width: 8px;
 }
-.playingHighlight:focus {
-  outline: 0;
+::-webkit-scrollbar-thumb {
+  background: #777;
 }
-
-.playlist {
-  overflow-y: auto;
-}
-
-.media + .media {
-  padding-top: 0.2rem;
-  margin-top: 0.2rem;
-}
-
-.mediaItemDiv {
-  padding: 5px;
-  vertical-align: middle;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  transition: all 0.2s ease;
-}
-
-.mediaItemDiv .mediaItemEllipsis .dropdown {
-  visibility: hidden;
-}
-.mediaItemDiv:hover .mediaItemEllipsis .dropdown {
-  visibility: visible;
-}
-.mediaItemEllipsis {
-  margin-right: 8px;
-  flex-basis: 20px;
-}
-.is-visible-important {
-  visibility: visible !important;
-}
-
-.list-song {
-  flex: 8;
-}
-.mediaItemCounter {
-  text-align: right;
-  margin-right: 5px;
-  min-width: 30px;
-  flex-basis: 36px;
+::-webkit-scrollbar-thumb:hover {
+  background: #888;
 }
 
 .panel-block {
@@ -80,46 +46,7 @@ section {
   outline: none;
 }
 
-/* SCROLLBAR */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-/* Track */
-::-webkit-scrollbar-track-piece:start {
-}
-
-::-webkit-scrollbar-track-piece:end {
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #777;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #888;
-}
-
 /* copied from MyHelmet */
-
-html {
-  overflow: auto;
-}
-
-#level {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-}
-
-.columns {
-  margin-bottom: 0 !important;
-}
-
-section {
-  padding: 10px !important;
-}
 
 .playingHighlight {
   color: #23d160;
@@ -137,37 +64,8 @@ section {
   margin-top: 0.2rem;
 }
 
-.mediaItemDiv {
-  padding: 5px;
-  vertical-align: middle;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  transition: all 0.2s ease;
-}
-
-.mediaItemDiv .mediaItemEllipsis .dropdown {
-  visibility: hidden;
-}
-.mediaItemDiv:hover .mediaItemEllipsis .dropdown {
-  visibility: visible;
-}
-.mediaItemEllipsis {
-  margin-right: 8px;
-  flex-basis: 20px;
-}
 .is-visible-important {
   visibility: visible !important;
-}
-
-.list-song {
-  flex: 8;
-}
-.mediaItemCounter {
-  text-align: right;
-  margin-right: 5px;
-  min-width: 30px;
-  flex-basis: 36px;
 }
 
 .ReactVirtualized__List:focus {
@@ -183,17 +81,6 @@ section {
   overflow: visible !important;
 }
 
-/* SCROLLBAR */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-thumb {
-  background: #777;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #888;
-}
-
 /* THEMING */
 
 .myLevel {
@@ -203,15 +90,7 @@ section {
 #left-column {
   background-color: #f4f4f4;
 }
-.mediaItemDiv:hover {
-  background-color: #f4f4f4;
-}
-.mediaItemDiv a {
-  color: #666;
-}
-.mediaItemDiv a:hover {
-  color: #888;
-}
+
 .dropdown a {
   color: #666;
 }
@@ -259,16 +138,7 @@ section {
   #headerLogo {
     filter: invert(100%);
   }
-  .mediaItemDiv:hover {
-    background-color: #282f2f;
-  }
 
-  .mediaItemDiv a {
-    color: #aaa;
-  }
-  .mediaItemDiv a:hover {
-    color: #ccc;
-  }
   .dropdown a {
     color: #aaa;
   }

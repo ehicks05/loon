@@ -187,7 +187,7 @@ export default function ActionMenu(props) {
   return (
     <div
       className={
-        "dropdown " +
+        "dropdown invisible group-hover:visible" +
         isRightAligned +
         (isDropdownActive ? " is-active is-visible-important" : "")
       }

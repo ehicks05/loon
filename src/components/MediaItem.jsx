@@ -5,7 +5,6 @@ import {
   useUserStore,
   setSelectedPlaylistId,
 } from "../common/UserContextProvider";
-import { useWindowSize } from "react-use";
 
 const getRowStyle = (draggableStyle, isDragging) => ({
   // some basic styles to make the items look a bit nicer
@@ -30,8 +29,6 @@ export default function MediaItem({
     (state) => state.selectedContextMenuId
   );
 
-  const windowSize = useWindowSize();
-
   function handleHoverTrue() {
     setHover(true);
   }
@@ -47,20 +44,9 @@ export default function MediaItem({
     setSelectedPlaylistId(selectedPlaylistId, selectedTrackId);
   }
 
-  // not sure this is a good idea...
-  function limitLength(input, fraction) {
-    const limit = (windowSize.width * 1.6) / 20 / fraction;
-    if (input.length > limit) return input.substring(0, limit) + "...";
-    return input;
-  }
-
   const artist = track.artist ? track.artist : "Missing!";
   const trackTitle = track.title ? track.title : "Missing!";
   const album = track.album ? track.album : "Missing!";
-
-  const trimmedArtist = limitLength(artist, 1.8);
-  const trimmedTrackTitle = limitLength(trackTitle, 1);
-  const trimmedAlbum = limitLength(album, 1.8);
 
   const formattedDuration = track.formattedDuration;
 
@@ -79,18 +65,6 @@ export default function MediaItem({
   const showActionMenu = !isDragging && (hover || isDropdownActive);
 
   const missingFile = track.missingFile;
-  const trackTitleEl = (
-    <b
-      style={{ cursor: missingFile ? "default" : "pointer" }}
-      onClick={
-        missingFile
-          ? null
-          : (e) => handleSelectedTrackIdChange(e, playlistId, track.id)
-      }
-    >
-      {trimmedTrackTitle}
-    </b>
-  );
 
   return (
     <div
@@ -101,39 +75,50 @@ export default function MediaItem({
       style={getRowStyle(draggableStyle, isDragging)}
     >
       <div
-        className={"mediaItemDiv"}
+        className={"group flex p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all"}
         onMouseEnter={handleHoverTrue}
         onMouseLeave={handleHoverFalse}
         style={missingFile ? { color: "red" } : null}
       >
-        <div className={"mediaItemCounter"}>{trackNumber}</div>
+        <div className={"text-right mr-1 min-w-8"}>{trackNumber}</div>
 
-        <div {...dragHandleProps} className={"list-song"}>
-          {trackTitleEl}
+        <div {...dragHandleProps} className={"flex-grow"}>
+          <div
+            className="line-clamp-1 font-bold"
+            style={{ cursor: missingFile ? "default" : "pointer" }}
+            onClick={
+              missingFile
+                ? null
+                : (e) => handleSelectedTrackIdChange(e, playlistId, track.id)
+            }
+          >
+            {trackTitle}
+          </div>
           {missingFile && (
             <span
-              style={{ marginLeft: "1em" }}
-              className={"tag is-normal is-danger"}
+              className={"ml-4 tag is-normal is-danger"}
             >
               Track Missing
             </span>
           )}
-          <br />
-          <span style={{ fontSize: ".875rem" }}>
-            <Link to={"/artist/" + artist}>{trimmedArtist}</Link> -{" "}
-            <Link to={"/artist/" + track.albumArtist + "/album/" + album}>
-              <i>{trimmedAlbum}</i>
+          <span className="text-sm line-clamp-1">
+            <Link className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-300 hover:dark:text-neutral-300" to={"/artist/" + artist}>
+              {artist}
+            </Link>
+            {" - "}
+            <Link className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-300 hover:dark:text-neutral-300" to={"/artist/" + track.albumArtist + "/album/" + album}>
+              <i>{album}</i>
             </Link>
           </span>
         </div>
 
-        <div className={"mediaItemEllipsis"}>
+        <div className={"flex items-center mr-2 basis-5"}>
           {showActionMenu && (
             <ActionMenu tracks={[track]} contextMenuId={contextMenuId} />
           )}
         </div>
 
-        <div style={{ flexBasis: "20px" }}>{formattedDuration}</div>
+        <div className="basis-5">{formattedDuration}</div>
       </div>
     </div>
   );

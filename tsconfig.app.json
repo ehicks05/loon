@@ -28,5 +28,5 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src-from-template", "src/main.jsx"]
+  "include": ["src/main.tsx"]
 }

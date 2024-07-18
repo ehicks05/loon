@@ -2,25 +2,25 @@ import React from "react";
 import {
   FaEllipsisH,
   FaHeart,
-  FaRegHeart,
   FaList,
   FaMinus,
   FaPlus,
+  FaRegHeart,
   FaSync,
 } from "react-icons/fa";
-import {
-  useUserStore,
-  setSelectedContextMenuId,
-} from "../common/UserContextProvider";
-import {
-  useAppStore,
-  toggleTracksInPlaylist,
-} from "../common/AppContextProvider";
 import { useWindowSize } from "react-use";
+import {
+  toggleTracksInPlaylist,
+  useAppStore,
+} from "../common/AppContextProvider";
+import {
+  setSelectedContextMenuId,
+  useUserStore,
+} from "../common/UserContextProvider";
 
 export default function ActionMenu(props) {
   const selectedContextMenuId = useUserStore(
-    (state) => state.selectedContextMenuId
+    (state) => state.selectedContextMenuId,
   );
   const playlists = useAppStore((state) => state.playlists);
   const windowSize = useWindowSize();
@@ -35,14 +35,14 @@ export default function ActionMenu(props) {
     playlistId,
     trackIds,
     action,
-    replaceExisting
+    replaceExisting,
   ) {
     const formData = new FormData();
     formData.append("trackIds", trackIds);
     formData.append("mode", action);
     formData.append(
       "replaceExisting",
-      replaceExisting ? replaceExisting : false
+      replaceExisting ? replaceExisting : false,
     );
 
     toggleTracksInPlaylist(playlistId, formData);
@@ -50,14 +50,14 @@ export default function ActionMenu(props) {
 
   function addTracksToPlaylist(trackIds) {
     const playlistId = document.getElementById(
-      "mediaItem" + props.contextMenuId + "AddToPlaylistSelect"
+      `mediaItem${props.contextMenuId}AddToPlaylistSelect`,
     ).value;
     handleToggleTracksInPlaylist(playlistId, trackIds, "add");
   }
 
   function removeTracksFromPlaylist(trackIds) {
     const playlistId = document.getElementById(
-      "mediaItem" + props.contextMenuId + "removeFromPlaylistSelect"
+      `mediaItem${props.contextMenuId}removeFromPlaylistSelect`,
     ).value;
     handleToggleTracksInPlaylist(playlistId, trackIds, "remove");
   }
@@ -67,15 +67,15 @@ export default function ActionMenu(props) {
 
   const favoritesPlaylist = playlists.find((playlist) => playlist.favorites);
   const favoritesIds = favoritesPlaylist.playlistTracks.map(
-    (playlistTrack) => playlistTrack.track.id
+    (playlistTrack) => playlistTrack.track.id,
   );
   const isFavorite = trackIds.every((trackId) =>
-    favoritesIds.includes(trackId)
+    favoritesIds.includes(trackId),
   );
 
   const queuePlaylist = playlists.find((playlist) => playlist.queue);
   const queueIds = queuePlaylist.playlistTracks.map(
-    (playlistTrack) => playlistTrack.track.id
+    (playlistTrack) => playlistTrack.track.id,
   );
   const isQueued = trackIds.every((trackId) => queueIds.includes(trackId));
   const equalsQueue = isQueued && trackIds.length === queueIds.length;
@@ -87,7 +87,7 @@ export default function ActionMenu(props) {
     .filter((playlist) => !playlist.favorites && !playlist.queue)
     .filter((playlist) => {
       const playlistTrackIds = playlist.playlistTracks.map(
-        (playlistTrack) => playlistTrack.track.id
+        (playlistTrack) => playlistTrack.track.id,
       );
       return !trackIds.every((trackId) => playlistTrackIds.includes(trackId));
     })
@@ -103,7 +103,7 @@ export default function ActionMenu(props) {
     .filter((playlist) => !playlist.favorites && !playlist.queue)
     .filter((playlist) => {
       const playlistTrackIds = playlist.playlistTracks.map(
-        (playlistTrack) => playlistTrack.track.id
+        (playlistTrack) => playlistTrack.track.id,
       );
       return trackIds.every((trackId) => playlistTrackIds.includes(trackId));
     })
@@ -119,7 +119,7 @@ export default function ActionMenu(props) {
     <form>
       <div className="field has-addons">
         <div className="control">
-          <button className="button is-static is-small">
+          <button type="button" className="button is-static is-small">
             <span className="icon is-small">
               <FaPlus />
             </span>
@@ -127,13 +127,14 @@ export default function ActionMenu(props) {
         </div>
         <div className="control is-expanded">
           <span className="select is-small is-fullwidth">
-            <select id={"mediaItem" + contextMenuId + "AddToPlaylistSelect"}>
+            <select id={`mediaItem${contextMenuId}AddToPlaylistSelect`}>
               {addToPlaylistOptions}
             </select>
           </span>
         </div>
         <div className="control">
           <button
+            type="button"
             className="button is-small is-primary"
             onClick={() => addTracksToPlaylist(trackIds)}
             disabled={!addToPlaylistOptions.length}
@@ -149,7 +150,7 @@ export default function ActionMenu(props) {
     <form>
       <div className="field has-addons">
         <div className="control">
-          <button className="button is-static is-small">
+          <button type="button" className="button is-static is-small">
             <span className="icon is-small">
               <FaMinus />
             </span>
@@ -160,15 +161,14 @@ export default function ActionMenu(props) {
             className="select is-small is-fullwidth"
             style={{ minWidth: "8em" }}
           >
-            <select
-              id={"mediaItem" + contextMenuId + "removeFromPlaylistSelect"}
-            >
+            <select id={`mediaItem${contextMenuId}removeFromPlaylistSelect`}>
               {removeFromPlaylistOptions}
             </select>
           </span>
         </div>
         <div className="control">
           <button
+            type="button"
             className="button is-small is-primary"
             onClick={() => removeTracksFromPlaylist(trackIds)}
             disabled={!removeFromPlaylistOptions.length}
@@ -180,24 +180,21 @@ export default function ActionMenu(props) {
     </form>
   );
 
-  const button = document.getElementById(contextMenuId + "Button");
+  const button = document.getElementById(`${contextMenuId}Button`);
   const left = button ? button.getBoundingClientRect().left : 0;
   const isRightAligned = left > windowSize.width / 2 ? "is-right" : "";
 
   return (
     <div
-      className={
-        "dropdown invisible group-hover:visible" +
-        isRightAligned +
-        (isDropdownActive ? " is-active is-visible-important" : "")
-      }
+      className={`dropdown invisible group-hover:visible${isRightAligned}${isDropdownActive ? " is-active is-visible-important" : ""}`}
       style={props.style}
     >
       <div className="dropdown-trigger">
         <button
+          type="button"
           className="button is-small"
           aria-haspopup="true"
-          id={contextMenuId + "Button"}
+          id={`${contextMenuId}Button`}
           onClick={toggleDropdown}
         >
           <span className="icon is-small">
@@ -215,7 +212,7 @@ export default function ActionMenu(props) {
               handleToggleTracksInPlaylist(
                 favoritesPlaylist.id,
                 trackIds,
-                isFavorite ? "remove" : "add"
+                isFavorite ? "remove" : "add",
               );
             }}
           >
@@ -234,15 +231,13 @@ export default function ActionMenu(props) {
               handleToggleTracksInPlaylist(
                 queuePlaylist.id,
                 trackIds,
-                isQueued ? "remove" : "add"
+                isQueued ? "remove" : "add",
               );
             }}
           >
             <p>
               <span
-                className={
-                  "icon " + (isQueued ? "has-text-success" : "has-text-grey")
-                }
+                className={`icon ${isQueued ? "has-text-success" : "has-text-grey"}`}
               >
                 <FaList />
               </span>
@@ -258,16 +253,14 @@ export default function ActionMenu(props) {
                 queuePlaylist.id,
                 trackIds,
                 "add",
-                true
+                true,
               );
             }}
             disabled={equalsQueue}
           >
             <p>
               <span
-                className={
-                  "icon " + (equalsQueue ? "has-text-success" : "has-text-grey")
-                }
+                className={`icon ${equalsQueue ? "has-text-success" : "has-text-grey"}`}
               >
                 <FaSync />
               </span>

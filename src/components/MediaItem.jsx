@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import ActionMenu from "./ActionMenu";
 import { Link } from "react-router-dom";
 import {
-  useUserStore,
   setSelectedPlaylistId,
+  useUserStore,
 } from "../common/UserContextProvider";
+import ActionMenu from "./ActionMenu";
 
 const getRowStyle = (draggableStyle, isDragging) => ({
   // some basic styles to make the items look a bit nicer
@@ -23,10 +23,10 @@ export default function MediaItem({
 }) {
   const [hover, setHover] = useState(false);
   const selectedTrackId = useUserStore(
-    (state) => state.userState.selectedTrackId
+    (state) => state.userState.selectedTrackId,
   );
   const selectedContextMenuId = useUserStore(
-    (state) => state.selectedContextMenuId
+    (state) => state.selectedContextMenuId,
   );
 
   function handleHoverTrue() {
@@ -39,7 +39,7 @@ export default function MediaItem({
 
   function handleSelectedTrackIdChange(e, selectedPlaylistId, selectedTrackId) {
     console.log(
-      `setSelectedPlaylistId:${selectedPlaylistId}...${selectedTrackId}`
+      `setSelectedPlaylistId:${selectedPlaylistId}...${selectedTrackId}`,
     );
     setSelectedPlaylistId(selectedPlaylistId, selectedTrackId);
   }
@@ -58,7 +58,7 @@ export default function MediaItem({
   const draggableProps = provided ? provided.draggableProps : null;
   const dragHandleProps = provided ? provided.dragHandleProps : null;
 
-  const contextMenuId = "trackId=" + track.id;
+  const contextMenuId = `trackId=${track.id}`;
   const isDropdownActive = selectedContextMenuId === contextMenuId;
   const isDragging = snapshot ? snapshot.isDragging : false;
 
@@ -66,53 +66,60 @@ export default function MediaItem({
 
   const missingFile = track.missingFile;
 
+  const handleChangeTrack = missingFile
+    ? () => {}
+    : (e) => handleSelectedTrackIdChange(e, playlistId, track.id);
+
   return (
     <div
       className={highlightClass}
-      id={"track" + track.id}
+      id={`track${track.id}`}
       ref={innerRef}
       {...draggableProps}
       style={getRowStyle(draggableStyle, isDragging)}
     >
       <div
-        className={"group flex p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all"}
+        className={
+          "group flex p-1 transition-all hover:bg-neutral-100 dark:hover:bg-neutral-800"
+        }
         onMouseEnter={handleHoverTrue}
         onMouseLeave={handleHoverFalse}
         style={missingFile ? { color: "red" } : null}
       >
-        <div className={"text-right mr-1 min-w-8"}>{trackNumber}</div>
+        <div className={"mr-1 min-w-8 text-right"}>{trackNumber}</div>
 
         <div {...dragHandleProps} className={"flex-grow"}>
           <div
             className="line-clamp-1 font-bold"
             style={{ cursor: missingFile ? "default" : "pointer" }}
-            onClick={
-              missingFile
-                ? null
-                : (e) => handleSelectedTrackIdChange(e, playlistId, track.id)
-            }
+            onClick={handleChangeTrack}
+            onKeyUp={handleChangeTrack}
           >
             {trackTitle}
           </div>
           {missingFile && (
-            <span
-              className={"ml-4 tag is-normal is-danger"}
-            >
+            <span className={"tag is-normal is-danger ml-4"}>
               Track Missing
             </span>
           )}
-          <span className="text-sm line-clamp-1">
-            <Link className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-300 hover:dark:text-neutral-300" to={"/artist/" + artist}>
+          <span className="line-clamp-1 text-sm">
+            <Link
+              className="text-neutral-600 hover:text-neutral-300 dark:text-neutral-400 hover:dark:text-neutral-300"
+              to={`/artist/${artist}`}
+            >
               {artist}
             </Link>
             {" - "}
-            <Link className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-300 hover:dark:text-neutral-300" to={"/artist/" + track.albumArtist + "/album/" + album}>
+            <Link
+              className="text-neutral-600 hover:text-neutral-300 dark:text-neutral-400 hover:dark:text-neutral-300"
+              to={`/artist/${track.albumArtist}/album/${album}`}
+            >
               <i>{album}</i>
             </Link>
           </span>
         </div>
 
-        <div className={"flex items-center mr-2 basis-5"}>
+        <div className={"mr-2 flex basis-5 items-center"}>
           {showActionMenu && (
             <ActionMenu tracks={[track]} contextMenuId={contextMenuId} />
           )}

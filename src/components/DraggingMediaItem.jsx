@@ -1,80 +1,49 @@
 import React from "react";
 import { useUserStore } from "../common/UserContextProvider";
-import { useWindowSize } from "react-use";
-
-function formatTime(secs) {
-  const minutes = Math.floor(secs / 60) || 0;
-  const seconds = secs - minutes * 60 || 0;
-  return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
-}
 
 export default function DraggingMediaItem({ trackNumber, track, provided }) {
   const selectedTrackId = useUserStore(
-    (state) => state.userState.selectedTrackId
+    (state) => state.userState.selectedTrackId,
   );
-  const windowSize = useWindowSize();
 
-  function limitLength(input, fraction) {
-    const limit = (windowSize.width * 1.6) / 20 / fraction;
-    if (input.length > limit) return input.substring(0, limit) + "...";
-    return input;
-  }
-
-  const artist = track.artist ? limitLength(track.artist, 1.8) : "Missing!";
-  const trackTitle = track.title ? limitLength(track.title, 1) : "Missing!";
-  const album = track.album ? limitLength(track.album, 1.8) : "Missing!";
-  const formattedDuration = track.duration;
-
-  const highlightClass =
-    track.id === selectedTrackId ? " playingHighlight" : "";
-
-  const innerRef = provided ? provided.innerRef : null;
-  const draggableProps = provided ? provided.draggableProps : null;
-  const dragHandleProps = provided ? provided.dragHandleProps : null;
-
+  const artist = track.artist ? track.artist : "Missing!";
+  const trackTitle = track.title ? track.title : "Missing!";
+  const album = track.album ? track.album : "Missing!";
   const missingFile = track.missingFile;
-  const trackTitleEl = (
-    <b style={{ cursor: missingFile ? "default" : "pointer" }}>{trackTitle}</b>
-  );
+
+  const highlightClass = track.id === selectedTrackId ? "playingHighlight" : "";
 
   return (
     <div
-      className={highlightClass}
-      id={"track" + track.id}
-      ref={innerRef}
-      {...draggableProps}
-      style={{
-        userSelect: "none",
-        filter: "brightness(130%)",
-        boxSizing: "border-box",
-        border: "3px solid gray",
-      }}
+      id={`track${track.id}`}
+      ref={provided.innerRef}
+      {...provided.draggableProps}
+      className={`select-none border border-neutral-500 brightness-125 ${highlightClass}`}
     >
       <div
-        className={"mediaItemDiv"}
+        className={
+          "group flex p-1 transition-all hover:bg-neutral-100 dark:hover:bg-neutral-800"
+        }
         style={missingFile ? { color: "red" } : null}
       >
-        <div className={"mediaItemCounter"}>{trackNumber}</div>
+        <div className={"mr-1 min-w-8 text-right"}>{trackNumber}</div>
 
-        <div {...dragHandleProps} className={"list-song"}>
-          {trackTitleEl}
+        <div {...provided.dragHandleProps} className={"flex-grow"}>
+          <div className="line-clamp-1 font-bold">{trackTitle}</div>
+
           {missingFile && (
-            <span
-              style={{ marginLeft: "1em" }}
-              className={"tag is-normal is-danger"}
-            >
+            <span className={"tag is-normal is-danger ml-4"}>
               Track Missing
             </span>
           )}
-          <br />
-          <span style={{ fontSize: ".875rem" }}>
+          <span className="line-clamp-1 text-sm">
             {artist} - <i>{album}</i>
           </span>
         </div>
 
-        <div className={"mediaItemEllipsis"}></div>
+        <div className={"mr-2 flex basis-5 items-center"} />
 
-        <div style={{ flexBasis: "20px" }}>{formatTime(formattedDuration)}</div>
+        <div className="basis-5">{track.formattedDuration}</div>
       </div>
     </div>
   );

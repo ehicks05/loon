@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter } from "react-router-dom";
 
+import { useWindowSize } from "react-use";
 import Header from "./Header";
-import Player from "./components/app/Player/Player";
+import LoginForm from "./LoginForm";
 import Routes from "./Routes";
 import SidePanel from "./SidePanel";
 import Title from "./Title";
-import PlaybackControls from "./components/app/Player/PlaybackControls";
-import { useUserStore, fetchUser } from "./common/UserContextProvider";
 import {
-  useAppStore,
-  fetchTracks,
   fetchPlaylists,
+  fetchTracks,
+  useAppStore,
 } from "./common/AppContextProvider";
-import { useWindowSize } from "react-use";
-import LoginForm from "./LoginForm";
+import { fetchUser, useUserStore } from "./common/UserContextProvider";
+import PlaybackControls from "./components/app/Player/PlaybackControls";
+import Player from "./components/app/Player/Player";
 
 import PageLoader from "@/common/PageLoader";
 import usePoll from "./hooks/usePoll";
@@ -53,14 +53,13 @@ export default function App() {
     const headerHeight = 56;
     const progressBarHeight = 23;
     const footerHeight = progressBarHeight + (width <= 768 ? 111 : 62);
-    const columnHeight = "" + (height - (headerHeight + footerHeight)) + "px";
+    const columnHeight = `${height - (headerHeight + footerHeight)}px`;
     setColumnHeight(columnHeight);
   }, [width, height]);
 
   if (!user && !userLoading) return <LoginForm />;
 
-  if (!(user && tracks && playlists))
-    return <PageLoader />;
+  if (!(user && tracks && playlists)) return <PageLoader />;
 
   return (
     <BrowserRouter>

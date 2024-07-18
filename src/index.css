@@ -2,22 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
-  overflow: auto;
-}
-
 section {
   padding: 10px !important;
-}
-
-#level {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-}
-
-.columns {
-  margin-bottom: 0 !important;
 }
 
 /* SCROLLBAR */
@@ -29,6 +15,16 @@ section {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #888;
+}
+
+#level {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+.columns {
+  margin-bottom: 0 !important;
 }
 
 .panel-block {

@@ -1,3 +1,4 @@
+import * as Popover from "@radix-ui/react-popover";
 import React from "react";
 import {
   FaEllipsisH,
@@ -8,7 +9,6 @@ import {
   FaRegHeart,
   FaSync,
 } from "react-icons/fa";
-import { useWindowSize } from "react-use";
 import {
   toggleTracksInPlaylist,
   useAppStore,
@@ -18,12 +18,51 @@ import {
   useUserStore,
 } from "../common/UserContextProvider";
 
+const AddOrRemoveFromPlaylist = ({
+  contextMenuId,
+  options,
+  mode,
+  onSubmit,
+  disabled,
+}) => (
+  <form>
+    <div className="field has-addons">
+      <div className="control">
+        <button type="button" className="button is-static is-small">
+          <span className="icon is-small">
+            {mode === "add" ? <FaPlus /> : <FaMinus />}
+          </span>
+        </button>
+      </div>
+      <div className="control is-expanded">
+        <span
+          className="select is-small is-fullwidth"
+          style={{ minWidth: "8em" }}
+        >
+          <select id={`mediaItem${contextMenuId}${mode}FromPlaylistSelect`}>
+            {options}
+          </select>
+        </span>
+      </div>
+      <div className="control">
+        <button
+          type="button"
+          className="button is-small is-primary"
+          onClick={onSubmit}
+          disabled={disabled}
+        >
+          Ok
+        </button>
+      </div>
+    </div>
+  </form>
+);
+
 export default function ActionMenu(props) {
   const selectedContextMenuId = useUserStore(
     (state) => state.selectedContextMenuId,
   );
   const playlists = useAppStore((state) => state.playlists);
-  const windowSize = useWindowSize();
 
   function toggleDropdown() {
     if (selectedContextMenuId === props.contextMenuId)
@@ -78,10 +117,8 @@ export default function ActionMenu(props) {
     (playlistTrack) => playlistTrack.track.id,
   );
   const isQueued = trackIds.every((trackId) => queueIds.includes(trackId));
-  const equalsQueue = isQueued && trackIds.length === queueIds.length;
 
   const contextMenuId = props.contextMenuId;
-  const isDropdownActive = selectedContextMenuId === contextMenuId;
 
   const addToPlaylistOptions = playlists
     .filter((playlist) => !playlist.favorites && !playlist.queue)
@@ -115,100 +152,28 @@ export default function ActionMenu(props) {
       </option>
     ));
 
-  const addToPlaylistPickerForm = (
-    <form>
-      <div className="field has-addons">
-        <div className="control">
-          <button type="button" className="button is-static is-small">
-            <span className="icon is-small">
-              <FaPlus />
-            </span>
-          </button>
-        </div>
-        <div className="control is-expanded">
-          <span className="select is-small is-fullwidth">
-            <select id={`mediaItem${contextMenuId}AddToPlaylistSelect`}>
-              {addToPlaylistOptions}
-            </select>
-          </span>
-        </div>
-        <div className="control">
-          <button
-            type="button"
-            className="button is-small is-primary"
-            onClick={() => addTracksToPlaylist(trackIds)}
-            disabled={!addToPlaylistOptions.length}
-          >
-            Ok
-          </button>
-        </div>
-      </div>
-    </form>
-  );
-
-  const removeFromPlaylistPickerForm = (
-    <form>
-      <div className="field has-addons">
-        <div className="control">
-          <button type="button" className="button is-static is-small">
-            <span className="icon is-small">
-              <FaMinus />
-            </span>
-          </button>
-        </div>
-        <div className="control is-expanded">
-          <span
-            className="select is-small is-fullwidth"
-            style={{ minWidth: "8em" }}
-          >
-            <select id={`mediaItem${contextMenuId}removeFromPlaylistSelect`}>
-              {removeFromPlaylistOptions}
-            </select>
-          </span>
-        </div>
-        <div className="control">
-          <button
-            type="button"
-            className="button is-small is-primary"
-            onClick={() => removeTracksFromPlaylist(trackIds)}
-            disabled={!removeFromPlaylistOptions.length}
-          >
-            Ok
-          </button>
-        </div>
-      </div>
-    </form>
-  );
-
-  const button = document.getElementById(`${contextMenuId}Button`);
-  const left = button ? button.getBoundingClientRect().left : 0;
-  const isRightAligned = left > windowSize.width / 2 ? "is-right" : "";
-
   return (
-    <div
-      className={`dropdown invisible group-hover:visible${isRightAligned}${isDropdownActive ? " is-active is-visible-important" : ""}`}
-      style={props.style}
-    >
-      <div className="dropdown-trigger">
+    <Popover.Root>
+      <Popover.Trigger>
         <button
           type="button"
           className="button is-small"
-          aria-haspopup="true"
-          id={`${contextMenuId}Button`}
           onClick={toggleDropdown}
         >
           <span className="icon is-small">
             <FaEllipsisH />
           </span>
         </button>
-      </div>
-      <div className="dropdown-menu" id="dropdown-menu2" role="menu">
-        <div className="dropdown-content">
-          <a
-            href="/"
-            className="dropdown-item"
+      </Popover.Trigger>
+      <Popover.Anchor />
+      <Popover.Portal>
+        <Popover.Content sideOffset={12} className="rounded bg-neutral-800 p-2">
+          <Popover.Arrow />
+
+          <button
+            type="button"
+            className="dropdown-item flex items-center gap-2"
             onClick={(e) => {
-              e.preventDefault();
               handleToggleTracksInPlaylist(
                 favoritesPlaylist.id,
                 trackIds,
@@ -216,18 +181,18 @@ export default function ActionMenu(props) {
               );
             }}
           >
-            <p>
-              <span className={"icon has-text-success"}>
-                {isFavorite ? <FaHeart /> : <FaRegHeart />}
-              </span>
-              {isFavorite ? "Remove from " : "Add to "} Favorites
-            </p>
-          </a>
-          <a
-            href="/"
-            className="dropdown-item"
+            {isFavorite ? (
+              <FaHeart className="text-green-500" />
+            ) : (
+              <FaRegHeart className="text-neutral-500" />
+            )}
+            {isFavorite ? "Remove " : "Add"} Favorite
+          </button>
+
+          <button
+            type="button"
+            className="dropdown-item flex items-center gap-2"
             onClick={(e) => {
-              e.preventDefault();
               handleToggleTracksInPlaylist(
                 queuePlaylist.id,
                 trackIds,
@@ -235,20 +200,16 @@ export default function ActionMenu(props) {
               );
             }}
           >
-            <p>
-              <span
-                className={`icon ${isQueued ? "has-text-success" : "has-text-grey"}`}
-              >
-                <FaList />
-              </span>
-              {isQueued ? "Remove from " : "Add to "} Queue
-            </p>
-          </a>
-          <a
-            href="/"
-            className="dropdown-item"
+            <FaList
+              className={`${isQueued ? "text-green-500" : "text-neutral-500"}`}
+            />
+            {isQueued ? "Remove from " : "Add to "} Queue
+          </button>
+
+          <button
+            type="button"
+            className="dropdown-item flex items-center gap-2"
             onClick={(e) => {
-              e.preventDefault();
               handleToggleTracksInPlaylist(
                 queuePlaylist.id,
                 trackIds,
@@ -256,21 +217,27 @@ export default function ActionMenu(props) {
                 true,
               );
             }}
-            disabled={equalsQueue}
           >
-            <p>
-              <span
-                className={`icon ${equalsQueue ? "has-text-success" : "has-text-grey"}`}
-              >
-                <FaSync />
-              </span>
-              Replace Queue
-            </p>
-          </a>
-          <div className="dropdown-item">{addToPlaylistPickerForm}</div>
-          <div className="dropdown-item">{removeFromPlaylistPickerForm}</div>
-        </div>
-      </div>
-    </div>
+            <FaSync className="text-neutral-500" />
+            Replace Queue
+          </button>
+
+          <AddOrRemoveFromPlaylist
+            contextMenuId={contextMenuId}
+            options={addToPlaylistOptions}
+            mode={"add"}
+            onSubmit={() => addTracksToPlaylist(trackIds)}
+            disabled={!addToPlaylistOptions.length}
+          />
+          <AddOrRemoveFromPlaylist
+            contextMenuId={contextMenuId}
+            options={removeFromPlaylistOptions}
+            mode={"remove"}
+            onSubmit={() => removeTracksFromPlaylist(trackIds)}
+            disabled={!removeFromPlaylistOptions.length}
+          />
+        </Popover.Content>
+      </Popover.Portal>
+    </Popover.Root>
   );
 }

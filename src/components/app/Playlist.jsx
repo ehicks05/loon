@@ -129,7 +129,7 @@ export default function Playlist(props) {
   );
 
   const mediaList = (
-    <div ref={containerRef} className="h-full">
+    <div ref={containerRef} className="h-full overflow-hidden">
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable
           droppableId="droppable"

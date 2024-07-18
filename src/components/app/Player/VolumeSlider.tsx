@@ -1,7 +1,9 @@
 import React from "react";
 import { useUserStore, setVolume } from "../../../common/UserContextProvider";
-import Slider, { createSliderWithTooltip } from "rc-slider/es";
+import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
+
+const createSliderWithTooltip = Slider.createSliderWithTooltip;
 
 const SliderWithTooltip = createSliderWithTooltip(Slider);
 

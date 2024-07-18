@@ -4,6 +4,9 @@ import { BrowserRouter } from "react-router-dom";
 import Header from "./Header";
 import Player from "./components/app/Player/Player";
 import Routes from "./Routes";
+import SidePanel from "./SidePanel";
+import Title from "./Title";
+import PlaybackControls from "./components/app/Player/PlaybackControls";
 import { useUserStore, fetchUser } from "./common/UserContextProvider";
 import {
   useAppStore,
@@ -13,11 +16,8 @@ import {
 import { useWindowSize } from "react-use";
 import LoginForm from "./LoginForm";
 
-import SidePanel from "./SidePanel";
-import Title from "./Title";
-import PageLoader from "PageLoader";
-import PlaybackControls from "components/app/Player/PlaybackControls";
-import usePoll from "hooks/usePoll";
+import PageLoader from "@/common/PageLoader";
+import usePoll from "./hooks/usePoll";
 
 export default function App() {
   const [columnHeight, setColumnHeight] = useState("");
@@ -59,7 +59,8 @@ export default function App() {
 
   if (!user && !userLoading) return <LoginForm />;
 
-  if (!(user && tracks && playlists)) return <PageLoader />;
+  if (!(user && tracks && playlists))
+    return <PageLoader />;
 
   return (
     <BrowserRouter>

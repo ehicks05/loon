@@ -4,7 +4,7 @@ import { getTrackById } from "../../../common/AppContextProvider";
 import "lazysizes";
 import "lazysizes/plugins/attrchange/ls.attrchange";
 import { useUserStore } from "../../../common/UserContextProvider";
-import { PLACEHOLDER_IMAGE_URL, getImageUrl } from "components/utils";
+import { PLACEHOLDER_IMAGE_URL, getImageUrl } from "@/components/utils";
 import { useWindowSize } from "react-use";
 
 export default function TrackDescription() {

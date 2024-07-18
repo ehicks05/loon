@@ -1,6 +1,5 @@
 import React from "react";
-import Loader from "react-loader-spinner";
-import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
+import { RevolvingDot } from "react-loader-spinner";
 
 export default function PageLoader() {
   return (
@@ -12,7 +11,7 @@ export default function PageLoader() {
       }}
     >
       <div style={{ margin: "auto" }}>
-        <Loader type="RevolvingDot" color="#44CC44" height={150} width={150} />
+        <RevolvingDot color="#44CC44" height={150} width={150} />
       </div>
     </div>
   );

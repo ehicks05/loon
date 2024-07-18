@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Redirect } from "react-router-dom";
+// import { Redirect } from "react-router-dom";
 import { useAppStore, upsertPlaylist } from "../../common/AppContextProvider";
 
 import {
@@ -65,7 +65,7 @@ export default function PlaylistBuilder(props) {
 
   if (!treeData) return <div>Loading...</div>;
 
-  if (redirectToPlaylists) return <Redirect to={"/playlists"} />;
+  // if (redirectToPlaylists) return <Redirect to={"/playlists"} />;
 
   return (
     <div>

@@ -1,5 +1,5 @@
-import { useAppStore, getTrackById } from "common/AppContextProvider";
-import { useUserStore } from "common/UserContextProvider";
+import { useAppStore, getTrackById } from "@/common/AppContextProvider";
+import { useUserStore } from "@/common/UserContextProvider";
 import { useEffect } from "react";
 
 export default function Title() {

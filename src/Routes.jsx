@@ -3,7 +3,7 @@ import { Redirect, Route, Switch } from "react-router-dom";
 import { useUserStore } from "./common/UserContextProvider";
 
 import SystemSettings from "./components/app/admin/SystemSettings";
-import Playlist from "./components/app/Playlist";
+// import Playlist from "./components/app/Playlist";
 import Playlists from "./components/app/Playlists";
 import GeneralSettings from "./components/app/settings/GeneralSettings";
 import Eq from "./components/app/settings/Eq";
@@ -60,12 +60,12 @@ export default function Routes() {
         render={(props) => <Album {...props} />}
       />
       <Route exact path="/search" render={(props) => <Search {...props} />} />
-      <Route
+      {/* <Route
         exact
         path="/favorites"
         render={(props) => <Playlist {...props} />}
       />
-      <Route exact path="/queue" render={(props) => <Playlist {...props} />} />
+      <Route exact path="/queue" render={(props) => <Playlist {...props} />} /> */}
 
       <Switch>
         <Route
@@ -80,11 +80,11 @@ export default function Routes() {
         />
 
         <Route exact path="/playlists" render={() => <Playlists />} />
-        <Route
+        {/* <Route
           exact
           path="/playlists/:id"
           render={(props) => <Playlist {...props} />}
-        />
+        /> */}
       </Switch>
     </>
   );

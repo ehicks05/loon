@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import MediaItem from "../MediaItem";
-import {
-  AutoSizer,
-  CellMeasurer,
-  CellMeasurerCache,
-  List,
-} from "react-virtualized";
+// import {
+//   AutoSizer,
+//   CellMeasurer,
+//   CellMeasurerCache,
+//   List,
+// } from "react-virtualized";
 import TextInput from "../TextInput";
 import { FaSearch } from "react-icons/fa";
 import { useAppStore } from "../../common/AppContextProvider";
@@ -24,10 +24,10 @@ export default function Search() {
   const selectedTrackId = useUserStore(
     (state) => state.userState.selectedTrackId
   );
-  const cache = useRef(
-    new CellMeasurerCache({ fixedWidth: true, defaultHeight: 58 })
-  );
-  const listRef = useRef({});
+  // const cache = useRef(
+  //   new CellMeasurerCache({ fixedWidth: true, defaultHeight: 58 })
+  // );
+  // const listRef = useRef({});
 
   useEffect(() => {
     return function cleanup() {
@@ -98,7 +98,10 @@ export default function Search() {
           flexGrow: 1,
         }}
       >
-        <AutoSizer style={{ outline: 0 }}>
+        {searchResults.map((track, index) => <div>
+          <MediaItem playlistId={0} track={track} trackNumber={index + 1} />
+        </div>)}
+        {/* <AutoSizer style={{ outline: 0 }}>
           {({ width, height }) => {
             return (
               <List
@@ -116,29 +119,29 @@ export default function Search() {
               />
             );
           }}
-        </AutoSizer>
+        </AutoSizer> */}
       </div>
     </div>
   );
 
-  function renderRow({ index, key, style, parent }) {
-    const track = searchResults[index];
-    return (
-      <CellMeasurer
-        key={key}
-        cache={cache.current}
-        parent={parent}
-        columnIndex={0}
-        rowIndex={index}
-      >
-        <div style={style}>
-          <MediaItem playlistId={0} track={track} trackNumber={index + 1} />
-        </div>
-      </CellMeasurer>
-    );
-  }
+  // function renderRow({ index, key, style, parent }) {
+  //   const track = searchResults[index];
+  //   return (
+  //     <CellMeasurer
+  //       key={key}
+  //       cache={cache.current}
+  //       parent={parent}
+  //       columnIndex={0}
+  //       rowIndex={index}
+  //     >
+  //       <div style={style}>
+  //         <MediaItem playlistId={0} track={track} trackNumber={index + 1} />
+  //       </div>
+  //     </CellMeasurer>
+  //   );
+  // }
 
-  function setListRef(ref) {
-    listRef.current = ref;
-  }
+  // function setListRef(ref) {
+  //   listRef.current = ref;
+  // }
 }

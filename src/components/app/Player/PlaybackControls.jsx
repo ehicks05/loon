@@ -1,14 +1,14 @@
 import React from "react";
-import { FaVolumeUp, FaVolumeOff, FaRandom } from "react-icons/fa";
-import {
-  useUserStore,
-  setShuffle,
-  setMuted,
-} from "../../../common/UserContextProvider";
+import { FaRandom, FaVolumeOff, FaVolumeUp } from "react-icons/fa";
 import { useWindowSize } from "react-use";
-import TrackProgressBar from "./TrackProgressBar";
-import TrackDescription from "./TrackDescription";
+import {
+  setMuted,
+  setShuffle,
+  useUserStore,
+} from "../../../common/UserContextProvider";
 import PlaybackButtons from "./PlaybackButtons";
+import TrackDescription from "./TrackDescription";
+import TrackProgressBar from "./TrackProgressBar";
 import VolumeSlider from "./VolumeSlider";
 
 export default function PlaybackControls() {
@@ -73,7 +73,8 @@ function ShuffleButton() {
 
   return (
     <button
-      className={"button is-small" + (shuffle ? " is-success" : "")}
+      type="button"
+      className={`button is-small${shuffle ? " is-success" : ""}`}
       style={{ marginLeft: "1.5em" }}
       onClick={handleShuffleChange}
     >
@@ -92,6 +93,7 @@ function MuteButton() {
 
   return (
     <button
+      type="button"
       className="button is-small"
       style={{ margin: "0 .75em 0 .5em" }}
       onClick={handleMuteChange}

@@ -3,6 +3,12 @@ import React from "react";
 import { usePlayerStore } from "../../../common/PlayerContextProvider";
 import "rc-slider/assets/index.css";
 
+function formatTime(secs) {
+  const minutes = Math.floor(secs / 60) || 0;
+  const seconds = Math.round(secs - minutes * 60) || 0;
+  return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+}
+
 export default function TrackProgressBar() {
   const { elapsedTime, duration, setForcedElapsedTime } = usePlayerStore(
     (state) => ({
@@ -14,12 +20,6 @@ export default function TrackProgressBar() {
 
   const formattedElapsedTime = formatTime(Math.round(elapsedTime));
   const formattedDuration = formatTime(Math.round(duration));
-
-  function formatTime(secs) {
-    const minutes = Math.floor(secs / 60) || 0;
-    const seconds = Math.round(secs - minutes * 60) || 0;
-    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
-  }
 
   function HandleSetElapsedTime(value) {
     setForcedElapsedTime(value);

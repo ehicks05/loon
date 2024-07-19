@@ -25,37 +25,25 @@ const AddOrRemoveFromPlaylist = ({
   onSubmit,
   disabled,
 }) => (
-  <form>
-    <div className="field has-addons">
-      <div className="control">
-        <button type="button" className="button is-static is-small">
-          <span className="icon is-small">
-            {mode === "add" ? <FaPlus /> : <FaMinus />}
-          </span>
-        </button>
-      </div>
-      <div className="control is-expanded">
-        <span
-          className="select is-small is-fullwidth"
-          style={{ minWidth: "8em" }}
-        >
-          <select id={`mediaItem${contextMenuId}${mode}FromPlaylistSelect`}>
-            {options}
-          </select>
-        </span>
-      </div>
-      <div className="control">
-        <button
-          type="button"
-          className="button is-small is-primary"
-          onClick={onSubmit}
-          disabled={disabled}
-        >
-          Ok
-        </button>
-      </div>
+  <div className="flex items-center">
+    <span className="p-2">{mode === "add" ? <FaPlus /> : <FaMinus />}</span>
+    <div className="flex-grow p-2">
+      <select
+        className="w-full bg-neutral-700 p-1"
+        id={`mediaItem${contextMenuId}${mode}FromPlaylistSelect`}
+      >
+        {options}
+      </select>
     </div>
-  </form>
+    <button
+      type="button"
+      className="p-2 bg-black rounded"
+      onClick={onSubmit}
+      disabled={disabled}
+    >
+      Ok
+    </button>
+  </div>
 );
 
 export default function ActionMenu(props) {
@@ -154,17 +142,23 @@ export default function ActionMenu(props) {
 
   return (
     <Popover.Root>
-      <Popover.Trigger className="button is-small" onClick={toggleDropdown}>
+      <Popover.Trigger
+        className="p-2 rounded bg-black"
+        onClick={toggleDropdown}
+      >
         <FaEllipsisH />
       </Popover.Trigger>
       <Popover.Anchor />
       <Popover.Portal>
-        <Popover.Content sideOffset={12} className="rounded bg-neutral-800 p-2">
+        <Popover.Content
+          sideOffset={12}
+          className="flex flex-col text-neutral-400 p-2 rounded bg-neutral-800"
+        >
           <Popover.Arrow />
 
           <button
             type="button"
-            className="dropdown-item flex items-center gap-2"
+            className="dropdown-item flex items-center gap-2 p-2"
             onClick={(e) => {
               handleToggleTracksInPlaylist(
                 favoritesPlaylist.id,
@@ -183,7 +177,7 @@ export default function ActionMenu(props) {
 
           <button
             type="button"
-            className="dropdown-item flex items-center gap-2"
+            className="dropdown-item flex items-center gap-2 p-2"
             onClick={(e) => {
               handleToggleTracksInPlaylist(
                 queuePlaylist.id,
@@ -200,7 +194,7 @@ export default function ActionMenu(props) {
 
           <button
             type="button"
-            className="dropdown-item flex items-center gap-2"
+            className="dropdown-item flex items-center gap-2 p-2"
             onClick={(e) => {
               handleToggleTracksInPlaylist(
                 queuePlaylist.id,

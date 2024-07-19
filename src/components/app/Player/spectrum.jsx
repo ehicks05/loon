@@ -16,14 +16,14 @@ const OCTAVES = [
 ];
 
 function getFrequencyTiltAdjustment(binStartingFreq) {
-  let temp = binStartingFreq ? binStartingFreq : 20;
+  const temp = binStartingFreq ? binStartingFreq : 20;
 
   const octaveAdjustment = OCTAVES.find(
-    (octave) => octave.from <= temp && octave.to >= temp
+    (octave) => octave.from <= temp && octave.to >= temp,
   ).distance;
 
-  let dBAdjustment = octaveAdjustment * 1.1;
-  return Math.pow(10, dBAdjustment / 20);
+  const dBAdjustment = octaveAdjustment * 1.1;
+  return 10 ** (dBAdjustment / 20);
 }
 
 function getMergedFrequencyBins(dataArray, binWidth) {
@@ -33,12 +33,12 @@ function getMergedFrequencyBins(dataArray, binWidth) {
   while (i < dataArray.length && i * binWidth <= 22000) {
     let bins = Math.floor(size);
 
-    let linearAdjustment = getFrequencyTiltAdjustment(i * binWidth);
+    const linearAdjustment = getFrequencyTiltAdjustment(i * binWidth);
 
     if (i + bins > dataArray.length) bins = dataArray.length - i;
 
-    let slice = dataArray.slice(i, i + bins);
-    let average = (array) => array.reduce((o1, o2) => o1 + o2) / array.length;
+    const slice = dataArray.slice(i, i + bins);
+    const average = (array) => array.reduce((o1, o2) => o1 + o2) / array.length;
     const avg = average(slice);
 
     mergedData.push(avg * linearAdjustment);
@@ -100,7 +100,7 @@ export default function renderSpectrumFrame() {
     const g = 250 * (i / bufferLength);
     const b = 50;
 
-    ctx.fillStyle = "rgb(" + r + "," + g + "," + b + ")";
+    ctx.fillStyle = `rgb(${r},${g},${b})`;
     ctx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
 
     x += barWidth + 1;

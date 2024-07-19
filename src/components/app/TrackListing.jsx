@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useMeasure } from "react-use";
 import { FixedSizeList as List } from "react-window";
-import { useAppStore } from "../../common/AppContextProvider";
 import {
   setSelectedContextMenuId,
   useUserStore,
@@ -21,6 +20,7 @@ export const TrackListing = ({ tracks }) => {
   const selectedTrackId = useUserStore(
     (state) => state.userState.selectedTrackId,
   );
+  const selectedTrackIndex = tracks.findIndex((t) => t.id === selectedTrackId);
 
   useEffect(() => {
     return function cleanup() {
@@ -28,10 +28,9 @@ export const TrackListing = ({ tracks }) => {
     };
   }, []);
 
-  const scrollToIndex = () => {
-    const index = tracks.find((track) => track.id === selectedTrackId);
-    listRef.current.scrollToItem(index, "center");
-  };
+  useEffect(() => {
+    listRef.current.scrollToItem(selectedTrackIndex, "smart");
+  }, [selectedTrackIndex]);
 
   return (
     <div ref={containerRef} className="flex h-full flex-grow flex-col">

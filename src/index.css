@@ -17,12 +17,6 @@ section {
   background: #888;
 }
 
-#level {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-}
-
 /* copied from MyHelmet */
 
 .playingHighlight {
@@ -47,10 +41,6 @@ section {
 
 /* THEMING */
 
-#left-column {
-  background-color: #f4f4f4;
-}
-
 .dropdown a {
   color: #666;
 }
@@ -71,12 +61,6 @@ section {
   .myLevel {
     background-color: #282f2f;
     color: #ddd;
-  }
-  #left-column {
-    background-color: #282f2f;
-  }
-  #headerLogo {
-    filter: invert(100%);
   }
 
   .dropdown a {

@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from "react";
 // import { Redirect } from "react-router-dom";
-import { useAppStore, upsertPlaylist } from "../../common/AppContextProvider";
+import { upsertPlaylist, useAppStore } from "../../common/AppContextProvider";
 
 import {
-  FaRegCheckSquare,
-  FaRegPlusSquare,
-  FaChevronRight,
   FaChevronDown,
-  FaRegMinusSquare,
-  FaRegSquare,
+  FaChevronRight,
+  FaRegCheckSquare,
+  FaRegFile,
   FaRegFolder,
   FaRegFolderOpen,
-  FaRegFile,
+  FaRegMinusSquare,
+  FaRegPlusSquare,
+  FaRegSquare,
 } from "react-icons/fa";
 
 import CheckboxTree from "react-checkbox-tree";
 import "react-checkbox-tree/lib/react-checkbox-tree.css";
+import superFetch from "../../common/SuperFetch";
 import TextInput from "../TextInput";
 
 export default function PlaylistBuilder(props) {
@@ -28,18 +29,20 @@ export default function PlaylistBuilder(props) {
   const playlists = useAppStore((state) => state.playlists);
 
   useEffect(() => {
-    fetch("/library/getLibraryTrackPaths", { method: "GET" })
+    superFetch("/library/getLibraryTrackPaths", { method: "GET" })
       .then((response) => response.json())
       .then((json) => setTreeData(json));
   }, []);
 
   useEffect(() => {
-    let playlistId = props.match.params.id ? Number(props.match.params.id) : 0;
+    const playlistId = props.match.params.id
+      ? Number(props.match.params.id)
+      : 0;
     if (playlistId) {
       const playlist = playlists.find((playlist) => playlist.id === playlistId);
       setPlaylist(playlist);
       setChecked(
-        playlist.playlistTracks.map((playlistTrack) => playlistTrack.track.id)
+        playlist.playlistTracks.map((playlistTrack) => playlistTrack.track.id),
       );
     }
   }, [playlists, props.match.params.id]);
@@ -120,7 +123,7 @@ export default function PlaylistBuilder(props) {
           }}
         />
 
-        <button className={"button is-primary"} onClick={save}>
+        <button type="button" className={"button is-primary"} onClick={save}>
           Save
         </button>
       </section>

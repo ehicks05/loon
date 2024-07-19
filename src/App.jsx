@@ -65,8 +65,8 @@ export default function App() {
                 <SidePanel />
               </div>
               <div className="flex-grow"> </div>
-              <div className="h-28">
-                <canvas id="spectrumCanvas" height={100} width={150} />
+              <div className="h-28 rounded-lg m-2 p-2 bg-neutral-800">
+                <canvas id="spectrumCanvas" />
               </div>
             </div>
           </div>

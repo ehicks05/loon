@@ -10,8 +10,40 @@ import {
   FaVolumeUp,
 } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useAppStore } from "./common/AppContextProvider";
 import { useUserStore } from "./common/UserContextProvider";
+
+function playlistToLink(playlist, selectedPlaylistId) {
+  return {
+    path: `/playlists/${playlist.id}`,
+    icon: <FaMusic />,
+    text: playlist.name,
+    currentlyPlaying: playlist.id === selectedPlaylistId,
+  };
+}
+
+const SidebarLink = ({ link }) => {
+  const location = useLocation();
+  const isActive = location.pathname === link.path;
+
+  return (
+    <NavLink
+      key={link.path}
+      to={link.path}
+      exact
+      className={`flex gap-2 items-center p-2 pl-4 rounded-lg hover:bg-neutral-700 ${isActive ? "text-white" : ""}`}
+    >
+      <span className="w-4 h-4">{link.icon}</span>
+      {link.text}
+      {link.currentlyPlaying && (
+        <span className="w-4 h-4 text-green-500 ml-3" title={"Active Playlist"}>
+          <FaVolumeUp aria-hidden="true" />
+        </span>
+      )}
+    </NavLink>
+  );
+};
 
 export default function SidePanel() {
   const playlists = useAppStore((state) => state.playlists);
@@ -48,52 +80,18 @@ export default function SidePanel() {
     { path: "/playlists", icon: <FaFolderOpen />, text: "Playlists" },
   ];
 
-  const links = defaultLinks.map((link) => linkToNavLink(link));
-
   const playlistLinks = playlists
     .filter((playlist) => !playlist.favorites && !playlist.queue)
-    .map((playlist) => playlistToLink(playlist))
-    .map((link) => linkToNavLink(link));
-
-  function playlistToLink(playlist) {
-    return {
-      path: `/playlists/${playlist.id}`,
-      icon: <FaMusic />,
-      text: playlist.name,
-      currentlyPlaying: playlist.id === selectedPlaylistId,
-    };
-  }
-
-  function linkToNavLink(link) {
-    const currentlyPlayingIcon = link.currentlyPlaying ? (
-      <span
-        className="panel-icon has-text-success"
-        style={{ marginLeft: ".75em" }}
-        title={"Active Playlist"}
-      >
-        <FaVolumeUp aria-hidden="true" />
-      </span>
-    ) : null;
-
-    return (
-      <NavLink
-        key={link.path}
-        to={link.path}
-        exact
-        className={"panel-block"}
-        activeClassName={"is-active"}
-      >
-        <span className="panel-icon">{link.icon}</span>
-        {link.text}
-        {currentlyPlayingIcon}
-      </NavLink>
-    );
-  }
+    .map((playlist) => playlistToLink(playlist, selectedPlaylistId));
 
   return (
-    <nav className={"panel"} style={{ maxWidth: "250px" }}>
-      {links}
-      {playlistLinks}
+    <nav className={"flex flex-col bg-neutral-800 rounded-lg m-2"}>
+      {defaultLinks.map((link) => (
+        <SidebarLink key={link.path} link={link} />
+      ))}
+      {playlistLinks.map((link) => (
+        <SidebarLink key={link.path} link={link} />
+      ))}
     </nav>
   );
 }

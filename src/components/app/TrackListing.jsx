@@ -40,7 +40,7 @@ export const TrackListing = ({ tracks }) => {
         height={containerHeight}
         itemCount={tracks.length}
         itemData={tracks}
-        itemKey={(_index, data) => data.id}
+        itemKey={(i) => tracks[i].id}
         itemSize={60}
       >
         {Row}

@@ -72,61 +72,53 @@ export default function MediaItem({
 
   return (
     <div
-      className={highlightClass}
+      className={`group flex h-full p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all ${highlightClass} ${missingFile ? "bg-red-400" : ""}`}
       id={`track${track.id}`}
       ref={innerRef}
       {...draggableProps}
       style={getRowStyle(draggableStyle, isDragging)}
+      onMouseEnter={handleHoverTrue}
+      onMouseLeave={handleHoverFalse}
     >
-      <div
-        className={
-          "group flex p-1 transition-all hover:bg-neutral-100 dark:hover:bg-neutral-800"
-        }
-        onMouseEnter={handleHoverTrue}
-        onMouseLeave={handleHoverFalse}
-        style={missingFile ? { color: "red" } : null}
-      >
-        <div className={"mr-1 min-w-8 text-right"}>{trackNumber}</div>
+      <div className={"mr-1 min-w-8 text-right"}>{trackNumber}</div>
 
-        <div {...dragHandleProps} className={"flex-grow"}>
-          <div
-            className="line-clamp-1 font-bold"
-            style={{ cursor: missingFile ? "default" : "pointer" }}
-            onClick={handleChangeTrack}
-            onKeyUp={handleChangeTrack}
+      <div {...dragHandleProps} className={"flex-grow"}>
+        <button
+          type="button"
+          disabled={missingFile}
+          className="line-clamp-1 font-bold"
+          onClick={handleChangeTrack}
+          onKeyUp={handleChangeTrack}
+        >
+          {trackTitle}
+        </button>
+        {missingFile && (
+          <span className={"tag is-normal is-danger ml-4"}>Track Missing</span>
+        )}
+        <span className="line-clamp-1 text-sm">
+          <Link
+            className="text-neutral-600 hover:text-neutral-300 dark:text-neutral-400 hover:dark:text-neutral-300"
+            to={`/artist/${artist}`}
           >
-            {trackTitle}
-          </div>
-          {missingFile && (
-            <span className={"tag is-normal is-danger ml-4"}>
-              Track Missing
-            </span>
-          )}
-          <span className="line-clamp-1 text-sm">
-            <Link
-              className="text-neutral-600 hover:text-neutral-300 dark:text-neutral-400 hover:dark:text-neutral-300"
-              to={`/artist/${artist}`}
-            >
-              {artist}
-            </Link>
-            {" - "}
-            <Link
-              className="text-neutral-600 hover:text-neutral-300 dark:text-neutral-400 hover:dark:text-neutral-300"
-              to={`/artist/${track.albumArtist}/album/${album}`}
-            >
-              <i>{album}</i>
-            </Link>
-          </span>
-        </div>
-
-        <div className={"mr-2 flex basis-5 items-center"}>
-          {showActionMenu && (
-            <ActionMenu tracks={[track]} contextMenuId={contextMenuId} />
-          )}
-        </div>
-
-        <div className="basis-5">{formattedDuration}</div>
+            {artist}
+          </Link>
+          {" - "}
+          <Link
+            className="text-neutral-600 hover:text-neutral-300 dark:text-neutral-400 hover:dark:text-neutral-300"
+            to={`/artist/${track.albumArtist}/album/${album}`}
+          >
+            <i>{album}</i>
+          </Link>
+        </span>
       </div>
+
+      <div className={"mr-2 flex basis-5 items-center"}>
+        {showActionMenu && (
+          <ActionMenu tracks={[track]} contextMenuId={contextMenuId} />
+        )}
+      </div>
+
+      <div className="basis-5">{formattedDuration}</div>
     </div>
   );
 }

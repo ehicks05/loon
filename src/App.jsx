@@ -54,7 +54,7 @@ export default function App() {
       <div className="h-dvh flex flex-col text-neutral-300 bg-neutral-950">
         <Title />
         <Navbar />
-        <div className={"flex flex-grow overflow-hidden"}>
+        <div className={"flex flex-grow m-2 gap-2 overflow-hidden"}>
           <div
             className={
               "hidden sm:block h-full w-60 overflow-y-auto overflow-x-hidden"
@@ -64,14 +64,14 @@ export default function App() {
               <div className="overflow-y-auto">
                 <SidePanel />
               </div>
-              <div className="h-28 rounded-lg m-2 p-2 bg-neutral-900">
+              <div className="h-28 rounded-lg p-2 bg-neutral-900">
                 <canvas id="spectrumCanvas" height={"100%"} />
               </div>
             </div>
           </div>
           <div
             className={
-              "w-full overflow-y-auto overflow-x-hidden bg-neutral-100 dark:bg-neutral-900"
+              "w-full rounded-lg overflow-y-auto overflow-x-hidden p-2 bg-neutral-100 dark:bg-neutral-900"
             }
           >
             <Routes />

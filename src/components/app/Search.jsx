@@ -42,19 +42,15 @@ export default function Search() {
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
-      <section className="section flex flex-col">
-        <form>
-          <TextInput
-            label="Search"
-            leftIcon={<FaSearch color="gray" />}
-            value={searchKey}
-            onChange={handleSearchInput}
-            horizontal={false}
-            hideLabel={true}
-            autoComplete="off"
-          />
-        </form>
-      </section>
+      <TextInput
+        label="Search"
+        leftIcon={<FaSearch color="gray" />}
+        value={searchKey}
+        onChange={handleSearchInput}
+        horizontal={false}
+        hideLabel={true}
+        autoComplete="off"
+      />
 
       <TrackListing tracks={searchResults} />
     </div>

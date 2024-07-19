@@ -85,7 +85,7 @@ export default function SidePanel() {
     .map((playlist) => playlistToLink(playlist, selectedPlaylistId));
 
   return (
-    <nav className={"flex flex-col bg-neutral-900 rounded-lg m-2"}>
+    <nav className={"flex flex-col bg-neutral-900 rounded-lg"}>
       {defaultLinks.map((link) => (
         <SidebarLink key={link.path} link={link} />
       ))}

@@ -30,7 +30,7 @@ export default function TextInput(props) {
       {leftIcon && <span className="">{leftIcon}</span>}
       <input
         type="text"
-        className={"w-full bg-neutral-800"}
+        className={"w-full bg-neutral-800 outline-none"}
         size={size}
         placeholder={props.label}
         id={props.id}

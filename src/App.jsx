@@ -51,7 +51,7 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <div className="h-dvh flex flex-col">
+      <div className="h-dvh flex flex-col text-neutral-300 bg-neutral-950">
         <Title />
         <Navbar />
         <div className={"flex flex-grow overflow-hidden"}>

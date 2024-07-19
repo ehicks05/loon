@@ -1,9 +1,9 @@
 import React from "react";
-import { setSelectedTrackId } from "../../../common/UserContextProvider";
 import { usePlayerStore } from "../../../common/PlayerContextProvider";
+import { setSelectedTrackId } from "../../../common/UserContextProvider";
 
-import { useWindowSize } from "react-use";
 import { FaPause, FaPlay, FaStepBackward, FaStepForward } from "react-icons/fa";
+import { useWindowSize } from "react-use";
 import { getNewTrackId } from "./trackDeterminationUtils";
 
 export default function PlaybackButtons() {
@@ -15,38 +15,34 @@ export default function PlaybackButtons() {
     setSelectedTrackId(getNewTrackId(direction));
   }
 
+  const PlaybackStateIcon = playbackState === "playing" ? FaPause : FaPlay;
+
   return (
-    <>
+    <div className="flex gap-0.5 items-center">
       <button
-        className="button"
-        style={{ height: "36px", width: "36px" }}
+        type="button"
+        className="p-2 rounded bg-black hover:bg-neutral-900"
         onClick={() => handleTrackChange("prev")}
       >
-        <span className="icon">
-          <FaStepBackward />
-        </span>
+        <FaStepBackward className="h-5 w-5" />
       </button>
       <button
-        className="button is-medium"
-        style={{ height: "45px", width: "45px" }}
+        type="button"
+        className="p-2 rounded bg-black hover:bg-neutral-900"
         onClick={() =>
           setPlaybackState(playbackState === "playing" ? "paused" : "playing")
         }
       >
-        <span className="icon">
-          {playbackState === "playing" ? <FaPause /> : <FaPlay />}
-        </span>
+        <PlaybackStateIcon className="h-7 w-7" />
       </button>
       <button
-        className="button"
-        style={{ height: "36px", width: "36px" }}
+        type="button"
+        className="p-2 rounded bg-black hover:bg-neutral-900"
         onClick={() => handleTrackChange("next")}
       >
-        <span className="icon">
-          <FaStepForward />
-        </span>
+        <FaStepForward className="h-5 w-5" />
       </button>
       {width >= 768 && <span style={{ paddingLeft: "8px" }}> </span>}
-    </>
+    </div>
   );
 }

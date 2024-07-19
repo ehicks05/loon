@@ -1,15 +1,15 @@
-import { Link } from "react-router-dom";
 import React from "react";
+import { Link } from "react-router-dom";
 import { getTrackById } from "../../../common/AppContextProvider";
 import "lazysizes";
 import "lazysizes/plugins/attrchange/ls.attrchange";
-import { useUserStore } from "../../../common/UserContextProvider";
 import { PLACEHOLDER_IMAGE_URL, getImageUrl } from "@/components/utils";
 import { useWindowSize } from "react-use";
+import { useUserStore } from "../../../common/UserContextProvider";
 
 export default function TrackDescription() {
   const selectedTrackId = useUserStore(
-    (state) => state.userState.selectedTrackId
+    (state) => state.userState.selectedTrackId,
   );
   const { width } = useWindowSize();
 
@@ -30,24 +30,23 @@ export default function TrackDescription() {
       src={PLACEHOLDER_IMAGE_URL}
       data-src={imageUrl}
       alt="Placeholder"
-      className="lazyload"
-      style={{ height: "48px", margin: "0", paddingRight: "8px" }}
+      className="lazyload h-12 m-0"
     />
   );
 
   return (
-    <div className="level-item">
+    <div className="flex gap-2">
       {albumArt}
       <span
         id="track"
-        style={{ maxWidth: textWidth, maxHeight: "48px", overflow: "auto" }}
+        className="flex flex-col max-h-12 overflow-auto"
+        style={{ maxWidth: textWidth }}
       >
         <b>{title}</b>
-        <br />
-        <span id="artistAlbumText" style={{ fontSize: ".875rem" }}>
-          <Link to={"/artist/" + artist}>{artist}</Link>
+        <span id="artistAlbumText" className="text-sm">
+          <Link to={`/artist/${artist}`}>{artist}</Link>
           {" - "}
-          <Link to={"/artist/" + albumArtist + "/album/" + album}>
+          <Link to={`/artist/${albumArtist}/album/${album}`}>
             <i>{album}</i>
           </Link>
         </span>

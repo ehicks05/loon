@@ -1,6 +1,6 @@
+import Slider from "rc-slider/es";
 import React from "react";
 import { usePlayerStore } from "../../../common/PlayerContextProvider";
-import Slider from "rc-slider/es";
 import "rc-slider/assets/index.css";
 
 export default function TrackProgressBar() {
@@ -9,7 +9,7 @@ export default function TrackProgressBar() {
       elapsedTime: state.elapsedTime,
       duration: state.duration,
       setForcedElapsedTime: state.setForcedElapsedTime,
-    })
+    }),
   );
 
   const formattedElapsedTime = formatTime(Math.round(elapsedTime));
@@ -26,11 +26,8 @@ export default function TrackProgressBar() {
   }
 
   return (
-    <div className="level-item" style={{ marginBottom: "0" }}>
-      <span
-        id="timeElapsed"
-        style={{ fontSize: ".875rem", marginRight: "10px" }}
-      >
+    <div className="flex gap-3 items-center">
+      <span id="timeElapsed" className="text-sm">
         {formattedElapsedTime}
       </span>
       <Slider
@@ -46,7 +43,7 @@ export default function TrackProgressBar() {
         step={0.01}
         onChange={HandleSetElapsedTime}
       />
-      <span id="duration" style={{ fontSize: ".875rem", marginLeft: "8px" }}>
+      <span id="duration" className="text-sm">
         {formattedDuration}
       </span>
     </div>

@@ -47,10 +47,6 @@ section {
 
 /* THEMING */
 
-.myLevel {
-  color: #4a4a4a;
-  background-color: #f4f4f4;
-}
 #left-column {
   background-color: #f4f4f4;
 }
@@ -65,12 +61,6 @@ section {
   color: #666;
 }
 .card a:hover {
-  color: #888;
-}
-.myLevel a {
-  color: #666;
-}
-.myLevel a:hover {
   color: #888;
 }
 .navbar {
@@ -99,12 +89,6 @@ section {
     color: #aaa;
   }
   .card a:hover {
-    color: #ccc;
-  }
-  .myLevel a {
-    color: #aaa;
-  }
-  .myLevel a:hover {
     color: #ccc;
   }
 

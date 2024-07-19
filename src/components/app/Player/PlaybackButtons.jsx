@@ -3,13 +3,11 @@ import { usePlayerStore } from "../../../common/PlayerContextProvider";
 import { setSelectedTrackId } from "../../../common/UserContextProvider";
 
 import { FaPause, FaPlay, FaStepBackward, FaStepForward } from "react-icons/fa";
-import { useWindowSize } from "react-use";
 import { getNewTrackId } from "./trackDeterminationUtils";
 
 export default function PlaybackButtons() {
   const playbackState = usePlayerStore((state) => state.playbackState);
   const setPlaybackState = usePlayerStore((state) => state.setPlaybackState);
-  const { width } = useWindowSize();
 
   function handleTrackChange(direction) {
     setSelectedTrackId(getNewTrackId(direction));
@@ -42,7 +40,6 @@ export default function PlaybackButtons() {
       >
         <FaStepForward className="h-5 w-5" />
       </button>
-      {width >= 768 && <span style={{ paddingLeft: "8px" }}> </span>}
     </div>
   );
 }

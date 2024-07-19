@@ -20,7 +20,7 @@ export default function PlaybackControls() {
       <div className="z-10">
         <nav className="flex flex-col md:flex-row items-center justify-between">
           <div className="flex justify-center">
-            <div className="hidden md:block">
+            <div className="hidden md:block md:pr-2">
               <PlaybackButtons />
             </div>
             <TrackDescription />

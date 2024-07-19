@@ -27,8 +27,10 @@ export const fetchUser = async () => {
 export const setUserState = (userState) => useUserStore.setState({ userState });
 export const fetchUserState = async () => {
   try {
-    const response = await superFetch(baseUrl + "currentUserState");
-    useUserStore.setState({ userState: await response.json() });
+    const response = await superFetch(`${baseUrl}currentUserState`);
+    const userState = await response.json();
+
+    useUserStore.setState({ userState });
   } catch (err) {
     console.log("unable to load userState");
   }
@@ -49,8 +51,6 @@ export const updateUser = async (url, data) => {
     setUserState({ ...useUserStore.getState().userState, [key]: val }),
   );
 
-  console.log("hi");
-
   if (data.volume) {
     await debouncedVolumeFetch(baseUrl + url, {
       method: "PUT",
@@ -66,13 +66,13 @@ export const setSelectedPlaylistId = async (
   selectedPlaylistId,
   selectedTrackId,
 ) => {
-  updateUser(useUserStore.getState().user.id + "/saveProgress", {
+  updateUser(`${useUserStore.getState().user.id}/saveProgress`, {
     selectedPlaylistId,
     selectedTrackId,
   });
 };
 export const setSelectedTrackId = async (selectedTrackId) => {
-  updateUser(useUserStore.getState().user.id + "/saveProgress", {
+  updateUser(`${useUserStore.getState().user.id}/saveProgress`, {
     selectedPlaylistId: useUserStore.getState().userState.selectedPlaylistId,
     selectedTrackId,
   });

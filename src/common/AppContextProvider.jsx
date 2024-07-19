@@ -24,7 +24,7 @@ export const fetchTracks = async () => {
 };
 
 export const fetchPlaylists = async () => {
-  const response = await superFetch(playlistBaseUrl + "getPlaylists");
+  const response = await superFetch(`${playlistBaseUrl}getPlaylists`);
   const json = await response.json();
   const playlists = json.map((p) => {
     return { ...p, playlistTracks: _.sortBy(p.playlistTracks, "index") };
@@ -33,7 +33,7 @@ export const fetchPlaylists = async () => {
 };
 
 export const upsertPlaylist = async (formData) => {
-  await superFetch(playlistBaseUrl + "addOrModify", {
+  await superFetch(`${playlistBaseUrl}addOrModify`, {
     method: "POST",
     body: formData,
   });
@@ -49,7 +49,7 @@ export const toggleTracksInPlaylist = async (playlistId, formData) => {
 };
 
 export const copyPlaylist = async (formData) => {
-  const id = await superFetch(playlistBaseUrl + "copyFrom", {
+  const id = await superFetch(`${playlistBaseUrl}copyFrom`, {
     method: "POST",
     body: formData,
   })
@@ -105,7 +105,7 @@ export const dragAndDrop = async (formData) => {
   playlist.playlistTracks = tracks;
   useAppStore.setState({ playlists: [...rest, playlist] });
 
-  await superFetch(playlistBaseUrl + "dragAndDrop", {
+  await superFetch(`${playlistBaseUrl}dragAndDrop`, {
     method: "POST",
     body: formData,
   });

@@ -1,22 +1,22 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
 import {
-  FaSearch,
-  FaMusic,
-  FaUsers,
+  FaCompactDisc,
   FaFolderOpen,
   FaHeart,
   FaList,
-  FaCompactDisc,
+  FaMusic,
+  FaSearch,
+  FaUsers,
   FaVolumeUp,
 } from "react-icons/fa";
+import { NavLink } from "react-router-dom";
 import { useAppStore } from "./common/AppContextProvider";
 import { useUserStore } from "./common/UserContextProvider";
 
 export default function SidePanel() {
   const playlists = useAppStore((state) => state.playlists);
   const selectedPlaylistId = useUserStore(
-    (state) => state.userState.selectedPlaylistId
+    (state) => state.userState.selectedPlaylistId,
   );
 
   if (!playlists) return <div>Loading...</div>;
@@ -50,14 +50,14 @@ export default function SidePanel() {
 
   const links = defaultLinks.map((link) => linkToNavLink(link));
 
-  let playlistLinks = playlists
+  const playlistLinks = playlists
     .filter((playlist) => !playlist.favorites && !playlist.queue)
     .map((playlist) => playlistToLink(playlist))
     .map((link) => linkToNavLink(link));
 
   function playlistToLink(playlist) {
     return {
-      path: "/playlists/" + playlist.id,
+      path: `/playlists/${playlist.id}`,
       icon: <FaMusic />,
       text: playlist.name,
       currentlyPlaying: playlist.id === selectedPlaylistId,

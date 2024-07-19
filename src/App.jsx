@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { BrowserRouter } from "react-router-dom";
 
 import { useWindowSize } from "react-use";
-import Header from "./Header";
 import LoginForm from "./LoginForm";
+import Navbar from "./Navbar";
 import Routes from "./Routes";
 import SidePanel from "./SidePanel";
 import Title from "./Title";
@@ -63,35 +63,36 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <Title />
-      <Header />
-      <div className={"columns is-gapless"}>
-        <div
-          id="left-column"
-          style={{ height: columnHeight, overflow: "hidden auto" }}
-          className={"column is-narrow is-hidden-touch"}
-        >
+      <div className="h-dvh flex flex-col">
+        <Title />
+        <Navbar />
+        <div className={"flex h-full"}>
           <div
-            style={{ height: "100%", display: "flex", flexDirection: "column" }}
+            className={
+              "hidden sm:block h-full overflow-y-auto overflow-x-hidden"
+            }
           >
-            <div style={{ overflowY: "auto" }}>
-              <SidePanel />
-            </div>
-            <div style={{ flex: "1 1 auto" }}> </div>
-            <div style={{ height: "100px" }}>
-              <canvas id="spectrumCanvas" height={100} width={150} />
+            <div className="h-full flex flex-col">
+              <div className="overflow-y-auto">
+                <SidePanel />
+              </div>
+              <div className="flex-grow"> </div>
+              <div className="h-28">
+                <canvas id="spectrumCanvas" height={100} width={150} />
+              </div>
             </div>
           </div>
+          <div
+            className={
+              "w-full overflow-y-auto overflow-x-hidden bg-neutral-100 dark:bg-neutral-900"
+            }
+          >
+            <Routes />
+          </div>
         </div>
-        <div
-          className="column"
-          style={{ height: columnHeight, overflow: "hidden auto" }}
-        >
-          <Routes />
-        </div>
+        <Player />
+        <PlaybackControls />
       </div>
-      <Player />
-      <PlaybackControls />
     </BrowserRouter>
   );
 }

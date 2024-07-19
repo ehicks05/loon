@@ -60,13 +60,12 @@ export default function App() {
               "hidden sm:block h-full w-60 overflow-y-auto overflow-x-hidden"
             }
           >
-            <div className="h-full flex flex-col">
+            <div className="h-full flex flex-col justify-between">
               <div className="overflow-y-auto">
                 <SidePanel />
               </div>
-              <div className="flex-grow"> </div>
-              <div className="h-28 rounded-lg m-2 p-2 bg-neutral-800">
-                <canvas id="spectrumCanvas" />
+              <div className="h-28 rounded-lg m-2 p-2 bg-neutral-900">
+                <canvas id="spectrumCanvas" height={"100%"} />
               </div>
             </div>
           </div>

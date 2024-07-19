@@ -1,6 +1,6 @@
+import _ from "lodash";
 import create from "zustand";
 import { devtools } from "zustand/middleware";
-import _ from "lodash";
 import superFetch from "./SuperFetch";
 
 const baseUrl = "/users/";
@@ -10,7 +10,7 @@ export const useUserStore = create(
     user: null,
     userState: null,
     selectedContextMenuId: null,
-  }))
+  })),
 );
 
 export const setUser = (user) => useUserStore.setState({ user });
@@ -46,8 +46,10 @@ const debouncedVolumeFetch = _.debounce(superFetch, 2000);
 
 export const updateUser = async (url, data) => {
   Object.entries(data).forEach(([key, val]) =>
-    setUserState({ ...useUserStore.getState().userState, [key]: val })
+    setUserState({ ...useUserStore.getState().userState, [key]: val }),
   );
+
+  console.log("hi");
 
   if (data.volume) {
     await debouncedVolumeFetch(baseUrl + url, {
@@ -62,7 +64,7 @@ export const updateUser = async (url, data) => {
 
 export const setSelectedPlaylistId = async (
   selectedPlaylistId,
-  selectedTrackId
+  selectedTrackId,
 ) => {
   updateUser(useUserStore.getState().user.id + "/saveProgress", {
     selectedPlaylistId,

@@ -15,8 +15,11 @@ export default function VolumeSlider() {
         step={1}
         onChange={setVolume}
         trackStyle={{ backgroundColor: "hsl(141, 71%, 48%)", height: 4 }}
-        railStyle={{ backgroundColor: "#ddd" }}
-        handleStyle={{ borderColor: "hsl(141, 71%, 48%)" }}
+        railStyle={{ backgroundColor: "#aaa" }}
+        handleStyle={{
+          borderColor: "hsl(141, 11%, 88%)",
+          backgroundColor: "hsl(141, 11%, 88%)",
+        }}
       />
     </div>
   );

@@ -35,8 +35,11 @@ export default function TrackProgressBar() {
         id="progress"
         style={{ width: "100%", margin: "0", cursor: "pointer" }}
         trackStyle={{ backgroundColor: "hsl(141, 71%, 48%)", height: 4 }}
-        railStyle={{ backgroundColor: "#ddd" }}
-        handleStyle={{ borderColor: "hsl(141, 71%, 48%)" }}
+        railStyle={{ backgroundColor: "#aaa" }}
+        handleStyle={{
+          borderColor: "hsl(141, 11%, 88%)",
+          backgroundColor: "hsl(141, 11%, 88%)",
+        }}
         type="range"
         value={elapsedTime}
         max={duration}

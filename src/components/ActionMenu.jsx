@@ -154,16 +154,8 @@ export default function ActionMenu(props) {
 
   return (
     <Popover.Root>
-      <Popover.Trigger>
-        <button
-          type="button"
-          className="button is-small"
-          onClick={toggleDropdown}
-        >
-          <span className="icon is-small">
-            <FaEllipsisH />
-          </span>
-        </button>
+      <Popover.Trigger className="button is-small" onClick={toggleDropdown}>
+        <FaEllipsisH />
       </Popover.Trigger>
       <Popover.Anchor />
       <Popover.Portal>

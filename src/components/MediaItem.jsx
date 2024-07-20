@@ -26,7 +26,7 @@ export default function MediaItem({
     (state) => state.userState.selectedTrackId,
   );
   const selectedContextMenuId = useUserStore(
-    (state) => state.selectedContextMenuId,
+    (state) => state.userState.selectedContextMenuId,
   );
 
   function handleHoverTrue() {

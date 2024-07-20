@@ -2,19 +2,23 @@ import React from "react";
 import "lazysizes";
 import "lazysizes/plugins/attrchange/ls.attrchange";
 import _ from "lodash";
-import { useAppStore } from "../../common/AppContextProvider";
+import { type Track, useAppStore } from "../../common/AppContextProvider";
 import { ArtistCard } from "../ArtistCard";
+
+export interface Artist {
+  name: string;
+  imageId: string;
+}
+
+const trackToArtist = (track: Track): Artist => ({
+  name: track.artist,
+  imageId: track.artistThumbnailId,
+});
 
 export default function Artists() {
   const tracks = useAppStore((state) => state.tracks);
 
-  const artists = _.uniqBy(
-    tracks.map((track) => ({
-      artistName: track.artist,
-      artistImageId: track.artistThumbnailId,
-    })),
-    (o) => o.artistName,
-  );
+  const artists = _.uniqBy(tracks.map(trackToArtist), (o: Artist) => o.name);
 
   return (
     <>

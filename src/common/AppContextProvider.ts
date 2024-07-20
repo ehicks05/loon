@@ -5,10 +5,48 @@ import superFetch from "./SuperFetch";
 const tracksBaseUrl = "/library/";
 const playlistBaseUrl = "/playlists/";
 
-export const useAppStore = create(() => ({
-  tracks: null,
-  playlists: null,
-}));
+export interface Track {
+  id: string;
+  artist: string;
+  title: string;
+  album: string;
+  albumArtist: string;
+  extension: string; // enum?
+  duration: number;
+  trackNumber: number;
+  discNumber: number;
+  trackGainLinear: string;
+  trackPeak: string;
+  artistImageId: string;
+  albumImageId: string;
+  artistThumbnailId: string;
+  albumThumbnailId: string;
+  missingFile: boolean;
+  sampleRate: number;
+  bitDepth: number;
+  formattedDuration: string;
+}
+
+export interface PlaylistTrack {
+  index: number;
+  track: Pick<Track, "id" | "formattedDuration">;
+}
+
+export interface Playlist {
+  id: number;
+  userId: number;
+  name: string;
+  favorites: boolean;
+  queue: boolean;
+  playlistTracks: PlaylistTrack[];
+}
+
+export const useAppStore = create<{ tracks: Track[]; playlists: Playlist[] }>(
+  () => ({
+    tracks: [],
+    playlists: [],
+  }),
+);
 
 export const useTrackMap = () => {
   return useAppStore((state) => _.keyBy(state.tracks, "id"));
@@ -69,7 +107,7 @@ export const deletePlaylist = async (playlistId) => {
 export const clearPlaylist = async (playlistId) => {
   const formData = new FormData();
   formData.append("mode", "");
-  formData.append("replaceExisting", true);
+  formData.append("replaceExisting", "true");
   formData.append("trackIds", []);
   await superFetch(playlistBaseUrl + playlistId, {
     method: "POST",
@@ -96,11 +134,17 @@ export const dragAndDrop = async (formData) => {
   const playlist = playlists.find((p) => p.id === playlistId);
   const rest = playlists.filter((p) => p.id !== playlistId);
 
+  if (!playlist) {
+    return;
+  }
+
   const tracks = [...playlist.playlistTracks];
   const track = tracks[oldIndex];
   tracks.splice(oldIndex, 1);
   tracks.splice(newIndex, 0, track);
-  tracks.forEach((track, i) => (track.index = i));
+  tracks.forEach((track, i) => {
+    track.index = i;
+  });
 
   playlist.playlistTracks = tracks;
   useAppStore.setState({ playlists: [...rest, playlist] });

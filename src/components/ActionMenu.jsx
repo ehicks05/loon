@@ -48,7 +48,7 @@ const AddOrRemoveFromPlaylist = ({
 
 export default function ActionMenu(props) {
   const selectedContextMenuId = useUserStore(
-    (state) => state.selectedContextMenuId,
+    (state) => state.userState.selectedContextMenuId,
   );
   const playlists = useAppStore((state) => state.playlists);
 

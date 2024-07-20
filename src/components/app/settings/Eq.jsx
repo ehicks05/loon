@@ -19,7 +19,7 @@ export default function Eq() {
     setEq(eqNum, field, value);
   }
 
-  const cellClass = "border border-neutral-600 p-2";
+  const cellClass = "border border-neutral-700 p-2";
 
   const eqs = [
     {

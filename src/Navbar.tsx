@@ -7,7 +7,7 @@ import {
   MenuItem,
   MenuItems,
 } from "@headlessui/react";
-import React, { useState } from "react";
+import React from "react";
 import { FaBars, FaXmark } from "react-icons/fa6";
 import { Link, useHistory } from "react-router-dom";
 import { useLocation } from "react-router-dom";
@@ -27,8 +27,6 @@ function classNames(...classes) {
 
 export default function Navbar() {
   const user = useUserStore2((state) => state.user);
-  const [isActive, setIsActive] = useState(false);
-
   const { pathname } = useLocation();
   const history = useHistory();
 

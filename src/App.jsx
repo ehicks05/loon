@@ -51,7 +51,7 @@ export default function App() {
   }, [user, userLoading, libraryLoading]);
 
   if (!user && !userLoading) return <LoginForm />;
-  if (!(user && tracks && playlists)) return <PageLoader />;
+  if (!(user && tracks && playlists.length !== 0)) return <PageLoader />;
 
   return (
     <BrowserRouter>

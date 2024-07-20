@@ -4,16 +4,15 @@ import ActionMenu from "./ActionMenu";
 import "lazysizes";
 import "lazysizes/plugins/attrchange/ls.attrchange";
 import { useAppStore } from "../common/AppContextProvider";
+import type { Artist } from "./app/Artists";
 import { PLACEHOLDER_IMAGE_URL, getImageUrl } from "./utils";
 
-export function ArtistCard({ artist }) {
+export function ArtistCard({ artist }: { artist: Artist }) {
   const tracks = useAppStore((state) => state.tracks);
 
-  const imageUrl = getImageUrl(artist.artistImageId);
-  const contextMenuId = `artist=${artist.artistName}`;
-  const artistTracks = tracks.filter(
-    (track) => track.artist === artist.artistName,
-  );
+  const imageUrl = getImageUrl(artist.imageId);
+  const contextMenuId = `artist=${artist.name}`;
+  const artistTracks = tracks.filter((track) => track.artist === artist.name);
 
   return (
     <div>
@@ -29,7 +28,7 @@ export function ArtistCard({ artist }) {
         </div>
       </div>
       <div className="p-3">
-        <Link to={`/artist/${artist.artistName}`}>{artist.artistName}</Link>
+        <Link to={`/artist/${artist.name}`}>{artist.name}</Link>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import _ from "lodash";
 import create from "zustand";
+import { devtools } from "zustand/middleware";
 import superFetch from "./SuperFetch";
 
 const tracksBaseUrl = "/library/";
@@ -42,10 +43,13 @@ export interface Playlist {
 }
 
 export const useAppStore = create<{ tracks: Track[]; playlists: Playlist[] }>(
-  () => ({
-    tracks: [],
-    playlists: [],
-  }),
+  devtools(
+    () => ({
+      tracks: [] as Track[],
+      playlists: [] as Playlist[],
+    }),
+    { name: "app" },
+  ),
 );
 
 export const useTrackMap = () => {
@@ -58,7 +62,8 @@ export const useDistinctArtists = () => {
 
 export const fetchTracks = async () => {
   const response = await superFetch(tracksBaseUrl);
-  useAppStore.setState({ tracks: await response.json() });
+  const tracks = await response.json();
+  useAppStore.setState((state) => ({ ...state, tracks }));
 };
 
 export const fetchPlaylists = async () => {
@@ -67,7 +72,7 @@ export const fetchPlaylists = async () => {
   const playlists = json.map((p) => {
     return { ...p, playlistTracks: _.sortBy(p.playlistTracks, "index") };
   });
-  useAppStore.setState({ playlists });
+  useAppStore.setState((state) => ({ ...state, playlists }));
 };
 
 export const upsertPlaylist = async (formData) => {
@@ -147,7 +152,10 @@ export const dragAndDrop = async (formData) => {
   });
 
   playlist.playlistTracks = tracks;
-  useAppStore.setState({ playlists: [...rest, playlist] });
+  useAppStore.setState((state) => ({
+    ...state,
+    playlists: [...rest, playlist],
+  }));
 
   await superFetch(`${playlistBaseUrl}dragAndDrop`, {
     method: "POST",

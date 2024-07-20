@@ -1,4 +1,5 @@
 import React from "react";
+import { FaVolumeUp } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { deletePlaylist, useAppStore } from "../../common/AppContextProvider";
 import { useUserStore } from "../../common/UserContextProvider";
@@ -13,17 +14,15 @@ export default function Playlists() {
       return deletePlaylist(playlistId);
   }
 
-  const playlistItems = playlists.filter(
-    (playlist) => !playlist.favorites && !playlist.queue,
-  );
+  const playlistItems = playlists;
 
   return (
     <div>
       <section className={"section"}>
-        <h1 className="text-xl">Playlists</h1>
+        <h1 className="text-xl">Library</h1>
       </section>
 
-      <section className="flex flex-col gap-4 items-start">
+      <section className="flex flex-col gap-2 items-start">
         <table className={""}>
           <tbody>
             <tr>
@@ -34,18 +33,20 @@ export default function Playlists() {
             </tr>
             {playlistItems.map((playlist, index) => {
               return (
-                <tr
-                  key={playlist.id}
-                  className={
-                    playlist.id === selectedPlaylistId
-                      ? " playingHighlight"
-                      : ""
-                  }
-                >
-                  <td className="p-2"> {index + 1} </td>
+                <tr key={playlist.id}>
+                  <td className="p-2"> {index + 1}. </td>
                   <td className="p-2 font-bold">
-                    <Link to={`/playlists/${playlist.id}`}>
+                    <Link
+                      to={`/playlists/${playlist.id}`}
+                      className="flex items-center"
+                    >
                       {playlist.name}
+
+                      {playlist.id === selectedPlaylistId && (
+                        <span className="w-4 h-4 text-green-500 ml-3">
+                          <FaVolumeUp aria-hidden="true" />
+                        </span>
+                      )}
                     </Link>
                   </td>
                   <td className="p-2 text-right">
@@ -60,13 +61,15 @@ export default function Playlists() {
                         Edit
                       </Link>
 
-                      <button
-                        type="button"
-                        className={"p-2 rounded bg-red-600"}
-                        onClick={() => handleDeletePlaylist(playlist.id)}
-                      >
-                        Delete
-                      </button>
+                      {!(playlist.queue || playlist.favorites) && (
+                        <button
+                          type="button"
+                          className={"p-2 rounded bg-red-600"}
+                          onClick={() => handleDeletePlaylist(playlist.id)}
+                        >
+                          Delete
+                        </button>
+                      )}
                     </span>
                   </td>
                 </tr>

@@ -14,16 +14,23 @@ import { useLocation } from "react-router-dom";
 import { useAppStore } from "./common/AppContextProvider";
 import { useUserStore } from "./common/UserContextProvider";
 
-function playlistToLink(playlist, selectedPlaylistId) {
+function playlistToLink(playlist, selectedPlaylistId, isPlaylist) {
   return {
     path: `/playlists/${playlist.id}`,
-    icon: <FaMusic />,
+    icon: playlist.favorites ? (
+      <FaHeart />
+    ) : playlist.queue ? (
+      <FaList />
+    ) : (
+      <FaMusic />
+    ),
     text: playlist.name,
     currentlyPlaying: playlist.id === selectedPlaylistId,
+    isPlaylist,
   };
 }
 
-const SidebarLink = ({ link }) => {
+const SidebarLink = ({ link, isPlaylist }) => {
   const location = useLocation();
   const isActive = location.pathname === link.path;
 
@@ -32,7 +39,7 @@ const SidebarLink = ({ link }) => {
       key={link.path}
       to={link.path}
       exact
-      className={`flex gap-2 items-center p-2 pl-4 rounded-lg hover:bg-neutral-800 transition-all ${isActive ? "text-white" : ""}`}
+      className={`flex gap-2 items-center p-2 ${isPlaylist ? "pl-6" : "pl-4"} rounded-lg hover:bg-neutral-800 transition-all ${isActive ? "text-white" : ""}`}
     >
       <span className="w-4 h-4">{link.icon}</span>
       {link.text}
@@ -60,29 +67,18 @@ export default function SidePanel() {
       text: "Search",
       currentlyPlaying: selectedPlaylistId === 0,
     },
-    {
-      path: "/favorites",
-      icon: <FaHeart />,
-      text: "Favorites",
-      currentlyPlaying:
-        selectedPlaylistId ===
-        playlists.find((playlist) => playlist.favorites).id,
-    },
-    {
-      path: "/queue",
-      icon: <FaList />,
-      text: "Queue",
-      currentlyPlaying:
-        selectedPlaylistId === playlists.find((playlist) => playlist.queue).id,
-    },
     { path: "/artists", icon: <FaUsers />, text: "Artists" },
     { path: "/albums", icon: <FaCompactDisc />, text: "Albums" },
-    { path: "/playlists", icon: <FaFolderOpen />, text: "Playlists" },
+    { path: "/library", icon: <FaFolderOpen />, text: "Library" },
   ];
 
-  const playlistLinks = playlists
-    .filter((playlist) => !playlist.favorites && !playlist.queue)
-    .map((playlist) => playlistToLink(playlist, selectedPlaylistId));
+  const playlistLinks = playlists.map((playlist) =>
+    playlistToLink(
+      playlist,
+      selectedPlaylistId,
+      !playlist.favorites && !playlist.queue,
+    ),
+  );
 
   return (
     <nav className={"flex flex-col bg-neutral-900 rounded-lg"}>
@@ -90,7 +86,7 @@ export default function SidePanel() {
         <SidebarLink key={link.path} link={link} />
       ))}
       {playlistLinks.map((link) => (
-        <SidebarLink key={link.path} link={link} />
+        <SidebarLink key={link.path} link={link} isPlaylist />
       ))}
     </nav>
   );

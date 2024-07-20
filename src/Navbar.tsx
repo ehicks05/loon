@@ -16,11 +16,9 @@ import { useUserStore2 } from "./common/UserContextProvider";
 
 const navigation = [
   { name: "Search", href: "/search", current: false },
-  { name: "Favorites", href: "/favorites", current: false },
-  { name: "Queue", href: "/queue", current: false },
+  { name: "Library", href: "/library", current: false },
   { name: "Artists", href: "/artists", current: false },
   { name: "Albums", href: "/albums", current: false },
-  { name: "Playlists", href: "/playlists", current: false },
 ];
 
 function classNames(...classes) {

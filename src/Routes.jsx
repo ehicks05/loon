@@ -79,7 +79,7 @@ export default function Routes() {
           render={(props) => <PlaylistBuilder {...props} />}
         />
 
-        <Route exact path="/playlists" render={() => <Playlists />} />
+        <Route exact path="/library" render={() => <Playlists />} />
         <Route
           exact
           path="/playlists/:id"

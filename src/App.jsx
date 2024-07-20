@@ -50,7 +50,12 @@ export default function App() {
     if (user && !userLoading && libraryLoading) fetchLibrary();
   }, [user, userLoading, libraryLoading]);
 
-  if (!user && !userLoading) return <LoginForm />;
+  if (!user && !userLoading)
+    return (
+      <div className="h-dvh flex flex-col text-neutral-300 bg-neutral-950">
+        <LoginForm />
+      </div>
+    );
   if (!(user && tracks && playlists.length !== 0)) return <PageLoader />;
 
   return (

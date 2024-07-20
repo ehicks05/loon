@@ -18,7 +18,7 @@ function LoginForm() {
         method: "POST",
         body: new URLSearchParams(formData),
       },
-      false
+      false,
     ).then((response) => {
       if (response?.status !== 200)
         setFailureMessage("Invalid username and/or password");
@@ -27,18 +27,18 @@ function LoginForm() {
   }
 
   return (
-    <div
-      style={{
-        maxWidth: "640px",
-        margin: "auto",
-        padding: "8rem 4rem",
-      }}
-    >
-      <form method="POST" action="/" id="loginForm" onSubmit={login}>
+    <div className="max-w-xl mx-auto my-auto p-16">
+      <form
+        method="POST"
+        action="/"
+        id="loginForm"
+        onSubmit={login}
+        className="flex flex-col gap-4"
+      >
         <div className="field">
           <div className="control">
             <input
-              className="input"
+              className="input w-full p-2"
               type="email"
               placeholder="Email"
               id="username"
@@ -50,7 +50,7 @@ function LoginForm() {
         <div className="field">
           <div className="control">
             <input
-              className="input"
+              className="input w-full p-2"
               type="password"
               placeholder="Password"
               id="password"
@@ -61,7 +61,7 @@ function LoginForm() {
         </div>
         <button
           type="submit"
-          className="button is-block is-primary is-fullwidth"
+          className="p-2 rounded bg-green-500 text-white w-full"
         >
           Log in
         </button>

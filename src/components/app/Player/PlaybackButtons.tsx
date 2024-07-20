@@ -9,7 +9,7 @@ export default function PlaybackButtons() {
   const playbackState = usePlayerStore((state) => state.playbackState);
   const setPlaybackState = usePlayerStore((state) => state.setPlaybackState);
 
-  function handleTrackChange(direction) {
+  function handleTrackChange(direction: "prev" | "next") {
     setSelectedTrackId(getNewTrackId(direction));
   }
 

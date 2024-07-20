@@ -6,8 +6,19 @@ import superFetch from "./SuperFetch";
 export const useUserStore = create(
   persist(
     devtools(() => ({
-      user: null,
-      userState: null,
+      userState: {
+        selectedPlaylistId: 0,
+        selectedTrackId: "",
+        volume: 0,
+        eq1Frequency: 100,
+        eq1Gain: 0,
+        eq2Frequency: 400,
+        eq2Gain: 0,
+        eq3Frequency: 1200,
+        eq3Gain: 0,
+        eq4Frequency: 4000,
+        eq4Gain: 0,
+      },
       selectedContextMenuId: null,
     })),
     {
@@ -16,11 +27,15 @@ export const useUserStore = create(
   ),
 );
 
-export const setUser = (user) => useUserStore.setState({ user });
+export const useUserStore2 = create(() => ({
+  user: null,
+}));
+
+const setUser = (user) => useUserStore2.setState({ user });
 export const fetchUser = async () => {
   try {
     const response = await superFetch("/me");
-    useUserStore.setState({ user: await response.json() });
+    setUser({ user: await response.json() });
   } catch (err) {
     console.log("unable to load user");
   }
@@ -31,7 +46,7 @@ const setUserState = (userState) => useUserStore.setState({ userState });
 // helpers
 
 const updateUser = async (data) => {
-  const userId = useUserStore.getState().user.id;
+  const userId = useUserStore.getState().user?.id;
   setUserState({ ...useUserStore.getState().userState, ...data });
 };
 

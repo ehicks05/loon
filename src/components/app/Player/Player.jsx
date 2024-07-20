@@ -1,14 +1,14 @@
 import { useEffect, useRef } from "react";
-import {
-  useUserStore,
-  setSelectedTrackId,
-} from "../../../common/UserContextProvider";
-import { getTrackById } from "../../../common/AppContextProvider";
-import { scaleVolume, getMaxSafeGain, scrollIntoView } from "./playerUtils";
-import { usePlayerStore } from "../../../common/PlayerContextProvider";
-import { getNewTrackId } from "./trackDeterminationUtils";
-import renderSpectrumFrame from "./spectrum";
 import apiUrl from "../../../apiUrl";
+import { getTrackById } from "../../../common/AppContextProvider";
+import { usePlayerStore } from "../../../common/PlayerContextProvider";
+import {
+  setSelectedTrackId,
+  useUserStore,
+} from "../../../common/UserContextProvider";
+import { getMaxSafeGain, scaleVolume, scrollIntoView } from "./playerUtils";
+import renderSpectrumFrame from "./spectrum";
+import { getNewTrackId } from "./trackDeterminationUtils";
 
 const Player = () => {
   const userState = useUserStore((state) => state.userState);
@@ -30,16 +30,16 @@ const Player = () => {
     setAnalyser: state.setAnalyser,
   }));
 
-  let audio = useRef({});
-  let audioCtx = useRef({});
-  let trackGainNode = useRef({});
-  let gainNode = useRef({});
-  let band1 = useRef({});
-  let band2 = useRef({});
-  let band3 = useRef({});
-  let band4 = useRef({});
-  let analyser = useRef({});
-  let audioBufferSourceNode = useRef({});
+  const audio = useRef({});
+  const audioCtx = useRef({});
+  const trackGainNode = useRef({});
+  const gainNode = useRef({});
+  const band1 = useRef({});
+  const band2 = useRef({});
+  const band3 = useRef({});
+  const band4 = useRef({});
+  const analyser = useRef({});
+  const audioBufferSourceNode = useRef({});
 
   useEffect(() => {
     if (audio) audio.current.currentTime = forcedElapsedTime;
@@ -110,7 +110,7 @@ const Player = () => {
     analyser.current.connect(audioCtx.current.destination);
 
     audioBufferSourceNode.current = audioCtx.current.createMediaElementSource(
-      audio.current
+      audio.current,
     );
     audioBufferSourceNode.current.connect(gainNode.current);
 
@@ -210,7 +210,7 @@ const Player = () => {
     const track = getTrackById(userState.selectedTrackId);
     if (!track || track.missingFile) {
       if (!track) console.log("no track found...");
-      if (track.missingFile) console.log("track is missing file...");
+      else if (track.missingFile) console.log("track is missing file...");
       changeTrack("next");
       return;
     }

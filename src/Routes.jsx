@@ -1,6 +1,6 @@
 import React from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
-import { useUserStore } from "./common/UserContextProvider";
+import { useUserStore2 } from "./common/UserContextProvider";
 
 import About from "./components/app/About";
 import Album from "./components/app/Album";
@@ -17,7 +17,7 @@ import Eq from "./components/app/settings/Eq";
 import GeneralSettings from "./components/app/settings/GeneralSettings";
 
 export default function Routes() {
-  const user = useUserStore((state) => state.user);
+  const user = useUserStore2((state) => state.user);
   const isAdmin = user.admin;
 
   return (

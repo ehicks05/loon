@@ -12,7 +12,7 @@ import { FaBars, FaXmark } from "react-icons/fa6";
 import { Link, useHistory } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import superFetch from "./common/SuperFetch";
-import { useUserStore } from "./common/UserContextProvider";
+import { useUserStore2 } from "./common/UserContextProvider";
 
 const navigation = [
   { name: "Search", href: "/search", current: false },
@@ -28,7 +28,7 @@ function classNames(...classes) {
 }
 
 export default function Navbar() {
-  const user = useUserStore((state) => state.user);
+  const user = useUserStore2((state) => state.user);
   const [isActive, setIsActive] = useState(false);
 
   const { pathname } = useLocation();

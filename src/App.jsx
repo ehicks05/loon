@@ -11,7 +11,11 @@ import {
   fetchTracks,
   useAppStore,
 } from "./common/AppContextProvider";
-import { fetchUser, useUserStore } from "./common/UserContextProvider";
+import {
+  fetchUser,
+  useUserStore,
+  useUserStore2,
+} from "./common/UserContextProvider";
 import PlaybackControls from "./components/app/Player/PlaybackControls";
 import Player from "./components/app/Player/Player";
 
@@ -22,7 +26,7 @@ export default function App() {
   const [userLoading, setUserLoading] = useState(true);
   const [libraryLoading, setLibraryLoading] = useState(true);
 
-  const user = useUserStore((state) => state.user);
+  const user = useUserStore2((state) => state.user);
   const tracks = useAppStore((state) => state.tracks);
   const playlists = useAppStore((state) => state.playlists);
   usePoll("/poll", 60 * 60 * 1000);

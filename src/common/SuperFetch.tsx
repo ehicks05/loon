@@ -1,6 +1,6 @@
 import apiUrl from "../apiUrl";
 
-function superFetch(url, options) {
+function superFetch(url: string, options: RequestInit) {
   return fetch(apiUrl + url, { ...options, credentials: "include" });
 }
 

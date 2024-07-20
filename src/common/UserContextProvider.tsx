@@ -1,4 +1,3 @@
-import _ from "lodash";
 import create from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import superFetch from "./SuperFetch";
@@ -63,22 +62,31 @@ const DEFAULT_USER: UserState = {
 
 export const useUserStore = create<{ userState: UserState }>(
   persist(
-    devtools(() => ({
-      userState: DEFAULT_USER,
-    })),
+    devtools(
+      () => ({
+        userState: DEFAULT_USER,
+      }),
+      { name: "userState" },
+    ),
     { name: "loon-storage" },
   ),
 );
 
-export const useUserStore2 = create<{ user: User | null }>(() => ({
-  user: null,
-}));
+export const useUserStore2 = create<{ user: User | null }>(
+  devtools(
+    () => ({
+      user: null,
+    }),
+    { name: "user" },
+  ),
+);
 
-const setUser = (user) => useUserStore2.setState({ user });
+const setUser = (user: User) => useUserStore2.setState({ user });
 export const fetchUser = async () => {
   try {
     const response = await superFetch("/me");
-    setUser({ user: await response.json() });
+    const user = await response.json();
+    setUser(user);
   } catch (err) {
     console.log("unable to load user");
   }

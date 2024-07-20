@@ -18,7 +18,7 @@ import GeneralSettings from "./components/app/settings/GeneralSettings";
 
 export default function Routes() {
   const user = useUserStore2((state) => state.user);
-  const isAdmin = user.admin;
+  const isAdmin = user?.admin;
 
   return (
     <>

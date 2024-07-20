@@ -39,7 +39,7 @@ export default function Navbar() {
     return false;
   }
 
-  const isAdmin = user.admin;
+  const isAdmin = user?.admin;
 
   return (
     <Disclosure as="nav" className="">

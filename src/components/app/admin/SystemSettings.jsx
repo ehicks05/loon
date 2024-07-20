@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import TextInput from "../../TextInput";
-import Select from "../../Select";
-import superFetch from "../../../common/SuperFetch";
 import apiUrl from "../../../apiUrl";
+import superFetch from "../../../common/SuperFetch";
+import Select from "../../Select";
+import TextInput from "../../TextInput";
 
 export default function SystemSettings() {
   const [settings, setSettings] = useState(null);
@@ -15,10 +15,10 @@ export default function SystemSettings() {
   }, []);
 
   useEffect(() => {
-    const eventSource = new EventSource(apiUrl + "/system-events", {
+    const eventSource = new EventSource(`${apiUrl}/system-events`, {
       withCredentials: true,
     });
-    eventSource.addEventListener("taskStateUpdate", function (e) {
+    eventSource.addEventListener("taskStateUpdate", (e) => {
       setTaskState(JSON.parse(e.data));
     });
 
@@ -31,7 +31,7 @@ export default function SystemSettings() {
     if (!taskState?.tasks) return null;
 
     let inProgress = Object.entries(taskState.tasks).filter(
-      (entry) => entry[1].status === "incomplete"
+      (entry) => entry[1].status === "incomplete",
     );
     if (inProgress.filter((task) => task[0] === "LibrarySyncTask").length === 1)
       inProgress = inProgress.filter((task) => task[0] === "LibrarySyncTask");
@@ -43,7 +43,7 @@ export default function SystemSettings() {
     rescan,
     deleteTracksWithoutFiles,
     deleteLibrary,
-    librarySync
+    librarySync,
   ) {
     if (deleteTracksWithoutFiles || deleteLibrary)
       if (!window.confirm("Are you sure?")) return;
@@ -52,7 +52,7 @@ export default function SystemSettings() {
     formData.append("rescan", rescan ? "true" : "false");
     formData.append(
       "deleteTracksWithoutFiles",
-      deleteTracksWithoutFiles ? "true" : "false"
+      deleteTracksWithoutFiles ? "true" : "false",
     );
     formData.append("deleteLibrary", deleteLibrary ? "true" : "false");
     formData.append("librarySync", librarySync ? "true" : "false");
@@ -63,7 +63,7 @@ export default function SystemSettings() {
           ? "deleting tracks without files"
           : "deleting library";
         console.log(
-          "Finished " + action + ". Refreshing track listing and playlists."
+          `Finished ${action}. Refreshing track listing and playlists.`,
         );
 
         // todo reimplement
@@ -114,12 +114,13 @@ export default function SystemSettings() {
       </section>
       <section className="section">
         <form id="frmSystemSettings" method="post" action="">
-          <span
+          <button
+            type="button"
             className={"button is-primary"}
             onClick={() => submitForm(false, false, false, false)}
           >
             Save
-          </span>
+          </button>
           <br />
           <br />
           <div className={"columns is-multiline"}>
@@ -198,15 +199,14 @@ export default function SystemSettings() {
                   style={{ marginBottom: "0" }}
                 >
                   <button
+                    type="button"
                     className="button"
                     disabled={isTasksRunning}
                     onClick={() => submitForm(false, false, false, true)}
                   >
                     Library Sync
                   </button>
-                  <ProgressText
-                    taskStatus={taskState.tasks["LibrarySyncTask"]}
-                  />
+                  <ProgressText taskStatus={taskState.tasks.LibrarySyncTask} />
                 </div>
                 <div
                   className={"buttons has-addons"}
@@ -220,7 +220,7 @@ export default function SystemSettings() {
                   >
                     Scan for Files
                   </button>
-                  <ProgressText taskStatus={taskState.tasks["MusicScanner"]} />
+                  <ProgressText taskStatus={taskState.tasks.MusicScanner} />
                 </div>
                 <div
                   className={"buttons has-addons"}
@@ -234,7 +234,7 @@ export default function SystemSettings() {
                   >
                     Scan for Images
                   </button>
-                  <ProgressText taskStatus={taskState.tasks["ImageScanner"]} />
+                  <ProgressText taskStatus={taskState.tasks.ImageScanner} />
                 </div>
                 <div
                   className={"buttons has-addons"}
@@ -248,9 +248,7 @@ export default function SystemSettings() {
                   >
                     Transcode Library
                   </button>
-                  <ProgressText
-                    taskStatus={taskState.tasks["TranscoderTask"]}
-                  />
+                  <ProgressText taskStatus={taskState.tasks.TranscoderTask} />
                 </div>
                 <div className={"buttons"} style={{ marginBottom: "0" }}>
                   <button
@@ -286,8 +284,7 @@ function ProgressText(props) {
 
   const progress = props.taskStatus.progress;
   const status = props.taskStatus.status;
-  const progressClass =
-    "button " + (status === "complete" ? "is-success" : "is-info");
+  const progressClass = `button ${status === "complete" ? "is-success" : "is-info"}`;
   const showProgressBar = status === "complete" || status === "incomplete";
 
   return (
@@ -303,7 +300,7 @@ function SystemStatusBar(props) {
   const tasks = props.tasks;
   if (!tasks) return null;
 
-  let tasksInProgress = props.tasksInProgress;
+  const tasksInProgress = props.tasksInProgress;
   const progress =
     tasksInProgress.length !== 1 ? 0 : String(tasksInProgress[0][1].progress);
 

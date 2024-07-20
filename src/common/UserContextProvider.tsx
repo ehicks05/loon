@@ -108,6 +108,8 @@ export const setSelectedPlaylistId = async (
 };
 
 export const setSelectedTrackId = async (selectedTrackId) => {
+  if (!selectedTrackId) return;
+
   updateUser({
     selectedPlaylistId: useUserStore.getState().userState.selectedPlaylistId,
     selectedTrackId,

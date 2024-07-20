@@ -12,20 +12,20 @@ import VolumeSlider from "./VolumeSlider";
 
 export default function PlaybackControls() {
   return (
-    <div className="p-2 bg-neutral-800">
+    <div className="flex flex-col gap-4 p-2 bg-neutral-800 pt-4">
       <div className="w-full z-10">
         <TrackProgressBar />
       </div>
 
       <div className="z-10">
-        <nav className="flex flex-col md:flex-row items-center justify-between">
+        <nav className="flex flex-col gap-4 md:flex-row items-center justify-between">
           <div className="flex justify-center">
             <div className="hidden md:block md:pr-2">
               <PlaybackButtons />
             </div>
             <TrackDescription />
           </div>
-          <div className="mt-1">
+          <div className="">
             <div className="flex items-center justify-center">
               <div className="inline md:hidden">
                 <PlaybackButtons />

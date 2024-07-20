@@ -1,9 +1,8 @@
-import Slider from "rc-slider/es";
 import React from "react";
 import { usePlayerStore } from "../../../common/PlayerContextProvider";
-import "rc-slider/assets/index.css";
+import { LoonSlider } from "../../Slider";
 
-function formatTime(secs) {
+function formatTime(secs: number) {
   const minutes = Math.floor(secs / 60) || 0;
   const seconds = Math.round(secs - minutes * 60) || 0;
   return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
@@ -21,31 +20,17 @@ export default function TrackProgressBar() {
   const formattedElapsedTime = formatTime(Math.round(elapsedTime));
   const formattedDuration = formatTime(Math.round(duration));
 
-  function HandleSetElapsedTime(value) {
-    setForcedElapsedTime(value);
-  }
-
   return (
     <div className="flex gap-3 items-center">
       <span id="timeElapsed" className="text-sm">
         {formattedElapsedTime}
       </span>
-      <Slider
-        name="progress"
-        id="progress"
-        style={{ width: "100%", margin: "0", cursor: "pointer" }}
-        trackStyle={{ backgroundColor: "hsl(141, 71%, 48%)", height: 4 }}
-        railStyle={{ backgroundColor: "#aaa" }}
-        handleStyle={{
-          borderColor: "hsl(141, 11%, 88%)",
-          backgroundColor: "hsl(141, 11%, 88%)",
-          scale: ".8",
-        }}
-        type="range"
-        value={elapsedTime}
+      <LoonSlider
+        value={[elapsedTime]}
+        onValueChange={(value) => setForcedElapsedTime(value[0])}
+        min={0}
         max={duration}
-        step={0.01}
-        onChange={HandleSetElapsedTime}
+        step={1}
       />
       <span id="duration" className="text-sm">
         {formattedDuration}

@@ -39,6 +39,7 @@ export default function TrackProgressBar() {
         handleStyle={{
           borderColor: "hsl(141, 11%, 88%)",
           backgroundColor: "hsl(141, 11%, 88%)",
+          scale: ".8",
         }}
         type="range"
         value={elapsedTime}

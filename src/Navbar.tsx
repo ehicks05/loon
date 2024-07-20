@@ -44,7 +44,7 @@ export default function Navbar() {
   const isAdmin = user.admin;
 
   return (
-    <Disclosure as="nav" className="bg-gray-800">
+    <Disclosure as="nav" className="">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
           <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -106,15 +106,15 @@ export default function Navbar() {
               </div>
               <MenuItems
                 transition
-                className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+                className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-neutral-800 py-1 shadow-2xl ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
               >
                 {isAdmin && (
                   <>
-                    <div>Admin</div>
+                    <div className="px-4 py-2 text-neutral-500">Admin</div>
                     <MenuItem>
                       <Link
                         to="/admin/systemSettings"
-                        className="block px-4 py-2 text-gray-700 text-sm data-[focus]:bg-gray-100"
+                        className="block px-4 py-2 text-sm data-[focus]:bg-neutral-900"
                       >
                         Manage System
                       </Link>
@@ -122,7 +122,7 @@ export default function Navbar() {
                     <MenuItem>
                       <Link
                         to="/admin/users"
-                        className="block px-4 py-2 text-gray-700 text-sm data-[focus]:bg-gray-100"
+                        className="block px-4 py-2 text-sm data-[focus]:bg-neutral-900"
                       >
                         Manage Users
                       </Link>
@@ -130,18 +130,18 @@ export default function Navbar() {
                     <MenuItem>
                       <Link
                         to="/admin/about"
-                        className="block px-4 py-2 text-gray-700 text-sm data-[focus]:bg-gray-100"
+                        className="block px-4 py-2 text-sm data-[focus]:bg-neutral-900"
                       >
                         About Current Track
                       </Link>
                     </MenuItem>
                   </>
                 )}
-                <div>Settings</div>
+                <div className="px-4 py-2 text-neutral-500">Settings</div>
                 <MenuItem>
                   <Link
                     to="/settings/general"
-                    className="block px-4 py-2 text-gray-700 text-sm data-[focus]:bg-gray-100"
+                    className="block px-4 py-2 text-sm data-[focus]:bg-neutral-900"
                   >
                     General
                   </Link>
@@ -149,18 +149,18 @@ export default function Navbar() {
                 <MenuItem>
                   <Link
                     to="/settings/eq"
-                    className="block px-4 py-2 text-gray-700 text-sm data-[focus]:bg-gray-100"
+                    className="block px-4 py-2 text-sm data-[focus]:bg-neutral-900"
                   >
                     Equalizer
                   </Link>
                 </MenuItem>
 
-                <div>Auth Status</div>
+                <div className="px-4 py-2 text-neutral-500">Auth Status</div>
                 <MenuItem>
                   <a
                     href="/"
                     onClick={handleLogout}
-                    className="block px-4 py-2 text-gray-700 text-sm data-[focus]:bg-gray-100"
+                    className="block px-4 py-2 text-sm data-[focus]:bg-neutral-900"
                   >
                     Sign out
                   </a>

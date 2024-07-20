@@ -12,32 +12,24 @@ import VolumeSlider from "./VolumeSlider";
 
 export default function PlaybackControls() {
   return (
-    <div className="flex flex-col gap-4 p-2 bg-neutral-800 pt-4">
-      <div className="w-full z-10">
-        <TrackProgressBar />
+    <div className="flex flex-col items-center justify-between md:flex-row gap-4 p-3 bg-neutral-900">
+      <div className="w-full md:w-1/2">
+        <TrackDescription />
       </div>
 
-      <div className="z-10">
-        <nav className="flex flex-col gap-4 md:flex-row items-center justify-between">
-          <div className="flex justify-center">
-            <div className="hidden md:block md:pr-2">
-              <PlaybackButtons />
-            </div>
-            <TrackDescription />
-          </div>
-          <div className="">
-            <div className="flex items-center justify-center">
-              <div className="inline md:hidden">
-                <PlaybackButtons />
-              </div>
-              <div className="flex gap-2 items-center ml-4">
-                <ShuffleButton />
-                <MuteButton />
-                <VolumeSlider />
-              </div>
-            </div>
-          </div>
-        </nav>
+      <div className="flex flex-col gap-4 md:gap-2 w-full items-center">
+        <div className="w-full md:w-5/6">
+          <TrackProgressBar />
+        </div>
+        <PlaybackButtons />
+      </div>
+
+      <div className="w-full md:w-1/2">
+        <div className="flex gap-2 items-center justify-center md:justify-end ml-4">
+          <ShuffleButton />
+          <MuteButton />
+          <VolumeSlider />
+        </div>
       </div>
     </div>
   );

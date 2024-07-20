@@ -7,7 +7,7 @@ export default function VolumeSlider() {
   const volume = useUserStore((state) => state.userState.volume);
 
   return (
-    <div className="w-32 mr-3">
+    <div className="w-32 max-w-32 md:w-auto md:flex-grow mr-3">
       <Slider
         value={volume}
         min={-30}
@@ -19,6 +19,7 @@ export default function VolumeSlider() {
         handleStyle={{
           borderColor: "hsl(141, 11%, 88%)",
           backgroundColor: "hsl(141, 11%, 88%)",
+          scale: ".8",
         }}
       />
     </div>

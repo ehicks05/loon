@@ -19,14 +19,14 @@ export default function PlaybackButtons() {
     <div className="flex gap-0.5 items-center">
       <button
         type="button"
-        className="p-2 rounded bg-black hover:bg-neutral-900"
+        className="p-2 rounded hover:bg-neutral-950"
         onClick={() => handleTrackChange("prev")}
       >
         <FaStepBackward className="h-5 w-5" />
       </button>
       <button
         type="button"
-        className="p-2 rounded bg-black hover:bg-neutral-900"
+        className="p-2 rounded hover:bg-neutral-950"
         onClick={() =>
           setPlaybackState(playbackState === "playing" ? "paused" : "playing")
         }
@@ -35,7 +35,7 @@ export default function PlaybackButtons() {
       </button>
       <button
         type="button"
-        className="p-2 rounded bg-black hover:bg-neutral-900"
+        className="p-2 rounded hover:bg-neutral-950"
         onClick={() => handleTrackChange("next")}
       >
         <FaStepForward className="h-5 w-5" />

@@ -30,19 +30,19 @@ export default function TrackDescription() {
       src={PLACEHOLDER_IMAGE_URL}
       data-src={imageUrl}
       alt="Placeholder"
-      className="lazyload h-12 m-0"
+      className="lazyload h-20 m-0 rounded"
     />
   );
 
   return (
-    <div className="flex gap-2">
+    <div className="flex items-center justify-center md:justify-start gap-2">
       {albumArt}
       <span
         id="track"
-        className="flex flex-col max-h-12 overflow-auto"
+        className="flex flex-col max-h-20 overflow-auto"
         style={{ maxWidth: textWidth }}
       >
-        <b>{title}</b>
+        <b className="text-sm">{title}</b>
         <span id="artistAlbumText" className="text-sm">
           <Link to={`/artist/${artist}`}>{artist}</Link>
           {" - "}

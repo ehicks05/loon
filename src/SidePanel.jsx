@@ -32,7 +32,7 @@ const SidebarLink = ({ link }) => {
       key={link.path}
       to={link.path}
       exact
-      className={`flex gap-2 items-center p-2 pl-4 rounded-lg hover:bg-neutral-700 ${isActive ? "text-white" : ""}`}
+      className={`flex gap-2 items-center p-2 pl-4 rounded-lg hover:bg-neutral-800 transition-all ${isActive ? "text-white" : ""}`}
     >
       <span className="w-4 h-4">{link.icon}</span>
       {link.text}

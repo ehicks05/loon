@@ -19,11 +19,7 @@ export default function Eq() {
     setEq(eqNum, field, value);
   }
 
-  const cellStyle = {
-    border: "1px solid gray",
-    verticalAlign: "middle",
-    padding: "8px",
-  };
+  const cellClass = "border border-neutral-600 p-2";
 
   const eqs = [
     {
@@ -53,7 +49,7 @@ export default function Eq() {
   ];
 
   const freqCells = eqs.map((eq) => (
-    <td key={eq.name} style={cellStyle}>
+    <td key={eq.name} className={cellClass}>
       <input
         className={"input text-right"}
         name={`${eq.name}Frequency`}
@@ -67,7 +63,7 @@ export default function Eq() {
     </td>
   ));
   const gainCells = eqs.map((eq) => (
-    <td key={eq.name} style={cellStyle}>
+    <td key={eq.name} className={cellClass}>
       <div className="flex flex-col items-center h-56">
         <LoonSlider
           name={`${eq.name}Gain`}
@@ -88,7 +84,7 @@ export default function Eq() {
     </td>
   ));
   const typeCells = eqs.map((eq) => (
-    <td key={eq.name} style={cellStyle} className={"text-center"}>
+    <td key={eq.name} className={`text-center ${cellClass}`}>
       {eq.type}
     </td>
   ));
@@ -97,21 +93,15 @@ export default function Eq() {
     <table style={{ padding: "8px" }}>
       <tbody>
         <tr>
-          <td style={cellStyle} className={"text-center"}>
-            Freq
-          </td>
+          <td className={`text-center ${cellClass}`}>Freq</td>
           {freqCells}
         </tr>
         <tr>
-          <td style={cellStyle} className={"text-center"}>
-            Gain
-          </td>
+          <td className={`text-center ${cellClass}`}>Gain</td>
           {gainCells}
         </tr>
         <tr>
-          <td style={cellStyle} className={"text-center"}>
-            Type
-          </td>
+          <td className={`text-center ${cellClass}`}>Type</td>
           {typeCells}
         </tr>
       </tbody>

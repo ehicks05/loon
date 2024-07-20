@@ -72,13 +72,8 @@ export const useUserStore = create<{ userState: UserState }>(
   ),
 );
 
-export const useUserStore2 = create<{ user: User | null }>(
-  devtools(
-    () => ({
-      user: null,
-    }),
-    { name: "user" },
-  ),
+export const useUserStore2 = create<{ user?: User }>(
+  devtools(() => ({}), { name: "user" }),
 );
 
 const setUser = (user: User) => useUserStore2.setState({ user });

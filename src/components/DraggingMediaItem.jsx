@@ -18,7 +18,7 @@ export default function DraggingMediaItem({ trackNumber, track, provided }) {
       id={`track${track.id}`}
       ref={provided.innerRef}
       {...provided.draggableProps}
-      className={`select-none border border-neutral-500 brightness-125 ${highlightClass}`}
+      className={"select-none border border-neutral-500 bg-neutral-800"}
     >
       <div
         className={
@@ -26,17 +26,25 @@ export default function DraggingMediaItem({ trackNumber, track, provided }) {
         }
         style={missingFile ? { color: "red" } : null}
       >
-        <div className={"mr-1 min-w-8 text-right"}>{trackNumber}</div>
+        <div
+          className={`mr-1 min-w-8 text-right text-neutral-300 ${highlightClass}`}
+        >
+          {trackNumber}
+        </div>
 
-        <div {...provided.dragHandleProps} className={"flex-grow"}>
-          <div className="line-clamp-1 font-bold">{trackTitle}</div>
+        <div {...provided.dragHandleProps} className={"flex-grow "}>
+          <div
+            className={`line-clamp-1 font-bold text-neutral-300 ${highlightClass}`}
+          >
+            {trackTitle}
+          </div>
 
           {missingFile && (
             <span className={"tag is-normal is-danger ml-4"}>
               Track Missing
             </span>
           )}
-          <span className="line-clamp-1 text-sm">
+          <span className="line-clamp-1 text-sm text-neutral-400">
             {artist} - <i>{album}</i>
           </span>
         </div>

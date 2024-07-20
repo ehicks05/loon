@@ -112,7 +112,11 @@ export default function MediaItem({
         </span>
       </div>
 
-      <div className={"mr-2 flex basis-5 items-center"}>
+      <div
+        className={
+          "mr-2 flex basis-5 items-center dark:text-neutral-400 hover:dark:text-neutral-300"
+        }
+      >
         {showActionMenu && (
           <ActionMenu tracks={[track]} contextMenuId={contextMenuId} />
         )}

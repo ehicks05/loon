@@ -5,15 +5,7 @@ import { LoonSlider } from "../../Slider";
 export default function Eq() {
   const userState = useUserStore((state) => state.userState);
 
-  function handleEqChange(e) {
-    const eqNum = e.target.name.substring(2, 3);
-    const field = e.target.name.substring(3);
-    const value = e.target.value;
-
-    setEq(eqNum, field, value);
-  }
-
-  function handleSliderChange(value, name) {
+  function handleSliderChange(value: number, name: string) {
     const eqNum = name.substring(2, 3);
     const field = name.substring(3);
     setEq(eqNum, field, value);
@@ -58,7 +50,13 @@ export default function Eq() {
         max={20000}
         step={1}
         defaultValue={eq.frequency}
-        onChange={handleEqChange}
+        onChange={(e) => {
+          const eqNum = e.target.name.substring(2, 3);
+          const field = e.target.name.substring(3);
+          const value = e.target.value;
+
+          setEq(eqNum, field, value);
+        }}
       />
     </td>
   ));
@@ -69,7 +67,7 @@ export default function Eq() {
           name={`${eq.name}Gain`}
           value={[eq.gain]}
           onValueChange={(value) =>
-            handleSliderChange([value], `${eq.name}Gain`)
+            handleSliderChange(value[0], `${eq.name}Gain`)
           }
           min={-12}
           max={12}

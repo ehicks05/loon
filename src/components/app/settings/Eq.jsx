@@ -1,6 +1,6 @@
 import React from "react";
-import VerticalSlider from "../../VerticalSlider";
-import { useUserStore, setEq } from "../../../common/UserContextProvider";
+import { setEq, useUserStore } from "../../../common/UserContextProvider";
+import { LoonSlider } from "../../Slider";
 
 export default function Eq() {
   const userState = useUserStore((state) => state.userState);
@@ -55,8 +55,8 @@ export default function Eq() {
   const freqCells = eqs.map((eq) => (
     <td key={eq.name} style={cellStyle}>
       <input
-        className={"input has-text-right"}
-        name={eq.name + "Frequency"}
+        className={"input text-right"}
+        name={`${eq.name}Frequency`}
         type={"number"}
         min={20}
         max={20000}
@@ -68,15 +68,27 @@ export default function Eq() {
   ));
   const gainCells = eqs.map((eq) => (
     <td key={eq.name} style={cellStyle}>
-      <VerticalSlider
-        name={eq.name + "Gain"}
-        value={eq.gain}
-        onChange={handleSliderChange}
-      />
+      <div className="flex flex-col items-center h-56">
+        <LoonSlider
+          name={`${eq.name}Gain`}
+          value={[eq.gain]}
+          onValueChange={(value) =>
+            handleSliderChange([value], `${eq.name}Gain`)
+          }
+          min={-12}
+          max={12}
+          step={1}
+          orientation="vertical"
+        />
+        <span>
+          {eq.gain > 0 ? "+" : ""}
+          {eq.gain} dB
+        </span>
+      </div>
     </td>
   ));
   const typeCells = eqs.map((eq) => (
-    <td key={eq.name} style={cellStyle} className={"has-text-centered"}>
+    <td key={eq.name} style={cellStyle} className={"text-center"}>
       {eq.type}
     </td>
   ));
@@ -85,19 +97,19 @@ export default function Eq() {
     <table style={{ padding: "8px" }}>
       <tbody>
         <tr>
-          <td style={cellStyle} className={"has-text-centered"}>
+          <td style={cellStyle} className={"text-center"}>
             Freq
           </td>
           {freqCells}
         </tr>
         <tr>
-          <td style={cellStyle} className={"has-text-centered"}>
+          <td style={cellStyle} className={"text-center"}>
             Gain
           </td>
           {gainCells}
         </tr>
         <tr>
-          <td style={cellStyle} className={"has-text-centered"}>
+          <td style={cellStyle} className={"text-center"}>
             Type
           </td>
           {typeCells}

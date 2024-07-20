@@ -1,30 +1,26 @@
-import { useUserStore } from "../../../common/UserContextProvider";
 import {
-  useAppStore,
   getPlaylistById,
+  useAppStore,
 } from "../../../common/AppContextProvider";
+import { useUserStore } from "../../../common/UserContextProvider";
 
-export const getNewTrackId = (input) => {
-  const {
-    selectedTrackId,
-    selectedPlaylistId,
-    shuffle,
-  } = useUserStore.getState().userState;
+export const getNewTrackId = (input: "prev" | "next") => {
+  const { selectedTrackId, selectedPlaylistId, shuffle } =
+    useUserStore.getState().userState;
 
-  const currentPlaylistTrackIds = getCurrentPlaylistTrackIds(
-    selectedPlaylistId
-  );
+  const currentPlaylistTrackIds =
+    getCurrentPlaylistTrackIds(selectedPlaylistId);
   const currentTrackIndex = currentPlaylistTrackIds.indexOf(selectedTrackId);
 
   const newIndex = getNewIndex(
     input,
     currentTrackIndex,
     currentPlaylistTrackIds,
-    shuffle
+    shuffle,
   );
 
   const newTrackId = currentPlaylistTrackIds[newIndex];
-  if (newTrackId === -1) console.error("Unable to select a new track id.");
+  if (!newTrackId) console.error("Unable to select a new track id.");
 
   return newTrackId;
 };
@@ -34,24 +30,25 @@ function getCurrentPlaylistTrackIds(selectedPlaylistId) {
   const currentPlaylist = getPlaylistById(selectedPlaylistId);
   if (currentPlaylist)
     return currentPlaylist.playlistTracks.map(
-      (playlistTrack) => playlistTrack.track.id
+      (playlistTrack) => playlistTrack.track.id,
     );
-  else return tracks.map((track) => track.id);
+
+  return tracks.map((track) => track.id);
 }
 
 function getNewIndex(
-  input,
-  currentTrackIndex,
-  currentPlaylistTrackIds,
-  shuffle
+  input: "prev" | "next",
+  currentTrackIndex: number,
+  currentPlaylistTrackIds: string[],
+  shuffle: boolean,
 ) {
   let newIndex = shuffle
     ? Math.floor(Math.random() * currentPlaylistTrackIds.length)
     : input === "prev"
-    ? currentTrackIndex - 1
-    : input === "next"
-    ? currentTrackIndex + 1
-    : -1;
+      ? currentTrackIndex - 1
+      : input === "next"
+        ? currentTrackIndex + 1
+        : -1;
 
   if (newIndex === -1) {
     console.error("Unable to select a new track index.");

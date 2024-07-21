@@ -109,23 +109,21 @@ export default function SystemSettings() {
         tasksInProgress={tasksInProgress()}
       />
       <section className={"section"}>
-        <h1 className="title">Admin</h1>
-        <h2 className="subtitle">Modify System</h2>
+        <h1 className="font-bold text-2xl">Admin</h1>
+        <h2 className="">Modify System</h2>
       </section>
       <section className="section">
         <form id="frmSystemSettings" method="post" action="">
           <button
             type="button"
-            className={"button is-primary"}
+            className={"p-2 rounded bg-black"}
             onClick={() => submitForm(false, false, false, false)}
           >
             Save
           </button>
-          <br />
-          <br />
-          <div className={"columns is-multiline"}>
+          <div className={"flex flex-wrap gap-4"}>
             <div className={"column is-narrow"}>
-              <div className="subtitle">General</div>
+              <div className="font-bold text-lg">General</div>
               <TextInput
                 id="instanceName"
                 label="Instance Name"
@@ -148,7 +146,7 @@ export default function SystemSettings() {
                   htmlFor="registrationEnabled"
                   style={{ padding: ".5rem" }}
                 >
-                  Enable Registration
+                  Enable Signups
                 </label>
               </div>
               <div className="field">
@@ -174,7 +172,7 @@ export default function SystemSettings() {
               />
             </div>
             <div className={"column is-narrow"}>
-              <div className="subtitle">Locations</div>
+              <div className="font-bold text-lg">Locations</div>
               <TextInput
                 id="musicFolder"
                 label="Music Folder"
@@ -191,86 +189,55 @@ export default function SystemSettings() {
                 value={settings.dataFolder}
               />
             </div>
-            <div className="column">
-              <div className={"content"}>
-                <div className="subtitle">Tasks</div>
-                <div
-                  className={"buttons has-addons"}
-                  style={{ marginBottom: "0" }}
+            <div className="flex flex-col gap-2">
+              <div className="font-bold text-lg">Tasks</div>
+              <div>
+                <Button
+                  disabled={isTasksRunning}
+                  onClick={() => submitForm(false, false, false, true)}
                 >
-                  <button
-                    type="button"
-                    className="button"
-                    disabled={isTasksRunning}
-                    onClick={() => submitForm(false, false, false, true)}
-                  >
-                    Library Sync
-                  </button>
-                  <ProgressText taskStatus={taskState.tasks.LibrarySyncTask} />
-                </div>
-                <div
-                  className={"buttons has-addons"}
-                  style={{ marginBottom: "0", marginLeft: "16px" }}
-                >
-                  <button
-                    type="button"
-                    className="button"
-                    disabled={isTasksRunning}
-                    onClick={() => submitForm(true, false, false, false)}
-                  >
-                    Scan for Files
-                  </button>
-                  <ProgressText taskStatus={taskState.tasks.MusicScanner} />
-                </div>
-                <div
-                  className={"buttons has-addons"}
-                  style={{ marginBottom: "0", marginLeft: "16px" }}
-                >
-                  <button
-                    type="button"
-                    className="button"
-                    disabled={isTasksRunning}
-                    onClick={() => doImageScan()}
-                  >
-                    Scan for Images
-                  </button>
-                  <ProgressText taskStatus={taskState.tasks.ImageScanner} />
-                </div>
-                <div
-                  className={"buttons has-addons"}
-                  style={{ marginBottom: "0", marginLeft: "16px" }}
-                >
-                  <button
-                    type="button"
-                    className="button"
-                    disabled={isTasksRunning}
-                    onClick={() => doTranscodeLibrary()}
-                  >
-                    Transcode Library
-                  </button>
-                  <ProgressText taskStatus={taskState.tasks.TranscoderTask} />
-                </div>
-                <div className={"buttons"} style={{ marginBottom: "0" }}>
-                  <button
-                    type="button"
-                    className="button is-danger"
-                    disabled={isTasksRunning}
-                    onClick={() => submitForm(false, true, false, false)}
-                  >
-                    Delete Tracks Without Files
-                  </button>
-                </div>
-                <div className={"buttons"} style={{ marginBottom: "0" }}>
-                  <button
-                    type="button"
-                    className="button is-danger"
-                    disabled={isTasksRunning}
-                    onClick={() => submitForm(false, false, true, false)}
-                  >
-                    Delete Library
-                  </button>
-                </div>
+                  Library Sync
+                </Button>
+                <ProgressText taskStatus={taskState.tasks.LibrarySyncTask} />
               </div>
+              <div className={"ml-4"}>
+                <Button
+                  disabled={isTasksRunning}
+                  onClick={() => submitForm(true, false, false, false)}
+                >
+                  Step 1: Track Scan
+                </Button>
+                <ProgressText taskStatus={taskState.tasks.MusicScanner} />
+              </div>
+              <div className={"ml-4"}>
+                <Button disabled={isTasksRunning} onClick={() => doImageScan()}>
+                  Step 2: Image Scan
+                </Button>
+                <ProgressText taskStatus={taskState.tasks.ImageScanner} />
+              </div>
+              <div className={"ml-4"}>
+                <Button
+                  disabled={isTasksRunning}
+                  onClick={() => doTranscodeLibrary()}
+                >
+                  Step 3: Transcode
+                </Button>
+                <ProgressText taskStatus={taskState.tasks.TranscoderTask} />
+              </div>
+              <Button
+                className="bg-red-600"
+                disabled={isTasksRunning}
+                onClick={() => submitForm(false, true, false, false)}
+              >
+                Delete Tracks Without Files
+              </Button>
+              <Button
+                className="bg-red-600"
+                disabled={isTasksRunning}
+                onClick={() => submitForm(false, false, true, false)}
+              >
+                Delete Library
+              </Button>
             </div>
           </div>
         </form>
@@ -278,6 +245,18 @@ export default function SystemSettings() {
     </div>
   );
 }
+
+export const Button = ({ children, className, type, ...props }) => {
+  return (
+    <button
+      type={type || "button"}
+      className={`p-2 rounded-lg text-white bg-black hover:brightness-110 ${className}`}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+};
 
 function ProgressText(props) {
   if (!props.taskStatus) return null;

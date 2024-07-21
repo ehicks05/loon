@@ -1,8 +1,19 @@
 import React, { useEffect, useState } from "react";
 import apiUrl from "../../../apiUrl";
 import superFetch from "../../../common/SuperFetch";
+import { Button } from "../../Button";
 import Select from "../../Select";
 import TextInput from "../../TextInput";
+
+const transcodeQualityOptions = [
+  { value: "0", text: "v0 (~240 Kbps)" },
+  { value: "1", text: "v1 (~220 Kbps)" },
+  { value: "2", text: "v2 (~190 Kbps)" },
+  { value: "3", text: "v3 (~170 Kbps)" },
+  { value: "4", text: "v4 (~160 Kbps)" },
+  { value: "5", text: "v5 (~130 Kbps)" },
+  { value: "6", text: "v6 (~120 Kbps)" },
+];
 
 export default function SystemSettings() {
   const [settings, setSettings] = useState(null);
@@ -90,16 +101,6 @@ export default function SystemSettings() {
 
   if (!settings || !taskState) return <div>Loading...</div>;
 
-  const transcodeQualityOptions = [
-    { value: "0", text: "v0 (~240 Kbps)" },
-    { value: "1", text: "v1 (~220 Kbps)" },
-    { value: "2", text: "v2 (~190 Kbps)" },
-    { value: "3", text: "v3 (~170 Kbps)" },
-    { value: "4", text: "v4 (~160 Kbps)" },
-    { value: "5", text: "v5 (~130 Kbps)" },
-    { value: "6", text: "v6 (~120 Kbps)" },
-  ];
-
   const isTasksRunning = taskState.tasksRunning > 0;
 
   return (
@@ -114,15 +115,14 @@ export default function SystemSettings() {
       </section>
       <section className="section">
         <form id="frmSystemSettings" method="post" action="">
-          <button
-            type="button"
-            className={"p-2 rounded bg-black"}
+          <Button
+            className={"bg-green-600"}
             onClick={() => submitForm(false, false, false, false)}
           >
             Save
-          </button>
+          </Button>
           <div className={"flex flex-wrap gap-4"}>
-            <div className={"column is-narrow"}>
+            <div className={"flex flex-col gap-2"}>
               <div className="font-bold text-lg">General</div>
               <TextInput
                 id="instanceName"
@@ -171,7 +171,7 @@ export default function SystemSettings() {
                 required={true}
               />
             </div>
-            <div className={"column is-narrow"}>
+            <div className={"flex flex-col gap-2"}>
               <div className="font-bold text-lg">Locations</div>
               <TextInput
                 id="musicFolder"
@@ -189,6 +189,7 @@ export default function SystemSettings() {
                 value={settings.dataFolder}
               />
             </div>
+
             <div className="flex flex-col gap-2">
               <div className="font-bold text-lg">Tasks</div>
               <div>
@@ -245,18 +246,6 @@ export default function SystemSettings() {
     </div>
   );
 }
-
-export const Button = ({ children, className, type, ...props }) => {
-  return (
-    <button
-      type={type || "button"}
-      className={`p-2 rounded-lg text-white bg-black hover:brightness-110 ${className}`}
-      {...props}
-    >
-      {children}
-    </button>
-  );
-};
 
 function ProgressText(props) {
   if (!props.taskStatus) return null;

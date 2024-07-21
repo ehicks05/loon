@@ -15,10 +15,10 @@ import superFetch from "./common/SuperFetch";
 import { useUserStore2 } from "./common/UserContextProvider";
 
 const navigation = [
-  { name: "Search", href: "/search", current: false },
-  { name: "Library", href: "/library", current: false },
-  { name: "Artists", href: "/artists", current: false },
-  { name: "Albums", href: "/albums", current: false },
+  { name: "Search", href: "/search" },
+  { name: "Library", href: "/library" },
+  { name: "Artists", href: "/artists" },
+  { name: "Albums", href: "/albums" },
 ];
 
 function classNames(...classes) {
@@ -40,7 +40,7 @@ export default function Navbar() {
   const isAdmin = user?.admin;
 
   return (
-    <Disclosure as="nav" className="bg-green-700">
+    <Disclosure as="nav" className="bg-green-600">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
           <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -76,7 +76,7 @@ export default function Navbar() {
                     className={classNames(
                       pathname === item.href
                         ? "bg-green-900 text-white"
-                        : "text-gray-300 hover:bg-green-800 hover:text-white",
+                        : "text-gray-100 hover:bg-green-800 hover:text-white",
                       "rounded-md px-3 py-2 font-medium text-sm",
                     )}
                   >
@@ -177,7 +177,7 @@ export default function Navbar() {
               className={classNames(
                 pathname === item.href
                   ? "bg-green-900 text-white"
-                  : "text-gray-300 hover:bg-green-800 hover:text-white",
+                  : "text-gray-100 hover:bg-green-800 hover:text-white",
                 "block rounded-md px-3 py-2 font-medium text-base",
               )}
             >

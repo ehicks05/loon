@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import TextInput from "../../TextInput";
 import superFetch from "../../../common/SuperFetch";
+import { Button } from "../../Button";
+import TextInput from "../../TextInput";
 
 export default function UserSettings() {
   const [currentUser, setCurrentUser] = useState({});
@@ -21,7 +22,7 @@ export default function UserSettings() {
 
     document
       .getElementById("toggle-add-user-form")
-      .addEventListener("click", function () {
+      .addEventListener("click", () => {
         document.getElementById("add-user-form").classList.toggle("is-hidden");
         document
           .getElementById("toggle-add-user-form")
@@ -38,7 +39,7 @@ export default function UserSettings() {
   }
 
   function updateUser(id, formData) {
-    return superFetch("/admin/users/" + id, {
+    return superFetch(`/admin/users/${id}`, {
       method: "PUT",
       body: formData,
     })
@@ -47,7 +48,7 @@ export default function UserSettings() {
   }
 
   function deleteUserFETCH(id) {
-    return superFetch("/admin/users/" + id, { method: "DELETE" })
+    return superFetch(`/admin/users/${id}`, { method: "DELETE" })
       .then((response) => response.text())
       .then(() => loadUsers());
   }
@@ -70,10 +71,10 @@ export default function UserSettings() {
 
   function saveUser(id) {
     const formData = new FormData();
-    formData.append("username", document.getElementById("username" + id).value);
-    formData.append("fullName", document.getElementById("fullName" + id).value);
-    formData.append("password", document.getElementById("password" + id).value);
-    formData.append("isAdmin", document.getElementById("isAdmin" + id).checked);
+    formData.append("username", document.getElementById(`username${id}`).value);
+    formData.append("fullName", document.getElementById(`fullName${id}`).value);
+    formData.append("password", document.getElementById(`password${id}`).value);
+    formData.append("isAdmin", document.getElementById(`isAdmin${id}`).checked);
 
     updateUser(id, formData);
   }
@@ -94,36 +95,32 @@ export default function UserSettings() {
     const deleteButton = isCurrentUser ? (
       ""
     ) : (
-      <button
-        className="button is-danger"
+      <Button
+        className="bg-red-600"
         onClick={() => showDeleteConfirmation(user.id)}
       >
         Delete
-      </button>
+      </Button>
     );
-    const saveButton = (
-      <button className="button" onClick={() => saveUser(user.id)}>
-        Save
-      </button>
-    );
+    const saveButton = <Button onClick={() => saveUser(user.id)}>Save</Button>;
 
     return (
       <tr key={user.id}>
         <td>
-          <TextInput id={"username" + user.id} value={user.username} />
+          <TextInput id={`username${user.id}`} value={user.username} />
         </td>
         <td>
-          <TextInput id={"fullName" + user.id} value={user.fullName} />
+          <TextInput id={`fullName${user.id}`} value={user.fullName} />
         </td>
         <td>
-          <TextInput id={"password" + user.id} value={user.password} />
+          <TextInput id={`password${user.id}`} value={user.password} />
         </td>
         <td>
           <label className="checkbox">
             <input
               type="checkbox"
-              id={"isAdmin" + user.id}
-              name={"isAdmin" + user.id}
+              id={`isAdmin${user.id}`}
+              name={`isAdmin${user.id}`}
               value={"ROLE_ADMIN"}
               defaultChecked={user.roles
                 .map((role) => role.role)
@@ -167,9 +164,7 @@ export default function UserSettings() {
       </section>
 
       <section className="section" style={{ maxWidth: "400px" }}>
-        <button className="button is-normal" id="toggle-add-user-form">
-          Add User...
-        </button>
+        <Button id="toggle-add-user-form">Add User...</Button>
         <div className="box is-hidden" id="add-user-form">
           <h2 className="subtitle">Add User</h2>
 
@@ -206,15 +201,13 @@ export default function UserSettings() {
             <div>Are you sure you want to delete this user?</div>
           </section>
           <footer className="modal-card-foot">
-            <button
-              className="button is-danger"
+            <Button
+              className="bg-red-600"
               onClick={() => deleteUser(userIdToDelete)}
             >
               Delete
-            </button>
-            <button className="button" onClick={toggleModal}>
-              Cancel
-            </button>
+            </Button>
+            <Button onClick={toggleModal}>Cancel</Button>
           </footer>
         </div>
       </div>

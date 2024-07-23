@@ -1,22 +1,21 @@
 import _ from "lodash";
 import React, { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
+import { useDebounceValue } from "usehooks-ts";
 import { type Track, useAppStore } from "../../common/AppContextProvider";
 import { setSelectedContextMenuId } from "../../common/UserContextProvider";
-import { trpc } from "../../utils/trpc";
 import TextInput from "../TextInput";
 import { TrackListing } from "./TrackListing";
 
 export default function Search() {
   const [searchKey, setSearchKey] = useState("");
+  const [debouncedSearchKey, setDebouncedSearchKey] = useDebounceValue(
+    searchKey,
+    300,
+  );
   const [searchResults, setSearchResults] = useState<Track[]>([]);
-  const setSearchKeyDebounced = _.debounce(setSearchKey, 200);
 
   const tracks = useAppStore((state) => state.tracks);
-
-  const { data } = trpc.playlist.list.useQuery();
-
-  console.log(data);
 
   useEffect(() => {
     return function cleanup() {
@@ -25,7 +24,7 @@ export default function Search() {
   }, []);
 
   useEffect(() => {
-    const key = searchKey.toLowerCase();
+    const key = debouncedSearchKey.toLowerCase();
     const filteredTracks =
       key.length > 0
         ? tracks.filter((track) => {
@@ -39,11 +38,7 @@ export default function Search() {
         : tracks;
 
     setSearchResults(filteredTracks);
-  }, [tracks, searchKey]);
-
-  function handleSearchInput(e) {
-    setSearchKeyDebounced(e.target.value);
-  }
+  }, [tracks, debouncedSearchKey]);
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
@@ -51,7 +46,10 @@ export default function Search() {
         label="Search"
         leftIcon={<FaSearch color="gray" />}
         value={searchKey}
-        onChange={handleSearchInput}
+        onChange={(e) => {
+          setSearchKey(e.target.value);
+          setDebouncedSearchKey(e.target.value);
+        }}
         isHorizontal={false}
         hideLabel={true}
         autoComplete="off"

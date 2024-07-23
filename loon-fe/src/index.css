@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-section {
-  padding: 10px !important;
-}
-
 /* SCROLLBAR */
 ::-webkit-scrollbar {
   width: 8px;
@@ -17,74 +13,8 @@ section {
   background: #888;
 }
 
-/* copied from MyHelmet */
-
-.playingHighlight {
-  color: #23d160;
-}
-.playingHighlight:focus {
-  outline: 0;
-}
-
-.playlist {
-  overflow-y: auto;
-}
-
-.media + .media {
-  padding-top: 0.2rem;
-  margin-top: 0.2rem;
-}
-
-.is-visible-important {
-  visibility: visible !important;
-}
-
 /* THEMING */
-
-.dropdown a {
-  color: #666;
-}
-.dropdown a:hover {
-  color: #888;
-}
-.card a {
-  color: #666;
-}
-.card a:hover {
-  color: #888;
-}
-.navbar {
-  border: none;
-}
-
 @media (prefers-color-scheme: dark) {
-  .myLevel {
-    background-color: #282f2f;
-    color: #ddd;
-  }
-
-  .dropdown a {
-    color: #aaa;
-  }
-  .dropdown a:hover {
-    color: #ccc;
-  }
-  .card a {
-    color: #aaa;
-  }
-  .card a:hover {
-    color: #ccc;
-  }
-
-  .input {
-    color: #eee;
-    background-color: #333;
-  }
-  .select select {
-    color: #eee;
-    background-color: #333;
-  }
-
   /* checkbox tree */
   .rct-node-icon {
     color: #23d160 !important;

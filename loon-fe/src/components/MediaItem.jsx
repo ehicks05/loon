@@ -50,8 +50,7 @@ export default function MediaItem({
 
   const formattedDuration = track.formattedDuration;
 
-  const highlightClass =
-    track.id === selectedTrackId ? " playingHighlight" : "";
+  const highlightClass = track.id === selectedTrackId ? " text-green-500" : "";
 
   const innerRef = provided ? provided.innerRef : null;
   const draggableStyle = provided ? provided.draggableProps.style : null;

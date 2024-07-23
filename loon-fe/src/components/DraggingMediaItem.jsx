@@ -11,7 +11,8 @@ export default function DraggingMediaItem({ trackNumber, track, provided }) {
   const album = track.album ? track.album : "Missing!";
   const missingFile = track.missingFile;
 
-  const highlightClass = track.id === selectedTrackId ? "playingHighlight" : "";
+  const highlightClass =
+    track.id === selectedTrackId ? "text-green-500" : "text-neutral-300";
 
   return (
     <div
@@ -26,16 +27,12 @@ export default function DraggingMediaItem({ trackNumber, track, provided }) {
         }
         style={missingFile ? { color: "red" } : null}
       >
-        <div
-          className={`mr-1 min-w-8 text-right text-neutral-300 ${highlightClass}`}
-        >
+        <div className={`mr-1 min-w-8 text-right ${highlightClass}`}>
           {trackNumber}
         </div>
 
         <div {...provided.dragHandleProps} className={"flex-grow "}>
-          <div
-            className={`line-clamp-1 font-bold text-neutral-300 ${highlightClass}`}
-          >
+          <div className={`line-clamp-1 font-bold ${highlightClass}`}>
             {trackTitle}
           </div>
 

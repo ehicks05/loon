@@ -1,21 +1,26 @@
 import _ from "lodash";
 import React, { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import { useAppStore } from "../../common/AppContextProvider";
+import { type Track, useAppStore } from "../../common/AppContextProvider";
 import { setSelectedContextMenuId } from "../../common/UserContextProvider";
+import { trpc } from "../../utils/trpc";
 import TextInput from "../TextInput";
 import { TrackListing } from "./TrackListing";
 
 export default function Search() {
   const [searchKey, setSearchKey] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchResults, setSearchResults] = useState<Track[]>([]);
   const setSearchKeyDebounced = _.debounce(setSearchKey, 200);
 
   const tracks = useAppStore((state) => state.tracks);
 
+  const { data } = trpc.playlist.list.useQuery();
+
+  console.log(data);
+
   useEffect(() => {
     return function cleanup() {
-      setSelectedContextMenuId(null);
+      setSelectedContextMenuId("");
     };
   }, []);
 
@@ -47,7 +52,7 @@ export default function Search() {
         leftIcon={<FaSearch color="gray" />}
         value={searchKey}
         onChange={handleSearchInput}
-        horizontal={false}
+        isHorizontal={false}
         hideLabel={true}
         autoComplete="off"
       />

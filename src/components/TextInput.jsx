@@ -9,7 +9,7 @@ export default function TextInput({
 }) {
   return (
     <div className={`flex gap-2 ${isHorizontal ? "flex-row" : "flex-col"}`}>
-      <label className="label">{label}</label>
+      {label && !hideLabel && <label className="label">{label}</label>}
 
       <div className={"p-2 flex items-center gap-2 rounded bg-neutral-800"}>
         {leftIcon && <span className="">{leftIcon}</span>}

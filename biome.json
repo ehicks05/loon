@@ -14,7 +14,7 @@
   },
   "overrides": [
     {
-      "include": ["./tsconfig.app.json", "./tsconfig.node.json"],
+      "include": ["./loon-fe/tsconfig.app.json", "./loon-fe/tsconfig.node.json"],
       "json": {
         "parser": {
           "allowComments": true

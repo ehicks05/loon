@@ -5,7 +5,7 @@ import type {
 } from "@hello-pangea/dnd";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import type { Track } from "../common/AppContextProvider";
+import type { Track } from "../common/types";
 import {
   setSelectedPlaylistId,
   useUserStore,

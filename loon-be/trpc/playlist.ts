@@ -5,7 +5,8 @@ import { playlists } from "../drizzle/schema";
 import { publicProcedure, router } from "./trpc";
 
 export const playlistRouter = router({
-  list: publicProcedure.query(async () => {
+  list: publicProcedure.query(async ({ ctx: { user } }) => {
+    console.log({ user });
     return db.query.playlists.findMany({
       with: {
         playlistTracks: true,

@@ -36,10 +36,6 @@ server.register(fastifyTRPCPlugin, {
 });
 
 server.get("/poll", (req, res) => res.send({ success: true }));
-server.get("/me", async (req, res) => {
-  const { user } = await validateRequest(req, res);
-  res.send(user);
-});
 
 server.get("/login/github", async (req, res) => {
   const state = generateState();

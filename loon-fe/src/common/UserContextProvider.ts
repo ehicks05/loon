@@ -1,6 +1,6 @@
 import create from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import superFetch from "./SuperFetch";
+import type { User } from "./types";
 
 export interface UserState {
   id?: number;
@@ -20,26 +20,6 @@ export interface UserState {
   eq4Gain: number;
   theme?: string; // remove?
   transcode: boolean;
-}
-
-interface Role {
-  id?: null;
-  role: "ROLE_USER" | "ROLE_ADMIN";
-  authority: "ROLE_USER" | "ROLE_ADMIN";
-  new: boolean;
-}
-
-export interface User {
-  id: number;
-  username: string;
-  fullName: string;
-  roles: Role[];
-  userState: UserState;
-  enabled: boolean;
-  accountNonExpired: boolean;
-  accountNonLocked: boolean;
-  credentialsNonExpired: boolean;
-  admin: boolean;
 }
 
 const DEFAULT_USER: UserState = {
@@ -75,17 +55,6 @@ export const useUserStore = create<{ userState: UserState }>(
 export const useUserStore2 = create<{ user?: User }>(
   devtools(() => ({}), { name: "user" }),
 );
-
-const setUser = (user: User) => useUserStore2.setState({ user });
-export const fetchUser = async () => {
-  try {
-    const response = await superFetch("/me");
-    const user = await response.json();
-    setUser(user);
-  } catch (err) {
-    console.log("unable to load user");
-  }
-};
 
 const setUserState = (update: Partial<UserState>) =>
   useUserStore.setState((state) => ({

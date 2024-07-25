@@ -1,6 +1,6 @@
 import type { DraggableProvided } from "@hello-pangea/dnd";
 import React from "react";
-import type { Track } from "../common/AppContextProvider";
+import type { Track } from "../common/types";
 import { useUserStore } from "../common/UserContextProvider";
 
 interface Props {

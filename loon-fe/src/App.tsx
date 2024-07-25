@@ -20,12 +20,15 @@ import { useTitle } from "./hooks/useTitle";
 import { trpc } from "./utils/trpc";
 
 const useCacheData = () => {
-  useTitle();
+  const { data: user } = trpc.misc.me.useQuery();
   const { data: tracks } = trpc.misc.tracks.useQuery();
   const { data: playlists } = trpc.playlist.list.useQuery();
 
-  // load library
   useEffect(() => {
+    if (user) {
+      useUserStore2.setState((state) => ({ ...state, user }));
+    }
+
     if (tracks && playlists) {
       useAppStore.setState((state) => ({
         ...state,
@@ -36,25 +39,16 @@ const useCacheData = () => {
         playlists,
       }));
     }
-  }, [tracks, playlists]);
+  }, [user, tracks, playlists]);
 };
 
 export default function App() {
   useInterval(() => fetch("/poll"), 1000 * 60 * 60);
-
-  const user = useUserStore2((state) => state.user);
-
-  // load user
-  useEffect(() => {
-    const fetch = async () => {
-      await fetchUser();
-    };
-    fetch();
-  }, []);
-
+  useTitle();
   useCacheData();
 
   const { tracks, playlists } = useAppStore();
+  const { user } = useUserStore2((state) => state);
 
   if (!user || !tracks.length || !playlists.length) return <PageLoader />;
 
@@ -63,11 +57,7 @@ export default function App() {
       <div className="h-dvh flex flex-col text-neutral-300 bg-neutral-950">
         <Navbar />
         <div className={"flex flex-grow m-2 gap-2 overflow-hidden"}>
-          <div
-            className={
-              "hidden sm:block h-full w-60 overflow-y-auto overflow-x-hidden"
-            }
-          >
+          <div className="hidden sm:block h-full w-60 overflow-y-auto overflow-x-hidden">
             <div className="h-full flex flex-col justify-between">
               <div className="overflow-y-auto">
                 <SidePanel />

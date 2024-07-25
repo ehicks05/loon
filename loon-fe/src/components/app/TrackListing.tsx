@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { FixedSizeList as List } from "react-window";
 import { useResizeObserver } from "usehooks-ts";
-import type { Track } from "../../common/AppContextProvider";
+import type { Track } from "../../common/types";
 import {
   setSelectedContextMenuId,
   useUserStore,

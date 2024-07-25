@@ -1,4 +1,4 @@
-import _ from "lodash";
+import { clamp } from "lodash";
 
 function isScrolledIntoView(el: Element) {
   const rect = el.getBoundingClientRect();
@@ -16,7 +16,7 @@ function scrollIntoView(trackId: string) {
 }
 
 function scaleVolume(inputDecibel: number) {
-  const dB = _.clamp(inputDecibel, -60, 0);
+  const dB = clamp(inputDecibel, -60, 0);
   return dB === -60 ? 0 : 10 ** (dB / 20);
 }
 

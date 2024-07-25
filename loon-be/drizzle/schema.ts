@@ -8,6 +8,7 @@ import {
   integer,
   pgTable,
   primaryKey,
+  text,
   unique,
   uniqueIndex,
   varchar,
@@ -30,15 +31,15 @@ export const loon_system = pgTable("loon_system", {
 });
 
 export const playlists = pgTable("playlists", {
-  id: bigint("id", { mode: "number" }).primaryKey().notNull(),
+  id: text("id").primaryKey().notNull(),
   favorites: boolean("favorites"),
   name: varchar("name", { length: 255 }).notNull(),
   queue: boolean("queue"),
-  userId: bigint("user_id", { mode: "number" }).notNull(),
+  userId: text("user_id").notNull(),
 });
 
 export const tracks = pgTable("tracks", {
-  id: varchar("id", { length: 255 }).primaryKey().notNull(),
+  id: text("id").primaryKey().notNull(),
   album: varchar("album", { length: 255 }).notNull(),
   albumArtist: varchar("album_artist", { length: 255 }).notNull(),
   albumImageId: varchar("album_image_id", { length: 1000 }),
@@ -62,41 +63,15 @@ export const tracks = pgTable("tracks", {
   trackPeak: varchar("track_peak", { length: 255 }).notNull(),
 });
 
-export const user_state = pgTable("user_state", {
-  // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-  id: bigint("id", { mode: "number" })
-    .primaryKey()
-    .notNull()
-    .references(() => loon_users.id),
-  eq1frequency: integer("eq1frequency"),
-  eq1gain: integer("eq1gain"),
-  eq2frequency: integer("eq2frequency"),
-  eq2gain: integer("eq2gain"),
-  eq3frequency: integer("eq3frequency"),
-  eq3gain: integer("eq3gain"),
-  eq4frequency: integer("eq4frequency"),
-  eq4gain: integer("eq4gain"),
-  muted: boolean("muted"),
-  // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-  selectedPlaylistId: bigint("selected_playlist_id", { mode: "number" }),
-  selectedTrackId: varchar("selected_track_id", { length: 255 }),
-  shuffle: boolean("shuffle").notNull(),
-  theme: varchar("theme", { length: 255 }),
-  transcode: boolean("transcode").notNull(),
-  volume: doublePrecision("volume"),
-});
-
 export const playlist_tracks = pgTable(
   "playlist_tracks",
   {
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    playlistId: bigint("playlist_id", { mode: "number" })
+    playlistId: text("playlist_id")
       .notNull()
       .references(() => playlists.id),
-    trackId: varchar("track_id", { length: 255 })
+    trackId: text("track_id")
       .notNull()
       .references(() => tracks.id),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     index: bigint("index", { mode: "number" }).notNull(),
   },
   (table) => {
@@ -108,3 +83,27 @@ export const playlist_tracks = pgTable(
     };
   },
 );
+
+// export const user_state = pgTable("user_state", {
+//   // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+//   id: bigint("id", { mode: "number" })
+//     .primaryKey()
+//     .notNull()
+//     .references(() => loon_users.id),
+//   eq1frequency: integer("eq1frequency"),
+//   eq1gain: integer("eq1gain"),
+//   eq2frequency: integer("eq2frequency"),
+//   eq2gain: integer("eq2gain"),
+//   eq3frequency: integer("eq3frequency"),
+//   eq3gain: integer("eq3gain"),
+//   eq4frequency: integer("eq4frequency"),
+//   eq4gain: integer("eq4gain"),
+//   muted: boolean("muted"),
+//   // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+//   selectedPlaylistId: bigint("selected_playlist_id", { mode: "number" }),
+//   selectedTrackId: varchar("selected_track_id", { length: 255 }),
+//   shuffle: boolean("shuffle").notNull(),
+//   theme: varchar("theme", { length: 255 }),
+//   transcode: boolean("transcode").notNull(),
+//   volume: doublePrecision("volume"),
+// });

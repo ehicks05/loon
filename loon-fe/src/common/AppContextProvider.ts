@@ -1,17 +1,8 @@
-import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
 import _ from "lodash";
 import create from "zustand";
 import { devtools } from "zustand/middleware";
-import type { AppRouter } from "../../../loon-be/trpc/router";
 import superFetch from "./SuperFetch";
-
-type RouterInput = inferRouterInputs<AppRouter>;
-type RouterOutput = inferRouterOutputs<AppRouter>;
-
-export type Track = RouterOutput["misc"]["tracks"][number] & {
-  formattedDuration: string;
-};
-export type Playlist = RouterOutput["playlist"]["list"][number];
+import type { Playlist, Track } from "./types";
 
 const tracksBaseUrl = "/library/";
 const playlistBaseUrl = "/playlists/";

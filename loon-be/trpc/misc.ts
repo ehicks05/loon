@@ -11,10 +11,7 @@ export const miscRouter = t.router({
 
   tracks: t.procedure.query(async () => {
     const result = await db.select().from(tracks);
-    // .where(not(eq(tracks.music_brainz_track_id, "")));
-    return {
-      tracks: result,
-    };
+    return result;
   }),
 
   // builds JSON of all the nested folders and files

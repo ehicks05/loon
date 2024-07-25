@@ -13,13 +13,14 @@ export const lucia = new Lucia(adapter, {
     },
   },
   getUserAttributes: (attributes) => ({
-    githubId: attributes.github_id,
+    githubId: attributes.githubId,
     username: attributes.username,
+    isAdmin: attributes.isAdmin,
   }),
 });
 
 interface DatabaseUserAttributes {
-  github_id: number;
+  githubId: number;
   username: string;
   isAdmin: boolean;
 }

@@ -37,7 +37,7 @@ export default function Navbar() {
     return false;
   }
 
-  const isAdmin = user?.admin;
+  const isAdmin = user?.isAdmin;
 
   return (
     <Disclosure as="nav" className="bg-green-600">

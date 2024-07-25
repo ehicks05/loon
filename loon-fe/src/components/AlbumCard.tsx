@@ -4,39 +4,41 @@ import { useAppStore, useDistinctArtists } from "../common/AppContextProvider";
 import ActionMenu from "./ActionMenu";
 import { PLACEHOLDER_IMAGE_URL, getImageUrl } from "./utils";
 
-export default function AlbumCard({ album, hideAlbumArtist }) {
+interface Album {
+  name: string;
+  artist: string;
+  imageId: string | null;
+}
+
+interface Props {
+  album: Album;
+  hideAlbumArtist?: boolean;
+}
+
+export default function AlbumCard({ album, hideAlbumArtist }: Props) {
   const tracks = useAppStore((state) => state.tracks);
   const distinctArtists = useDistinctArtists();
 
-  const imageUrl = getImageUrl(album.albumImageId);
-
-  const contextMenuId = `artist=${album.albumArtist},album=${album.album}`;
+  const contextMenuId = `artist=${album.artist},album=${album.name}`;
 
   const albumTracks = tracks.filter(
-    (track) =>
-      track.albumArtist === album.albumArtist && track.album === album.album,
+    (track) => track.albumArtist === album.artist && track.album === album.name,
   );
 
-  const linkAlbumArtist = distinctArtists.includes(album.albumArtist);
+  const linkAlbumArtist = distinctArtists.includes(album.artist);
 
-  let albumArtistText = (
-    <span title={album.albumArtist}>{album.albumArtist}</span>
-  );
+  let albumArtistText = <span title={album.artist}>{album.artist}</span>;
   if (linkAlbumArtist)
     albumArtistText = (
-      <Link to={`/artist/${album.albumArtist}`}>{albumArtistText}</Link>
+      <Link to={`/artist/${album.artist}`}>{albumArtistText}</Link>
     );
-
-  const albumArtist = hideAlbumArtist ? null : (
-    <span className="line-clamp-3">{albumArtistText}</span>
-  );
 
   return (
     <div>
       <div className="group relative">
         <img
           src={PLACEHOLDER_IMAGE_URL}
-          data-src={imageUrl}
+          data-src={getImageUrl(album.imageId)}
           alt="Placeholder"
           className="lazyload rounded w-36 h-36 object-cover"
         />
@@ -45,14 +47,13 @@ export default function AlbumCard({ album, hideAlbumArtist }) {
         </div>
       </div>
       <div className="p-3">
-        {albumArtist}
+        {!hideAlbumArtist && (
+          <span className="line-clamp-3">{albumArtistText}</span>
+        )}
 
-        <Link to={`/artist/${album.albumArtist}/album/${album.album}`}>
-          <span
-            className="font-bold"
-            title={`${album.albumArtist} - ${album.album}`}
-          >
-            {album.album}
+        <Link to={`/artist/${album.artist}/album/${album.name}`}>
+          <span className="font-bold" title={`${album.artist} - ${album.name}`}>
+            {album.name}
           </span>
         </Link>
       </div>

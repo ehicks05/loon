@@ -17,7 +17,7 @@ import {
 import CheckboxTree from "react-checkbox-tree";
 import "react-checkbox-tree/lib/react-checkbox-tree.css";
 import superFetch from "../../common/SuperFetch";
-import TextInput from "../TextInput";
+import { TextInput } from "../TextInput";
 
 export default function PlaylistBuilder(props) {
   const [checked, setChecked] = useState([]);

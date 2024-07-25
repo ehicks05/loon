@@ -2,10 +2,10 @@ import React from "react";
 import MediaItem from "../MediaItem";
 import "lazysizes";
 import "lazysizes/plugins/attrchange/ls.attrchange";
-import { useAppStore } from "../../common/AppContextProvider";
+import { sortBy } from "lodash";
 import { useWindowSize } from "react-use";
+import { useAppStore } from "../../common/AppContextProvider";
 import AlbumCard from "../AlbumCard";
-import _ from "lodash";
 
 export default function Album(props) {
   const artist = props.match.params.artist;
@@ -14,12 +14,12 @@ export default function Album(props) {
   const tracks = useAppStore((state) => state.tracks);
   const maxWidth = useWindowSize().width >= 768 ? "100%" : "500px";
 
-  if (!tracks) return <div>Loading...</div>;
-
-  const albumTracks = _.chain(tracks)
-    .filter((track) => track.albumArtist === artist && track.album === album)
-    .sortBy(["discNumber", "trackNumber"])
-    .value();
+  const albumTracks = sortBy(
+    tracks.filter(
+      (track) => track.albumArtist === artist && track.album === album,
+    ),
+    ["discNumber", "trackNumber"],
+  );
 
   const mediaItems = albumTracks.map((track) => {
     return (
@@ -27,7 +27,7 @@ export default function Album(props) {
         key={track.id}
         playlistId={0}
         track={track}
-        trackNumber={track.discNumber + "." + track.trackNumber}
+        trackNumber={`${track.discNumber}.${track.trackNumber}`}
       />
     );
   });
@@ -39,9 +39,9 @@ export default function Album(props) {
           <div style={{ maxWidth: maxWidth, margin: "auto" }}>
             <AlbumCard
               album={{
-                albumArtist: albumTracks[0].albumArtist,
-                album: albumTracks[0].album,
-                albumImageId: albumTracks[0].albumImageId,
+                artist: albumTracks[0].albumArtist,
+                name: albumTracks[0].album,
+                imageId: albumTracks[0].albumImageId,
               }}
             />
           </div>

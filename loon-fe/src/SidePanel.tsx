@@ -1,4 +1,4 @@
-import React from "react";
+import React, { type ReactNode } from "react";
 import {
   FaCompactDisc,
   FaFolderOpen,
@@ -11,10 +11,17 @@ import {
 } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import { useAppStore } from "./common/AppContextProvider";
+import { type Playlist, useAppStore } from "./common/AppContextProvider";
 import { useUserStore } from "./common/UserContextProvider";
 
-function playlistToLink(playlist, selectedPlaylistId, isPlaylist) {
+interface PlaylistLink {
+  path: string;
+  icon: ReactNode;
+  text: string;
+  currentlyPlaying?: boolean;
+}
+
+function playlistToLink(playlist: Playlist, selectedPlaylistId: number) {
   return {
     path: `/playlists/${playlist.id}`,
     icon: playlist.favorites ? (
@@ -26,11 +33,15 @@ function playlistToLink(playlist, selectedPlaylistId, isPlaylist) {
     ),
     text: playlist.name,
     currentlyPlaying: playlist.id === selectedPlaylistId,
-    isPlaylist,
   };
 }
 
-const SidebarLink = ({ link, isPlaylist }) => {
+interface SidebarLinkProps {
+  link: PlaylistLink;
+  isPlaylist?: boolean;
+}
+
+const SidebarLink = ({ link, isPlaylist }: SidebarLinkProps) => {
   const location = useLocation();
   const isActive = location.pathname === link.path;
 
@@ -73,11 +84,7 @@ export default function SidePanel() {
   ];
 
   const playlistLinks = playlists.map((playlist) =>
-    playlistToLink(
-      playlist,
-      selectedPlaylistId,
-      !playlist.favorites && !playlist.queue,
-    ),
+    playlistToLink(playlist, selectedPlaylistId),
   );
 
   return (

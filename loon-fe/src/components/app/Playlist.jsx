@@ -17,7 +17,7 @@ import {
 } from "../../common/UserContextProvider";
 import DraggingMediaItem from "../DraggingMediaItem";
 import MediaItem from "../MediaItem";
-import TextInput from "../TextInput";
+import { TextInput } from "../TextInput";
 
 const Row = ({ data: { tracks, trackMap, playlistId }, index, style }) => {
   const playlistTrack = tracks[index];
@@ -213,11 +213,7 @@ export default function Playlist(props) {
               <div className="field has-addons">
                 <div className="control">
                   <span>
-                    <TextInput
-                      label="Name"
-                      id="playlistName"
-                      hideLabel={true}
-                    />
+                    <TextInput id="playlistName" />
                   </span>
                 </div>
                 <div className="control">

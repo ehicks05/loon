@@ -1,4 +1,4 @@
-import { usePlayerStore } from "@/common/PlayerContextProvider";
+import { usePlayerStore } from "../../../common/PlayerContextProvider";
 
 const OCTAVES = [
   { distance: -6, from: 0, to: 20 },
@@ -15,19 +15,19 @@ const OCTAVES = [
   { distance: 5, from: 20480, to: 40960 },
 ];
 
-function getFrequencyTiltAdjustment(binStartingFreq) {
+function getFrequencyTiltAdjustment(binStartingFreq: number) {
   const temp = binStartingFreq ? binStartingFreq : 20;
 
-  const octaveAdjustment = OCTAVES.find(
-    (octave) => octave.from <= temp && octave.to >= temp,
-  ).distance;
+  const octaveAdjustment =
+    OCTAVES.find((octave) => octave.from <= temp && octave.to >= temp)
+      ?.distance || 0;
 
   const dBAdjustment = octaveAdjustment * 1.1;
   return 10 ** (dBAdjustment / 20);
 }
 
-function getMergedFrequencyBins(dataArray, binWidth) {
-  const mergedData = [];
+function getMergedFrequencyBins(dataArray: Uint8Array, binWidth: number) {
+  const mergedData: number[] = [];
   let i = 0;
   let size = 1;
   while (i < dataArray.length && i * binWidth <= 22000) {
@@ -38,7 +38,8 @@ function getMergedFrequencyBins(dataArray, binWidth) {
     if (i + bins > dataArray.length) bins = dataArray.length - i;
 
     const slice = dataArray.slice(i, i + bins);
-    const average = (array) => array.reduce((o1, o2) => o1 + o2) / array.length;
+    const average = (array: Uint8Array) =>
+      array.reduce((o1, o2) => o1 + o2) / array.length;
     const avg = average(slice);
 
     mergedData.push(avg * linearAdjustment);
@@ -57,18 +58,20 @@ export default function renderSpectrumFrame() {
 
   requestAnimationFrame(() => renderSpectrumFrame());
 
-  const canvas = document.getElementById("spectrumCanvas");
+  const canvas = document.getElementById("spectrumCanvas") as HTMLCanvasElement;
+  const ctx = canvas.getContext("2d");
 
   if (
-    !canvas ||
     !audioCtx ||
+    audioCtx.current?.state !== "running" ||
     !analyser ||
-    audioCtx.current.state !== "running" ||
-    playbackState !== "playing"
-  )
+    !analyser.current ||
+    playbackState !== "playing" ||
+    !canvas ||
+    !ctx
+  ) {
     return;
-
-  const ctx = canvas.getContext("2d");
+  }
 
   // Make it visually fill the positioned parent
   canvas.style.width = "100%";
@@ -94,11 +97,11 @@ export default function renderSpectrumFrame() {
   for (let i = 0; i < bufferLength; i++) {
     const barHeight = mergedData[i] / (255 / HEIGHT);
 
-    const r = 40 * (barHeight / HEIGHT) + 20;
-    const g = 220 * (barHeight / HEIGHT) + 20;
-    const b = 40 * (barHeight / HEIGHT) + 20;
+    const h = 100;
+    const s = 10 * (barHeight / HEIGHT) + 80;
+    const l = 30 * (barHeight / HEIGHT) + 15;
 
-    ctx.fillStyle = `rgb(${r},${g},${b})`;
+    ctx.fillStyle = `hsl(${h},${s}%,${l}%)`;
     ctx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
 
     x += barWidth + 1;

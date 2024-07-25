@@ -1,45 +1,24 @@
+import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
 import _ from "lodash";
 import create from "zustand";
 import { devtools } from "zustand/middleware";
+import type { AppRouter } from "../../../loon-be/trpc/router";
 import superFetch from "./SuperFetch";
+
+type RouterInput = inferRouterInputs<AppRouter>;
+type RouterOutput = inferRouterOutputs<AppRouter>;
+
+export type Track = RouterOutput["misc"]["tracks"][number] & {
+  formattedDuration: string;
+};
+export type Playlist = RouterOutput["playlist"]["list"][number];
 
 const tracksBaseUrl = "/library/";
 const playlistBaseUrl = "/playlists/";
 
-export interface Track {
-  id: string;
-  artist: string;
-  title: string;
-  album: string;
-  albumArtist: string;
-  extension: string; // enum?
-  duration: number;
-  trackNumber: number;
-  discNumber: number;
-  trackGainLinear: string;
-  trackPeak: string;
-  artistImageId: string;
-  albumImageId: string;
-  artistThumbnailId: string;
-  albumThumbnailId: string;
-  missingFile: boolean;
-  sampleRate: number;
-  bitDepth: number;
-  formattedDuration: string;
-}
-
 export interface PlaylistTrack {
   index: number;
   track: Pick<Track, "id" | "formattedDuration">;
-}
-
-export interface Playlist {
-  id: number;
-  userId: number;
-  name: string;
-  favorites: boolean;
-  queue: boolean;
-  playlistTracks: PlaylistTrack[];
 }
 
 export const useAppStore = create<{ tracks: Track[]; playlists: Playlist[] }>(
@@ -58,12 +37,6 @@ export const useTrackMap = () => {
 
 export const useDistinctArtists = () => {
   return useAppStore((state) => _.uniq(_.map(state.tracks, "artist")));
-};
-
-export const fetchTracks = async () => {
-  const response = await superFetch(tracksBaseUrl);
-  const tracks = await response.json();
-  useAppStore.setState((state) => ({ ...state, tracks }));
 };
 
 export const fetchPlaylists = async () => {

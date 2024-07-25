@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import apiUrl from "../../../apiUrl";
+import { API_URL } from "../../../apiUrl";
 import { getTrackById } from "../../../common/AppContextProvider";
 import { usePlayerStore } from "../../../common/PlayerContextProvider";
 import {
@@ -218,7 +218,7 @@ const Player = () => {
     // set new audio source
     if (audio.current) {
       audio.current.volume = 0;
-      audio.current.src = apiUrl + "/media?id=" + track.id;
+      audio.current.src = `${API_URL}/media?id=${track.id}`;
 
       if (trackGainNode.current) {
         const gain = getMaxSafeGain(track.trackGainLinear, track.trackPeak);

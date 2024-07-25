@@ -2,6 +2,7 @@ import React from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { useUserStore2 } from "./common/UserContextProvider";
 
+import { GithubLogin, GithubLoginCallback } from "./GithubLogin";
 import About from "./components/app/About";
 import Album from "./components/app/Album";
 import Albums from "./components/app/Albums";
@@ -23,6 +24,12 @@ export default function Routes() {
   return (
     <>
       <Route exact path="/" render={() => <Redirect to="/search" />} />
+      <Route exact path="/login/github" render={() => <GithubLogin />} />
+      <Route
+        exact
+        path="/login/github/callback"
+        render={() => <GithubLoginCallback />}
+      />
       <AdminRoute
         exact
         path="/admin/systemSettings"
@@ -49,17 +56,13 @@ export default function Routes() {
       <Route exact path="/settings/eq" render={() => <Eq />} />
       <Route exact path="/albums" render={() => <Albums />} />
       <Route exact path="/artists" render={() => <Artists />} />
-      <Route
-        exact
-        path="/artist/:artist"
-        render={(props) => <Artist {...props} />}
-      />
+      <Route exact path="/artist/:artist" render={() => <Artist />} />
       <Route
         exact
         path="/artist/:artist/album/:album"
         render={(props) => <Album {...props} />}
       />
-      <Route exact path="/search" render={(props) => <Search {...props} />} />
+      <Route exact path="/search" render={() => <Search />} />
       <Route
         exact
         path="/favorites"
@@ -90,13 +93,13 @@ export default function Routes() {
   );
 }
 
-function AdminRoute({ component: C, appProps, ...rest }) {
+function AdminRoute({ component: Component, appProps, ...rest }) {
   return (
     <Route
       {...rest}
       render={(props) =>
         appProps.isAdmin ? (
-          <C {...props} {...appProps} />
+          <Component {...props} {...appProps} />
         ) : (
           <Redirect to={"/"} />
         )

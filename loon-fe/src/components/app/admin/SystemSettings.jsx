@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import apiUrl from "../../../apiUrl";
+import { API_URL } from "../../../apiUrl";
 import superFetch from "../../../common/SuperFetch";
 import { Button } from "../../Button";
 import Select from "../../Select";
-import TextInput from "../../TextInput";
+import { TextInput } from "../../TextInput";
 
 const transcodeQualityOptions = [
   { value: "0", text: "v0 (~240 Kbps)" },
@@ -26,7 +26,7 @@ export default function SystemSettings() {
   }, []);
 
   useEffect(() => {
-    const eventSource = new EventSource(`${apiUrl}/system-events`, {
+    const eventSource = new EventSource(`${API_URL}/system-events`, {
       withCredentials: true,
     });
     eventSource.addEventListener("taskStateUpdate", (e) => {
@@ -164,7 +164,7 @@ export default function SystemSettings() {
                 </label>
               </div>
               <Select
-                id="transcodeQuality"
+                name="transcodeQuality"
                 label="Transcode Quality"
                 items={transcodeQualityOptions}
                 value={settings.transcodeQuality}

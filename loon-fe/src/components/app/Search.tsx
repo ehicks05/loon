@@ -4,7 +4,7 @@ import { FaSearch } from "react-icons/fa";
 import { useDebounceValue } from "usehooks-ts";
 import { type Track, useAppStore } from "../../common/AppContextProvider";
 import { setSelectedContextMenuId } from "../../common/UserContextProvider";
-import TextInput from "../TextInput";
+import { TextInput } from "../TextInput";
 import { TrackListing } from "./TrackListing";
 
 export default function Search() {
@@ -43,7 +43,6 @@ export default function Search() {
   return (
     <div className="flex h-full flex-col overflow-hidden">
       <TextInput
-        label="Search"
         leftIcon={<FaSearch color="gray" />}
         value={searchKey}
         onChange={(e) => {
@@ -51,7 +50,6 @@ export default function Search() {
           setDebouncedSearchKey(e.target.value);
         }}
         isHorizontal={false}
-        hideLabel={true}
         autoComplete="off"
       />
 

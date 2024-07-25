@@ -7,7 +7,12 @@ import { trpc } from "./utils/trpc";
 import "./index.css";
 
 export const AppWrap = () => {
-  const [queryClient] = useState(() => new QueryClient());
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
+      }),
+  );
   const [trpcClient] = useState(() =>
     trpc.createClient({
       links: [

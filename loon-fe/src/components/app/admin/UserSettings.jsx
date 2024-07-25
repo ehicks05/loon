@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import superFetch from "../../../common/SuperFetch";
 import { Button } from "../../Button";
-import TextInput from "../../TextInput";
+import { TextInput } from "../../TextInput";
 
 export default function UserSettings() {
   const [currentUser, setCurrentUser] = useState({});

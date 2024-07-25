@@ -1,13 +1,13 @@
 import React from "react";
 import "lazysizes";
 import "lazysizes/plugins/attrchange/ls.attrchange";
-import _ from "lodash";
+import { sortBy, uniqBy } from "lodash";
 import { type Track, useAppStore } from "../../common/AppContextProvider";
 import { ArtistCard } from "../ArtistCard";
 
 export interface Artist {
   name: string;
-  imageId: string;
+  imageId: string | null;
 }
 
 const trackToArtist = (track: Track): Artist => ({
@@ -17,8 +17,10 @@ const trackToArtist = (track: Track): Artist => ({
 
 export default function Artists() {
   const tracks = useAppStore((state) => state.tracks);
-
-  const artists = _.uniqBy(tracks.map(trackToArtist), (o: Artist) => o.name);
+  const artists = sortBy(
+    uniqBy(tracks.map(trackToArtist), (o: Artist) => o.name),
+    ["name"],
+  );
 
   return (
     <>

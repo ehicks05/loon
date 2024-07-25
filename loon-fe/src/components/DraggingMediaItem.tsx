@@ -1,7 +1,19 @@
+import type { DraggableProvided } from "@hello-pangea/dnd";
 import React from "react";
+import type { Track } from "../common/AppContextProvider";
 import { useUserStore } from "../common/UserContextProvider";
 
-export default function DraggingMediaItem({ trackNumber, track, provided }) {
+interface Props {
+  trackNumber: number;
+  track: Track;
+  provided: DraggableProvided;
+}
+
+export default function DraggingMediaItem({
+  trackNumber,
+  track,
+  provided,
+}: Props) {
   const selectedTrackId = useUserStore(
     (state) => state.userState.selectedTrackId,
   );
@@ -22,10 +34,7 @@ export default function DraggingMediaItem({ trackNumber, track, provided }) {
       className={"select-none border border-neutral-500 bg-neutral-800"}
     >
       <div
-        className={
-          "group flex p-1 transition-all hover:bg-neutral-100 dark:hover:bg-neutral-800"
-        }
-        style={missingFile ? { color: "red" } : null}
+        className={`group flex p-1 transition-all hover:bg-neutral-100 dark:hover:bg-neutral-800 ${missingFile ? "text-red-500" : null}`}
       >
         <div className={`mr-1 min-w-8 text-right ${highlightClass}`}>
           {trackNumber}

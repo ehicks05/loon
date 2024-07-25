@@ -1,12 +1,21 @@
+import type {
+  DraggableProvided,
+  DraggableStateSnapshot,
+  DraggableStyle,
+} from "@hello-pangea/dnd";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import type { Track } from "../common/AppContextProvider";
 import {
   setSelectedPlaylistId,
   useUserStore,
 } from "../common/UserContextProvider";
 import ActionMenu from "./ActionMenu";
 
-const getRowStyle = (draggableStyle, isDragging) => ({
+const getRowStyle = (
+  isDragging: boolean,
+  draggableStyle?: DraggableStyle | null,
+) => ({
   // some basic styles to make the items look a bit nicer
   userSelect: "none",
   filter: isDragging ? "brightness(150%)" : "",
@@ -14,80 +23,57 @@ const getRowStyle = (draggableStyle, isDragging) => ({
   ...draggableStyle,
 });
 
+interface Props {
+  trackNumber: string;
+  track: Track;
+  playlistId: number;
+  provided?: DraggableProvided;
+  snapshot?: DraggableStateSnapshot;
+}
+
 export default function MediaItem({
   trackNumber,
   track,
   playlistId,
   provided,
   snapshot,
-}) {
+}: Props) {
   const [hover, setHover] = useState(false);
-  const selectedTrackId = useUserStore(
-    (state) => state.userState.selectedTrackId,
-  );
-  const selectedContextMenuId = useUserStore(
-    (state) => state.userState.selectedContextMenuId,
-  );
-
-  function handleHoverTrue() {
-    setHover(true);
-  }
-
-  function handleHoverFalse() {
-    setHover(false);
-  }
-
-  function handleSelectedTrackIdChange(e, selectedPlaylistId, selectedTrackId) {
-    console.log(
-      `setSelectedPlaylistId:${selectedPlaylistId}...${selectedTrackId}`,
-    );
-    setSelectedPlaylistId(selectedPlaylistId, selectedTrackId);
-  }
+  const { selectedTrackId, selectedContextMenuId } = useUserStore((state) => ({
+    selectedTrackId: state.userState.selectedTrackId,
+    selectedContextMenuId: state.userState.selectedContextMenuId,
+  }));
 
   const artist = track.artist ? track.artist : "Missing!";
   const trackTitle = track.title ? track.title : "Missing!";
   const album = track.album ? track.album : "Missing!";
-
-  const formattedDuration = track.formattedDuration;
-
-  const highlightClass = track.id === selectedTrackId ? " text-green-500" : "";
-
-  const innerRef = provided ? provided.innerRef : null;
-  const draggableStyle = provided ? provided.draggableProps.style : null;
-  const draggableProps = provided ? provided.draggableProps : null;
-  const dragHandleProps = provided ? provided.dragHandleProps : null;
+  const missingFile = track.missingFile;
+  const highlightClass = track.id === selectedTrackId ? "text-green-500" : "";
 
   const contextMenuId = `trackId=${track.id}`;
   const isDropdownActive = selectedContextMenuId === contextMenuId;
-  const isDragging = snapshot ? snapshot.isDragging : false;
+  const isDragging = snapshot?.isDragging || false;
 
   const showActionMenu = !isDragging && (hover || isDropdownActive);
-
-  const missingFile = track.missingFile;
-
-  const handleChangeTrack = missingFile
-    ? () => {}
-    : (e) => handleSelectedTrackIdChange(e, playlistId, track.id);
 
   return (
     <div
       className={`group flex h-full p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all ${highlightClass} ${missingFile ? "bg-red-400" : ""}`}
       id={`track${track.id}`}
-      ref={innerRef}
-      {...draggableProps}
-      style={getRowStyle(draggableStyle, isDragging)}
-      onMouseEnter={handleHoverTrue}
-      onMouseLeave={handleHoverFalse}
+      ref={provided?.innerRef}
+      style={getRowStyle(isDragging, provided?.draggableProps.style)}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      {...provided?.draggableProps}
     >
       <div className={"mr-1 min-w-8 text-right"}>{trackNumber}</div>
 
-      <div {...dragHandleProps} className={"flex-grow"}>
+      <div {...provided?.dragHandleProps} className={"flex-grow"}>
         <button
           type="button"
-          disabled={missingFile}
+          disabled={missingFile || undefined}
           className="line-clamp-1 font-bold"
-          onClick={handleChangeTrack}
-          onKeyUp={handleChangeTrack}
+          onClick={() => setSelectedPlaylistId(playlistId, track.id)}
         >
           {trackTitle}
         </button>
@@ -116,12 +102,12 @@ export default function MediaItem({
           "mr-2 flex basis-5 items-center dark:text-neutral-400 hover:dark:text-neutral-300"
         }
       >
-        {showActionMenu && (
+        {/* {showActionMenu && (
           <ActionMenu tracks={[track]} contextMenuId={contextMenuId} />
-        )}
+        )} */}
       </div>
 
-      <div className="basis-5">{formattedDuration}</div>
+      <div className="basis-5">{track.formattedDuration}</div>
     </div>
   );
 }

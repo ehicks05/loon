@@ -93,8 +93,8 @@ export default function ActionMenu(props) {
   const trackIds = tracks.map((track) => track.id);
 
   const favoritesPlaylist = playlists.find((playlist) => playlist.favorites);
-  const favoritesIds = favoritesPlaylist.playlistTracks.map(
-    (playlistTrack) => playlistTrack.track.id,
+  const favoritesIds = favoritesPlaylist?.playlistTracks.map(
+    (playlistTrack) => playlistTrack.trackId,
   );
   const isFavorite = trackIds.every((trackId) =>
     favoritesIds.includes(trackId),
@@ -102,7 +102,7 @@ export default function ActionMenu(props) {
 
   const queuePlaylist = playlists.find((playlist) => playlist.queue);
   const queueIds = queuePlaylist.playlistTracks.map(
-    (playlistTrack) => playlistTrack.track.id,
+    (playlistTrack) => playlistTrack.trackId,
   );
   const isQueued = trackIds.every((trackId) => queueIds.includes(trackId));
 
@@ -112,7 +112,7 @@ export default function ActionMenu(props) {
     .filter((playlist) => !playlist.favorites && !playlist.queue)
     .filter((playlist) => {
       const playlistTrackIds = playlist.playlistTracks.map(
-        (playlistTrack) => playlistTrack.track.id,
+        (playlistTrack) => playlistTrack.trackId,
       );
       return !trackIds.every((trackId) => playlistTrackIds.includes(trackId));
     })
@@ -128,7 +128,7 @@ export default function ActionMenu(props) {
     .filter((playlist) => !playlist.favorites && !playlist.queue)
     .filter((playlist) => {
       const playlistTrackIds = playlist.playlistTracks.map(
-        (playlistTrack) => playlistTrack.track.id,
+        (playlistTrack) => playlistTrack.trackId,
       );
       return trackIds.every((trackId) => playlistTrackIds.includes(trackId));
     })

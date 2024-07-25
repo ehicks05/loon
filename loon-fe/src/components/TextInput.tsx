@@ -1,15 +1,15 @@
-import React from "react";
+import React, { type ReactNode, type InputHTMLAttributes } from "react";
 
-export default function TextInput({
-  label,
-  hideLabel,
-  isHorizontal,
-  leftIcon,
-  ...props
-}) {
+interface Props extends InputHTMLAttributes<HTMLInputElement> {
+  label?: string;
+  isHorizontal: boolean;
+  leftIcon?: ReactNode;
+}
+
+export function TextInput({ label, isHorizontal, leftIcon, ...props }: Props) {
   return (
     <div className={`flex gap-2 ${isHorizontal ? "flex-row" : "flex-col"}`}>
-      {label && !hideLabel && <label className="label">{label}</label>}
+      {label && <label className="label">{label}</label>}
 
       <div className={"p-2 flex items-center gap-2 rounded bg-neutral-800"}>
         {leftIcon && <span className="">{leftIcon}</span>}

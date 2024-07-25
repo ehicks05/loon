@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
-import { useMeasure } from "react-use";
 import { FixedSizeList as List } from "react-window";
+import { useResizeObserver } from "usehooks-ts";
+import type { Track } from "../../common/AppContextProvider";
 import {
   setSelectedContextMenuId,
   useUserStore,
@@ -13,9 +14,15 @@ const Row = ({ data, index, style }) => (
   </div>
 );
 
-export const TrackListing = ({ tracks }) => {
-  const listRef = useRef();
-  const [containerRef, { height: containerHeight }] = useMeasure();
+interface Props {
+  tracks: Track[];
+}
+
+export const TrackListing = ({ tracks }: Props) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { height: containerHeight } = useResizeObserver({ ref: containerRef });
+
+  const listRef = useRef<List>(null);
 
   const selectedTrackId = useUserStore(
     (state) => state.userState.selectedTrackId,
@@ -24,12 +31,12 @@ export const TrackListing = ({ tracks }) => {
 
   useEffect(() => {
     return function cleanup() {
-      setSelectedContextMenuId(null);
+      setSelectedContextMenuId("");
     };
   }, []);
 
   useEffect(() => {
-    listRef.current.scrollToItem(selectedTrackIndex, "smart");
+    listRef.current?.scrollToItem(selectedTrackIndex, "smart");
   }, [selectedTrackIndex]);
 
   return (
@@ -37,7 +44,7 @@ export const TrackListing = ({ tracks }) => {
       <List
         ref={listRef}
         width="100%"
-        height={containerHeight}
+        height={containerHeight || 0}
         itemCount={tracks.length}
         itemData={tracks}
         itemKey={(i) => tracks[i].id}

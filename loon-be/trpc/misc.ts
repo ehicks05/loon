@@ -1,13 +1,19 @@
 import { eq, not } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../db";
-import { tracks } from "../drizzle/schema";
+import { system_settings, tracks } from "../drizzle/main";
 import { publicProcedure, router } from "./trpc";
 
 export const miscRouter = router({
   health: publicProcedure.query(() => "ok"),
   me: publicProcedure.query(({ ctx }) => {
     return ctx.user;
+  }),
+
+  systemSettings: publicProcedure.query(async () => {
+    const systemSettings = (await db.select().from(system_settings))[0];
+
+    return systemSettings;
   }),
 
   tracks: publicProcedure.query(async () => {

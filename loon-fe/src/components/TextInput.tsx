@@ -14,8 +14,6 @@ export function TextInput({ label, isHorizontal, leftIcon, ...props }: Props) {
       <div className={"p-2 flex items-center gap-2 rounded bg-neutral-800"}>
         {leftIcon && <span className="">{leftIcon}</span>}
         <input
-          id={props.id}
-          name={props.id}
           type="text"
           className={"w-full bg-neutral-800 outline-none"}
           placeholder={props.placeholder || label}

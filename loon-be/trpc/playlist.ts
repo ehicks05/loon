@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../db";
-import { playlists } from "../drizzle/schema";
+import { playlists } from "../drizzle/main";
 import { publicProcedure, router } from "./trpc";
 
 export const playlistRouter = router({
@@ -14,36 +14,35 @@ export const playlistRouter = router({
     });
   }),
 
-  getById: publicProcedure.input(z.number()).query(async ({ input }) => {
+  getById: publicProcedure.input(z.string()).query(async ({ input }) => {
     return db.select().from(playlists).where(eq(playlists.id, input));
   }),
 
   create: publicProcedure
-    .input(z.object({ id: z.number(), name: z.string(), userId: z.number() }))
+    .input(z.object({ id: z.string(), name: z.string(), userId: z.string() }))
     .mutation(async ({ input: { id, name, userId } }) => {
       return db
         .insert(playlists)
         .values({ id, name, userId, favorites: false, queue: false });
     }),
 
-  delete: publicProcedure.input(z.number()).mutation(async ({ input }) => {
+  delete: publicProcedure.input(z.string()).mutation(async ({ input }) => {
     return db.delete(playlists).where(eq(playlists.id, input));
   }),
 
-  clone: publicProcedure.input(z.number()).mutation(async ({ input }) => {
-    const original = await db
-      .select()
-      .from(playlists)
-      .where(eq(playlists.id, input))[0];
+  clone: publicProcedure.input(z.string()).mutation(async ({ input }) => {
+    const original = (
+      await db.select().from(playlists).where(eq(playlists.id, input))
+    )[0];
     const { id, ...values } = original;
-    return db.insert(playlists).values(values);
+    return db.insert(playlists).values({ id: "TODO", ...values });
   }),
 
-  addOrModify: publicProcedure.input(z.number()).mutation(async ({ input }) => {
+  addOrModify: publicProcedure.input(z.string()).mutation(async ({ input }) => {
     return db.select().from(playlists).where(eq(playlists.id, input));
   }),
 
-  dragAndDrop: publicProcedure.input(z.number()).mutation(async ({ input }) => {
+  dragAndDrop: publicProcedure.input(z.string()).mutation(async ({ input }) => {
     return db.select().from(playlists).where(eq(playlists.id, input));
   }),
 });

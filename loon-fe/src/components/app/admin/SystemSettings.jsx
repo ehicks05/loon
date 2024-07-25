@@ -124,42 +124,13 @@ export default function SystemSettings() {
           <div className={"flex flex-wrap gap-4"}>
             <div className={"flex flex-col gap-2"}>
               <div className="font-bold text-lg">General</div>
-              <TextInput
-                id="instanceName"
-                label="Instance Name"
-                value={settings.instanceName}
-              />
-              <TextInput
-                id="logonMessage"
-                label="Welcome Message"
-                value={settings.logonMessage}
-                size={50}
-              />
               <div className="field">
                 <input
                   type="checkbox"
-                  id="registrationEnabled"
-                  name="registrationEnabled"
-                  defaultChecked={settings.registrationEnabled}
+                  name="watchFiles"
+                  defaultChecked={settings.watchFiles}
                 />
-                <label
-                  htmlFor="registrationEnabled"
-                  style={{ padding: ".5rem" }}
-                >
-                  Enable Signups
-                </label>
-              </div>
-              <div className="field">
-                <input
-                  type="checkbox"
-                  id="directoryWatcherEnabled"
-                  name="directoryWatcherEnabled"
-                  defaultChecked={settings.directoryWatcherEnabled}
-                />
-                <label
-                  htmlFor="directoryWatcherEnabled"
-                  style={{ padding: ".5rem" }}
-                >
+                <label htmlFor="watchFiles" style={{ padding: ".5rem" }}>
                   Enable Directory Watcher
                 </label>
               </div>
@@ -174,17 +145,17 @@ export default function SystemSettings() {
             <div className={"flex flex-col gap-2"}>
               <div className="font-bold text-lg">Locations</div>
               <TextInput
-                id="musicFolder"
+                name="musicFolder"
                 label="Music Folder"
                 value={settings.musicFolder}
               />
               <TextInput
-                id="transcodeFolder"
+                name="transcodeFolder"
                 label="Transcode Folder"
                 value={settings.transcodeFolder}
               />
               <TextInput
-                id="dataFolder"
+                name="dataFolder"
                 label="Data Folder"
                 value={settings.dataFolder}
               />

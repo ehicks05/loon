@@ -96,12 +96,20 @@ server.get(
           Authorization: `Bearer ${tokens.accessToken}`,
         },
       });
-      const githubUser: GitHubUser = await githubUserResponse.json();
+      const githubUser = (await githubUserResponse.json()) as
+        | GitHubUser
+        | undefined;
+      if (!githubUser) {
+        res.status(400).send();
+        return;
+      }
 
-      const existingUser = await db
-        .select()
-        .from(userTable)
-        .where(eq(userTable.githubId, Number(githubUser.id)))?.[0];
+      const existingUser = (
+        await db
+          .select()
+          .from(userTable)
+          .where(eq(userTable.githubId, Number(githubUser.id)))
+      )?.[0];
 
       if (existingUser) {
         const session = await lucia.createSession(existingUser.id, {});

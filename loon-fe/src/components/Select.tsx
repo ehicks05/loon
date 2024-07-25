@@ -8,7 +8,7 @@ interface Props extends SelectHTMLAttributes<HTMLSelectElement> {
 export default function Select({ className, label, items, ...props }: Props) {
   return (
     <div>
-      <label>
+      <label className="flex gap-2 items-center">
         {label}
         <select
           className={`overflow-auto p-2 rounded bg-neutral-800 ${className}`}

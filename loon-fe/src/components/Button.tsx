@@ -1,7 +1,9 @@
-import React from "react";
+import React, { type ButtonHTMLAttributes } from "react";
 import { twMerge } from "tailwind-merge";
 
-export const Button = ({ children, className, type, ...props }) => {
+interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {}
+
+export const Button = ({ children, className, type, ...props }: Props) => {
   return (
     <button
       type={type || "button"}

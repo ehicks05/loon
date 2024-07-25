@@ -17,7 +17,7 @@ export const system_settings = pgTable("system_settings", {
   spotifyClientSecret: text("spotify_client_secret").notNull().default(""),
   transcodeFolder: text("transcode_folder").notNull().default(""),
   transcodeQuality: text("transcode_quality").notNull().default(""),
-  watchFiles: boolean("watch_files").default(false),
+  watchFiles: boolean("watch_files").notNull().default(false),
 });
 
 export const playlists = pgTable("playlists", {

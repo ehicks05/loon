@@ -2,7 +2,7 @@ import React, { type ReactNode, type InputHTMLAttributes } from "react";
 
 interface Props extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
-  isHorizontal: boolean;
+  isHorizontal?: boolean;
   leftIcon?: ReactNode;
 }
 

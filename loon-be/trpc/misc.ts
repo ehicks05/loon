@@ -12,9 +12,32 @@ export const miscRouter = router({
 
   systemSettings: publicProcedure.query(async () => {
     const systemSettings = (await db.select().from(system_settings))[0];
-
     return systemSettings;
   }),
+
+  setSystemSettings: publicProcedure
+    .input(
+      z.object({
+        dataFolder: z.string(),
+        lastFmApiKey: z.string(),
+        musicFolder: z.string(),
+        spotifyClientId: z.string(),
+        spotifyClientSecret: z.string(),
+        transcodeFolder: z.string(),
+        transcodeQuality: z.string(),
+        watchFiles: z.boolean(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const systemSettings = (
+        await db
+          .update(system_settings)
+          .set(input)
+          .where(eq(system_settings.id, "system"))
+          .returning()
+      )[0];
+      return systemSettings;
+    }),
 
   tracks: publicProcedure.query(async () => {
     const result = await db.select().from(tracks);

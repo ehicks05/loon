@@ -1,0 +1,150 @@
+import React, { useEffect, useState } from "react";
+import type { SystemSettings as ISystemSettings } from "../../../common/types";
+import { trpc } from "../../../utils/trpc";
+import { Button } from "../../Button";
+import Select from "../../Select";
+import { TextInput } from "../../TextInput";
+
+const transcodeQualityOptions = [
+  { value: "v0", text: "v0 (~240 Kbps)" },
+  { value: "v1", text: "v1 (~220 Kbps)" },
+  { value: "v2", text: "v2 (~190 Kbps)" },
+  { value: "v3", text: "v3 (~170 Kbps)" },
+  { value: "v4", text: "v4 (~160 Kbps)" },
+  { value: "v5", text: "v5 (~130 Kbps)" },
+  { value: "v6", text: "v6 (~120 Kbps)" },
+];
+
+export default function SystemSettings() {
+  const { data, isFetching: isQueryFetching } =
+    trpc.misc.systemSettings.useQuery();
+  const { mutate, isPending: isMutationPending } =
+    trpc.misc.setSystemSettings.useMutation();
+  const isLoading = isQueryFetching || isMutationPending;
+
+  const [settings, setSettings] = useState<ISystemSettings | undefined>(
+    undefined,
+  );
+
+  useEffect(() => {
+    if (data) {
+      setSettings(data);
+    }
+  }, [data]);
+
+  if (!settings) {
+    return <div>Loading...</div>;
+  }
+
+  const submitForm = () => {
+    mutate(settings);
+  };
+
+  const onChange = (name: string, value: string | boolean) => {
+    setSettings({ ...settings, [name]: value });
+  };
+
+  const isTasksRunning = false;
+
+  return (
+    <div className="flex flex-col gap-4">
+      <section className={""}>
+        <h1 className="font-bold text-2xl">Admin</h1>
+        <h2 className="">Modify System</h2>
+      </section>
+      <section className="flex gap-4">
+        <div className="flex flex-col gap-4 p-4 bg-black rounded">
+          <div className={"flex flex-col gap-2"}>
+            <div className="font-bold text-lg">General</div>
+            <label>
+              <input
+                type="checkbox"
+                name="watchFiles"
+                checked={settings.watchFiles}
+                onChange={(e) => onChange(e.target.name, e.target.checked)}
+              />
+              <span className="pl-2">Enable Directory Watcher</span>
+            </label>
+            <Select
+              name="transcodeQuality"
+              label="Transcode Quality"
+              items={transcodeQualityOptions}
+              value={settings.transcodeQuality}
+              required={true}
+              onChange={(e) => onChange(e.target.name, e.target.value)}
+            />
+          </div>
+          <div className={"flex flex-col gap-2"}>
+            <div className="font-bold text-lg">Locations</div>
+            <TextInput
+              name="musicFolder"
+              label="Music Folder"
+              value={settings.musicFolder}
+              onChange={(e) => onChange(e.target.name, e.target.value)}
+            />
+            <TextInput
+              name="transcodeFolder"
+              label="Transcode Folder"
+              value={settings.transcodeFolder}
+              onChange={(e) => onChange(e.target.name, e.target.value)}
+            />
+            <TextInput
+              name="dataFolder"
+              label="Data Folder"
+              value={settings.dataFolder}
+              onChange={(e) => onChange(e.target.name, e.target.value)}
+            />
+          </div>
+          <Button
+            className={"bg-green-600"}
+            onClick={submitForm}
+            disabled={isLoading}
+          >
+            Save
+          </Button>
+        </div>
+
+        <div className="flex flex-col gap-2 bg-black p-4 rounded">
+          <div className="font-bold text-lg">Tasks</div>
+          <div>
+            <Button disabled={isTasksRunning} onClick={() => submitForm()}>
+              Library Sync
+            </Button>
+          </div>
+          <div className={"ml-4"}>
+            <Button disabled={isTasksRunning} onClick={() => submitForm()}>
+              Step 1: Track Scan
+            </Button>
+          </div>
+          <div className={"ml-4"}>
+            <Button disabled={isTasksRunning} onClick={() => doImageScan()}>
+              Step 2: Image Scan
+            </Button>
+          </div>
+          <div className={"ml-4"}>
+            <Button
+              disabled={isTasksRunning}
+              onClick={() => doTranscodeLibrary()}
+            >
+              Step 3: Transcode
+            </Button>
+          </div>
+          <Button
+            className="bg-red-600"
+            disabled={isTasksRunning}
+            onClick={() => submitForm()}
+          >
+            Delete Tracks Without Files
+          </Button>
+          <Button
+            className="bg-red-600"
+            disabled={isTasksRunning}
+            onClick={() => submitForm()}
+          >
+            Delete Library
+          </Button>
+        </div>
+      </section>
+    </div>
+  );
+}

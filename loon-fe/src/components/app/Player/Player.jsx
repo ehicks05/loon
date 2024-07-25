@@ -51,24 +51,12 @@ const Player = () => {
       audio.crossOrigin = "use-credentials";
       audio.controls = false;
       audio.autoplay = false;
-      audio.onended = () => {
-        changeTrack("next");
-      };
-      audio.ondurationchange = () => {
-        setDuration(audio.duration);
-      };
-      audio.onerror = () => {
-        console.log(audio.error);
-      };
-      audio.onplaying = () => {
-        renderSpectrumFrame();
-      };
-      audio.onpause = (e) => {
-        console.log(e);
-      };
-      audio.ontimeupdate = () => {
-        setElapsedTime(audio.currentTime);
-      };
+      audio.onended = () => changeTrack("next");
+      audio.ondurationchange = () => setDuration(audio.duration);
+      audio.onerror = () => console.log(audio.error);
+      audio.onplaying = () => renderSpectrumFrame();
+      audio.onpause = (e) => console.log(e);
+      audio.ontimeupdate = () => setElapsedTime(audio.currentTime);
       document.body.appendChild(audio);
       return audio;
     }

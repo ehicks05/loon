@@ -33,7 +33,7 @@ export const playlistRouter = router({
     const original = await db
       .select()
       .from(playlists)
-      .where(eq(playlists.id, input));
+      .where(eq(playlists.id, input))[0];
     const { id, ...values } = original;
     return db.insert(playlists).values(values);
   }),

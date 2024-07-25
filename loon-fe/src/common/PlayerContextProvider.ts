@@ -9,6 +9,13 @@ interface PlayerStore {
   playbackState: PlaybackState;
   audioCtx?: React.RefObject<AudioContext>;
   analyser?: React.RefObject<AnalyserNode>;
+
+  setElapsedTime: (elapsedTime: number) => void;
+  setForcedElapsedTime: (forcedElapsedTime: number) => void;
+  setDuration: (duration: number) => void;
+  setPlaybackState: (playbackState: PlaybackState) => void;
+  setAudioCtx: (audioCtx: React.RefObject<AudioContext>) => void;
+  setAnalyser: (analyser: React.RefObject<AnalyserNode>) => void;
 }
 
 const usePlayerStore = create<PlayerStore>((set) => ({

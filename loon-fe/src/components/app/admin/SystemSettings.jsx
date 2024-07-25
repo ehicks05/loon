@@ -1,119 +1,35 @@
-import React, { useEffect, useState } from "react";
-import { API_URL } from "../../../apiUrl";
-import superFetch from "../../../common/SuperFetch";
+import React, { useState } from "react";
+import { trpc } from "../../../utils/trpc";
 import { Button } from "../../Button";
 import Select from "../../Select";
 import { TextInput } from "../../TextInput";
 
 const transcodeQualityOptions = [
-  { value: "0", text: "v0 (~240 Kbps)" },
-  { value: "1", text: "v1 (~220 Kbps)" },
-  { value: "2", text: "v2 (~190 Kbps)" },
-  { value: "3", text: "v3 (~170 Kbps)" },
-  { value: "4", text: "v4 (~160 Kbps)" },
-  { value: "5", text: "v5 (~130 Kbps)" },
-  { value: "6", text: "v6 (~120 Kbps)" },
+  { value: "v0", text: "v0 (~240 Kbps)" },
+  { value: "v1", text: "v1 (~220 Kbps)" },
+  { value: "v2", text: "v2 (~190 Kbps)" },
+  { value: "v3", text: "v3 (~170 Kbps)" },
+  { value: "v4", text: "v4 (~160 Kbps)" },
+  { value: "v5", text: "v5 (~130 Kbps)" },
+  { value: "v6", text: "v6 (~120 Kbps)" },
 ];
 
 export default function SystemSettings() {
-  const [settings, setSettings] = useState(null);
-  const [taskState, setTaskState] = useState(null);
+  const { data: settings } = trpc.misc.systemSettings.useQuery();
 
-  useEffect(() => {
-    superFetch("/admin/systemSettings", { method: "GET" })
-      .then((response) => response.json())
-      .then((data) => setSettings(data));
-  }, []);
-
-  useEffect(() => {
-    const eventSource = new EventSource(`${API_URL}/system-events`, {
-      withCredentials: true,
-    });
-    eventSource.addEventListener("taskStateUpdate", (e) => {
-      setTaskState(JSON.parse(e.data));
-    });
-
-    return function cleanup() {
-      eventSource.close();
-    };
-  }, []);
-
-  function tasksInProgress() {
-    if (!taskState?.tasks) return null;
-
-    let inProgress = Object.entries(taskState.tasks).filter(
-      (entry) => entry[1].status === "incomplete",
-    );
-    if (inProgress.filter((task) => task[0] === "LibrarySyncTask").length === 1)
-      inProgress = inProgress.filter((task) => task[0] === "LibrarySyncTask");
-
-    return inProgress;
+  if (!settings) {
+    return <div>Loading...</div>;
   }
 
-  function submitForm(
-    rescan,
-    deleteTracksWithoutFiles,
-    deleteLibrary,
-    librarySync,
-  ) {
-    if (deleteTracksWithoutFiles || deleteLibrary)
-      if (!window.confirm("Are you sure?")) return;
-
-    const formData = new FormData(document.getElementById("frmSystemSettings"));
-    formData.append("rescan", rescan ? "true" : "false");
-    formData.append(
-      "deleteTracksWithoutFiles",
-      deleteTracksWithoutFiles ? "true" : "false",
-    );
-    formData.append("deleteLibrary", deleteLibrary ? "true" : "false");
-    formData.append("librarySync", librarySync ? "true" : "false");
-
-    updateSystemSettings(formData).then(() => {
-      if (deleteTracksWithoutFiles || deleteLibrary) {
-        const action = deleteTracksWithoutFiles
-          ? "deleting tracks without files"
-          : "deleting library";
-        console.log(
-          `Finished ${action}. Refreshing track listing and playlists.`,
-        );
-
-        // todo reimplement
-        // self.props.store.appState.loadTracks();
-        // self.props.store.appState.loadPlaylists();
-      }
-    });
-  }
-
-  function updateSystemSettings(formData) {
-    return superFetch("/admin/systemSettings", {
-      method: "PUT",
-      body: formData,
-    }).then((response) => response.json());
-  }
-
-  function doImageScan() {
-    superFetch("/admin/systemSettings/imageScan", { method: "GET" });
-  }
-
-  function doTranscodeLibrary() {
-    superFetch("/admin/systemSettings/transcodeLibrary", { method: "GET" });
-  }
-
-  if (!settings || !taskState) return <div>Loading...</div>;
-
-  const isTasksRunning = taskState.tasksRunning > 0;
+  const isTasksRunning = false;
 
   return (
-    <div>
-      <SystemStatusBar
-        tasks={taskState.tasks}
-        tasksInProgress={tasksInProgress()}
-      />
-      <section className={"section"}>
+    <div className="flex flex-col gap-4">
+      <section className={""}>
         <h1 className="font-bold text-2xl">Admin</h1>
         <h2 className="">Modify System</h2>
       </section>
-      <section className="section">
+      <section className="">
         <form id="frmSystemSettings" method="post" action="">
           <Button
             className={"bg-green-600"}
@@ -170,7 +86,6 @@ export default function SystemSettings() {
                 >
                   Library Sync
                 </Button>
-                <ProgressText taskStatus={taskState.tasks.LibrarySyncTask} />
               </div>
               <div className={"ml-4"}>
                 <Button
@@ -179,13 +94,11 @@ export default function SystemSettings() {
                 >
                   Step 1: Track Scan
                 </Button>
-                <ProgressText taskStatus={taskState.tasks.MusicScanner} />
               </div>
               <div className={"ml-4"}>
                 <Button disabled={isTasksRunning} onClick={() => doImageScan()}>
                   Step 2: Image Scan
                 </Button>
-                <ProgressText taskStatus={taskState.tasks.ImageScanner} />
               </div>
               <div className={"ml-4"}>
                 <Button
@@ -194,7 +107,6 @@ export default function SystemSettings() {
                 >
                   Step 3: Transcode
                 </Button>
-                <ProgressText taskStatus={taskState.tasks.TranscoderTask} />
               </div>
               <Button
                 className="bg-red-600"
@@ -214,45 +126,6 @@ export default function SystemSettings() {
           </div>
         </form>
       </section>
-    </div>
-  );
-}
-
-function ProgressText(props) {
-  if (!props.taskStatus) return null;
-
-  const progress = props.taskStatus.progress;
-  const status = props.taskStatus.status;
-  const progressClass = `button ${status === "complete" ? "is-success" : "is-info"}`;
-  const showProgressBar = status === "complete" || status === "incomplete";
-
-  return (
-    showProgressBar && (
-      <span className={progressClass} style={{}}>
-        {progress}%
-      </span>
-    )
-  );
-}
-
-function SystemStatusBar(props) {
-  const tasks = props.tasks;
-  if (!tasks) return null;
-
-  const tasksInProgress = props.tasksInProgress;
-  const progress =
-    tasksInProgress.length !== 1 ? 0 : String(tasksInProgress[0][1].progress);
-
-  return (
-    <div>
-      <progress
-        className="progress is-info is-small"
-        value={progress}
-        max="100"
-        style={{ borderRadius: 0, height: "6px" }}
-      >
-        test
-      </progress>
     </div>
   );
 }

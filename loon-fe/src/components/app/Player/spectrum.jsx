@@ -94,11 +94,9 @@ export default function renderSpectrumFrame() {
   for (let i = 0; i < bufferLength; i++) {
     const barHeight = mergedData[i] / (255 / HEIGHT);
 
-    const red = (barHeight / HEIGHT) * 255;
-
-    const r = red + 25 * (i / bufferLength);
-    const g = 250 * (i / bufferLength);
-    const b = 50;
+    const r = 40 * (barHeight / HEIGHT) + 20;
+    const g = 220 * (barHeight / HEIGHT) + 20;
+    const b = 40 * (barHeight / HEIGHT) + 20;
 
     ctx.fillStyle = `rgb(${r},${g},${b})`;
     ctx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);

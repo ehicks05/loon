@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { trpc } from "../../../utils/trpc";
 import { Button } from "../../Button";
 import Select from "../../Select";
@@ -40,16 +40,14 @@ export default function SystemSettings() {
           <div className={"flex flex-wrap gap-4"}>
             <div className={"flex flex-col gap-2"}>
               <div className="font-bold text-lg">General</div>
-              <div className="field">
+              <label>
                 <input
                   type="checkbox"
                   name="watchFiles"
                   defaultChecked={settings.watchFiles}
                 />
-                <label htmlFor="watchFiles" style={{ padding: ".5rem" }}>
-                  Enable Directory Watcher
-                </label>
-              </div>
+                <span className="pl-2">Enable Directory Watcher</span>
+              </label>
               <Select
                 name="transcodeQuality"
                 label="Transcode Quality"

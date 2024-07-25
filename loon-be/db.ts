@@ -2,6 +2,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import postgres from "postgres";
 import { env } from "./env";
+import { all } from "./drizzle";
 
 // for migrations
 const migrationClient = postgres(env.DB_URL, { max: 1 });
@@ -9,4 +10,4 @@ const migrationClient = postgres(env.DB_URL, { max: 1 });
 
 // for query purposes
 const queryClient = postgres(env.DB_URL);
-export const db = drizzle(queryClient);
+export const db = drizzle(queryClient, { schema: all });

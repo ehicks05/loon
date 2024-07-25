@@ -6,24 +6,42 @@ import { publicProcedure, router } from "./trpc";
 
 export const playlistRouter = router({
   list: publicProcedure.query(async () => {
-    return db.select().from(playlists);
+    return db.query.playlists.findMany({
+      with: {
+        playlistTracks: true,
+      },
+    });
   }),
+
   getById: publicProcedure.input(z.number()).query(async ({ input }) => {
     return db.select().from(playlists).where(eq(playlists.id, input));
   }),
 
-  create: publicProcedure.input(z.number()).mutation(async ({ input }) => {
-    return db.select().from(playlists).where(eq(playlists.id, input));
-  }),
+  create: publicProcedure
+    .input(z.object({ id: z.number(), name: z.string(), userId: z.number() }))
+    .mutation(async ({ input: { id, name, userId } }) => {
+      return db
+        .insert(playlists)
+        .values({ id, name, userId, favorites: false, queue: false });
+    }),
+
   delete: publicProcedure.input(z.number()).mutation(async ({ input }) => {
-    return db.select().from(playlists).where(eq(playlists.id, input));
+    return db.delete(playlists).where(eq(playlists.id, input));
   }),
+
   clone: publicProcedure.input(z.number()).mutation(async ({ input }) => {
-    return db.select().from(playlists).where(eq(playlists.id, input));
+    const original = await db
+      .select()
+      .from(playlists)
+      .where(eq(playlists.id, input));
+    const { id, ...values } = original;
+    return db.insert(playlists).values(values);
   }),
+
   addOrModify: publicProcedure.input(z.number()).mutation(async ({ input }) => {
     return db.select().from(playlists).where(eq(playlists.id, input));
   }),
+
   dragAndDrop: publicProcedure.input(z.number()).mutation(async ({ input }) => {
     return db.select().from(playlists).where(eq(playlists.id, input));
   }),

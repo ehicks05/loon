@@ -1,5 +1,8 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import cookie from "@fastify/cookie";
 import cors from "@fastify/cors";
+import fastifyStatic from "@fastify/static";
 import {
   type FastifyTRPCPluginOptions,
   fastifyTRPCPlugin,
@@ -16,12 +19,19 @@ import { lucia } from "./lucia/lucia";
 import { createContext } from "./trpc/context";
 import { type AppRouter, appRouter } from "./trpc/router";
 
+const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+const __dirname = path.dirname(__filename); // get the name of the directory
+
 const server = fastify({
   maxParamLength: 5000,
 });
 
 server.register(cors, { origin: true });
 server.register(cookie);
+
+server.register(fastifyStatic, {
+  root: path.join(__dirname, "/static"),
+});
 
 server.register(fastifyTRPCPlugin, {
   prefix: "/trpc",
@@ -36,6 +46,7 @@ server.register(fastifyTRPCPlugin, {
 });
 
 server.get("/poll", (req, res) => res.send({ success: true }));
+server.get("/media", (req, res) => res.sendFile("test.flac", "", {}));
 
 server.get("/login/github", async (req, res) => {
   const state = generateState();
@@ -58,7 +69,7 @@ interface GitHubUser {
   login: string;
 }
 
-type MyRequest = FastifyRequest<{
+type GithubCallbackRequest = FastifyRequest<{
   Querystring: {
     code?: string;
     state?: string;
@@ -75,7 +86,7 @@ server.get(
   //     },
   //   },
   // },
-  async (req: MyRequest, res) => {
+  async (req: GithubCallbackRequest, res) => {
     const code = req.query.code?.toString() ?? null;
     const state = req.query.state?.toString() ?? null;
     const storedState = req.cookies.github_oauth_state ?? null;
@@ -99,10 +110,12 @@ server.get(
       const githubUser = (await githubUserResponse.json()) as
         | GitHubUser
         | undefined;
-      if (!githubUser) {
+      if (!githubUser?.id) {
         res.status(400).send();
         return;
       }
+
+      console.log({ githubUser });
 
       const existingUser = (
         await db
@@ -184,7 +197,7 @@ server.post("/logout", async (req, res) => {
     return;
   }
   await lucia.invalidateSession(session.id);
-  res
+  return res
     .header("Set-Cookie", lucia.createBlankSessionCookie().serialize())
     .status(200)
     .send();

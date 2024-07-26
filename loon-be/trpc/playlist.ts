@@ -6,11 +6,15 @@ import { publicProcedure, router } from "./trpc";
 
 export const playlistRouter = router({
   list: publicProcedure.query(async ({ ctx: { user } }) => {
-    console.log({ user });
+    if (!user) {
+      return [];
+    }
+
     return db.query.playlists.findMany({
       with: {
         playlistTracks: true,
       },
+      where: eq(playlists.userId, user.id),
     });
   }),
 

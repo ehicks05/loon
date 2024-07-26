@@ -1,7 +1,8 @@
-import { eq, not } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../db";
 import { system_settings, tracks } from "../drizzle/main";
+import { listFiles } from "../utils/files";
 import { publicProcedure, router } from "./trpc";
 
 export const miscRouter = router({
@@ -11,8 +12,7 @@ export const miscRouter = router({
   }),
 
   systemSettings: publicProcedure.query(async () => {
-    const systemSettings = (await db.select().from(system_settings))[0];
-    return systemSettings;
+    return db.query.system_settings.findFirst();
   }),
 
   setSystemSettings: publicProcedure
@@ -49,6 +49,17 @@ export const miscRouter = router({
     return {
       tracksPaths: "todo",
     };
+  }),
+
+  scan: publicProcedure.query(async () => {
+    const systemSettings = await db.query.system_settings.findFirst();
+    if (!systemSettings) {
+      return [];
+    }
+
+    const { musicFolder } = systemSettings;
+
+    return listFiles(musicFolder);
   }),
 });
 

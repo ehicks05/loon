@@ -14,13 +14,17 @@ import { type Session, type User, generateIdFromEntropySize } from "lucia";
 import { serializeCookie } from "oslo/cookie";
 import { db } from "./db";
 import { userTable } from "./drizzle/lucia";
+import { tracks } from "./drizzle/main";
 import { github } from "./lucia/github";
 import { lucia } from "./lucia/lucia";
 import { createContext } from "./trpc/context";
 import { type AppRouter, appRouter } from "./trpc/router";
+import { doesFileExist } from "./utils/files";
 
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 const __dirname = path.dirname(__filename); // get the name of the directory
+
+const MYSTERY_PATH = "/static";
 
 const server = fastify({
   maxParamLength: 5000,
@@ -30,7 +34,7 @@ server.register(cors, { origin: true });
 server.register(cookie);
 
 server.register(fastifyStatic, {
-  root: path.join(__dirname, "/static"),
+  root: path.join(__dirname, MYSTERY_PATH),
 });
 
 server.register(fastifyTRPCPlugin, {
@@ -46,7 +50,28 @@ server.register(fastifyTRPCPlugin, {
 });
 
 server.get("/poll", (req, res) => res.send({ success: true }));
-server.get("/media", (req, res) => res.sendFile("test.flac", "", {}));
+
+type MediaRequest = FastifyRequest<{
+  Querystring: {
+    id?: string;
+  };
+}>;
+server.get("/media", async (req: MediaRequest, res) => {
+  const id = req.query.id?.toString() ?? null;
+  if (!id) {
+    return res.status(400).send();
+  }
+  const track = await db.query.tracks.findFirst({ where: eq(tracks.id, id) });
+  const path = track?.path;
+  if (!path) {
+    return res.status(404).send();
+  }
+  const fileExists = await doesFileExist(`.${MYSTERY_PATH}/${path}`);
+  if (!fileExists) {
+    return res.status(404).send();
+  }
+  return res.sendFile(path, "", { acceptRanges: true });
+});
 
 server.get("/login/github", async (req, res) => {
   const state = generateState();

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, useHistory, useLocation } from "react-router-dom";
 
 import Navbar from "./Navbar";
 import Routes from "./Routes";
@@ -20,9 +20,12 @@ import { useTitle } from "./hooks/useTitle";
 import { trpc } from "./utils/trpc";
 
 const useCacheData = () => {
-  const { data: user } = trpc.misc.me.useQuery();
-  const { data: tracks } = trpc.misc.tracks.useQuery();
-  const { data: playlists } = trpc.playlist.list.useQuery();
+  const { data: user, isLoading: isLoadingUser } = trpc.misc.me.useQuery();
+  const { data: tracks, isLoading: isLoadingTracks } =
+    trpc.misc.tracks.useQuery();
+  const { data: playlists, isLoading: isLoadingPlaylists } =
+    trpc.playlist.list.useQuery();
+  const isLoading = isLoadingUser || isLoadingTracks || isLoadingPlaylists;
 
   useEffect(() => {
     if (user) {
@@ -40,40 +43,45 @@ const useCacheData = () => {
       }));
     }
   }, [user, tracks, playlists]);
+
+  return { isLoading, user, tracks, playlists };
 };
 
 export default function App() {
   useInterval(() => fetch("/poll"), 1000 * 60 * 60);
   useTitle();
-  useCacheData();
+  const { isLoading, user, tracks, playlists } = useCacheData();
+  const history = useHistory();
 
-  const { tracks, playlists } = useAppStore();
-  const { user } = useUserStore2((state) => state);
+  if (isLoading) {
+    return <PageLoader />;
+  }
 
-  if (!user || !tracks.length || !playlists.length) return <PageLoader />;
+  if (!user || !tracks.length || !playlists.length) {
+    console.log({ user, t: tracks.length, p: playlists.length });
+    history.push("/login/github");
+  }
 
   return (
-    <BrowserRouter>
-      <div className="h-dvh flex flex-col text-neutral-300 bg-neutral-950">
-        <Navbar />
-        <div className={"flex flex-grow m-2 gap-2 overflow-hidden"}>
-          <div className="hidden sm:block h-full w-60 overflow-y-auto overflow-x-hidden">
-            <div className="h-full flex flex-col justify-between">
-              <div className="overflow-y-auto">
-                <SidePanel />
-              </div>
-              <div className="h-28 rounded-lg p-2 bg-neutral-900">
-                <canvas id="spectrumCanvas" height={"100%"} />
-              </div>
+    <div className="h-dvh flex flex-col text-neutral-300 bg-neutral-950">
+      <Navbar />
+      <div className={"flex flex-grow m-2 gap-2 overflow-hidden"}>
+        <div className="hidden sm:block h-full w-60 overflow-y-auto overflow-x-hidden">
+          <div className="h-full flex flex-col justify-between">
+            <div className="overflow-y-auto">
+              <SidePanel />
+            </div>
+            <div className="h-28 rounded-lg p-2 bg-neutral-900">
+              <canvas id="spectrumCanvas" height={"100%"} />
             </div>
           </div>
-          <div className="w-full rounded-lg overflow-y-auto overflow-x-hidden p-2 bg-neutral-100 dark:bg-neutral-900">
-            <Routes />
-          </div>
         </div>
-        <Player />
-        <PlaybackControls />
+        <div className="w-full rounded-lg overflow-y-auto overflow-x-hidden p-2 bg-neutral-100 dark:bg-neutral-900">
+          <Routes />
+        </div>
       </div>
-    </BrowserRouter>
+      <Player />
+      <PlaybackControls />
+    </div>
   );
 }

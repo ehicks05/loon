@@ -30,11 +30,9 @@ export default function Navbar() {
   const { pathname } = useLocation();
   const history = useHistory();
 
-  function handleLogout() {
-    superFetch("/logout", { method: "POST" }).then(() => {
-      history.push("/");
-    });
-    return false;
+  async function handleLogout() {
+    await superFetch("/logout", { method: "POST" });
+    history.push("/");
   }
 
   const isAdmin = user?.isAdmin;
@@ -107,60 +105,53 @@ export default function Navbar() {
                 {isAdmin && (
                   <>
                     <div className="px-4 py-2 text-neutral-500">Admin</div>
-                    <MenuItem>
-                      <Link
-                        to="/admin/systemSettings"
-                        className="block px-4 py-2 text-sm data-[focus]:bg-neutral-900"
-                      >
-                        Manage System
-                      </Link>
-                    </MenuItem>
-                    <MenuItem>
-                      <Link
-                        to="/admin/users"
-                        className="block px-4 py-2 text-sm data-[focus]:bg-neutral-900"
-                      >
-                        Manage Users
-                      </Link>
-                    </MenuItem>
-                    <MenuItem>
-                      <Link
-                        to="/admin/about"
-                        className="block px-4 py-2 text-sm data-[focus]:bg-neutral-900"
-                      >
-                        About Current Track
-                      </Link>
-                    </MenuItem>
+                    {adminMenuItems.map(({ to, label }) => (
+                      <MenuItem key={to}>
+                        <Link
+                          to={to}
+                          className="block px-4 py-2 text-sm data-[focus]:bg-neutral-900"
+                        >
+                          {label}
+                        </Link>
+                      </MenuItem>
+                    ))}
                   </>
                 )}
                 <div className="px-4 py-2 text-neutral-500">Settings</div>
-                <MenuItem>
-                  <Link
-                    to="/settings/general"
-                    className="block px-4 py-2 text-sm data-[focus]:bg-neutral-900"
-                  >
-                    General
-                  </Link>
-                </MenuItem>
-                <MenuItem>
-                  <Link
-                    to="/settings/eq"
-                    className="block px-4 py-2 text-sm data-[focus]:bg-neutral-900"
-                  >
-                    Equalizer
-                  </Link>
-                </MenuItem>
+                {userMenuItems.map(({ to, label }) => (
+                  <MenuItem key={to}>
+                    <Link
+                      to={to}
+                      className="block px-4 py-2 text-sm data-[focus]:bg-neutral-900"
+                    >
+                      {label}
+                    </Link>
+                  </MenuItem>
+                ))}
 
                 <div className="px-4 py-2 text-neutral-500">Auth Status</div>
-                <MenuItem>
-                  <a
-                    href="/"
-                    onClick={handleLogout}
-                    className="block px-4 py-2 text-sm data-[focus]:bg-neutral-900"
-                  >
-                    Sign out
-                  </a>
-                </MenuItem>
+                {user && (
+                  <MenuItem>
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 block text-sm data-[focus]:bg-neutral-900"
+                    >
+                      Sign out
+                    </button>
+                  </MenuItem>
+                )}
+
+                {!user && (
+                  <MenuItem>
+                    <a
+                      href="/login"
+                      className="w-full text-left px-4 py-2 block text-sm data-[focus]:bg-neutral-900"
+                    >
+                      Sign in
+                    </a>
+                  </MenuItem>
+                )}
               </MenuItems>
             </Menu>
           </div>
@@ -189,3 +180,28 @@ export default function Navbar() {
     </Disclosure>
   );
 }
+
+const userMenuItems = [
+  {
+    to: "/settings/general",
+    label: "General",
+  },
+  {
+    to: "/settings/eq",
+    label: "Equalizer",
+  },
+];
+const adminMenuItems = [
+  {
+    to: "/admin/systemSettings",
+    label: "Manage System",
+  },
+  {
+    to: "/admin/users",
+    label: "Manage Users",
+  },
+  {
+    to: "/admin/about",
+    label: "About Current Track",
+  },
+];

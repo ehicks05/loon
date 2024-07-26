@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import superFetch from "./common/SuperFetch";
+import { useUserStore2 } from "./common/UserContextProvider";
 
 function GithubLogin() {
   useEffect(() => {
@@ -18,7 +19,8 @@ function GithubLogin() {
 
 function GithubLoginCallback() {
   const { search } = useLocation();
-  const params = new URLSearchParams(search);
+  const { user } = useUserStore2();
+  const history = useHistory();
 
   useEffect(() => {
     const doIt = async () => {
@@ -27,8 +29,12 @@ function GithubLoginCallback() {
       });
     };
 
-    doIt();
-  }, []);
+    if (!user) {
+      doIt();
+    } else {
+      history.push("/");
+    }
+  }, [search, user, history]);
 
   return <div className="max-w-xl mx-auto my-auto p-16">yo</div>;
 }

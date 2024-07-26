@@ -5,6 +5,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import { trpc } from "./utils/trpc";
 import "./index.css";
+import { BrowserRouter } from "react-router-dom";
 
 export const AppWrap = () => {
   const [queryClient] = useState(
@@ -32,7 +33,9 @@ export const AppWrap = () => {
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
-        <App />
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
       </QueryClientProvider>
     </trpc.Provider>
   );

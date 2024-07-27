@@ -2,7 +2,10 @@ import { useEffect, useRef } from "react";
 import { useEventListener } from "usehooks-ts";
 import { API_URL } from "../../../apiUrl";
 import { getTrackById } from "../../../common/AppContextProvider";
-import { usePlayerStore } from "../../../common/PlayerContextProvider";
+import {
+  type PlaybackState,
+  usePlayerStore,
+} from "../../../common/PlayerContextProvider";
 import {
   setSelectedTrackId,
   useUserStore,
@@ -33,9 +36,9 @@ const Player = () => {
 
   const audio = useRef<HTMLAudioElement | null>(null);
   const audioCtx = useRef<AudioContext | null>(null);
-  const systemFadeGainNode = useRef<GainNode | null>(null);
-  const trackGainNode = useRef<GainNode | null>(null);
-  const userGainNode = useRef<GainNode | null>(null);
+  const fadeGainNode = useRef<GainNode | null>(null); // fade out/in for pause/resume
+  const trackGainNode = useRef<GainNode | null>(null); // apply replaygain
+  const userGainNode = useRef<GainNode | null>(null); // apply user-controlled gain
   const band1 = useRef<BiquadFilterNode | null>(null);
   const band2 = useRef<BiquadFilterNode | null>(null);
   const band3 = useRef<BiquadFilterNode | null>(null);
@@ -72,9 +75,8 @@ const Player = () => {
     audioBufferSourceNode.current = audioCtx.current.createMediaElementSource(
       audio.current,
     );
-    systemFadeGainNode.current = audioCtx.current.createGain();
-    systemFadeGainNode.current.gain.value = 0;
-
+    fadeGainNode.current = audioCtx.current.createGain();
+    fadeGainNode.current.gain.setValueAtTime(0, audioCtx.current.currentTime);
     trackGainNode.current = audioCtx.current.createGain();
     userGainNode.current = audioCtx.current.createGain();
     userGainNode.current.gain.value = scaleVolume(userState.volume);
@@ -97,8 +99,8 @@ const Player = () => {
     analyser.current = audioCtx.current.createAnalyser();
     analyser.current.fftSize = 4096;
 
-    audioBufferSourceNode.current.connect(systemFadeGainNode.current);
-    systemFadeGainNode.current.connect(userGainNode.current);
+    audioBufferSourceNode.current.connect(fadeGainNode.current);
+    fadeGainNode.current.connect(userGainNode.current);
     userGainNode.current.connect(trackGainNode.current);
     trackGainNode.current.connect(band1.current);
     band1.current.connect(band2.current);
@@ -168,10 +170,14 @@ const Player = () => {
   };
 
   useEffect(() => {
-    const handlePlaybackStateChange = async (newPlaybackState) => {
+    const handlePlaybackStateChange = async (
+      newPlaybackState: PlaybackState,
+    ) => {
       // pause
       if (newPlaybackState === "paused") {
-        audioCtx.current.suspend();
+        fade(audioCtx.current, fadeGainNode.current, "out", () =>
+          audioCtx.current?.suspend(),
+        );
         return;
       }
 
@@ -181,8 +187,10 @@ const Player = () => {
         audio.current.currentSrc &&
         audioCtx.current.state === "suspended"
       ) {
-        audio.current.play();
-        audioCtx.current.resume();
+        fade(audioCtx.current, fadeGainNode.current, "in", () => {
+          audio.current.play();
+          audioCtx.current.resume();
+        });
         return;
       }
     };
@@ -211,11 +219,15 @@ const Player = () => {
       }
 
       if (playbackState === "playing") {
-        await audio.current.play();
+        fade(audioCtx.current, fadeGainNode.current, "in", () =>
+          audio.current.play(),
+        );
       }
 
       if (playbackState !== "playing") {
-        audioCtx.current.suspend();
+        fade(audioCtx.current, fadeGainNode.current, "out", () =>
+          audioCtx.current?.suspend(),
+        );
       }
 
       scrollIntoView(track.id);
@@ -224,5 +236,24 @@ const Player = () => {
 
   return null;
 };
+
+function fade(
+  audioCtx: AudioContext,
+  gainNode: GainNode,
+  mode: "in" | "out",
+  callback: () => void,
+) {
+  const { currentTime } = audioCtx;
+  const duration = 50;
+  const nearZero = 0.0001;
+
+  const from = mode === "in" ? nearZero : gainNode.gain.value;
+  gainNode.gain.setValueAtTime(from, currentTime);
+
+  const to = mode === "in" ? 1 : nearZero;
+  gainNode.gain.exponentialRampToValueAtTime(to, currentTime + duration / 1000);
+
+  setTimeout(callback, duration);
+}
 
 export default Player;

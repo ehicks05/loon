@@ -1,6 +1,6 @@
 import create from "zustand";
 
-type PlaybackState = "stopped" | "playing" | "paused";
+export type PlaybackState = "stopped" | "playing" | "paused";
 
 interface PlayerStore {
   elapsedTime: number;

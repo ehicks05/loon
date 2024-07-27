@@ -192,7 +192,7 @@ const Player = () => {
     handlePlaybackStateChange(playbackState);
   }, [playbackState]);
 
-  const initAudioSource = () => {
+  const initAudioSource = async () => {
     setElapsedTime(0);
 
     const track = getTrackById(userState.selectedTrackId);

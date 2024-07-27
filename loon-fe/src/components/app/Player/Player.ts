@@ -69,44 +69,43 @@ const Player = () => {
     audio.current = initAudio();
 
     audioCtx.current = new window.AudioContext();
+    audioBufferSourceNode.current = audioCtx.current.createMediaElementSource(
+      audio.current,
+    );
+    systemFadeGainNode.current = audioCtx.current.createGain();
+    systemFadeGainNode.current.gain.value = 0;
+
     trackGainNode.current = audioCtx.current.createGain();
     userGainNode.current = audioCtx.current.createGain();
-    band1.current = audioCtx.current.createBiquadFilter();
-    band2.current = audioCtx.current.createBiquadFilter();
-    band3.current = audioCtx.current.createBiquadFilter();
-    band4.current = audioCtx.current.createBiquadFilter();
-    analyser.current = audioCtx.current.createAnalyser();
-
     userGainNode.current.gain.value = scaleVolume(userState.volume);
-    userGainNode.current.connect(trackGainNode.current);
-
+    band1.current = audioCtx.current.createBiquadFilter();
     band1.current.type = "lowshelf";
     band1.current.frequency.value = userState.eq1Frequency;
     band1.current.gain.value = userState.eq1Gain;
+    band2.current = audioCtx.current.createBiquadFilter();
     band2.current.type = "peaking";
     band2.current.frequency.value = userState.eq2Frequency;
     band2.current.gain.value = userState.eq2Gain;
+    band3.current = audioCtx.current.createBiquadFilter();
     band3.current.type = "peaking";
     band3.current.frequency.value = userState.eq3Frequency;
     band3.current.gain.value = userState.eq3Gain;
+    band4.current = audioCtx.current.createBiquadFilter();
     band4.current.type = "highshelf";
     band4.current.frequency.value = userState.eq4Frequency;
     band4.current.gain.value = userState.eq4Gain;
-
+    analyser.current = audioCtx.current.createAnalyser();
     analyser.current.fftSize = 4096;
 
+    audioBufferSourceNode.current.connect(systemFadeGainNode.current);
+    systemFadeGainNode.current.connect(userGainNode.current);
+    userGainNode.current.connect(trackGainNode.current);
     trackGainNode.current.connect(band1.current);
     band1.current.connect(band2.current);
     band2.current.connect(band3.current);
     band3.current.connect(band4.current);
     band4.current.connect(analyser.current);
-
     analyser.current.connect(audioCtx.current.destination);
-
-    audioBufferSourceNode.current = audioCtx.current.createMediaElementSource(
-      audio.current,
-    );
-    audioBufferSourceNode.current.connect(userGainNode.current);
 
     scrollIntoView(userState.selectedTrackId);
 

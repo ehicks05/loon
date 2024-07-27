@@ -69,15 +69,15 @@ const Player = () => {
 
     audioCtx.current = new window.AudioContext();
     trackGainNode.current = audioCtx.current.createGain();
-    gainNode.current = audioCtx.current.createGain();
+    userGainNode.current = audioCtx.current.createGain();
     band1.current = audioCtx.current.createBiquadFilter();
     band2.current = audioCtx.current.createBiquadFilter();
     band3.current = audioCtx.current.createBiquadFilter();
     band4.current = audioCtx.current.createBiquadFilter();
     analyser.current = audioCtx.current.createAnalyser();
 
-    gainNode.current.gain.value = scaleVolume(userState.volume);
-    gainNode.current.connect(trackGainNode.current);
+    userGainNode.current.gain.value = scaleVolume(userState.volume);
+    userGainNode.current.connect(trackGainNode.current);
 
     band1.current.type = "lowshelf";
     band1.current.frequency.value = userState.eq1Frequency;
@@ -105,7 +105,7 @@ const Player = () => {
     audioBufferSourceNode.current = audioCtx.current.createMediaElementSource(
       audio.current,
     );
-    audioBufferSourceNode.current.connect(gainNode.current);
+    audioBufferSourceNode.current.connect(userGainNode.current);
 
     scrollIntoView(userState.selectedTrackId);
 
@@ -145,8 +145,8 @@ const Player = () => {
   }, [userState.selectedTrackId]);
 
   useEffect(() => {
-    if (gainNode.current)
-      gainNode.current.gain.value = scaleVolume(userState.volume);
+    if (userGainNode.current)
+      userGainNode.current.gain.value = scaleVolume(userState.volume);
   }, [userState.volume]);
 
   useEffect(() => {

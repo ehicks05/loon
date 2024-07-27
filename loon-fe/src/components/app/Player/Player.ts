@@ -186,15 +186,6 @@ const Player = () => {
         audioCtx.current.resume();
         return;
       }
-
-      // resume if suspended because of Autoplay Policy
-      if (
-        newPlaybackState === "playing" &&
-        audioCtx.current.state === "suspended"
-      ) {
-        audioCtx.current.resume();
-        initAudioSource();
-      }
     };
 
     handlePlaybackStateChange(playbackState);

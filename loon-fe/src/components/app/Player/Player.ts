@@ -30,19 +30,24 @@ const Player = () => {
     setAnalyser: state.setAnalyser,
   }));
 
-  const audio = useRef({});
-  const audioCtx = useRef({});
-  const trackGainNode = useRef({});
-  const gainNode = useRef({});
-  const band1 = useRef({});
-  const band2 = useRef({});
-  const band3 = useRef({});
-  const band4 = useRef({});
-  const analyser = useRef({});
-  const audioBufferSourceNode = useRef({});
+  const audio = useRef<HTMLAudioElement | null>(null);
+  const audioCtx = useRef<AudioContext | null>(null);
+  const systemFadeGainNode = useRef<GainNode | null>(null);
+  const trackGainNode = useRef<GainNode | null>(null);
+  const userGainNode = useRef<GainNode | null>(null);
+  const band1 = useRef<BiquadFilterNode | null>(null);
+  const band2 = useRef<BiquadFilterNode | null>(null);
+  const band3 = useRef<BiquadFilterNode | null>(null);
+  const band4 = useRef<BiquadFilterNode | null>(null);
+  const analyser = useRef<AnalyserNode | null>(null);
+  const audioBufferSourceNode = useRef<MediaElementAudioSourceNode | null>(
+    null,
+  );
 
   useEffect(() => {
-    if (audio) audio.current.currentTime = forcedElapsedTime;
+    if (audio.current) {
+      audio.current.currentTime = forcedElapsedTime;
+    }
   }, [forcedElapsedTime]);
 
   useEffect(() => {

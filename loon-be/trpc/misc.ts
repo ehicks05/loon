@@ -3,6 +3,7 @@ import { z } from "zod";
 import { db } from "../db";
 import { system_settings, tracks } from "../drizzle/main";
 import { listFiles } from "../utils/files";
+import { getMetadata } from "../utils/metadata";
 import { publicProcedure, router } from "./trpc";
 
 export const miscRouter = router({
@@ -61,6 +62,19 @@ export const miscRouter = router({
 
     return listFiles(musicFolder);
   }),
+
+  getMetadata: publicProcedure
+    .input(z.string())
+    .query(async ({ input: id }) => {
+      const track = await db.query.tracks.findFirst({
+        where: eq(tracks.id, id),
+      });
+      const path = track?.path;
+      if (!path) {
+        return undefined;
+      }
+      return await getMetadata(path);
+    }),
 });
 
 // export type definition of API

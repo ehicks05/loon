@@ -20,21 +20,21 @@ import { lucia } from "./lucia/lucia";
 import { createContext } from "./trpc/context";
 import { type AppRouter, appRouter } from "./trpc/router";
 import { doesFileExist } from "./utils/files";
+import { getMetadata, getTrackInput } from "./utils/metadata";
 
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 const __dirname = path.dirname(__filename); // get the name of the directory
 
-const MYSTERY_PATH = "/static";
-
 const server = fastify({
   maxParamLength: 5000,
+  logger: true,
 });
 
 server.register(cors, { origin: true });
 server.register(cookie);
 
 server.register(fastifyStatic, {
-  root: path.join(__dirname, MYSTERY_PATH),
+  root: "/",
 });
 
 server.register(fastifyTRPCPlugin, {
@@ -66,11 +66,58 @@ server.get("/media", async (req: MediaRequest, res) => {
   if (!path) {
     return res.status(404).send();
   }
-  const fileExists = await doesFileExist(`.${MYSTERY_PATH}/${path}`);
+  const fileExists = await doesFileExist(path);
   if (!fileExists) {
     return res.status(404).send();
   }
   return res.sendFile(path, "", { acceptRanges: true });
+});
+server.get("/media/exists", async (req: MediaRequest, res) => {
+  const id = req.query.id?.toString() ?? null;
+  if (!id) {
+    return res.status(400).send();
+  }
+  const track = await db.query.tracks.findFirst({ where: eq(tracks.id, id) });
+  const path = track?.path;
+  if (!path) {
+    return res.status(404).send();
+  }
+  const fileExists = await doesFileExist(path);
+  return res.send({ fileExists });
+});
+server.get("/media/metadata", async (req: MediaRequest, res) => {
+  const id = req.query.id?.toString() ?? null;
+  if (!id) {
+    return res.status(400).send();
+  }
+  const track = await db.query.tracks.findFirst({ where: eq(tracks.id, id) });
+  const path = track?.path;
+  if (!path) {
+    return res.status(404).send();
+  }
+  const fileExists = await doesFileExist(path);
+  if (!fileExists) {
+    return res.status(404).send();
+  }
+  const metadata = await getMetadata(path);
+  return res.send(metadata);
+});
+server.get("/media/trackInput", async (req: MediaRequest, res) => {
+  const id = req.query.id?.toString() ?? null;
+  if (!id) {
+    return res.status(400).send();
+  }
+  const track = await db.query.tracks.findFirst({ where: eq(tracks.id, id) });
+  const path = track?.path;
+  if (!path) {
+    return res.status(404).send();
+  }
+  const fileExists = await doesFileExist(path);
+  if (!fileExists) {
+    return res.status(404).send();
+  }
+  const trackInput = await getTrackInput(path);
+  return res.send(trackInput);
 });
 
 server.get("/login/github", async (req, res) => {

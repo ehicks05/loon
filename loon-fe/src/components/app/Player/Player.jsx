@@ -213,17 +213,14 @@ const Player = () => {
         trackGainNode.current.gain.value = gain;
       }
 
-      audio.current
-        .play()
-        .then(() => {
-          audio.current.volume = 1;
+      if (playbackState === "playing") {
+        await audio.current.play();
+      }
 
-          // Track changed while paused. Go to new track and pause.
-          if (playbackState !== "playing") audioCtx.current.suspend();
-        })
-        .catch((e) => {
-          console.log(e);
-        });
+      if (playbackState !== "playing") {
+        audioCtx.current.suspend();
+      }
+      audio.current.volume = 1;
 
       scrollIntoView(track.id);
     }

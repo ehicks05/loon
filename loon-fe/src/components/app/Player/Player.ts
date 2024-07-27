@@ -204,7 +204,6 @@ const Player = () => {
 
     // set new audio source
     if (audio.current) {
-      audio.current.volume = 0;
       audio.current.src = `${API_URL}/media?id=${track.id}`;
 
       if (trackGainNode.current) {
@@ -219,7 +218,6 @@ const Player = () => {
       if (playbackState !== "playing") {
         audioCtx.current.suspend();
       }
-      audio.current.volume = 1;
 
       scrollIntoView(track.id);
     }

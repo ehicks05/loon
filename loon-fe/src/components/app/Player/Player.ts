@@ -109,21 +109,23 @@ const Player = () => {
 
     scrollIntoView(userState.selectedTrackId);
 
-    function initKeyboardShortcuts() {
-      document.body.addEventListener("keypress", (e) => {
-        if (e.target.tagName === "INPUT") return;
-
-        if (e.key === " ")
-          setPlaybackState(playbackState === "playing" ? "paused" : "playing");
-        if (e.key === "ArrowRight") changeTrack("next");
-        if (e.key === "ArrowLeft") changeTrack("prev");
-      });
-    }
-    initKeyboardShortcuts();
-
     setAudioCtx(audioCtx);
     setAnalyser(analyser);
   }, []);
+
+  useEventListener(
+    "keydown",
+    (e) => {
+      console.log(`detected ${e.key}`);
+      if (e.target.tagName === "INPUT") return;
+
+      if (e.key === " ")
+        setPlaybackState(playbackState === "playing" ? "paused" : "playing");
+      if (e.key === "ArrowRight") changeTrack("next");
+      if (e.key === "ArrowLeft") changeTrack("prev");
+    },
+    document,
+  );
 
   const renders = useRef(0);
 

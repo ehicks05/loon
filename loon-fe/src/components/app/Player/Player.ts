@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useEventListener } from "usehooks-ts";
 import { API_URL } from "../../../apiUrl";
 import { getTrackById } from "../../../common/AppContextProvider";
 import { usePlayerStore } from "../../../common/PlayerContextProvider";

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { usePlayerStore } from "../../../common/PlayerContextProvider";
 import { LoonSlider } from "../../Slider";
 import { formatTime } from "../../utils";
@@ -12,7 +12,16 @@ export default function TrackProgressBar() {
     }),
   );
 
-  const formattedElapsedTime = formatTime(elapsedTime);
+  const [localValue, setLocalValue] = useState(elapsedTime);
+  const [isPointerDown, setIsPointerDown] = useState(false);
+
+  useEffect(() => {
+    if (!isPointerDown) {
+      setLocalValue(elapsedTime);
+    }
+  }, [isPointerDown, elapsedTime]);
+
+  const formattedElapsedTime = formatTime(localValue);
   const formattedDuration = formatTime(duration);
 
   return (
@@ -21,8 +30,11 @@ export default function TrackProgressBar() {
         {formattedElapsedTime}
       </span>
       <LoonSlider
-        value={[elapsedTime]}
-        onValueChange={(value) => setForcedElapsedTime(value[0])}
+        value={[localValue]}
+        onPointerDown={() => setIsPointerDown(true)}
+        onPointerUp={() => setIsPointerDown(false)}
+        onValueChange={(value) => setLocalValue(value[0])}
+        onValueCommit={(value) => setForcedElapsedTime(localValue)}
         min={0}
         max={duration}
         step={1}

@@ -8,18 +8,33 @@ interface Props extends InputHTMLAttributes<HTMLInputElement> {
 
 export function TextInput({ label, isHorizontal, leftIcon, ...props }: Props) {
   return (
-    <div className={`flex gap-2 ${isHorizontal ? "flex-row" : "flex-col"}`}>
-      {label && <label className="label">{label}</label>}
+    <label
+      className={`flex gap-1 ${isHorizontal ? "flex-row" : "flex-col"} w-full`}
+    >
+      {label || ""}
 
       <div className={"p-2 flex items-center gap-2 rounded bg-neutral-800"}>
         {leftIcon && <span className="">{leftIcon}</span>}
         <input
           type="text"
-          className={"w-full bg-neutral-800 outline-none"}
+          className="bg-neutral-800 outline-none"
           placeholder={props.placeholder || label}
           {...props}
         />
       </div>
-    </div>
+    </label>
+  );
+}
+
+export function CheckboxInput({ label, type, ...props }: Props) {
+  return (
+    <label className="flex gap-2 w-full p-2 items-center rounded bg-neutral-800">
+      <input
+        type="checkbox"
+        className="bg-neutral-800 outline-none"
+        {...props}
+      />
+      {label}
+    </label>
   );
 }

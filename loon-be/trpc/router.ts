@@ -1,10 +1,12 @@
-import { miscRouter } from "./misc";
-import { playlistRouter } from "./playlist";
+import { miscRouter } from "./routers/misc";
+import { playlistRouter } from "./routers/playlist";
+import { tracksRouter } from "./routers/tracks";
 import { router } from "./trpc";
 
 export const appRouter = router({
-  playlist: playlistRouter,
   misc: miscRouter,
+  playlist: playlistRouter,
+  tracks: tracksRouter,
 });
 
 export type AppRouter = typeof appRouter;

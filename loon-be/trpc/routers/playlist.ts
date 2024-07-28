@@ -1,8 +1,8 @@
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { db } from "../db";
-import { playlists } from "../drizzle/main";
-import { publicProcedure, router } from "./trpc";
+import { db } from "../../db";
+import { playlists } from "../../drizzle/main";
+import { publicProcedure, router } from "../trpc";
 
 export const playlistRouter = router({
   list: publicProcedure.query(async ({ ctx: { user } }) => {

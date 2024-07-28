@@ -5,7 +5,7 @@ const SUPPORTED_MEDIA_TYPES = ["flac", "mp3"];
 
 const isSupportedFile = (file: Dirent) =>
   !file.isDirectory() &&
-  SUPPORTED_MEDIA_TYPES.every((type) => file.name.endsWith(type));
+  SUPPORTED_MEDIA_TYPES.some((type) => file.name.endsWith(type));
 
 const toFullPath = (file: Dirent) => `${file.parentPath}\\${file.name}`;
 

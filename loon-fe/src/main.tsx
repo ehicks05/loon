@@ -7,6 +7,18 @@ import { trpc } from "./utils/trpc";
 import "./index.css";
 import { BrowserRouter } from "react-router-dom";
 
+const UserFetchWrapper = () => {
+  const { data, isLoading } = trpc.misc.me.useQuery();
+
+  if (isLoading) return null;
+
+  return (
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  );
+};
+
 export const AppWrap = () => {
   const [queryClient] = useState(
     () =>
@@ -33,9 +45,7 @@ export const AppWrap = () => {
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
+        <UserFetchWrapper />
       </QueryClientProvider>
     </trpc.Provider>
   );

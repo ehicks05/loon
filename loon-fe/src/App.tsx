@@ -22,7 +22,7 @@ import { trpc } from "./utils/trpc";
 const useCacheData = () => {
   const { data: user, isLoading: isLoadingUser } = trpc.misc.me.useQuery();
   const { data: tracks, isLoading: isLoadingTracks } =
-    trpc.misc.tracks.useQuery();
+    trpc.tracks.list.useQuery();
   const { data: playlists, isLoading: isLoadingPlaylists } =
     trpc.playlist.list.useQuery();
   const isLoading = isLoadingUser || isLoadingTracks || isLoadingPlaylists;

@@ -4,92 +4,9 @@ import { trpc } from "../../../utils/trpc";
 import { Button } from "../../Button";
 import Select from "../../Select";
 import { CheckboxInput, TextInput } from "../../TextInput";
+import { LibrarySync } from "./LibrarySync";
 import { MusicFolderSummary } from "./MusicFolderSummary";
 import { TRANSCODE_QUALITY_OPTIONS } from "./constants";
-
-const DEFAULT_SYNC_OPTIONS = {
-  scanTracks: false,
-  scanImages: false,
-  transcode: false,
-};
-
-const LibrarySync = () => {
-  const [options, setOptions] = useState(DEFAULT_SYNC_OPTIONS);
-  const [isSyncing, setIsSyncing] = useState(false);
-
-  const { data } = trpc.system.librarySyncStatus.useQuery(undefined, {
-    refetchInterval: 5000,
-  });
-  const { mutate, isPending } = trpc.system.runLibrarySync.useMutation();
-
-  const isDisableForm = isPending || isSyncing;
-
-  useEffect(() => {
-    if (isSyncing !== data?.inProgress) {
-      setIsSyncing(data?.inProgress);
-    }
-  }, [isSyncing, data]);
-
-  const runLibrarySync = () => {
-    setIsSyncing(true);
-    mutate();
-  };
-
-  const onChange = (name: string, value: string | boolean) => {
-    setOptions({ ...options, [name]: value });
-  };
-
-  return (
-    <div className="flex flex-col gap-2 bg-black p-4 rounded">
-      <div className="font-bold text-lg">Sync</div>
-      <CheckboxInput
-        label="Tracks"
-        name="scanTracks"
-        checked={options.scanTracks}
-        onChange={(e) => onChange(e.target.name, e.target.checked)}
-        disabled={isDisableForm}
-      />
-      <CheckboxInput
-        label="Images"
-        name="scanImages"
-        checked={options.scanImages}
-        onChange={(e) => onChange(e.target.name, e.target.checked)}
-        disabled={isDisableForm}
-      />
-      <CheckboxInput
-        label="Transcode"
-        name="transcode"
-        checked={options.transcode}
-        onChange={(e) => onChange(e.target.name, e.target.checked)}
-        disabled={isDisableForm}
-      />
-      <Button
-        className="bg-green-600"
-        disabled={isDisableForm}
-        onClick={runLibrarySync}
-      >
-        Run Library Sync
-      </Button>
-
-      <div className="font-bold text-lg">Cleanup</div>
-
-      <Button
-        className="bg-red-700"
-        disabled={isDisableForm}
-        onClick={() => null}
-      >
-        Delete Tracks Without Files
-      </Button>
-      <Button
-        className="bg-red-700"
-        disabled={isDisableForm}
-        onClick={() => null}
-      >
-        Delete Library
-      </Button>
-    </div>
-  );
-};
 
 export default function SystemSettings() {
   const { data, isFetching } = trpc.misc.systemSettings.useQuery();

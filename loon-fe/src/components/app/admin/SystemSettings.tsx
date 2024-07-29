@@ -5,24 +5,14 @@ import { Button } from "../../Button";
 import Select from "../../Select";
 import { CheckboxInput, TextInput } from "../../TextInput";
 import { MusicFolderSummary } from "./MusicFolderSummary";
-
-const transcodeQualityOptions = [
-  { value: "v0", text: "v0 (~240 Kbps)" },
-  { value: "v1", text: "v1 (~220 Kbps)" },
-  { value: "v2", text: "v2 (~190 Kbps)" },
-  { value: "v3", text: "v3 (~170 Kbps)" },
-  { value: "v4", text: "v4 (~160 Kbps)" },
-  { value: "v5", text: "v5 (~130 Kbps)" },
-  { value: "v6", text: "v6 (~120 Kbps)" },
-];
+import { TRANSCODE_QUALITY_OPTIONS } from "./constants";
 
 export default function SystemSettings() {
-  const { data, isFetching: isQueryFetching } =
-    trpc.misc.systemSettings.useQuery();
-  const { mutate, isPending: isMutationPending } =
-    trpc.misc.setSystemSettings.useMutation();
-  const isLoading = isQueryFetching || isMutationPending;
+  const { data, isFetching } = trpc.misc.systemSettings.useQuery();
+  const { mutate, isPending } = trpc.misc.setSystemSettings.useMutation();
+  const isLoading = isFetching || isPending;
 
+  // local, mutable cache
   const [settings, setSettings] = useState<ISystemSettings | undefined>(
     undefined,
   );
@@ -37,15 +27,9 @@ export default function SystemSettings() {
     return <div>Loading...</div>;
   }
 
-  const submitForm = () => {
-    mutate(settings);
-  };
-
   const onChange = (name: string, value: string | boolean) => {
     setSettings({ ...settings, [name]: value });
   };
-
-  const isTasksRunning = false;
 
   return (
     <div className="flex flex-col gap-4">
@@ -85,7 +69,7 @@ export default function SystemSettings() {
             <Select
               name="transcodeQuality"
               label="Quality"
-              items={transcodeQualityOptions}
+              items={TRANSCODE_QUALITY_OPTIONS}
               value={settings.transcodeQuality}
               required={true}
               onChange={(e) => onChange(e.target.name, e.target.value)}
@@ -93,7 +77,7 @@ export default function SystemSettings() {
           </div>
           <Button
             className={"bg-green-600"}
-            onClick={submitForm}
+            onClick={() => mutate(settings)}
             disabled={isLoading}
           >
             Save
@@ -103,40 +87,29 @@ export default function SystemSettings() {
         <div className="flex flex-col gap-2 bg-black p-4 rounded">
           <div className="font-bold text-lg">Tasks</div>
           <div>
-            <Button disabled={isTasksRunning} onClick={() => submitForm()}>
-              Library Sync
+            <Button disabled={true} onClick={() => null}>
+              Sync Library
             </Button>
           </div>
           <div className={"ml-4"}>
-            <Button disabled={isTasksRunning} onClick={() => submitForm()}>
+            <Button disabled={true} onClick={() => null}>
               Step 1: Track Scan
             </Button>
           </div>
           <div className={"ml-4"}>
-            <Button disabled={isTasksRunning} onClick={() => doImageScan()}>
+            <Button disabled={true} onClick={() => null}>
               Step 2: Image Scan
             </Button>
           </div>
           <div className={"ml-4"}>
-            <Button
-              disabled={isTasksRunning}
-              onClick={() => doTranscodeLibrary()}
-            >
+            <Button disabled={true} onClick={() => null}>
               Step 3: Transcode
             </Button>
           </div>
-          <Button
-            className="bg-red-600"
-            disabled={isTasksRunning}
-            onClick={() => submitForm()}
-          >
+          <Button className="bg-red-600" disabled={true} onClick={() => null}>
             Delete Tracks Without Files
           </Button>
-          <Button
-            className="bg-red-600"
-            disabled={isTasksRunning}
-            onClick={() => submitForm()}
-          >
+          <Button className="bg-red-600" disabled={true} onClick={() => null}>
             Delete Library
           </Button>
         </div>

@@ -64,7 +64,7 @@ export const LibrarySync = () => {
         disabled={isDisableForm}
         onClick={runLibrarySync}
       >
-        Run Library Sync
+        Sync Library
       </Button>
 
       <div className="font-bold text-lg">Cleanup</div>
@@ -72,14 +72,14 @@ export const LibrarySync = () => {
       <Button
         className="bg-red-700"
         disabled={isDisableForm}
-        onClick={() => null}
+        onClick={() => alert("not implemented")}
       >
         Delete Tracks Without Files
       </Button>
       <Button
         className="bg-red-700"
         disabled={isDisableForm}
-        onClick={() => null}
+        onClick={() => alert("not implemented")}
       >
         Delete Library
       </Button>

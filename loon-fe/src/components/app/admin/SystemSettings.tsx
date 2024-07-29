@@ -4,6 +4,7 @@ import { trpc } from "../../../utils/trpc";
 import { Button } from "../../Button";
 import Select from "../../Select";
 import { CheckboxInput, TextInput } from "../../TextInput";
+import { MusicFolderSummary } from "./MusicFolderSummary";
 
 const transcodeQualityOptions = [
   { value: "v0", text: "v0 (~240 Kbps)" },
@@ -14,48 +15,6 @@ const transcodeQualityOptions = [
   { value: "v5", text: "v5 (~130 Kbps)" },
   { value: "v6", text: "v6 (~120 Kbps)" },
 ];
-
-const MusicFolderSummary = () => {
-  const [enabled, setEnabled] = useState(false);
-
-  const { data, isFetching, refetch } = trpc.tracks.musicFolderSummary.useQuery(
-    null,
-    { enabled },
-  );
-  const fileCount = data?.mediaFiles.length;
-
-  const handleClick = () => {
-    if (!enabled) {
-      setEnabled(true);
-    } else {
-      refetch();
-    }
-  };
-
-  return (
-    <div className="flex gap-2 items-center">
-      <Button disabled={isFetching} className="text-sm" onClick={handleClick}>
-        Check
-      </Button>
-
-      {data && (
-        <span className="text-sm">
-          Found{" "}
-          {isFetching ? (
-            "?"
-          ) : (
-            <span
-              className={`font-bold ${fileCount ? "text-green-500" : "text-red-500"}`}
-            >
-              {fileCount}
-            </span>
-          )}{" "}
-          media files
-        </span>
-      )}
-    </div>
-  );
-};
 
 export default function SystemSettings() {
   const { data, isFetching: isQueryFetching } =

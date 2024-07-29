@@ -5,7 +5,7 @@ import { Button } from "../../Button";
 export const MusicFolderSummary = () => {
   const [enabled, setEnabled] = useState(false);
 
-  const { data, isFetching, refetch } = trpc.tracks.musicFolderSummary.useQuery(
+  const { data, isFetching, refetch } = trpc.system.listMusicFolder.useQuery(
     undefined,
     { enabled },
   );

@@ -14,6 +14,10 @@ const Tasks = () => {
     transcode: false,
   });
 
+  const { data, isFetching } = trpc.system.isSyncing.useQuery();
+  const { mutate, isPending } = trpc.system.runLibrarySync.useMutation();
+  const isLoading = isFetching || isPending;
+
   const onChange = (name: string, value: string | boolean) => {
     setSettings({ ...settings, [name]: value });
   };
@@ -27,7 +31,7 @@ const Tasks = () => {
           name="scanTracks"
           checked={options.scanTracks}
           onChange={(e) => onChange(e.target.name, e.target.value)}
-          disabled={true}
+          disabled={isLoading}
         />
       </div>
       <CheckboxInput
@@ -35,25 +39,25 @@ const Tasks = () => {
         name="scanImages"
         checked={options.scanImages}
         onChange={(e) => onChange(e.target.name, e.target.value)}
-        disabled={true}
+        disabled={isLoading}
       />
       <CheckboxInput
         label="Transcode"
         name="transcode"
         checked={options.transcode}
         onChange={(e) => onChange(e.target.name, e.target.value)}
-        disabled={true}
+        disabled={isLoading}
       />
-      <Button disabled={true} onClick={() => null}>
-        Sync Library
+      <Button disabled={isLoading} onClick={() => null}>
+        Run Library Sync
       </Button>
 
       <div className="font-bold text-lg">Cleanup</div>
 
-      <Button className="bg-red-600" disabled={true} onClick={() => null}>
+      <Button className="bg-red-600" disabled={isLoading} onClick={() => null}>
         Delete Tracks Without Files
       </Button>
-      <Button className="bg-red-600" disabled={true} onClick={() => null}>
+      <Button className="bg-red-600" disabled={isLoading} onClick={() => null}>
         Delete Library
       </Button>
     </div>

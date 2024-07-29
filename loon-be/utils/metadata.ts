@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { openAsBlob } from "node:fs";
 import { parseBlob } from "music-metadata";
 
@@ -22,9 +23,13 @@ export const getTrackInput = async (path: string) => {
   const { blob, metadata } = result;
   const { common, format } = metadata;
 
-  const recordingId = common.musicbrainz_recordingid;
+  let recordingId = common.musicbrainz_recordingid;
+
   if (!recordingId) {
-    throw new Error("missing a musicbrainz_recordingid");
+    console.log(`missing a recordingId on ${path}`);
+    recordingId = createHash("md5")
+      .update(`${common.artist}:${common.album}:${common.title}`)
+      .digest("hex");
   }
 
   const trackGainDb = common.replaygain_track_gain?.dB || 0;

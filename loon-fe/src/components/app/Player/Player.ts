@@ -118,7 +118,6 @@ const Player = () => {
   useEventListener(
     "keydown",
     (e) => {
-      console.log(`detected ${e.key}`);
       if (e.target.tagName === "INPUT") return;
 
       if (e.key === " ")

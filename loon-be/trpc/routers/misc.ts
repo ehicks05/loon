@@ -1,4 +1,3 @@
-import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../../db";
 import { system_settings } from "../../drizzle/main";
@@ -29,11 +28,7 @@ export const miscRouter = router({
     )
     .mutation(async ({ input }) => {
       const systemSettings = (
-        await db
-          .update(system_settings)
-          .set(input)
-          .where(eq(system_settings.id, "system"))
-          .returning()
+        await db.update(system_settings).set(input).returning()
       )[0];
       return systemSettings;
     }),

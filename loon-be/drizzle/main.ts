@@ -18,6 +18,7 @@ export const system_settings = pgTable("system_settings", {
   transcodeFolder: text("transcode_folder").notNull().default(""),
   transcodeQuality: text("transcode_quality").notNull().default(""),
   watchFiles: boolean("watch_files").notNull().default(false),
+  isSyncing: boolean("is_syncing").notNull().default(false),
 });
 
 export const playlists = pgTable("playlists", {

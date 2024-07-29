@@ -1,10 +1,9 @@
 import { eq } from "drizzle-orm";
 import pMap from "p-map";
-import { z } from "zod";
 import { db } from "../../db";
-import { tracks } from "../../drizzle/main";
+import { system_settings, tracks } from "../../drizzle/main";
 import { listFiles } from "../../utils/files";
-import { getMetadata, getTrackInput } from "../../utils/metadata";
+import { getTrackInput } from "../../utils/metadata";
 import { publicProcedure, router } from "../trpc";
 
 const processFile = async (path: string) => {
@@ -34,12 +33,14 @@ const syncLibrary = async () => {
   if (!systemSettings) {
     return { success: false, message: "Missing systemSettings" };
   }
+  await db.update(system_settings).set({ isSyncing: true });
 
   // scan music folder
   const mediaFiles = await listFiles(systemSettings.musicFolder);
 
-  const result = await pMap(mediaFiles, processFile, { concurrency: 4 });
+  // const result = await pMap(mediaFiles, processFile, { concurrency: 4 });
 
+  await db.update(system_settings).set({ isSyncing: false });
   return { success: true, message: "Scan complete" };
 };
 
@@ -55,22 +56,15 @@ export const systemRouter = router({
     return { mediaFiles };
   }),
 
-  sync: publicProcedure.query(async () => {
+  runLibrarySync: publicProcedure.mutation(async () => {
     return syncLibrary();
   }),
 
-  getMetadata: publicProcedure
-    .input(z.string())
-    .query(async ({ input: id }) => {
-      const track = await db.query.tracks.findFirst({
-        where: eq(tracks.id, id),
-      });
-      const path = track?.path;
-      if (!path) {
-        return undefined;
-      }
-      return await getMetadata(path);
-    }),
+  librarySyncStatus: publicProcedure.query(async () => {
+    const systemSettings = await db.query.system_settings.findFirst();
+
+    return { inProgress: systemSettings?.isSyncing };
+  }),
 });
 
 // export type definition of API

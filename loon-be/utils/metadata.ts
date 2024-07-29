@@ -58,9 +58,5 @@ export const getTrackInput = async (path: string) => {
     trackPeak: String(trackPeakRatio),
   };
 
-  // await db.insert(tracks).values(newtrack);
-
-  return {
-    newtrack,
-  };
+  return newtrack;
 };

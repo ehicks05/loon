@@ -15,6 +15,37 @@ const transcodeQualityOptions = [
   { value: "v6", text: "v6 (~120 Kbps)" },
 ];
 
+const MusicFolderSummary = () => {
+  const [enabled, setEnabled] = useState(false);
+
+  const { data, isFetching, refetch } = trpc.tracks.musicFolderSummary.useQuery(
+    null,
+    { enabled },
+  );
+
+  const handleClick = () => {
+    if (!enabled) {
+      setEnabled(true);
+    } else {
+      refetch();
+    }
+  };
+
+  return (
+    <div className="flex gap-2 items-center">
+      <Button disabled={isFetching} className="text-xs" onClick={handleClick}>
+        Check
+      </Button>
+
+      {data && (
+        <span className="text-xs">
+          Found {isFetching ? "?" : data.mediaFiles.length} media files
+        </span>
+      )}
+    </div>
+  );
+};
+
 export default function SystemSettings() {
   const { data, isFetching: isQueryFetching } =
     trpc.misc.systemSettings.useQuery();
@@ -62,6 +93,7 @@ export default function SystemSettings() {
               value={settings.musicFolder}
               onChange={(e) => onChange(e.target.name, e.target.value)}
             />
+            <MusicFolderSummary />
             <CheckboxInput
               name="watchFiles"
               label="Watch Music Folder for Changes"

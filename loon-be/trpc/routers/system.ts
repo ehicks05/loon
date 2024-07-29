@@ -33,12 +33,21 @@ const syncLibrary = async () => {
   if (!systemSettings) {
     return { success: false, message: "Missing systemSettings" };
   }
+
+  if (systemSettings.isSyncing) {
+    return { success: false, message: "Syncing in progress" };
+  }
+
   await db.update(system_settings).set({ isSyncing: true });
 
   // scan music folder
   const mediaFiles = await listFiles(systemSettings.musicFolder);
 
-  // const result = await pMap(mediaFiles, processFile, { concurrency: 4 });
+  try {
+    const result = await pMap(mediaFiles, processFile, { concurrency: 4 });
+  } catch (e) {
+    console.log(e);
+  }
 
   await db.update(system_settings).set({ isSyncing: false });
   return { success: true, message: "Scan complete" };
@@ -63,7 +72,7 @@ export const systemRouter = router({
   librarySyncStatus: publicProcedure.query(async () => {
     const systemSettings = await db.query.system_settings.findFirst();
 
-    return { inProgress: systemSettings?.isSyncing };
+    return { inProgress: systemSettings?.isSyncing || false };
   }),
 });
 

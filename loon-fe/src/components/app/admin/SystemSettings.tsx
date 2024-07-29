@@ -22,6 +22,7 @@ const MusicFolderSummary = () => {
     null,
     { enabled },
   );
+  const fileCount = data?.mediaFiles.length;
 
   const handleClick = () => {
     if (!enabled) {
@@ -33,13 +34,23 @@ const MusicFolderSummary = () => {
 
   return (
     <div className="flex gap-2 items-center">
-      <Button disabled={isFetching} className="text-xs" onClick={handleClick}>
+      <Button disabled={isFetching} className="text-sm" onClick={handleClick}>
         Check
       </Button>
 
       {data && (
-        <span className="text-xs">
-          Found {isFetching ? "?" : data.mediaFiles.length} media files
+        <span className="text-sm">
+          Found{" "}
+          {isFetching ? (
+            "?"
+          ) : (
+            <span
+              className={`font-bold ${fileCount ? "text-green-500" : "text-red-500"}`}
+            >
+              {fileCount}
+            </span>
+          )}{" "}
+          media files
         </span>
       )}
     </div>

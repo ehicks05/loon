@@ -7,6 +7,59 @@ import { CheckboxInput, TextInput } from "../../TextInput";
 import { MusicFolderSummary } from "./MusicFolderSummary";
 import { TRANSCODE_QUALITY_OPTIONS } from "./constants";
 
+const Tasks = () => {
+  const [options, setOptions] = useState({
+    scanTracks: false,
+    scanImages: false,
+    transcode: false,
+  });
+
+  const onChange = (name: string, value: string | boolean) => {
+    setSettings({ ...settings, [name]: value });
+  };
+
+  return (
+    <div className="flex flex-col gap-2 bg-black p-4 rounded">
+      <div className="font-bold text-lg">Sync</div>
+      <div>
+        <CheckboxInput
+          label="Tracks"
+          name="scanTracks"
+          checked={options.scanTracks}
+          onChange={(e) => onChange(e.target.name, e.target.value)}
+          disabled={true}
+        />
+      </div>
+      <CheckboxInput
+        label="Images"
+        name="scanImages"
+        checked={options.scanImages}
+        onChange={(e) => onChange(e.target.name, e.target.value)}
+        disabled={true}
+      />
+      <CheckboxInput
+        label="Transcode"
+        name="transcode"
+        checked={options.transcode}
+        onChange={(e) => onChange(e.target.name, e.target.value)}
+        disabled={true}
+      />
+      <Button disabled={true} onClick={() => null}>
+        Sync Library
+      </Button>
+
+      <div className="font-bold text-lg">Cleanup</div>
+
+      <Button className="bg-red-600" disabled={true} onClick={() => null}>
+        Delete Tracks Without Files
+      </Button>
+      <Button className="bg-red-600" disabled={true} onClick={() => null}>
+        Delete Library
+      </Button>
+    </div>
+  );
+};
+
 export default function SystemSettings() {
   const { data, isFetching } = trpc.misc.systemSettings.useQuery();
   const { mutate, isPending } = trpc.misc.setSystemSettings.useMutation();
@@ -84,35 +137,7 @@ export default function SystemSettings() {
           </Button>
         </div>
 
-        <div className="flex flex-col gap-2 bg-black p-4 rounded">
-          <div className="font-bold text-lg">Tasks</div>
-          <div>
-            <Button disabled={true} onClick={() => null}>
-              Sync Library
-            </Button>
-          </div>
-          <div className={"ml-4"}>
-            <Button disabled={true} onClick={() => null}>
-              Step 1: Track Scan
-            </Button>
-          </div>
-          <div className={"ml-4"}>
-            <Button disabled={true} onClick={() => null}>
-              Step 2: Image Scan
-            </Button>
-          </div>
-          <div className={"ml-4"}>
-            <Button disabled={true} onClick={() => null}>
-              Step 3: Transcode
-            </Button>
-          </div>
-          <Button className="bg-red-600" disabled={true} onClick={() => null}>
-            Delete Tracks Without Files
-          </Button>
-          <Button className="bg-red-600" disabled={true} onClick={() => null}>
-            Delete Library
-          </Button>
-        </div>
+        <Tasks />
       </section>
     </div>
   );

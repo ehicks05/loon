@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useRouteMatch } from "react-router-dom";
-import { upsertPlaylist, useAppStore } from "../../common/AppContextProvider";
-
+import CheckboxTree, { type Node } from "react-checkbox-tree";
 import {
   FaChevronDown,
   FaChevronRight,
@@ -13,11 +11,24 @@ import {
   FaRegPlusSquare,
   FaRegSquare,
 } from "react-icons/fa";
-
-import CheckboxTree, { type Node } from "react-checkbox-tree";
-import { TextInput } from "../TextInput";
+import { useRouteMatch } from "react-router-dom";
+import { upsertPlaylist, useAppStore } from "../../common/AppContextProvider";
 import { Button } from "../Button";
+import { TextInput } from "../TextInput";
 import "react-checkbox-tree/lib/react-checkbox-tree.css";
+
+const icons = {
+  check: <FaRegCheckSquare className="rct-icon rct-icon-check" />,
+  uncheck: <FaRegSquare className="rct-icon rct-icon-uncheck" />,
+  halfCheck: <FaRegCheckSquare className="rct-icon rct-icon-half-check" />,
+  expandClose: <FaChevronRight className="rct-icon rct-icon-expand-close" />,
+  expandOpen: <FaChevronDown className="rct-icon rct-icon-expand-open" />,
+  expandAll: <FaRegPlusSquare className="rct-icon rct-icon-expand-all" />,
+  collapseAll: <FaRegMinusSquare className="rct-icon rct-icon-collapse-all" />,
+  parentClose: <FaRegFolder className="rct-icon rct-icon-parent-close" />,
+  parentOpen: <FaRegFolderOpen className="rct-icon rct-icon-parent-open" />,
+  leaf: <FaRegFile className="rct-icon rct-icon-leaf-close" />,
+};
 
 const pathsToNodes = (paths: string[]) => {
   let nodes: Node[] = [];
@@ -34,10 +45,11 @@ const pathsToNodes = (paths: string[]) => {
           : parent?.children?.find((c) => c.value === `${partialPath}/${part}`);
 
       if (!node) {
+        const isLeaf = part.endsWith(".mp3") || part.endsWith(".flac");
         node = {
           label: part,
           value: i === 0 ? part : `${partialPath}/${part}`,
-          children: [],
+          children: isLeaf ? undefined : [],
         };
         if (parent) {
           parent.children = [...(parent?.children || []), node];
@@ -60,7 +72,7 @@ export default function PlaylistBuilder() {
   } = useRouteMatch<{ id: string | undefined }>();
   const [name, setName] = useState("");
   const [checked, setChecked] = useState<string[]>([]);
-  const [expanded, setExpanded] = useState(["0", "-1", "-2"]);
+  const [expanded, setExpanded] = useState<string[]>([]);
 
   const { playlists, tracks } = useAppStore();
   const playlist = id
@@ -73,6 +85,12 @@ export default function PlaylistBuilder() {
       setChecked(playlist.playlistTracks.map(({ trackId }) => trackId));
     }
   }, [playlist]);
+
+  // useEffect(() => {
+  //   if (nodes) {
+  //     setExpanded([nodes?.[0].value]);
+  //   }
+  // }, [nodes]);
 
   async function save() {
     const formData = new FormData();
@@ -92,63 +110,32 @@ export default function PlaylistBuilder() {
   console.log({ nodes });
 
   return (
-    <div className="flex flex-col gap-4">
-      <section className={"flex flex-col gap-2"}>
-        <h1 className="text-2xl font-bold">Playlist Builder</h1>
-        <h2 className="subtitle">
-          {playlist ? playlist.name : "New Playlist"}
-        </h2>
-      </section>
+    <section className="flex flex-col justify-between h-full gap-4">
+      <h1 className="text-2xl font-bold">Playlist Builder</h1>
+      <TextInput
+        id={"name"}
+        label={"Name"}
+        value={playlist ? playlist.name : "New Playlist"}
+        onChange={(e) => setName(e.target.value)}
+        required={true}
+        size={50}
+      />
 
-      <section className="flex flex-col gap-2">
-        <TextInput
-          id={"name"}
-          label={"Name"}
-          value={playlist ? playlist.name : "New Playlist"}
-          onChange={(e) => setName(e.target.value)}
-          required={true}
-          size={50}
-        />
-
-        <label className="label">Tracks</label>
+      <div className="flex flex-col h-full overflow-auto">
+        <label className="">Tracks</label>
         <CheckboxTree
           nodes={nodes}
           checked={checked}
           expanded={expanded}
           onCheck={(checked) => setChecked(checked)}
           onExpand={(expanded) => setExpanded(expanded)}
-          icons={{
-            check: <FaRegCheckSquare className="rct-icon rct-icon-check" />,
-            uncheck: <FaRegSquare className="rct-icon rct-icon-uncheck" />,
-            halfCheck: (
-              <FaRegCheckSquare className="rct-icon rct-icon-half-check" />
-            ),
-            expandClose: (
-              <FaChevronRight className="rct-icon rct-icon-expand-close" />
-            ),
-            expandOpen: (
-              <FaChevronDown className="rct-icon rct-icon-expand-open" />
-            ),
-            expandAll: (
-              <FaRegPlusSquare className="rct-icon rct-icon-expand-all" />
-            ),
-            collapseAll: (
-              <FaRegMinusSquare className="rct-icon rct-icon-collapse-all" />
-            ),
-            parentClose: (
-              <FaRegFolder className="rct-icon rct-icon-parent-close" />
-            ),
-            parentOpen: (
-              <FaRegFolderOpen className="rct-icon rct-icon-parent-open" />
-            ),
-            leaf: <FaRegFile className="rct-icon rct-icon-leaf-close" />,
-          }}
+          icons={icons}
         />
+      </div>
 
-        <Button className={"bg-green-600"} onClick={save}>
-          Save
-        </Button>
-      </section>
-    </div>
+      <Button className={"bg-green-600"} onClick={save}>
+        Save
+      </Button>
+    </section>
   );
 }

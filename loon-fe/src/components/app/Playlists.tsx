@@ -9,21 +9,19 @@ export default function Playlists() {
   const selectedPlaylistId = useUserStore(
     (state) => state.userState.selectedPlaylistId,
   );
-  function handleDeletePlaylist(playlistId) {
+  function handleDeletePlaylist(playlistId: string) {
     if (window.confirm("Do you really want to delete this playlist?"))
       return deletePlaylist(playlistId);
   }
 
-  const playlistItems = playlists;
-
   return (
     <div>
-      <section className={"section"}>
-        <h1 className="text-xl">Library</h1>
+      <section>
+        <h1 className="font-bold text-2xl">Library</h1>
       </section>
 
       <section className="flex flex-col gap-2 items-start">
-        <table className={""}>
+        <table>
           <tbody>
             <tr>
               <td className="p-2"> </td>
@@ -31,7 +29,7 @@ export default function Playlists() {
               <td className="p-2 text-right">Tracks</td>
               <td className="p-2"> </td>
             </tr>
-            {playlistItems.map((playlist, index) => {
+            {playlists.map((playlist, index) => {
               return (
                 <tr key={playlist.id}>
                   <td className="p-2"> {index + 1}. </td>
@@ -77,7 +75,10 @@ export default function Playlists() {
             })}
           </tbody>
         </table>
-        <Link className={"p-2 rounded bg-green-600"} to={"/playlists/new"}>
+        <Link
+          className={"p-2 rounded bg-green-600 text-white"}
+          to={"/playlists/new"}
+        >
           New Playlist
         </Link>
       </section>

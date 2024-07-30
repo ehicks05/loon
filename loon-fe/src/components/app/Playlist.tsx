@@ -55,7 +55,7 @@ export default function Playlist(props) {
 
   useEffect(() => {
     return function cleanup() {
-      setSelectedContextMenuId(null);
+      setSelectedContextMenuId("");
     };
   }, []);
 

@@ -4,7 +4,7 @@ import type { User } from "./types";
 
 export interface UserState {
   id?: number;
-  selectedPlaylistId: number;
+  selectedPlaylistId: string;
   selectedTrackId: string;
   selectedContextMenuId: string;
   shuffle: boolean;
@@ -23,7 +23,7 @@ export interface UserState {
 }
 
 const DEFAULT_USER: UserState = {
-  selectedPlaylistId: 0,
+  selectedPlaylistId: "",
   selectedTrackId: "",
   shuffle: false,
   muted: false,

@@ -1,4 +1,5 @@
 import { relations } from "drizzle-orm/relations";
+import { userTable } from "./lucia";
 import { playlist_tracks, playlists, tracks } from "./main";
 
 export const playlistTracksRelations = relations(
@@ -22,3 +23,7 @@ export const playlistsRelations = relations(playlists, ({ many }) => ({
 export const tracksRelations = relations(tracks, ({ many }) => ({
   playlistTracks: many(playlist_tracks),
 }));
+
+// export const userPlaylists = relations(userTable, ({ many }) => ({
+//   playlists: many(playlists),
+// }));

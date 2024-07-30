@@ -14,7 +14,7 @@ import { type Session, type User, generateIdFromEntropySize } from "lucia";
 import { serializeCookie } from "oslo/cookie";
 import { db } from "./db";
 import { userTable } from "./drizzle/lucia";
-import { tracks } from "./drizzle/main";
+import { playlists, tracks } from "./drizzle/main";
 import { github } from "./lucia/github";
 import { lucia } from "./lucia/lucia";
 import { createContext } from "./trpc/context";
@@ -215,6 +215,19 @@ server.get(
         username: githubUser.login,
         isAdmin: false,
       });
+
+      await db.insert(playlists).values([
+        {
+          userId,
+          name: "Favorites",
+          favorites: true,
+        },
+        {
+          userId,
+          name: "Queue",
+          queue: true,
+        },
+      ]);
 
       const session = await lucia.createSession(userId, {});
       console.log("created user");

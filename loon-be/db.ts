@@ -3,7 +3,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import postgres from "postgres";
 import { schema } from "./drizzle";
-import { system_settings } from "./drizzle/main";
+import { playlists, system_settings } from "./drizzle/main";
 import { env } from "./env";
 
 // for migrations
@@ -23,6 +23,25 @@ const seed = async () => {
     console.log("..creating system_settings table");
     await db.insert(system_settings).values({});
   }
+
+  const users = await db.query.userTable.findMany();
+  const allPlaylists = await db.query.playlists.findMany();
+
+  const newPlaylists = users.flatMap((user) => {
+    const userPlaylists = allPlaylists.filter((p) => p.userId === user.id);
+
+    const favorites = userPlaylists.some((p) => p.favorites)
+      ? []
+      : [{ userId: user.id, name: "Favorites", favorites: true }];
+    const queue = userPlaylists.some((p) => p.queue)
+      ? []
+      : [{ userId: user.id, name: "Queue", queue: true }];
+
+    return [...favorites, ...queue];
+  });
+
+  await db.insert(playlists).values(newPlaylists);
+
   console.log("done");
 };
 

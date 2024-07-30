@@ -5,8 +5,10 @@ import {
   pgTable,
   primaryKey,
   text,
+  uuid,
   varchar,
 } from "drizzle-orm/pg-core";
+import { userTable } from "./lucia";
 
 export const system_settings = pgTable("system_settings", {
   id: text("id").primaryKey().notNull().default("system"),
@@ -22,11 +24,13 @@ export const system_settings = pgTable("system_settings", {
 });
 
 export const playlists = pgTable("playlists", {
-  id: text("id").primaryKey().notNull(),
-  favorites: boolean("favorites"),
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  favorites: boolean("favorites").notNull().default(false),
   name: text("name").notNull(),
-  queue: boolean("queue"),
-  userId: text("user_id").notNull(),
+  queue: boolean("queue").notNull().default(false),
+  userId: text("user_id")
+    .notNull()
+    .references(() => userTable.id),
 });
 
 export const tracks = pgTable("tracks", {
@@ -57,7 +61,7 @@ export const tracks = pgTable("tracks", {
 export const playlist_tracks = pgTable(
   "playlist_tracks",
   {
-    playlistId: text("playlist_id")
+    playlistId: uuid("playlist_id")
       .notNull()
       .references(() => playlists.id),
     trackId: text("track_id")

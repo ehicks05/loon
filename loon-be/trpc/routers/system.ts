@@ -4,7 +4,7 @@ import { db } from "../../db";
 import { system_settings, tracks } from "../../drizzle/main";
 import { listFiles } from "../../utils/files";
 import { getTrackInput } from "../../utils/metadata";
-import { publicProcedure, router } from "../trpc";
+import { adminProcedure, router } from "../trpc";
 
 const processFile = async (path: string) => {
   const trackFromFile = await getTrackInput(path);
@@ -54,7 +54,7 @@ const syncLibrary = async () => {
 };
 
 export const systemRouter = router({
-  listMusicFolder: publicProcedure.query(async () => {
+  listMusicFolder: adminProcedure.query(async () => {
     const systemSettings = await db.query.system_settings.findFirst();
     if (!systemSettings) {
       return { mediaFiles: [] };
@@ -65,11 +65,11 @@ export const systemRouter = router({
     return { mediaFiles };
   }),
 
-  runLibrarySync: publicProcedure.mutation(async () => {
+  runLibrarySync: adminProcedure.mutation(async () => {
     return syncLibrary();
   }),
 
-  librarySyncStatus: publicProcedure.query(async () => {
+  librarySyncStatus: adminProcedure.query(async () => {
     const systemSettings = await db.query.system_settings.findFirst();
 
     return { inProgress: systemSettings?.isSyncing || false };

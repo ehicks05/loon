@@ -20,3 +20,19 @@ export const protectedProcedure = t.procedure.use(
     });
   },
 );
+
+export const adminProcedure = t.procedure.use(async function isAdmin(opts) {
+  const { ctx } = opts;
+  if (!ctx.user) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  if (!ctx.user.isAdmin) {
+    throw new TRPCError({ code: "FORBIDDEN" });
+  }
+
+  return opts.next({
+    ctx: {
+      user: ctx.user,
+    },
+  });
+});

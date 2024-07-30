@@ -1,18 +1,22 @@
 import React from "react";
 import { FaVolumeUp } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { deletePlaylist, useAppStore } from "../../common/AppContextProvider";
+import { useAppStore } from "../../common/AppContextProvider";
 import { useUserStore } from "../../common/UserContextProvider";
+import { trpc } from "../../utils/trpc";
 
 export default function Playlists() {
   const playlists = useAppStore((state) => state.playlists);
   const selectedPlaylistId = useUserStore(
     (state) => state.userState.selectedPlaylistId,
   );
-  function handleDeletePlaylist(playlistId: string) {
-    if (window.confirm("Do you really want to delete this playlist?"))
-      return deletePlaylist(playlistId);
+  function handleDelete(playlistId: string) {
+    if (window.confirm("Do you really want to delete this playlist?")) {
+      deletePlaylist(playlistId);
+    }
   }
+
+  const { mutate: deletePlaylist } = trpc.playlist.delete.useMutation();
 
   return (
     <div>
@@ -63,7 +67,7 @@ export default function Playlists() {
                         <button
                           type="button"
                           className={"p-2 rounded bg-red-600"}
-                          onClick={() => handleDeletePlaylist(playlist.id)}
+                          onClick={() => handleDelete(playlist.id)}
                         >
                           Delete
                         </button>

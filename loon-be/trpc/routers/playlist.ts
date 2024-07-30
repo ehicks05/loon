@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../../db";
-import { playlists } from "../../drizzle/main";
+import { playlist_tracks, playlists } from "../../drizzle/main";
 import { protectedProcedure, router } from "../trpc";
 
 export const playlistRouter = router({
@@ -20,32 +20,55 @@ export const playlistRouter = router({
   }),
 
   create: protectedProcedure
-    .input(z.object({ id: z.string(), name: z.string() }))
-    .mutation(async ({ ctx: { user }, input: { id, name } }) => {
-      return db
+    .input(z.object({ name: z.string(), trackIds: z.array(z.string()) }))
+    .mutation(async ({ ctx: { user }, input: { name, trackIds } }) => {
+      const results = await db
         .insert(playlists)
-        .values({ id, name, userId: user.id, favorites: false, queue: false });
+        .values({ name, userId: user.id, favorites: false, queue: false })
+        .returning();
+      const newPlaylist = results[0];
+
+      // create playlistTracks
+      const playlistTracks = trackIds.map((trackId, index) => ({
+        playlistId: newPlaylist.id,
+        trackId,
+        index,
+      }));
+      await db.insert(playlist_tracks).values(playlistTracks);
+
+      return newPlaylist;
     }),
 
   delete: protectedProcedure
     .input(z.string())
     .mutation(async ({ ctx: { user }, input }) => {
-      if (user.id !== input) {
+      const playlist = await db.query.playlists.findFirst({
+        where: eq(playlists.id, input),
+      });
+      if (!playlist) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+      if (user.id !== playlist.userId) {
         throw new TRPCError({ code: "FORBIDDEN" });
       }
       return db.delete(playlists).where(eq(playlists.id, input));
     }),
 
-  clone: protectedProcedure.input(z.string()).mutation(async ({ input }) => {
-    const original = await db.query.playlists.findFirst({
-      where: eq(playlists.id, input),
-    });
-    if (!original) {
-      throw new TRPCError({ code: "NOT_FOUND" });
-    }
-    const { id, ...values } = original;
-    return db.insert(playlists).values({ id: "TODO", ...values });
-  }),
+  clone: protectedProcedure
+    .input(z.string())
+    .mutation(async ({ ctx: { user }, input }) => {
+      const playlist = await db.query.playlists.findFirst({
+        where: eq(playlists.id, input),
+      });
+      if (!playlist) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+      if (user.id !== playlist.userId) {
+        throw new TRPCError({ code: "FORBIDDEN" });
+      }
+      const { id, ...values } = playlist;
+      return db.insert(playlists).values({ id: "TODO", ...values });
+    }),
 
   addOrModify: protectedProcedure
     .input(z.string())
@@ -54,10 +77,30 @@ export const playlistRouter = router({
     }),
 
   dragAndDrop: protectedProcedure
-    .input(z.string())
-    .mutation(async ({ input }) => {
-      return db.select().from(playlists).where(eq(playlists.id, input));
-    }),
+    .input(
+      z.object({
+        playlistId: z.string(),
+        oldIndex: z.number(),
+        newIndex: z.number(),
+      }),
+    )
+    .mutation(
+      async ({ ctx: { user }, input: { playlistId, oldIndex, newIndex } }) => {
+        const playlist = await db.query.playlists.findFirst({
+          where: eq(playlists.id, playlistId),
+        });
+        if (!playlist) {
+          throw new TRPCError({ code: "NOT_FOUND" });
+        }
+        if (user.id !== playlist.userId) {
+          throw new TRPCError({ code: "FORBIDDEN" });
+        }
+
+        // handle the move of playlistTrack at oldIndex to newIndex
+
+        return "ok";
+      },
+    ),
 });
 
 // export type definition of API

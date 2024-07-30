@@ -1,15 +1,12 @@
+import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../../db";
 import { playlists } from "../../drizzle/main";
-import { publicProcedure, router } from "../trpc";
+import { protectedProcedure, router } from "../trpc";
 
 export const playlistRouter = router({
-  list: publicProcedure.query(async ({ ctx: { user } }) => {
-    if (!user) {
-      return [];
-    }
-
+  list: protectedProcedure.query(async ({ ctx: { user } }) => {
     return db.query.playlists.findMany({
       with: {
         playlistTracks: true,
@@ -18,37 +15,49 @@ export const playlistRouter = router({
     });
   }),
 
-  getById: publicProcedure.input(z.string()).query(async ({ input }) => {
+  getById: protectedProcedure.input(z.string()).query(async ({ input }) => {
     return db.select().from(playlists).where(eq(playlists.id, input));
   }),
 
-  create: publicProcedure
-    .input(z.object({ id: z.string(), name: z.string(), userId: z.string() }))
-    .mutation(async ({ input: { id, name, userId } }) => {
+  create: protectedProcedure
+    .input(z.object({ id: z.string(), name: z.string() }))
+    .mutation(async ({ ctx: { user }, input: { id, name } }) => {
       return db
         .insert(playlists)
-        .values({ id, name, userId, favorites: false, queue: false });
+        .values({ id, name, userId: user.id, favorites: false, queue: false });
     }),
 
-  delete: publicProcedure.input(z.string()).mutation(async ({ input }) => {
-    return db.delete(playlists).where(eq(playlists.id, input));
-  }),
+  delete: protectedProcedure
+    .input(z.string())
+    .mutation(async ({ ctx: { user }, input }) => {
+      if (user.id !== input) {
+        throw new TRPCError({ code: "FORBIDDEN" });
+      }
+      return db.delete(playlists).where(eq(playlists.id, input));
+    }),
 
-  clone: publicProcedure.input(z.string()).mutation(async ({ input }) => {
-    const original = (
-      await db.select().from(playlists).where(eq(playlists.id, input))
-    )[0];
+  clone: protectedProcedure.input(z.string()).mutation(async ({ input }) => {
+    const original = await db.query.playlists.findFirst({
+      where: eq(playlists.id, input),
+    });
+    if (!original) {
+      throw new TRPCError({ code: "NOT_FOUND" });
+    }
     const { id, ...values } = original;
     return db.insert(playlists).values({ id: "TODO", ...values });
   }),
 
-  addOrModify: publicProcedure.input(z.string()).mutation(async ({ input }) => {
-    return db.select().from(playlists).where(eq(playlists.id, input));
-  }),
+  addOrModify: protectedProcedure
+    .input(z.string())
+    .mutation(async ({ input }) => {
+      return db.select().from(playlists).where(eq(playlists.id, input));
+    }),
 
-  dragAndDrop: publicProcedure.input(z.string()).mutation(async ({ input }) => {
-    return db.select().from(playlists).where(eq(playlists.id, input));
-  }),
+  dragAndDrop: protectedProcedure
+    .input(z.string())
+    .mutation(async ({ input }) => {
+      return db.select().from(playlists).where(eq(playlists.id, input));
+    }),
 });
 
 // export type definition of API

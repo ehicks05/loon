@@ -5,7 +5,7 @@ import { Button } from "../../Button";
 import Select from "../../Select";
 import { CheckboxInput, TextInput } from "../../TextInput";
 import { LibrarySync } from "./LibrarySync";
-// import { MusicFolderSummary } from "./MusicFolderSummary";
+import { MusicFolderSummary } from "./MusicFolderSummary";
 import { TRANSCODE_QUALITY_OPTIONS } from "./constants";
 
 export default function SystemSettings() {

@@ -1,5 +1,7 @@
+import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../../db";
+import { userTable } from "../../drizzle/lucia";
 import { system_settings } from "../../drizzle/main";
 import { publicProcedure, router } from "../trpc";
 
@@ -31,6 +33,32 @@ export const miscRouter = router({
         await db.update(system_settings).set(input).returning()
       )[0];
       return systemSettings;
+    }),
+
+  users: publicProcedure.query(async () => {
+    const users = await db.query.userTable.findMany();
+    return users.map((user) => ({
+      id: user.id,
+      username: user.username,
+      isAdmin: user.isAdmin,
+    }));
+  }),
+  deleteUser: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input: { id } }) => {
+      const deletedUser = await db
+        .delete(userTable)
+        .where(eq(userTable.id, id));
+      return deletedUser;
+    }),
+  updateUser: publicProcedure
+    .input(z.object({ id: z.string(), isAdmin: z.boolean() }))
+    .mutation(async ({ input: { id, isAdmin } }) => {
+      const updatedUser = await db
+        .update(userTable)
+        .set({ isAdmin })
+        .where(eq(userTable.id, id));
+      return updatedUser;
     }),
 });
 

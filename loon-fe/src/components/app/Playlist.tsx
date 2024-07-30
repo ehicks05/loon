@@ -1,6 +1,11 @@
-import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
-import React, { useEffect, useRef, useState } from "react";
-import { Link, Redirect } from "react-router-dom";
+import {
+  DragDropContext,
+  Draggable,
+  type DropResult,
+  Droppable,
+} from "@hello-pangea/dnd";
+import React, { useEffect, useRef } from "react";
+import { Link, useHistory, useRouteMatch } from "react-router-dom";
 import { useMeasure } from "react-use";
 import { FixedSizeList as List } from "react-window";
 import {
@@ -21,7 +26,7 @@ import { TextInput } from "../TextInput";
 
 const Row = ({ data: { tracks, trackMap, playlistId }, index, style }) => {
   const playlistTrack = tracks[index];
-  const track = trackMap[playlistTrack.track.id];
+  const track = trackMap[playlistTrack.trackId];
 
   return (
     <Draggable draggableId={track.id} index={index} key={track.id}>
@@ -41,14 +46,14 @@ const Row = ({ data: { tracks, trackMap, playlistId }, index, style }) => {
 };
 
 export default function Playlist(props) {
-  const [playlistId, setPlaylistId] = useState(null);
-  const [redirectTo, setRedirectTo] = useState(null);
+  const match = useRouteMatch<{ id: string | undefined }>();
+  const history = useHistory();
 
+  const playlists = useAppStore((state) => state.playlists);
+  const trackMap = useTrackMap();
   const selectedTrackId = useUserStore(
     (state) => state.userState.selectedTrackId,
   );
-  const playlists = useAppStore((state) => state.playlists);
-  const trackMap = useTrackMap();
 
   const listRef = useRef();
   const [containerRef, { height: containerHeight }] = useMeasure();
@@ -59,27 +64,16 @@ export default function Playlist(props) {
     };
   }, []);
 
-  useEffect(() => {
-    function parsePlaylistId() {
-      let playlistId = 0;
-      if (props.match.path === "/playlists/:id")
-        playlistId = props.match.params.id ? Number(props.match.params.id) : 0;
-      if (props.match.path === "/favorites") {
-        const favorites = playlists.filter((playlist) => playlist.favorites);
-        playlistId = favorites && favorites.length > 0 ? favorites[0].id : 0;
-      }
-      if (props.match.path === "/queue") {
-        const queue = playlists.filter((playlist) => playlist.queue);
-        playlistId = queue && queue.length > 0 ? queue[0].id : 0;
-      }
+  const playlistId =
+    match.path === "/favorites"
+      ? playlists.find((playlist) => playlist.favorites)?.id
+      : match.path === "/queue"
+        ? playlists.find((playlist) => playlist.queue)?.id
+        : match.path === "/playlists/:id"
+          ? match.params.id
+          : undefined;
 
-      return playlistId;
-    }
-
-    setPlaylistId(parsePlaylistId());
-  }, [playlists, props.match]);
-
-  function onDragEnd(result) {
+  function onDragEnd(result: DropResult) {
     // dropped outside the list
     if (!result.destination) return;
 
@@ -92,11 +86,7 @@ export default function Playlist(props) {
   }
 
   function persistDragAndDrop(playlistId, oldIndex, newIndex) {
-    const formData = new FormData();
-    formData.append("playlistId", playlistId);
-    formData.append("oldIndex", oldIndex);
-    formData.append("newIndex", newIndex);
-    dragAndDrop(formData);
+    dragAndDrop({ playlistId, oldIndex, newIndex });
   }
 
   function saveAsPlaylist() {
@@ -107,7 +97,7 @@ export default function Playlist(props) {
     formData.append("name", document.getElementById("playlistName").value);
 
     copyPlaylist(formData).then((data) =>
-      setRedirectTo(`/playlists/${data.id}`),
+      history.push(`/playlists/${data.id}`),
     );
   }
 
@@ -116,17 +106,16 @@ export default function Playlist(props) {
     if (el) el.classList.toggle("is-invisible");
   }
 
-  if (redirectTo) return <Redirect to={redirectTo} />;
-
   const playlist = getPlaylistById(playlistId);
 
   if (!playlists || !playlist) return <div>Loading...</div>;
 
-  const scrollToIndex = playlist.playlistTracks.indexOf(
-    playlist.playlistTracks.find(
-      (playlistTrack) => playlistTrack.track.id === selectedTrackId,
-    ),
+  const selectedPlaylistTrack = playlist.playlistTracks.find(
+    (playlistTrack) => playlistTrack.trackId === selectedTrackId,
   );
+  const scrollToIndex = selectedPlaylistTrack
+    ? playlist.playlistTracks.indexOf(selectedPlaylistTrack)
+    : undefined;
 
   const mediaList = (
     <div ref={containerRef} className="h-full overflow-hidden">
@@ -251,7 +240,7 @@ export default function Playlist(props) {
 
   function renderDraggingMediaItem(index, provided) {
     const playlistTrack = getPlaylistById(playlistId).playlistTracks[index];
-    const track = trackMap[playlistTrack.track.id];
+    const track = trackMap[playlistTrack.trackId];
 
     return (
       <DraggingMediaItem

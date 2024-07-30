@@ -30,7 +30,7 @@ function getCurrentPlaylistTrackIds(selectedPlaylistId) {
   const currentPlaylist = getPlaylistById(selectedPlaylistId);
   if (currentPlaylist)
     return currentPlaylist.playlistTracks.map(
-      (playlistTrack) => playlistTrack.track.id,
+      (playlistTrack) => playlistTrack.trackId,
     );
 
   return tracks.map((track) => track.id);

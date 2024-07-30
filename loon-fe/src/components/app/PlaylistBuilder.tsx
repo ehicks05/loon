@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import type React from "react";
+import { useEffect, useState } from "react";
 import CheckboxTree, { type Node } from "react-checkbox-tree";
 import {
   FaChevronDown,
@@ -11,11 +12,13 @@ import {
   FaRegPlusSquare,
   FaRegSquare,
 } from "react-icons/fa";
-import { useRouteMatch } from "react-router-dom";
+import { useHistory, useLocation, useRouteMatch } from "react-router-dom";
 import { upsertPlaylist, useAppStore } from "../../common/AppContextProvider";
 import { Button } from "../Button";
 import { TextInput } from "../TextInput";
 import "react-checkbox-tree/lib/react-checkbox-tree.css";
+import type { Playlist, Track } from "@/common/types";
+import { trpc } from "@/utils/trpc";
 
 const icons = {
   check: <FaRegCheckSquare className="rct-icon rct-icon-check" />,
@@ -30,10 +33,11 @@ const icons = {
   leaf: <FaRegFile className="rct-icon rct-icon-leaf-close" />,
 };
 
-const pathsToNodes = (paths: string[]) => {
+const tracksToNodes = (tracks: Track[]) => {
   let nodes: Node[] = [];
 
-  paths.forEach((path) => {
+  tracks.forEach((track) => {
+    const { path } = track;
     const parts = path.split("/").slice(1);
 
     let partialPath = "";
@@ -46,9 +50,14 @@ const pathsToNodes = (paths: string[]) => {
 
       if (!node) {
         const isLeaf = part.endsWith(".mp3") || part.endsWith(".flac");
+        const value = isLeaf
+          ? track.id
+          : i === 0
+            ? part
+            : `${partialPath}/${part}`;
         node = {
           label: part,
-          value: i === 0 ? part : `${partialPath}/${part}`,
+          value,
           children: isLeaf ? undefined : [],
         };
         if (parent) {
@@ -66,7 +75,71 @@ const pathsToNodes = (paths: string[]) => {
   return nodes;
 };
 
-export default function PlaylistBuilder() {
+function PlaylistBuilder({
+  playlist,
+  nodes,
+  checked,
+  setChecked,
+  expanded,
+  setExpanded,
+}: {
+  playlist?: Playlist;
+  nodes: Node[];
+  checked: string[];
+  setChecked: React.Dispatch<React.SetStateAction<string[]>>;
+  expanded: string[];
+  setExpanded: React.Dispatch<React.SetStateAction<string[]>>;
+}) {
+  const [name, setName] = useState(playlist?.name || "New Playlist");
+  const history = useHistory();
+  const utils = trpc.useUtils();
+
+  async function save() {
+    upsertPlaylist(
+      { id: playlist?.id, name, trackIds: checked },
+      {
+        onSuccess: () => {
+          utils.playlist.list.invalidate();
+          history.push("/library");
+        },
+      },
+    );
+  }
+
+  const { mutate: upsertPlaylist, isPending } =
+    trpc.playlist.upsert.useMutation();
+
+  return (
+    <section className="flex flex-col justify-between h-full gap-4">
+      <h1 className="text-2xl font-bold">Playlist Builder</h1>
+      <TextInput
+        name="name"
+        label="Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        size={50}
+      />
+
+      <div className="flex flex-col h-full overflow-auto">
+        <label className="">Tracks ({checked.length} selected)</label>
+        <CheckboxTree
+          nodes={nodes}
+          checked={checked}
+          expanded={expanded}
+          onCheck={(checked) => setChecked(checked)}
+          onExpand={(expanded) => setExpanded(expanded)}
+          icons={icons}
+        />
+      </div>
+
+      <Button disabled={isPending} className={"bg-green-600"} onClick={save}>
+        {playlist ? "Update" : "Create"} Playlist
+      </Button>
+    </section>
+  );
+}
+
+export default function Wrapper() {
   const {
     params: { id },
   } = useRouteMatch<{ id: string | undefined }>();
@@ -78,7 +151,7 @@ export default function PlaylistBuilder() {
   const playlist = id
     ? playlists.find((playlist) => playlist.id === id)
     : undefined;
-  const nodes = pathsToNodes(tracks.map((track) => track.path));
+  const nodes = tracksToNodes(tracks);
 
   useEffect(() => {
     if (playlist) {
@@ -92,50 +165,18 @@ export default function PlaylistBuilder() {
   //   }
   // }, [nodes]);
 
-  async function save() {
-    const formData = new FormData();
-    formData.append("action", playlist ? "modify" : "add");
-    formData.append("playlistId", playlist ? playlist.id : "0");
-    formData.append("name", name);
-    formData.append("trackIds", checked.toString());
-
-    upsertPlaylist(formData);
-    // on success, redirect to /playlists
-  }
-
   if (!nodes) {
     return <div>Loading...</div>;
   }
 
-  console.log({ nodes });
-
   return (
-    <section className="flex flex-col justify-between h-full gap-4">
-      <h1 className="text-2xl font-bold">Playlist Builder</h1>
-      <TextInput
-        id={"name"}
-        label={"Name"}
-        value={playlist ? playlist.name : "New Playlist"}
-        onChange={(e) => setName(e.target.value)}
-        required={true}
-        size={50}
-      />
-
-      <div className="flex flex-col h-full overflow-auto">
-        <label className="">Tracks</label>
-        <CheckboxTree
-          nodes={nodes}
-          checked={checked}
-          expanded={expanded}
-          onCheck={(checked) => setChecked(checked)}
-          onExpand={(expanded) => setExpanded(expanded)}
-          icons={icons}
-        />
-      </div>
-
-      <Button className={"bg-green-600"} onClick={save}>
-        Save
-      </Button>
-    </section>
+    <PlaylistBuilder
+      playlist={playlist}
+      nodes={nodes}
+      checked={checked}
+      setChecked={setChecked}
+      expanded={expanded}
+      setExpanded={setExpanded}
+    />
   );
 }

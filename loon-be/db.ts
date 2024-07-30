@@ -40,8 +40,9 @@ const seed = async () => {
     return [...favorites, ...queue];
   });
 
-  await db.insert(playlists).values(newPlaylists);
-
+  if (newPlaylists.length) {
+    await db.insert(playlists).values(newPlaylists);
+  }
   console.log("done");
 };
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-// import { Redirect } from "react-router-dom";
+import { useRouteMatch } from "react-router-dom";
 import { upsertPlaylist, useAppStore } from "../../common/AppContextProvider";
 
 import {
@@ -14,87 +14,109 @@ import {
   FaRegSquare,
 } from "react-icons/fa";
 
-import CheckboxTree from "react-checkbox-tree";
-import "react-checkbox-tree/lib/react-checkbox-tree.css";
-import superFetch from "../../common/SuperFetch";
+import CheckboxTree, { type Node } from "react-checkbox-tree";
 import { TextInput } from "../TextInput";
+import { Button } from "../Button";
+import "react-checkbox-tree/lib/react-checkbox-tree.css";
 
-export default function PlaylistBuilder(props) {
-  const [checked, setChecked] = useState([]);
+const pathsToNodes = (paths: string[]) => {
+  let nodes: Node[] = [];
+
+  paths.forEach((path) => {
+    const parts = path.split("/").slice(1);
+
+    let partialPath = "";
+    let parent: Node;
+    parts.forEach((part, i) => {
+      let node =
+        i === 0
+          ? nodes.find((n) => n.value === part)
+          : parent?.children?.find((c) => c.value === `${partialPath}/${part}`);
+
+      if (!node) {
+        node = {
+          label: part,
+          value: i === 0 ? part : `${partialPath}/${part}`,
+          children: [],
+        };
+        if (parent) {
+          parent.children = [...(parent?.children || []), node];
+        } else {
+          nodes = [...nodes, node];
+        }
+      }
+
+      partialPath = `${partialPath}/${part}`;
+      parent = node;
+    });
+  });
+
+  return nodes;
+};
+
+export default function PlaylistBuilder() {
+  const {
+    params: { id },
+  } = useRouteMatch<{ id: string | undefined }>();
+  const [name, setName] = useState("");
+  const [checked, setChecked] = useState<string[]>([]);
   const [expanded, setExpanded] = useState(["0", "-1", "-2"]);
-  const [redirectToPlaylists, setRedirectToPlaylists] = useState(false);
-  const [playlist, setPlaylist] = useState(null);
-  const [treeData, setTreeData] = useState(null);
 
-  const playlists = useAppStore((state) => state.playlists);
-
-  useEffect(() => {
-    superFetch("/library/getLibraryTrackPaths", { method: "GET" })
-      .then((response) => response.json())
-      .then((json) => setTreeData(json));
-  }, []);
+  const { playlists, tracks } = useAppStore();
+  const playlist = id
+    ? playlists.find((playlist) => playlist.id === id)
+    : undefined;
+  const nodes = pathsToNodes(tracks.map((track) => track.path));
 
   useEffect(() => {
-    const playlistId = props.match.params.id
-      ? Number(props.match.params.id)
-      : 0;
-    if (playlistId) {
-      const playlist = playlists.find((playlist) => playlist.id === playlistId);
-      setPlaylist(playlist);
-      setChecked(
-        playlist.playlistTracks.map((playlistTrack) => playlistTrack.track.id),
-      );
+    if (playlist) {
+      setChecked(playlist.playlistTracks.map(({ trackId }) => trackId));
     }
-  }, [playlists, props.match.params.id]);
+  }, [playlist]);
 
   async function save() {
     const formData = new FormData();
     formData.append("action", playlist ? "modify" : "add");
-    formData.append("playlistId", playlist ? playlist.id : 0);
-    formData.append("name", document.getElementById("name").value);
+    formData.append("playlistId", playlist ? playlist.id : "0");
+    formData.append("name", name);
     formData.append("trackIds", checked.toString());
 
     upsertPlaylist(formData);
-    setRedirectToPlaylists(true);
+    // on success, redirect to /playlists
   }
 
-  function onCheck(checked) {
-    setChecked(checked);
+  if (!nodes) {
+    return <div>Loading...</div>;
   }
 
-  function onExpand(expanded) {
-    setExpanded(expanded);
-  }
-
-  if (!treeData) return <div>Loading...</div>;
-
-  // if (redirectToPlaylists) return <Redirect to={"/playlists"} />;
+  console.log({ nodes });
 
   return (
-    <div>
-      <section className={"section"}>
-        <h1 className="title">Playlist Builder</h1>
+    <div className="flex flex-col gap-4">
+      <section className={"flex flex-col gap-2"}>
+        <h1 className="text-2xl font-bold">Playlist Builder</h1>
         <h2 className="subtitle">
           {playlist ? playlist.name : "New Playlist"}
         </h2>
       </section>
 
-      <section className="section">
+      <section className="flex flex-col gap-2">
         <TextInput
           id={"name"}
           label={"Name"}
           value={playlist ? playlist.name : "New Playlist"}
+          onChange={(e) => setName(e.target.value)}
           required={true}
           size={50}
         />
 
         <label className="label">Tracks</label>
         <CheckboxTree
-          nodes={treeData}
+          nodes={nodes}
           checked={checked}
           expanded={expanded}
-          onCheck={onCheck}
-          onExpand={onExpand}
+          onCheck={(checked) => setChecked(checked)}
+          onExpand={(expanded) => setExpanded(expanded)}
           icons={{
             check: <FaRegCheckSquare className="rct-icon rct-icon-check" />,
             uncheck: <FaRegSquare className="rct-icon rct-icon-uncheck" />,
@@ -123,9 +145,9 @@ export default function PlaylistBuilder(props) {
           }}
         />
 
-        <button type="button" className={"button is-primary"} onClick={save}>
+        <Button className={"bg-green-600"} onClick={save}>
           Save
-        </button>
+        </Button>
       </section>
     </div>
   );

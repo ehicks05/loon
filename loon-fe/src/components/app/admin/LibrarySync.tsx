@@ -13,9 +13,7 @@ export const LibrarySync = () => {
   const [options, setOptions] = useState(DEFAULT_SYNC_OPTIONS);
   const [isSyncing, setIsSyncing] = useState(false);
 
-  const { data } = trpc.system.librarySyncStatus.useQuery(undefined, {
-    refetchInterval: 5000,
-  });
+  const { data } = trpc.system.librarySyncStatus.useQuery();
   const { mutate, isPending } = trpc.system.runLibrarySync.useMutation();
 
   const isDisableForm = isPending || isSyncing;

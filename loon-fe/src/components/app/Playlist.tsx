@@ -1,6 +1,7 @@
 import {
   DragDropContext,
   Draggable,
+  type DraggableProvided,
   type DropResult,
   Droppable,
 } from "@hello-pangea/dnd";
@@ -20,6 +21,7 @@ import {
   setSelectedContextMenuId,
   useUserStore,
 } from "../../common/UserContextProvider";
+import { Button } from "../Button";
 import DraggingMediaItem from "../DraggingMediaItem";
 import MediaItem from "../MediaItem";
 import { TextInput } from "../TextInput";
@@ -45,7 +47,7 @@ const Row = ({ data: { tracks, trackMap, playlistId }, index, style }) => {
   );
 };
 
-export default function Playlist(props) {
+export default function Playlist() {
   const match = useRouteMatch<{ id: string | undefined }>();
   const history = useHistory();
 
@@ -55,8 +57,9 @@ export default function Playlist(props) {
     (state) => state.userState.selectedTrackId,
   );
 
-  const listRef = useRef();
-  const [containerRef, { height: containerHeight }] = useMeasure();
+  const listRef = useRef<List>(null);
+  const [containerRef, { height: containerHeight }] =
+    useMeasure<HTMLDivElement>();
 
   useEffect(() => {
     return function cleanup() {
@@ -142,12 +145,10 @@ export default function Playlist(props) {
                   trackMap,
                   playlistId,
                 }}
-                scrollToAlignment={"auto"}
-                scrollToIndex={scrollToIndex}
                 overscanCount={3}
                 outerRef={provided.innerRef}
                 itemCount={playlist.playlistTracks.length}
-                itemKey={(_index, data) => data.id}
+                itemKey={(_index, data) => data.tracks[_index].id}
                 itemSize={60}
               >
                 {Row}
@@ -159,87 +160,70 @@ export default function Playlist(props) {
     </div>
   );
 
-  const actions = renderActions(playlist);
-
-  const title = playlist ? playlist.name : "Library";
   return (
     <div className="flex h-full flex-col">
-      <section className={"section flex flex-col"}>
-        <h1 className="title">{title}</h1>
-        {actions}
+      <section className={"flex flex-col"}>
+        <h1 className="font-bold text-2xl">
+          {playlist ? playlist.name : "Library"}
+        </h1>
+        {playlist.queue && (
+          <div className={"subtitle"}>
+            <span className="buttons">
+              <Button
+                className=""
+                disabled={playlist.playlistTracks.length === 0}
+                onClick={toggleSaveAsPlaylistForm}
+              >
+                Save as Playlist
+              </Button>
+              <Button
+                className=""
+                disabled={playlist.playlistTracks.length === 0}
+                onClick={() => clearPlaylist(playlist.id)}
+              >
+                Clear
+              </Button>
+
+              <form id="saveAsPlaylistForm" className="is-invisible">
+                <div className="field has-addons">
+                  <div className="control">
+                    <span>
+                      <TextInput id="playlistName" />
+                    </span>
+                  </div>
+                  <div className="control">
+                    <Button className="" onClick={saveAsPlaylist}>
+                      Ok
+                    </Button>
+                  </div>
+                </div>
+              </form>
+            </span>
+          </div>
+        )}
+
+        {playlist && !playlist.queue && !playlist.favorites && (
+          <div className={"subtitle"}>
+            <span className="buttons">
+              <Link
+                to={`/playlists/${playlist.id}/edit`}
+                className="button is-small is-success"
+              >
+                Edit
+              </Link>
+            </span>
+          </div>
+        )}
       </section>
 
       {mediaList}
     </div>
   );
 
-  function renderActions(playlist) {
-    let actions = null;
+  function renderDraggingMediaItem(index: number, provided: DraggableProvided) {
+    const playlistTrack = getPlaylistById(playlistId)?.playlistTracks[index];
+    if (!playlistTrack) return null;
 
-    if (playlist?.queue) {
-      const disabled = playlist.playlistTracks.length === 0;
-      actions = (
-        <div className={"subtitle"}>
-          <span className="buttons">
-            <button
-              type="button"
-              className="button is-small is-success"
-              disabled={disabled}
-              onClick={toggleSaveAsPlaylistForm}
-            >
-              Save as Playlist
-            </button>
-            <button
-              type="button"
-              className="button is-small is-danger"
-              disabled={disabled}
-              onClick={() => clearPlaylist(playlist.id)}
-            >
-              Clear
-            </button>
-
-            <form id="saveAsPlaylistForm" className="is-invisible">
-              <div className="field has-addons">
-                <div className="control">
-                  <span>
-                    <TextInput id="playlistName" />
-                  </span>
-                </div>
-                <div className="control">
-                  <button
-                    type="button"
-                    className="button is-primary"
-                    onClick={saveAsPlaylist}
-                  >
-                    Ok
-                  </button>
-                </div>
-              </div>
-            </form>
-          </span>
-        </div>
-      );
-    }
-    if (playlist && !playlist.queue && !playlist.favorites) {
-      actions = (
-        <div className={"subtitle"}>
-          <span className="buttons">
-            <Link
-              to={`/playlists/${playlist.id}/edit`}
-              className="button is-small is-success"
-            >
-              Edit
-            </Link>
-          </span>
-        </div>
-      );
-    }
-
-    return actions;
-  }
-
-  function renderDraggingMediaItem(index, provided) {
-    const playlistTrack = getPlaylistById(playlistId).playlistTracks[index];
     const track = trackMap[playlistTrack.trackId];
 
     return (

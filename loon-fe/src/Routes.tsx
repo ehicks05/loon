@@ -71,23 +71,15 @@ export default function Routes() {
       <Route exact path="/queue" render={(props) => <Playlist {...props} />} />
 
       <Switch>
-        <Route
-          exact
-          path="/playlists/new"
-          render={(props) => <PlaylistBuilder {...props} />}
-        />
+        <Route exact path="/playlists/new" render={() => <PlaylistBuilder />} />
         <Route
           exact
           path="/playlists/:id/edit"
-          render={(props) => <PlaylistBuilder {...props} />}
+          render={() => <PlaylistBuilder />}
         />
 
         <Route exact path="/library" render={() => <Playlists />} />
-        <Route
-          exact
-          path="/playlists/:id"
-          render={(props) => <Playlist {...props} />}
-        />
+        <Route exact path="/playlists/:id" render={() => <Playlist />} />
       </Switch>
     </>
   );

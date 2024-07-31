@@ -97,7 +97,7 @@ export default function renderSpectrumFrame() {
   for (let i = 0; i < bufferLength; i++) {
     const barHeight = mergedData[i] / (255 / HEIGHT);
 
-    const h = 100;
+    const h = 135;
     const s = 10 * (barHeight / HEIGHT) + 80;
     const l = 30 * (barHeight / HEIGHT) + 15;
 

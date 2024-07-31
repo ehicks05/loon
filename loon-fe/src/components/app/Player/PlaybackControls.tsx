@@ -44,7 +44,7 @@ function ShuffleButton() {
   return (
     <button
       type="button"
-      className={`bg-black p-2 rounded ${shuffle ? " bg-green-600" : ""}`}
+      className={`bg-black p-2 rounded ${shuffle ? " bg-green-700" : ""}`}
       onClick={handleShuffleChange}
     >
       <FaRandom />

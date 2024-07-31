@@ -25,7 +25,7 @@ export default function PlaybackControls() {
       </div>
 
       <div className="w-full md:w-1/2">
-        <div className="flex gap-2 items-center justify-center md:justify-end ml-4">
+        <div className="flex gap-2 items-center justify-center md:justify-end md:ml-4">
           <ShuffleButton />
           <MuteButton />
           <VolumeSlider />

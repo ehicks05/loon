@@ -6,7 +6,7 @@ export default function VolumeSlider() {
   const volume = useUserStore((state) => state.userState.volume);
 
   return (
-    <div className="w-32 max-w-32 md:w-auto md:flex-grow">
+    <div className="w-32 max-w-32 md:w-auto md:flex-grow mr-1">
       <LoonSlider
         value={[volume]}
         onValueChange={(value) => setVolume(value[0])}

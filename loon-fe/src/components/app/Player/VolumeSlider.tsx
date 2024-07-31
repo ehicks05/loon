@@ -10,6 +10,7 @@ export default function VolumeSlider() {
       <LoonSlider
         value={[volume]}
         onValueChange={(value) => setVolume(value[0])}
+        onDoubleClick={() => setVolume(0)}
         min={-30}
         max={0}
         step={1}

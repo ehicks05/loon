@@ -3,7 +3,7 @@ import type {
   DraggableStateSnapshot,
   DraggableStyle,
 } from "@hello-pangea/dnd";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   setSelectedPlaylistId,

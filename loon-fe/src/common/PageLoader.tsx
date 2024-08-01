@@ -1,4 +1,3 @@
-import React from "react";
 import { RevolvingDot } from "react-loader-spinner";
 
 export default function PageLoader() {

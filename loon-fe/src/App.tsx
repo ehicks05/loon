@@ -1,20 +1,13 @@
-import React, { useEffect } from "react";
-import { BrowserRouter } from "react-router-dom";
-
-import Navbar from "./Navbar";
-import Routes from "./Routes";
-import SidePanel from "./SidePanel";
-import { useAppStore } from "./common/AppContextProvider";
-import {
-  fetchUser,
-  useUserStore,
-  useUserStore2,
-} from "./common/UserContextProvider";
-import PlaybackControls from "./components/app/Player/PlaybackControls";
-import Player from "./components/app/Player/Player";
-
+import { BottomPanel } from "@/components/BottomPanel/BottomPanel";
+import Navbar from "@/components/Navbar";
+import Player from "@/components/Player/Player";
+import SidePanel from "@/components/SidePanel";
+import { useEffect } from "react";
 import { useInterval } from "usehooks-ts";
+import Routes from "./Routes";
+import { useAppStore } from "./common/AppContextProvider";
 import PageLoader from "./common/PageLoader";
+import { useUserStore2 } from "./common/UserContextProvider";
 import { formatTime } from "./components/utils";
 import { useTitle } from "./hooks/useTitle";
 import { trpc } from "./utils/trpc";
@@ -51,9 +44,10 @@ const useCacheData = () => {
 };
 
 export default function App() {
+  console.log("yo");
   useInterval(() => fetch("/poll"), 1000 * 60 * 60);
   useTitle();
-  const { isLoading, user, tracks, playlists } = useCacheData();
+  const { isLoading } = useCacheData();
 
   if (isLoading) {
     return <PageLoader />;
@@ -78,7 +72,7 @@ export default function App() {
         </div>
       </div>
       <Player />
-      <PlaybackControls />
+      <BottomPanel />
     </div>
   );
 }

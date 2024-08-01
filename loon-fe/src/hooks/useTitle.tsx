@@ -1,6 +1,6 @@
+import { getTrackById } from "@/common/AppContextProvider";
+import { useUserStore } from "@/common/UserContextProvider";
 import { useDocumentTitle } from "usehooks-ts";
-import { getTrackById } from "../common/AppContextProvider";
-import { useUserStore } from "../common/UserContextProvider";
 
 export function useTitle() {
   const selectedTrackId = useUserStore(

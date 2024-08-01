@@ -1,14 +1,18 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/client";
-import React, { useState } from "react";
+import { useState } from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import { trpc } from "./utils/trpc";
 import "./index.css";
+import React from "react";
 import { BrowserRouter } from "react-router-dom";
+import { API_URL } from "./apiUrl";
+
+const TRPC_URL = `${API_URL}/trpc`;
 
 const UserFetchWrapper = () => {
-  const { data, isLoading } = trpc.misc.me.useQuery();
+  const { isLoading } = trpc.misc.me.useQuery();
 
   if (isLoading) return null;
 
@@ -30,7 +34,7 @@ export const AppWrap = () => {
     trpc.createClient({
       links: [
         httpBatchLink({
-          url: "http://localhost:3000/trpc",
+          url: TRPC_URL,
           fetch(url, options) {
             return fetch(url, {
               ...options,

@@ -1,10 +1,9 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import ActionMenu from "./ActionMenu";
 import "lazysizes";
 import "lazysizes/plugins/attrchange/ls.attrchange";
+import type { Artist } from "@/app/Artists";
 import { useAppStore } from "../common/AppContextProvider";
-import type { Artist } from "./app/Artists";
 import { PLACEHOLDER_IMAGE_URL, getImageUrl } from "./utils";
 
 export function ArtistCard({ artist }: { artist: Artist }) {

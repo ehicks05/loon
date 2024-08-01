@@ -1,26 +1,26 @@
-import React from "react";
+import type { Component } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { useUserStore2 } from "./common/UserContextProvider";
 
-import { GithubLogin, GithubLoginCallback } from "./GithubLogin";
-import { Login } from "./Login";
-import About from "./components/app/About";
-import Album from "./components/app/Album";
-import Albums from "./components/app/Albums";
-import Artist from "./components/app/Artist";
-import Artists from "./components/app/Artists";
-import Playlist from "./components/app/Playlist";
-import PlaylistBuilder from "./components/app/PlaylistBuilder";
-import Playlists from "./components/app/Playlists";
-import Search from "./components/app/Search";
-import SystemSettings from "./components/app/admin/SystemSettings";
-import UserSettings from "./components/app/admin/UserSettings";
-import Eq from "./components/app/settings/Eq";
-import GeneralSettings from "./components/app/settings/GeneralSettings";
+import About from "@/app/About";
+import Album from "@/app/Album";
+import Albums from "@/app/Albums";
+import Artist from "@/app/Artist";
+import Artists from "@/app/Artists";
+import { GithubLogin } from "@/app/GithubLogin";
+import Playlist from "@/app/Playlist";
+import PlaylistBuilder from "@/app/PlaylistBuilder";
+import Playlists from "@/app/Playlists";
+import Search from "@/app/Search";
+import SystemSettings from "@/app/admin/SystemSettings";
+import UserSettings from "@/app/admin/UserSettings";
+import Eq from "@/app/settings/Eq";
+import GeneralSettings from "@/app/settings/GeneralSettings";
+import { Login } from "./app/Login";
+import type { User } from "./common/types";
 
 export default function Routes() {
   const user = useUserStore2((state) => state.user);
-  const isAdmin = user?.isAdmin;
 
   return (
     <>
@@ -30,21 +30,16 @@ export default function Routes() {
       <AdminRoute
         exact
         path="/admin/systemSettings"
-        appProps={{ isAdmin }}
+        user={user}
         component={SystemSettings}
       />
       <AdminRoute
         exact
         path="/admin/users"
-        appProps={{ isAdmin }}
+        user={user}
         component={UserSettings}
       />
-      <AdminRoute
-        exact
-        path="/admin/about"
-        appProps={{ isAdmin }}
-        component={About}
-      />
+      <AdminRoute exact path="/admin/about" user={user} component={About} />
       <Route
         exact
         path="/settings/general"
@@ -60,12 +55,8 @@ export default function Routes() {
         render={(props) => <Album {...props} />}
       />
       <Route exact path="/search" render={() => <Search />} />
-      <Route
-        exact
-        path="/favorites"
-        render={(props) => <Playlist {...props} />}
-      />
-      <Route exact path="/queue" render={(props) => <Playlist {...props} />} />
+      <Route exact path="/favorites" render={() => <Playlist />} />
+      <Route exact path="/queue" render={() => <Playlist />} />
 
       <Switch>
         <Route exact path="/playlists/new" render={() => <PlaylistBuilder />} />
@@ -82,16 +73,16 @@ export default function Routes() {
   );
 }
 
-function AdminRoute({ component: Component, appProps, ...rest }) {
+function AdminRoute({
+  component: Component,
+  user,
+  ...rest
+}: { component: Component; user?: User }) {
   return (
     <Route
       {...rest}
       render={(props) =>
-        appProps.isAdmin ? (
-          <Component {...props} {...appProps} />
-        ) : (
-          <Redirect to={"/"} />
-        )
+        user.isAdmin ? <Component {...props} /> : <Redirect to={"/"} />
       }
     />
   );

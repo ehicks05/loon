@@ -1,5 +1,4 @@
 import * as Popover from "@radix-ui/react-popover";
-import React from "react";
 import {
   FaEllipsisH,
   FaHeart,

@@ -1,5 +1,5 @@
 import * as Slider from "@radix-ui/react-slider";
-import React, { type RefAttributes } from "react";
+import type { RefAttributes } from "react";
 
 export const SLIDER_CLASSES = {
   ROOT:

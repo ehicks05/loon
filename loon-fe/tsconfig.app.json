@@ -29,5 +29,5 @@
     },
     "types": ["vite/client"]
   },
-  "include": ["src/main.tsx"]
+  "include": ["src"]
 }

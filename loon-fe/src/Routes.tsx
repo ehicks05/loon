@@ -3,6 +3,7 @@ import { Redirect, Route, Switch } from "react-router-dom";
 import { useUserStore2 } from "./common/UserContextProvider";
 
 import { GithubLogin, GithubLoginCallback } from "./GithubLogin";
+import { Login } from "./Login";
 import About from "./components/app/About";
 import Album from "./components/app/Album";
 import Albums from "./components/app/Albums";
@@ -24,11 +25,8 @@ export default function Routes() {
   return (
     <>
       <Route exact path="/" render={() => <Redirect to="/search" />} />
-      <Route
-        exact
-        path="/login/github/callback"
-        render={() => <GithubLogin />}
-      />
+      <Route exact path="/login/github" render={() => <GithubLogin />} />
+      <Route exact path="/login" render={() => <Login />} />
       <AdminRoute
         exact
         path="/admin/systemSettings"

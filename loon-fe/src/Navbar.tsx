@@ -143,12 +143,12 @@ export default function Navbar() {
 
                 {!user && (
                   <MenuItem>
-                    <a
-                      href="/login"
+                    <Link
+                      to="/login"
                       className="w-full text-left px-4 py-2 block text-sm data-[focus]:bg-neutral-900"
                     >
                       Sign in
-                    </a>
+                    </Link>
                   </MenuItem>
                 )}
               </MenuItems>

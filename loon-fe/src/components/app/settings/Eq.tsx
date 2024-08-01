@@ -1,3 +1,4 @@
+import { TextInput } from "@/components/TextInput";
 import React from "react";
 import { setEq, useUserStore } from "../../../common/UserContextProvider";
 import { LoonSlider } from "../../Slider";
@@ -40,80 +41,76 @@ export default function Eq() {
     },
   ];
 
-  const freqCells = eqs.map((eq) => (
-    <td key={eq.name} className={cellClass}>
-      <input
-        className={"input text-right"}
-        name={`${eq.name}Frequency`}
-        type={"number"}
-        min={20}
-        max={20000}
-        step={1}
-        defaultValue={eq.frequency}
-        onChange={(e) => {
-          const eqNum = e.target.name.substring(2, 3);
-          const field = e.target.name.substring(3);
-          const value = e.target.value;
-
-          setEq(eqNum, field, value);
-        }}
-      />
-    </td>
-  ));
-  const gainCells = eqs.map((eq) => (
-    <td key={eq.name} className={cellClass}>
-      <div className="flex flex-col items-center h-56">
-        <LoonSlider
-          name={`${eq.name}Gain`}
-          value={[eq.gain]}
-          onValueChange={(value) =>
-            handleSliderChange(value[0], `${eq.name}Gain`)
-          }
-          min={-12}
-          max={12}
-          step={1}
-          orientation="vertical"
-        />
-        <span>
-          {eq.gain > 0 ? "+" : ""}
-          {eq.gain} dB
-        </span>
-      </div>
-    </td>
-  ));
-  const typeCells = eqs.map((eq) => (
-    <td key={eq.name} className={`text-center ${cellClass}`}>
-      {eq.type}
-    </td>
-  ));
-
   const eqTable = (
-    <table style={{ padding: "8px" }}>
+    <table>
       <tbody>
         <tr>
           <td className={`text-center ${cellClass}`}>Freq</td>
-          {freqCells}
+          {eqs.map((eq) => (
+            <td key={eq.name} className={cellClass}>
+              <TextInput
+                className={"bg-neutral-800 text-right"}
+                name={`${eq.name}Frequency`}
+                type={"number"}
+                min={20}
+                max={20000}
+                step={1}
+                defaultValue={eq.frequency}
+                onChange={(e) => {
+                  const eqNum = e.target.name.substring(2, 3);
+                  const field = e.target.name.substring(3);
+                  const value = e.target.value;
+
+                  setEq(eqNum, field, value);
+                }}
+              />
+            </td>
+          ))}
         </tr>
         <tr>
           <td className={`text-center ${cellClass}`}>Gain</td>
-          {gainCells}
+          {eqs.map((eq) => (
+            <td key={eq.name} className={cellClass}>
+              <div className="flex flex-col items-center h-56">
+                <LoonSlider
+                  name={`${eq.name}Gain`}
+                  value={[eq.gain]}
+                  onValueChange={(value) =>
+                    handleSliderChange(value[0], `${eq.name}Gain`)
+                  }
+                  min={-12}
+                  max={12}
+                  step={1}
+                  orientation="vertical"
+                />
+                <span>
+                  {eq.gain > 0 ? "+" : ""}
+                  {eq.gain} dB
+                </span>
+              </div>
+            </td>
+          ))}
         </tr>
         <tr>
           <td className={`text-center ${cellClass}`}>Type</td>
-          {typeCells}
+          {eqs.map((eq) => (
+            <td key={eq.name} className={`text-center ${cellClass}`}>
+              {eq.type}
+            </td>
+          ))}
         </tr>
       </tbody>
     </table>
   );
 
   return (
-    <div>
-      <section className={"section"}>
-        <h1 className="title">Settings</h1>
-        <h2 className="subtitle">Equalizer</h2>
+    <section className={"flex flex-col gap-4 items-start"}>
+      <div>
+        <h1 className="font-bold text-2xl">Settings</h1>
+        <h2 className="">Equalizer</h2>
+      </div>
 
-        {eqTable}
-      </section>
-    </div>
+      {eqTable}
+    </section>
   );
 }

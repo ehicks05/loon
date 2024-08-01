@@ -78,6 +78,7 @@ export default function Eq() {
                   onValueChange={(value) =>
                     handleSliderChange(value[0], `${eq.name}Gain`)
                   }
+                  onDoubleClick={() => handleSliderChange(0, `${eq.name}Gain`)}
                   min={-12}
                   max={12}
                   step={1}

@@ -1,3 +1,4 @@
+import { trpc } from "@/utils/trpc";
 import React, { useEffect, useState } from "react";
 import superFetch from "../../../common/SuperFetch";
 import {
@@ -9,11 +10,10 @@ export default function GeneralSettings() {
   const transcode = useUserStore((state) => state.userState.transcode);
   const [transcodeQuality, setTranscodeQuality] = useState("");
 
-  useEffect(() => {
-    superFetch("/systemSettings/transcodeQuality", { method: "GET" })
-      .then((response) => response.json())
-      .then((data) => setTranscodeQuality(data));
-  }, []);
+  const { data: user } = trpc.misc.me.useQuery();
+  if (!user) {
+    return <section>Please log in to access your settings.</section>;
+  }
 
   return (
     <div>

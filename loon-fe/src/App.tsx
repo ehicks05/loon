@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { BrowserRouter, useHistory, useLocation } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 
 import Navbar from "./Navbar";
 import Routes from "./Routes";
@@ -24,7 +24,10 @@ const useCacheData = () => {
   const { data: tracks, isLoading: isLoadingTracks } =
     trpc.tracks.list.useQuery();
   const { data: playlists, isLoading: isLoadingPlaylists } =
-    trpc.playlist.list.useQuery();
+    trpc.playlist.list.useQuery(undefined, {
+      enabled: !!user,
+      initialData: [],
+    });
   const isLoading = isLoadingUser || isLoadingTracks || isLoadingPlaylists;
 
   useEffect(() => {
@@ -51,15 +54,9 @@ export default function App() {
   useInterval(() => fetch("/poll"), 1000 * 60 * 60);
   useTitle();
   const { isLoading, user, tracks, playlists } = useCacheData();
-  const history = useHistory();
 
   if (isLoading) {
     return <PageLoader />;
-  }
-
-  if (!user || !tracks.length || !playlists.length) {
-    console.log({ user, t: tracks.length, p: playlists.length });
-    history.push("/login/github");
   }
 
   return (

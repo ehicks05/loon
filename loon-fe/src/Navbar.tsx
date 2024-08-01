@@ -14,6 +14,7 @@ import { Link, useHistory } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import superFetch from "./common/SuperFetch";
 import { useUserStore2 } from "./common/UserContextProvider";
+import { trpc } from "./utils/trpc";
 
 const navigation = [
   { name: "Search", href: "/search" },
@@ -27,13 +28,14 @@ function classNames(...classes) {
 }
 
 export default function Navbar() {
-  const user = useUserStore2((state) => state.user);
+  const { data: user, refetch } = trpc.misc.me.useQuery();
   const { pathname } = useLocation();
   const history = useHistory();
 
   async function handleLogout() {
     await superFetch("/logout", { method: "POST" });
     history.push("/");
+    refetch();
   }
 
   const isAdmin = user?.isAdmin;
@@ -92,7 +94,7 @@ export default function Navbar() {
                 <MenuButton className="relative flex rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                   <span className="-inset-1.5 absolute" />
                   <span className="sr-only">Open user menu</span>
-                  <FaUserCircle className="h-8 w-8 rounded-full text-neutral-800" />
+                  <FaUserCircle className="h-8 w-8 rounded-full text-neutral-100" />
                 </MenuButton>
               </div>
               <MenuItems

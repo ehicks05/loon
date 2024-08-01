@@ -4,6 +4,10 @@ import superFetch from "./common/SuperFetch";
 import { useUserStore2 } from "./common/UserContextProvider";
 
 function GithubLogin() {
+  const { search } = useLocation();
+  const { user } = useUserStore2();
+  const history = useHistory();
+
   useEffect(() => {
     const doIt = async () => {
       const response = await superFetch("/login/github", { method: "GET" });
@@ -11,16 +15,11 @@ function GithubLogin() {
       document.location.href = await response.text();
     };
 
-    doIt();
-  }, []);
-
-  return <div className="max-w-xl mx-auto my-auto p-16">yo</div>;
-}
-
-function GithubLoginCallback() {
-  const { search } = useLocation();
-  const { user } = useUserStore2();
-  const history = useHistory();
+    if (!search) {
+      console.log("step 1");
+      doIt();
+    }
+  }, [search]);
 
   useEffect(() => {
     const doIt = async () => {
@@ -29,14 +28,20 @@ function GithubLoginCallback() {
       });
     };
 
-    if (!user) {
+    if (search) {
+      console.log("step 2");
       doIt();
-    } else {
+    }
+  }, [search]);
+
+  useEffect(() => {
+    if (user) {
+      console.log("step 3");
       history.push("/");
     }
-  }, [search, user, history]);
+  }, [user, history]);
 
   return <div className="max-w-xl mx-auto my-auto p-16">yo</div>;
 }
 
-export { GithubLogin, GithubLoginCallback };
+export { GithubLogin };

@@ -24,11 +24,10 @@ export default function Routes() {
   return (
     <>
       <Route exact path="/" render={() => <Redirect to="/search" />} />
-      <Route exact path="/login/github" render={() => <GithubLogin />} />
       <Route
         exact
         path="/login/github/callback"
-        render={() => <GithubLoginCallback />}
+        render={() => <GithubLogin />}
       />
       <AdminRoute
         exact

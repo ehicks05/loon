@@ -6,6 +6,7 @@ import { useUserStore } from "../../common/UserContextProvider";
 import { trpc } from "../../utils/trpc";
 
 export default function Playlists() {
+  const { data: user } = trpc.misc.me.useQuery();
   const playlists = useAppStore((state) => state.playlists);
   const selectedPlaylistId = useUserStore(
     (state) => state.userState.selectedPlaylistId,
@@ -17,6 +18,10 @@ export default function Playlists() {
   }
 
   const { mutate: deletePlaylist } = trpc.playlist.delete.useMutation();
+
+  if (!user) {
+    return <section>Please log in to access your library.</section>;
+  }
 
   return (
     <div>

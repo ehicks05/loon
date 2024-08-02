@@ -96,7 +96,9 @@ export const playlistRouter = router({
       await db
         .delete(playlist_tracks)
         .where(eq(playlist_tracks.playlistId, upsertedPlaylist.id));
-      await db.insert(playlist_tracks).values(updatedPlaylistTracks);
+      if (updatedPlaylistTracks.length) {
+        await db.insert(playlist_tracks).values(updatedPlaylistTracks);
+      }
 
       return upsertedPlaylist;
     }),

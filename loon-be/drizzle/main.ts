@@ -30,7 +30,7 @@ export const playlists = pgTable("playlists", {
   queue: boolean("queue").notNull().default(false),
   userId: text("user_id")
     .notNull()
-    .references(() => userTable.id),
+    .references(() => userTable.id, { onDelete: "cascade" }),
 });
 
 export const tracks = pgTable("tracks", {
@@ -63,10 +63,10 @@ export const playlist_tracks = pgTable(
   {
     playlistId: uuid("playlist_id")
       .notNull()
-      .references(() => playlists.id),
+      .references(() => playlists.id, { onDelete: "cascade" }),
     trackId: text("track_id")
       .notNull()
-      .references(() => tracks.id),
+      .references(() => tracks.id, { onDelete: "cascade" }),
     index: bigint("index", { mode: "number" }).notNull(),
   },
   (table) => {

@@ -158,56 +158,31 @@ export default function Playlist() {
 
   return (
     <div className="flex h-full flex-col gap-4">
-      <section className={"flex flex-col gap-4"}>
-        <h1 className="font-bold text-2xl">
-          {playlist ? playlist.name : "Library"}
-        </h1>
-        {playlist.queue && (
-          <div className={"subtitle"}>
-            <span className="buttons">
-              <Button
-                className=""
-                disabled={playlist.playlistTracks.length === 0}
-                // onClick={toggleSaveAsPlaylistForm}
-              >
+      <section className={"flex flex-col gap-2"}>
+        <h1 className="font-bold text-2xl">{playlist.name}</h1>
+        <div className="flex gap-4">
+          {playlist.queue && (
+            <>
+              <Button disabled={playlist.playlistTracks.length === 0}>
                 Save as Playlist
               </Button>
-              <Button
-                className=""
-                disabled={playlist.playlistTracks.length === 0}
-                // onClick={() => clearPlaylist(playlist.id)}
-              >
+              <Button disabled={playlist.playlistTracks.length === 0}>
                 Clear
               </Button>
 
-              <form id="saveAsPlaylistForm" className="is-invisible">
-                <div className="field has-addons">
-                  <div className="control">
-                    <span>
-                      <TextInput id="playlistName" />
-                    </span>
-                  </div>
-                  <div className="control">
-                    <Button className="" onClick={saveAsPlaylist}>
-                      Ok
-                    </Button>
-                  </div>
-                </div>
-              </form>
-            </span>
-          </div>
-        )}
-
-        {playlist && !playlist.queue && !playlist.favorites && (
-          <div>
-            <Link
-              to={`/playlists/${playlist.id}/edit`}
-              className="p-2 bg-black rounded"
-            >
-              Edit
-            </Link>
-          </div>
-        )}
+              <div className="hidden">
+                <TextInput id="playlistName" />
+                <Button onClick={saveAsPlaylist}>Ok</Button>
+              </div>
+            </>
+          )}
+          <Link
+            to={`/playlists/${playlist.id}/edit`}
+            className="p-2 bg-black rounded"
+          >
+            Edit
+          </Link>
+        </div>
       </section>
 
       {mediaList}

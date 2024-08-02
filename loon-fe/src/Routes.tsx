@@ -1,4 +1,3 @@
-import type { Component } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { useUserStore2 } from "./common/UserContextProvider";
 
@@ -17,29 +16,33 @@ import UserSettings from "@/app/admin/UserSettings";
 import Eq from "@/app/settings/EqPage";
 import GeneralSettings from "@/app/settings/GeneralSettings";
 import { Login } from "./app/Login";
-import type { User } from "./common/types";
 
 export default function Routes() {
   const user = useUserStore2((state) => state.user);
+  const isAdmin = user?.isAdmin;
 
   return (
     <>
+      {/* ADMIN */}
+      <Route
+        exact
+        path="/admin/systemSettings"
+        render={() => (isAdmin ? <SystemSettings /> : <Redirect to={"/"} />)}
+      />
+      <Route
+        exact
+        path="/admin/users"
+        render={() => (isAdmin ? <UserSettings /> : <Redirect to={"/"} />)}
+      />
+      <Route
+        exact
+        path="/admin/about"
+        render={() => (isAdmin ? <About /> : <Redirect to={"/"} />)}
+      />
+
       <Route exact path="/" render={() => <Redirect to="/search" />} />
       <Route exact path="/login/github" render={() => <GithubLogin />} />
       <Route exact path="/login" render={() => <Login />} />
-      <AdminRoute
-        exact
-        path="/admin/systemSettings"
-        user={user}
-        component={SystemSettings}
-      />
-      <AdminRoute
-        exact
-        path="/admin/users"
-        user={user}
-        component={UserSettings}
-      />
-      <AdminRoute exact path="/admin/about" user={user} component={About} />
       <Route
         exact
         path="/settings/general"
@@ -52,38 +55,20 @@ export default function Routes() {
       <Route
         exact
         path="/artist/:artist/album/:album"
-        render={(props) => <Album {...props} />}
+        render={() => <Album />}
       />
       <Route exact path="/search" render={() => <Search />} />
-      <Route exact path="/favorites" render={() => <Playlist />} />
-      <Route exact path="/queue" render={() => <Playlist />} />
 
       <Switch>
+        <Route exact path="/library" render={() => <Playlists />} />
         <Route exact path="/playlists/new" render={() => <PlaylistBuilder />} />
+        <Route exact path="/playlists/:id" render={() => <Playlist />} />
         <Route
           exact
           path="/playlists/:id/edit"
           render={() => <PlaylistBuilder />}
         />
-
-        <Route exact path="/library" render={() => <Playlists />} />
-        <Route exact path="/playlists/:id" render={() => <Playlist />} />
       </Switch>
     </>
-  );
-}
-
-function AdminRoute({
-  component: Component,
-  user,
-  ...rest
-}: { component: Component; user?: User }) {
-  return (
-    <Route
-      {...rest}
-      render={(props) =>
-        user.isAdmin ? <Component {...props} /> : <Redirect to={"/"} />
-      }
-    />
   );
 }

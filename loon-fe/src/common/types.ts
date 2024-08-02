@@ -10,5 +10,7 @@ export type User = RouterOutput["misc"]["me"];
 export type RawTrackResponse = RouterOutput["tracks"]["list"][number];
 export type Track = RawTrackResponse & { formattedDuration: string };
 export type Playlist = RouterOutput["playlist"]["list"][number];
+export type PlaylistTrack =
+  RouterOutput["playlist"]["list"][number]["playlistTracks"][number];
 
 export type SystemSettings = RouterOutput["misc"]["systemSettings"];

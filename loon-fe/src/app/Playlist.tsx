@@ -10,6 +10,7 @@ import {
   setSelectedContextMenuId,
   useUserStore,
 } from "@/common/UserContextProvider";
+import type { PlaylistTrack, Track } from "@/common/types";
 import { Button } from "@/components/Button";
 import DraggingMediaItem from "@/components/DraggingMediaItem";
 import MediaItem from "@/components/MediaItem";
@@ -21,17 +22,31 @@ import {
   type DropResult,
   Droppable,
 } from "@hello-pangea/dnd";
-import { useEffect, useRef } from "react";
+import { type CSSProperties, useEffect, useRef } from "react";
 import { Link, useHistory, useRouteMatch } from "react-router-dom";
 import { useMeasure } from "react-use";
 import { FixedSizeList as List } from "react-window";
 
-const Row = ({ data: { tracks, trackMap, playlistId }, index, style }) => {
+interface RowProps {
+  data: {
+    tracks: PlaylistTrack[];
+    trackMap: Record<string, Track>;
+    playlistId: string;
+  };
+  index: number;
+  style: CSSProperties;
+}
+
+const Row = ({
+  data: { tracks, trackMap, playlistId },
+  index,
+  style,
+}: RowProps) => {
   const playlistTrack = tracks[index];
   const track = trackMap[playlistTrack.trackId];
 
   return (
-    <Draggable draggableId={track.id} index={index} key={track.id}>
+    <Draggable draggableId={track.id} index={index}>
       {(provided, snapshot) => (
         <div style={style}>
           <MediaItem
@@ -48,7 +63,9 @@ const Row = ({ data: { tracks, trackMap, playlistId }, index, style }) => {
 };
 
 export default function Playlist() {
-  const match = useRouteMatch<{ id: string | undefined }>();
+  const {
+    params: { id: playlistId },
+  } = useRouteMatch<{ id: string }>();
   const history = useHistory();
 
   const playlists = useAppStore((state) => state.playlists);
@@ -67,15 +84,6 @@ export default function Playlist() {
     };
   }, []);
 
-  const playlistId =
-    match.path === "/favorites"
-      ? playlists.find((playlist) => playlist.favorites)?.id
-      : match.path === "/queue"
-        ? playlists.find((playlist) => playlist.queue)?.id
-        : match.path === "/playlists/:id"
-          ? match.params.id
-          : undefined;
-
   function onDragEnd(result: DropResult) {
     // dropped outside the list
     if (!result.destination) return;
@@ -88,7 +96,11 @@ export default function Playlist() {
       );
   }
 
-  function persistDragAndDrop(playlistId, oldIndex, newIndex) {
+  function persistDragAndDrop(
+    playlistId: string,
+    oldIndex: number,
+    newIndex: number,
+  ) {
     dragAndDrop({ playlistId, oldIndex, newIndex });
   }
 
@@ -148,7 +160,7 @@ export default function Playlist() {
                 overscanCount={3}
                 outerRef={provided.innerRef}
                 itemCount={playlist.playlistTracks.length}
-                itemKey={(_index, data) => data.tracks[_index].id}
+                itemKey={(index, data) => data.tracks[index].trackId}
                 itemSize={60}
               >
                 {Row}

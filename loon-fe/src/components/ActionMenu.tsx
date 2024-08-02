@@ -54,10 +54,11 @@ export default function ActionMenu({ tracks }: { tracks: Track[] }) {
   const playlists = useAppStore((state) => state.playlists);
 
   const favoritesPlaylist = playlists.find((playlist) => playlist.favorites);
-  const isFavorite = isSaturated(favoritesPlaylist, trackIds);
+  const isFavorite =
+    favoritesPlaylist && isSaturated(favoritesPlaylist, trackIds);
 
   const queuePlaylist = playlists.find((playlist) => playlist.queue);
-  const isQueued = isSaturated(queuePlaylist, trackIds);
+  const isQueued = queuePlaylist && isSaturated(queuePlaylist, trackIds);
 
   const regularPlaylists = playlists.filter(
     (playlist) => !playlist.favorites && !playlist.queue,

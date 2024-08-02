@@ -3,7 +3,7 @@ import type {
   DraggableStateSnapshot,
   DraggableStyle,
 } from "@hello-pangea/dnd";
-import { useState } from "react";
+import { type CSSProperties, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   setSelectedPlaylistId,
@@ -15,7 +15,7 @@ import ActionMenu from "./ActionMenu";
 const getRowStyle = (
   isDragging: boolean,
   draggableStyle?: DraggableStyle | null,
-) => ({
+): CSSProperties => ({
   // some basic styles to make the items look a bit nicer
   userSelect: "none",
   filter: isDragging ? "brightness(150%)" : "",

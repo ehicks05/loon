@@ -1,8 +1,7 @@
 import { useAppStore } from "@/common/AppContextProvider";
 import { Button } from "@/components/Button";
 import { TextInput } from "@/components/TextInput";
-import type React from "react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import CheckboxTree, { type Node } from "react-checkbox-tree";
 import {
   FaChevronDown,
@@ -31,6 +30,29 @@ const icons = {
   parentClose: <FaRegFolder className="rct-icon rct-icon-parent-close" />,
   parentOpen: <FaRegFolderOpen className="rct-icon rct-icon-parent-open" />,
   leaf: <FaRegFile className="rct-icon rct-icon-leaf-close" />,
+};
+
+// expand the tree recursively until we expand a node with multiple children
+const expandTree = (rootNode: Node, expandedIds: string[]) => {
+  let node = rootNode;
+  while (true) {
+    expandedIds.push(node.value);
+
+    const { children } = node;
+    if (!children || children.length !== 1) {
+      break;
+    }
+    node = children[0];
+  }
+};
+
+const expandForest = (nodes: Node[]) => {
+  const expandedIds: string[] = [];
+
+  // each top-level node is a tree, we will expand one
+  nodes.forEach((rootNode) => expandTree(rootNode, expandedIds));
+
+  return expandedIds;
 };
 
 const tracksToNodes = (tracks: Track[]) => {
@@ -72,42 +94,36 @@ const tracksToNodes = (tracks: Track[]) => {
     });
   });
 
-  return nodes;
+  const expandedIds = expandForest(nodes);
+  return { nodes, expandedIds };
 };
 
 function PlaylistBuilder({
   playlist,
   nodes,
-  checked,
-  setChecked,
-  expanded,
-  setExpanded,
+  defaultChecked,
+  defaultExpanded,
 }: {
   playlist?: Playlist;
   nodes: Node[];
-  checked: string[];
-  setChecked: React.Dispatch<React.SetStateAction<string[]>>;
-  expanded: string[];
-  setExpanded: React.Dispatch<React.SetStateAction<string[]>>;
+  defaultChecked: string[];
+  defaultExpanded: string[];
 }) {
-  const [name, setName] = useState(playlist?.name || "New Playlist");
   const history = useHistory();
   const utils = trpc.useUtils();
-
-  async function save() {
-    upsertPlaylist(
-      { id: playlist?.id, name, trackIds: checked },
-      {
-        onSuccess: () => {
-          utils.playlist.list.invalidate();
-          history.push("/library");
-        },
-      },
-    );
-  }
+  const [name, setName] = useState(playlist?.name || "New Playlist");
+  const [checked, setChecked] = useState<string[]>(defaultChecked);
+  const [expanded, setExpanded] = useState<string[]>(defaultExpanded);
 
   const { mutate: upsertPlaylist, isPending } =
-    trpc.playlist.upsert.useMutation();
+    trpc.playlist.upsert.useMutation({
+      onSuccess: ({ id }) => {
+        utils.playlist.list.invalidate();
+        if (!playlist) {
+          history.push(`/playlists/${id}`);
+        }
+      },
+    });
 
   return (
     <section className="flex flex-col justify-between h-full gap-4">
@@ -132,7 +148,13 @@ function PlaylistBuilder({
         />
       </div>
 
-      <Button disabled={isPending} className={"bg-green-600"} onClick={save}>
+      <Button
+        disabled={isPending}
+        className={"bg-green-600"}
+        onClick={() =>
+          upsertPlaylist({ id: playlist?.id, name, trackIds: checked })
+        }
+      >
         {playlist ? "Update" : "Create"} Playlist
       </Button>
     </section>
@@ -142,30 +164,16 @@ function PlaylistBuilder({
 export default function Wrapper() {
   const {
     params: { id },
-  } = useRouteMatch<{ id: string | undefined }>();
-  const [name, setName] = useState("");
-  const [checked, setChecked] = useState<string[]>([]);
-  const [expanded, setExpanded] = useState<string[]>([]);
+  } = useRouteMatch<{ id?: string }>();
 
-  const { playlists, tracks } = useAppStore();
-  const playlist = id
-    ? playlists.find((playlist) => playlist.id === id)
-    : undefined;
-  const nodes = tracksToNodes(tracks);
+  const { data: playlist, isLoading } = trpc.playlist.getById.useQuery(id, {
+    enabled: !!id,
+  });
 
-  useEffect(() => {
-    if (playlist) {
-      setChecked(playlist.playlistTracks.map(({ trackId }) => trackId));
-    }
-  }, [playlist]);
+  const tracks = useAppStore((state) => state.tracks);
+  const { nodes, expandedIds } = tracksToNodes(tracks);
 
-  // useEffect(() => {
-  //   if (nodes) {
-  //     setExpanded([nodes?.[0].value]);
-  //   }
-  // }, [nodes]);
-
-  if (!nodes) {
+  if (isLoading) {
     return <div>Loading...</div>;
   }
 
@@ -173,10 +181,8 @@ export default function Wrapper() {
     <PlaylistBuilder
       playlist={playlist}
       nodes={nodes}
-      checked={checked}
-      setChecked={setChecked}
-      expanded={expanded}
-      setExpanded={setExpanded}
+      defaultChecked={playlist.playlistTracks.map(({ trackId }) => trackId)}
+      defaultExpanded={expandedIds}
     />
   );
 }

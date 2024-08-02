@@ -1,4 +1,3 @@
-import { useAppStore } from "@/common/AppContextProvider";
 import { Button } from "@/components/Button";
 import { TextInput } from "@/components/TextInput";
 import { useState } from "react";
@@ -16,7 +15,7 @@ import {
 } from "react-icons/fa";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import "react-checkbox-tree/lib/react-checkbox-tree.css";
-import type { Playlist, Track } from "@/common/types";
+import type { Playlist, RawTrackResponse } from "@/common/types";
 import { trpc } from "@/utils/trpc";
 
 const icons = {
@@ -55,7 +54,7 @@ const expandForest = (nodes: Node[]) => {
   return expandedIds;
 };
 
-const tracksToNodes = (tracks: Track[]) => {
+const tracksToNodes = (tracks: RawTrackResponse[]) => {
   let nodes: Node[] = [];
 
   tracks.forEach((track) => {
@@ -166,22 +165,25 @@ export default function Wrapper() {
     params: { id },
   } = useRouteMatch<{ id?: string }>();
 
-  const { data: playlist, isLoading } = trpc.playlist.getById.useQuery(id, {
-    enabled: !!id,
-  });
+  const { data: tracks } = trpc.tracks.list.useQuery();
+  const { data: playlist, isLoading: isLoadingPlaylist } =
+    trpc.playlist.getById.useQuery(id || "", {
+      enabled: !!id,
+    });
 
-  const tracks = useAppStore((state) => state.tracks);
-  const { nodes, expandedIds } = tracksToNodes(tracks);
-
-  if (isLoading) {
+  if (!tracks || isLoadingPlaylist) {
     return <div>Loading...</div>;
   }
+
+  const { nodes, expandedIds } = tracksToNodes(tracks);
+  const defaultChecked =
+    playlist?.playlistTracks.map(({ trackId }) => trackId) || [];
 
   return (
     <PlaylistBuilder
       playlist={playlist}
       nodes={nodes}
-      defaultChecked={playlist.playlistTracks.map(({ trackId }) => trackId)}
+      defaultChecked={defaultChecked}
       defaultExpanded={expandedIds}
     />
   );

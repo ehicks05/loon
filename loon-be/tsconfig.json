@@ -15,5 +15,6 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "lib": ["ESNext"]
-  }
+  },
+  "include": ["trpc", "lucia", "utils", "db.ts", "env.ts", "server.ts"]
 }

@@ -24,9 +24,9 @@ const getRowStyle = (
 });
 
 interface Props {
-  trackNumber: string;
+  trackNumber: number;
   track: Track;
-  playlistId: number;
+  playlistId: string;
   provided?: DraggableProvided;
   snapshot?: DraggableStateSnapshot;
 }
@@ -102,9 +102,9 @@ export default function MediaItem({
           "mr-2 flex basis-5 items-center dark:text-neutral-400 hover:dark:text-neutral-300"
         }
       >
-        {/* {showActionMenu && (
+        {showActionMenu && (
           <ActionMenu tracks={[track]} contextMenuId={contextMenuId} />
-        )} */}
+        )}
       </div>
 
       <div className="basis-5">{track.formattedDuration}</div>

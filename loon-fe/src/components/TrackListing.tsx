@@ -8,9 +8,13 @@ import { FixedSizeList as List } from "react-window";
 import { useResizeObserver } from "usehooks-ts";
 import MediaItem from "./MediaItem";
 
-const Row = ({ data, index, style }) => (
+const Row = ({
+  data,
+  index,
+  style,
+}: { data: Track[]; index: number; style: React.CSSProperties }) => (
   <div style={style}>
-    <MediaItem playlistId={0} track={data[index]} trackNumber={index + 1} />
+    <MediaItem playlistId={""} track={data[index]} trackNumber={index + 1} />
   </div>
 );
 

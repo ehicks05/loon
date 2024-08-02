@@ -1,3 +1,4 @@
+import type { Track } from "@/common/types";
 import * as Popover from "@radix-ui/react-popover";
 import {
   FaEllipsisH,
@@ -45,16 +46,18 @@ const AddOrRemoveFromPlaylist = ({
   </div>
 );
 
-export default function ActionMenu(props) {
+export default function ActionMenu({
+  contextMenuId,
+  tracks,
+}: { contextMenuId: string; tracks: Track[] }) {
   const selectedContextMenuId = useUserStore(
     (state) => state.userState.selectedContextMenuId,
   );
   const playlists = useAppStore((state) => state.playlists);
 
   function toggleDropdown() {
-    if (selectedContextMenuId === props.contextMenuId)
-      setSelectedContextMenuId("");
-    else setSelectedContextMenuId(props.contextMenuId);
+    if (selectedContextMenuId === contextMenuId) setSelectedContextMenuId("");
+    else setSelectedContextMenuId(contextMenuId);
   }
 
   function handleToggleTracksInPlaylist(
@@ -76,19 +79,18 @@ export default function ActionMenu(props) {
 
   function addTracksToPlaylist(trackIds) {
     const playlistId = document.getElementById(
-      `mediaItem${props.contextMenuId}AddToPlaylistSelect`,
+      `mediaItem${contextMenuId}AddToPlaylistSelect`,
     ).value;
     handleToggleTracksInPlaylist(playlistId, trackIds, "add");
   }
 
   function removeTracksFromPlaylist(trackIds) {
     const playlistId = document.getElementById(
-      `mediaItem${props.contextMenuId}removeFromPlaylistSelect`,
+      `mediaItem${contextMenuId}removeFromPlaylistSelect`,
     ).value;
     handleToggleTracksInPlaylist(playlistId, trackIds, "remove");
   }
 
-  const tracks = props.tracks;
   const trackIds = tracks.map((track) => track.id);
 
   const favoritesPlaylist = playlists.find((playlist) => playlist.favorites);
@@ -104,8 +106,6 @@ export default function ActionMenu(props) {
     (playlistTrack) => playlistTrack.trackId,
   );
   const isQueued = trackIds.every((trackId) => queueIds.includes(trackId));
-
-  const contextMenuId = props.contextMenuId;
 
   const addToPlaylistOptions = playlists
     .filter((playlist) => !playlist.favorites && !playlist.queue)

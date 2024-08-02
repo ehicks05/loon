@@ -25,7 +25,7 @@ export const getNewTrackId = (input: PlaybackDirection) => {
   return newTrackId;
 };
 
-function getCurrentPlaylistTrackIds(selectedPlaylistId) {
+function getCurrentPlaylistTrackIds(selectedPlaylistId: string) {
   const tracks = useAppStore.getState().tracks;
   const currentPlaylist = getPlaylistById(selectedPlaylistId);
   if (currentPlaylist)

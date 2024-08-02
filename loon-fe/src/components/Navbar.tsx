@@ -14,6 +14,7 @@ import { FaUserCircle } from "react-icons/fa";
 import { FaBars, FaXmark } from "react-icons/fa6";
 import { Link, useHistory } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import { twMerge } from "tailwind-merge";
 
 const navigation = [
   { name: "Search", href: "/search" },
@@ -21,10 +22,6 @@ const navigation = [
   { name: "Artists", href: "/artists" },
   { name: "Albums", href: "/albums" },
 ];
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
 
 export default function Navbar() {
   const utils = trpc.useUtils();
@@ -74,7 +71,7 @@ export default function Navbar() {
                     key={item.name}
                     to={item.href}
                     aria-current={pathname === item.href ? "page" : undefined}
-                    className={classNames(
+                    className={twMerge(
                       pathname === item.href
                         ? "bg-green-900 text-white"
                         : "text-gray-100 hover:bg-green-800 hover:text-white",
@@ -164,7 +161,7 @@ export default function Navbar() {
               key={item.name}
               to={item.href}
               aria-current={pathname === item.href ? "page" : undefined}
-              className={classNames(
+              className={twMerge(
                 pathname === item.href
                   ? "bg-green-900 text-white"
                   : "text-gray-100 hover:bg-green-800 hover:text-white",

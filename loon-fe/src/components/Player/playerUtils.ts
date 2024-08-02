@@ -21,7 +21,7 @@ function scaleVolume(inputDecibel: number) {
 }
 
 function getMaxSafeGain(trackGainLinear: number, trackPeak: number) {
-  if (!trackPeak) return trackGainLinear;
+  if (!trackPeak) return 1;
 
   const maxSafeGain = 1 / trackPeak;
 

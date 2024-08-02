@@ -1,16 +1,7 @@
 import _ from "lodash";
 import create from "zustand";
 import { devtools } from "zustand/middleware";
-import superFetch from "./SuperFetch";
 import type { Playlist, Track } from "./types";
-
-const tracksBaseUrl = "/library/";
-const playlistBaseUrl = "/playlists/";
-
-export interface PlaylistTrack {
-  index: number;
-  track: Pick<Track, "id" | "formattedDuration">;
-}
 
 export const useAppStore = create<{ tracks: Track[]; playlists: Playlist[] }>(
   devtools(
@@ -30,66 +21,11 @@ export const useDistinctArtists = () => {
   return useAppStore((state) => _.uniq(_.map(state.tracks, "artist")));
 };
 
-export const fetchPlaylists = async () => {
-  const response = await superFetch(`${playlistBaseUrl}getPlaylists`);
-  const json = await response.json();
-  const playlists = json.map((p) => {
-    return { ...p, playlistTracks: _.sortBy(p.playlistTracks, "index") };
-  });
-  useAppStore.setState((state) => ({ ...state, playlists }));
-};
-
-export const upsertPlaylist = async (formData) => {
-  await superFetch(`${playlistBaseUrl}addOrModify`, {
-    method: "POST",
-    body: formData,
-  });
-  fetchPlaylists();
-};
-
-export const toggleTracksInPlaylist = async (playlistId, formData) => {
-  await superFetch(playlistBaseUrl + playlistId, {
-    method: "POST",
-    body: formData,
-  });
-  fetchPlaylists();
-};
-
-export const copyPlaylist = async (formData) => {
-  const id = await superFetch(`${playlistBaseUrl}copyFrom`, {
-    method: "POST",
-    body: formData,
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      return data;
-    });
-  fetchPlaylists();
-  return id;
-};
-
-export const deletePlaylist = async (playlistId) => {
-  await superFetch(playlistBaseUrl + playlistId, { method: "DELETE" });
-  fetchPlaylists();
-};
-
-export const clearPlaylist = async (playlistId) => {
-  const formData = new FormData();
-  formData.append("mode", "");
-  formData.append("replaceExisting", "true");
-  formData.append("trackIds", []);
-  await superFetch(playlistBaseUrl + playlistId, {
-    method: "POST",
-    body: formData,
-  });
-  fetchPlaylists();
-};
-
-export const getTrackById = (id) => {
+export const getTrackById = (id: string) => {
   return useAppStore.getState().tracks.find((t) => t.id === id);
 };
 
-export const getPlaylistById = (id) => {
+export const getPlaylistById = (id: string) => {
   return useAppStore.getState().playlists.find((p) => p.id === id);
 };
 

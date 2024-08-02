@@ -1,6 +1,4 @@
 import {
-  clearPlaylist,
-  copyPlaylist,
   getPlaylistById,
   handleLocalDragAndDrop,
   useAppStore,
@@ -113,9 +111,9 @@ export default function Playlist() {
     formData.append("fromPlaylistId", queueId);
     formData.append("name", document.getElementById("playlistName").value);
 
-    copyPlaylist(formData).then((data) =>
-      history.push(`/playlists/${data.id}`),
-    );
+    // copyPlaylist(formData).then((data) =>
+    //   history.push(`/playlists/${data.id}`),
+    // );
   }
 
   function toggleSaveAsPlaylistForm() {
@@ -193,7 +191,7 @@ export default function Playlist() {
               <Button
                 className=""
                 disabled={playlist.playlistTracks.length === 0}
-                onClick={() => clearPlaylist(playlist.id)}
+                // onClick={() => clearPlaylist(playlist.id)}
               >
                 Clear
               </Button>

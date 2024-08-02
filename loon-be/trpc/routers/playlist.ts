@@ -15,9 +15,25 @@ export const playlistRouter = router({
     });
   }),
 
-  getById: protectedProcedure.input(z.string()).query(async ({ input }) => {
-    return db.select().from(playlists).where(eq(playlists.id, input));
-  }),
+  getById: protectedProcedure
+    .input(z.string())
+    .query(async ({ ctx: { user }, input }) => {
+      const playlist = await db.query.playlists.findFirst({
+        with: {
+          playlistTracks: { orderBy: playlist_tracks.index },
+        },
+        where: eq(playlists.id, input),
+      });
+
+      if (!playlist) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+      if (user.id !== playlist.userId) {
+        throw new TRPCError({ code: "FORBIDDEN" });
+      }
+
+      return playlist;
+    }),
 
   create: protectedProcedure
     .input(z.object({ name: z.string(), trackIds: z.array(z.string()) }))

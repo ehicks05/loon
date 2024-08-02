@@ -4,10 +4,7 @@ import {
   useAppStore,
   useTrackMap,
 } from "@/common/AppContextProvider";
-import {
-  setSelectedContextMenuId,
-  useUserStore,
-} from "@/common/UserContextProvider";
+import { useUserStore } from "@/common/UserContextProvider";
 import type { PlaylistTrack, Track } from "@/common/types";
 import { Button } from "@/components/Button";
 import DraggingMediaItem from "@/components/DraggingMediaItem";
@@ -22,7 +19,7 @@ import {
   Droppable,
 } from "@hello-pangea/dnd";
 import { type CSSProperties, useEffect, useRef } from "react";
-import { Link, useHistory, useRouteMatch } from "react-router-dom";
+import { Link, useRouteMatch } from "react-router-dom";
 import { useMeasure } from "react-use";
 import { FixedSizeList as List } from "react-window";
 
@@ -65,13 +62,8 @@ export default function Playlist() {
   const {
     params: { id: playlistId },
   } = useRouteMatch<{ id: string }>();
-  const history = useHistory();
-
   const playlists = useAppStore((state) => state.playlists);
   const trackMap = useTrackMap();
-  const selectedTrackId = useUserStore(
-    (state) => state.userState.selectedTrackId,
-  );
 
   const utils = trpc.useUtils();
   const { mutate: persistDragAndDrop } = trpc.playlist.dragAndDrop.useMutation({
@@ -81,12 +73,6 @@ export default function Playlist() {
   const listRef = useRef<List>(null);
   const [containerRef, { height: containerHeight }] =
     useMeasure<HTMLDivElement>();
-
-  useEffect(() => {
-    return function cleanup() {
-      setSelectedContextMenuId("");
-    };
-  }, []);
 
   function onDragEnd({ source, destination }: DropResult) {
     // dropped outside the list
@@ -105,32 +91,29 @@ export default function Playlist() {
   }
 
   function saveAsPlaylist() {
-    const queueId = playlists.find((playlist) => playlist.queue).id;
-
-    const formData = new FormData();
-    formData.append("fromPlaylistId", queueId);
-    formData.append("name", document.getElementById("playlistName").value);
-
-    // copyPlaylist(formData).then((data) =>
-    //   history.push(`/playlists/${data.id}`),
-    // );
-  }
-
-  function toggleSaveAsPlaylistForm() {
-    const el = document.getElementById("saveAsPlaylistForm");
-    if (el) el.classList.toggle("is-invisible");
+    const queueId = playlists.find((playlist) => playlist.queue)?.id;
+    const args = {
+      fromPlaylistId: queueId,
+      name: "TODO",
+    };
   }
 
   const playlist = getPlaylistById(playlistId);
 
-  if (!playlists || !playlist) return <div>Loading...</div>;
-
-  const selectedPlaylistTrack = playlist.playlistTracks.find(
-    (playlistTrack) => playlistTrack.trackId === selectedTrackId,
+  const selectedTrackId = useUserStore(
+    (state) => state.userState.selectedTrackId,
   );
-  const scrollToIndex = selectedPlaylistTrack
-    ? playlist.playlistTracks.indexOf(selectedPlaylistTrack)
-    : undefined;
+  const selectedTrackIndex = playlist?.playlistTracks.findIndex(
+    (t) => t.trackId === selectedTrackId,
+  );
+
+  useEffect(() => {
+    if (selectedTrackIndex) {
+      listRef.current?.scrollToItem(selectedTrackIndex, "smart");
+    }
+  }, [selectedTrackIndex]);
+
+  if (!playlists || !playlist) return <div>Loading...</div>;
 
   const mediaList = (
     <div ref={containerRef} className="h-full overflow-hidden">
@@ -138,7 +121,7 @@ export default function Playlist() {
         <Droppable
           droppableId="droppable"
           mode="virtual"
-          renderClone={(provided, snapshot, rubric) =>
+          renderClone={(provided, _snapshot, rubric) =>
             renderDraggingMediaItem(rubric.source.index, provided)
           }
         >
@@ -162,6 +145,7 @@ export default function Playlist() {
                 itemCount={playlist.playlistTracks.length}
                 itemKey={(index, data) => data.tracks[index].trackId}
                 itemSize={60}
+                initialScrollOffset={(selectedTrackIndex || 0) * 60}
               >
                 {Row}
               </List>
@@ -184,7 +168,7 @@ export default function Playlist() {
               <Button
                 className=""
                 disabled={playlist.playlistTracks.length === 0}
-                onClick={toggleSaveAsPlaylistForm}
+                // onClick={toggleSaveAsPlaylistForm}
               >
                 Save as Playlist
               </Button>

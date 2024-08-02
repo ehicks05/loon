@@ -1,7 +1,4 @@
-import {
-  setSelectedContextMenuId,
-  useUserStore,
-} from "@/common/UserContextProvider";
+import { useUserStore } from "@/common/UserContextProvider";
 import type { Track } from "@/common/types";
 import { useEffect, useRef } from "react";
 import { FixedSizeList as List } from "react-window";
@@ -32,12 +29,6 @@ export const TrackListing = ({ tracks }: Props) => {
     (state) => state.userState.selectedTrackId,
   );
   const selectedTrackIndex = tracks.findIndex((t) => t.id === selectedTrackId);
-
-  useEffect(() => {
-    return function cleanup() {
-      setSelectedContextMenuId("");
-    };
-  }, []);
 
   useEffect(() => {
     listRef.current?.scrollToItem(selectedTrackIndex, "smart");

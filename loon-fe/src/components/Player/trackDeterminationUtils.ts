@@ -1,7 +1,10 @@
 import { getPlaylistById, useAppStore } from "@/common/AppContextProvider";
-import { useUserStore } from "@/common/UserContextProvider";
+import {
+  type PlaybackDirection,
+  useUserStore,
+} from "@/common/UserContextProvider";
 
-export const getNewTrackId = (input: "prev" | "next") => {
+export const getNewTrackId = (input: PlaybackDirection) => {
   const { selectedTrackId, selectedPlaylistId, shuffle } =
     useUserStore.getState().userState;
 
@@ -34,7 +37,7 @@ function getCurrentPlaylistTrackIds(selectedPlaylistId) {
 }
 
 function getNewIndex(
-  input: "prev" | "next",
+  input: PlaybackDirection,
   currentTrackIndex: number,
   currentPlaylistTrackIds: string[],
   shuffle: boolean,

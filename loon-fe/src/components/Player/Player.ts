@@ -4,7 +4,11 @@ import {
   type PlaybackState,
   usePlayerStore,
 } from "@/common/PlayerContextProvider";
-import { setSelectedTrackId, useUserStore } from "@/common/UserContextProvider";
+import {
+  type PlaybackDirection,
+  setSelectedTrackId,
+  useUserStore,
+} from "@/common/UserContextProvider";
 import { useEffect, useRef } from "react";
 import { useEventListener } from "usehooks-ts";
 import { getMaxSafeGain, scaleVolume, scrollIntoView } from "./playerUtils";
@@ -31,26 +35,24 @@ const Player = () => {
     setAnalyser: state.setAnalyser,
   }));
 
-  const audio = useRef<HTMLAudioElement | null>(null);
-  const audioCtx = useRef<AudioContext | null>(null);
-  const fadeGainNode = useRef<GainNode | null>(null); // fade out/in for pause/resume
-  const trackGainNode = useRef<GainNode | null>(null); // apply replaygain
-  const userGainNode = useRef<GainNode | null>(null); // apply user-controlled gain
-  const band1 = useRef<BiquadFilterNode | null>(null);
-  const band2 = useRef<BiquadFilterNode | null>(null);
-  const band3 = useRef<BiquadFilterNode | null>(null);
-  const band4 = useRef<BiquadFilterNode | null>(null);
-  const analyser = useRef<AnalyserNode | null>(null);
-  const audioBufferSourceNode = useRef<MediaElementAudioSourceNode | null>(
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const audioBufferSourceNodeRef = useRef<MediaElementAudioSourceNode | null>(
     null,
   );
+  const fadeGainNodeRef = useRef<GainNode | null>(null); // fade out/in for pause/resume
+  const trackGainNodeRef = useRef<GainNode | null>(null); // apply replaygain
+  const userGainNodeRef = useRef<GainNode | null>(null); // apply user-controlled gain
+  const bandsRef = useRef<BiquadFilterNode[]>([]);
+  const analyserRef = useRef<AnalyserNode | null>(null);
 
   useEffect(() => {
-    if (audio.current) {
-      audio.current.currentTime = forcedElapsedTime;
+    if (audioRef.current) {
+      audioRef.current.currentTime = forcedElapsedTime;
     }
   }, [forcedElapsedTime]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     function initAudio() {
       const audio = new Audio();
@@ -66,63 +68,74 @@ const Player = () => {
       document.body.appendChild(audio);
       return audio;
     }
-    audio.current = initAudio();
 
-    audioCtx.current = new window.AudioContext();
-    audioBufferSourceNode.current = audioCtx.current.createMediaElementSource(
-      audio.current,
+    // create objects
+    const audio = initAudio();
+    const audioCtx = new AudioContext();
+    const audioBufferSourceNode = new MediaElementAudioSourceNode(audioCtx, {
+      mediaElement: audio,
+    });
+
+    const fadeGainNode = new GainNode(audioCtx);
+    const trackGainNode = new GainNode(audioCtx);
+    const userGainNode = new GainNode(audioCtx, {
+      gain: scaleVolume(userState.volume),
+    });
+
+    const eqBands = userState.eqBands.map(
+      (band) =>
+        new BiquadFilterNode(audioCtx, {
+          type: band.type,
+          frequency: band.frequency,
+          gain: band.gain,
+        }),
     );
-    fadeGainNode.current = audioCtx.current.createGain();
-    fadeGainNode.current.gain.setValueAtTime(0, audioCtx.current.currentTime);
-    trackGainNode.current = audioCtx.current.createGain();
-    userGainNode.current = audioCtx.current.createGain();
-    userGainNode.current.gain.value = scaleVolume(userState.volume);
-    band1.current = audioCtx.current.createBiquadFilter();
-    band1.current.type = "lowshelf";
-    band1.current.frequency.value = userState.eq1Frequency;
-    band1.current.gain.value = userState.eq1Gain;
-    band2.current = audioCtx.current.createBiquadFilter();
-    band2.current.type = "peaking";
-    band2.current.frequency.value = userState.eq2Frequency;
-    band2.current.gain.value = userState.eq2Gain;
-    band3.current = audioCtx.current.createBiquadFilter();
-    band3.current.type = "peaking";
-    band3.current.frequency.value = userState.eq3Frequency;
-    band3.current.gain.value = userState.eq3Gain;
-    band4.current = audioCtx.current.createBiquadFilter();
-    band4.current.type = "highshelf";
-    band4.current.frequency.value = userState.eq4Frequency;
-    band4.current.gain.value = userState.eq4Gain;
-    analyser.current = audioCtx.current.createAnalyser();
-    analyser.current.fftSize = 4096;
 
-    audioBufferSourceNode.current.connect(fadeGainNode.current);
-    fadeGainNode.current.connect(userGainNode.current);
-    userGainNode.current.connect(trackGainNode.current);
-    trackGainNode.current.connect(band1.current);
-    band1.current.connect(band2.current);
-    band2.current.connect(band3.current);
-    band3.current.connect(band4.current);
-    band4.current.connect(analyser.current);
-    analyser.current.connect(audioCtx.current.destination);
+    const analyser = new AnalyserNode(audioCtx, { fftSize: 4096 });
+
+    // connect nodes
+    audioBufferSourceNode.connect(fadeGainNode);
+    fadeGainNode.connect(userGainNode);
+    userGainNode.connect(trackGainNode);
+    trackGainNode.connect(eqBands[0]);
+
+    eqBands.slice(0, eqBands.length - 1).forEach((_, i) => {
+      eqBands[i].connect(eqBands[i + 1]);
+    });
+    eqBands[eqBands.length - 1].connect(analyser);
+
+    analyser.connect(audioCtx.destination);
+
+    // setup refs
+    audioRef.current = audio;
+    audioCtxRef.current = audioCtx;
+    audioBufferSourceNodeRef.current = audioBufferSourceNode;
+    fadeGainNodeRef.current = fadeGainNode;
+    trackGainNodeRef.current = trackGainNode;
+    userGainNodeRef.current = userGainNode;
+    bandsRef.current = eqBands;
+    analyserRef.current = analyser;
 
     scrollIntoView(userState.selectedTrackId);
 
-    setAudioCtx(audioCtx);
-    setAnalyser(analyser);
+    setAudioCtx(audioCtxRef);
+    setAnalyser(analyserRef);
   }, []);
+
+  const documentRef = useRef<Document>(document);
 
   useEventListener(
     "keydown",
-    (e) => {
-      if (e.target.tagName === "INPUT") return;
+    (e: KeyboardEvent) => {
+      const target = e.target as HTMLInputElement | null;
+      if (target?.tagName === "INPUT") return;
 
       if (e.key === " ")
         setPlaybackState(playbackState === "playing" ? "paused" : "playing");
       if (e.key === "ArrowRight") changeTrack("next");
       if (e.key === "ArrowLeft") changeTrack("prev");
     },
-    document,
+    documentRef,
   );
 
   const renders = useRef(0);
@@ -134,7 +147,7 @@ const Player = () => {
       return;
     }
 
-    const handleTrackChange = (newTrackId) => {
+    const handleTrackChange = (newTrackId: string) => {
       console.log(`handleTrackChange(${newTrackId})`);
       initAudioSource();
     };
@@ -143,25 +156,25 @@ const Player = () => {
   }, [userState.selectedTrackId]);
 
   useEffect(() => {
-    if (userGainNode.current)
-      userGainNode.current.gain.value = scaleVolume(userState.volume);
+    if (userGainNodeRef.current)
+      userGainNodeRef.current.gain.value = scaleVolume(userState.volume);
   }, [userState.volume]);
 
   useEffect(() => {
-    if (!audio.current) return;
+    if (!audioRef.current) return;
 
-    audio.current.muted = userState.muted;
-    band1.current.frequency.value = userState.eq1Frequency;
-    band1.current.gain.value = userState.eq1Gain;
-    band2.current.frequency.value = userState.eq2Frequency;
-    band2.current.gain.value = userState.eq2Gain;
-    band3.current.frequency.value = userState.eq3Frequency;
-    band3.current.gain.value = userState.eq3Gain;
-    band4.current.frequency.value = userState.eq4Frequency;
-    band4.current.gain.value = userState.eq4Gain;
-  }, [userState]);
+    audioRef.current.muted = userState.muted;
+  }, [userState.muted]);
 
-  const changeTrack = (direction) => {
+  useEffect(() => {
+    userState.eqBands.forEach((band, i) => {
+      bandsRef.current[i].type = band.type;
+      bandsRef.current[i].frequency.value = band.frequency;
+      bandsRef.current[i].gain.value = band.gain;
+    });
+  }, [userState.eqBands]);
+
+  const changeTrack = (direction: PlaybackDirection) => {
     setSelectedTrackId(getNewTrackId(direction));
   };
 
@@ -169,23 +182,23 @@ const Player = () => {
     const handlePlaybackStateChange = async (
       newPlaybackState: PlaybackState,
     ) => {
-      // pause
       if (newPlaybackState === "paused") {
-        fade(audioCtx.current, fadeGainNode.current, "out", () =>
-          audioCtx.current?.suspend(),
+        // pause
+        fade(audioCtxRef.current, fadeGainNodeRef.current, "out", () =>
+          audioCtxRef.current?.suspend(),
         );
         return;
       }
 
-      // resume
       if (
         newPlaybackState === "playing" &&
-        audio.current.currentSrc &&
-        audioCtx.current.state === "suspended"
+        audioRef.current?.currentSrc &&
+        audioCtxRef.current?.state === "suspended"
       ) {
-        fade(audioCtx.current, fadeGainNode.current, "in", () => {
-          audio.current.play();
-          audioCtx.current.resume();
+        // resume
+        fade(audioCtxRef.current, fadeGainNodeRef.current, "in", () => {
+          audioRef.current?.play();
+          audioCtxRef.current?.resume();
         });
         return;
       }
@@ -206,23 +219,26 @@ const Player = () => {
     }
 
     // set new audio source
-    if (audio.current) {
-      audio.current.src = `${API_URL}/media?id=${track.id}`;
+    if (audioRef.current) {
+      audioRef.current.src = `${API_URL}/media?id=${track.id}`;
 
-      if (trackGainNode.current) {
-        const gain = getMaxSafeGain(track.trackGainLinear, track.trackPeak);
-        trackGainNode.current.gain.value = gain;
+      if (trackGainNodeRef.current) {
+        const gain = getMaxSafeGain(
+          Number(track.trackGainLinear),
+          Number(track.trackPeak),
+        );
+        trackGainNodeRef.current.gain.value = gain;
       }
 
       if (playbackState === "playing") {
-        fade(audioCtx.current, fadeGainNode.current, "in", () =>
-          audio.current.play(),
+        fade(audioCtxRef.current, fadeGainNodeRef.current, "in", () =>
+          audioRef.current?.play(),
         );
       }
 
       if (playbackState !== "playing") {
-        fade(audioCtx.current, fadeGainNode.current, "out", () =>
-          audioCtx.current?.suspend(),
+        fade(audioCtxRef.current, fadeGainNodeRef.current, "out", () =>
+          audioCtxRef.current?.suspend(),
         );
       }
 
@@ -234,11 +250,15 @@ const Player = () => {
 };
 
 function fade(
-  audioCtx: AudioContext,
-  gainNode: GainNode,
+  audioCtx: AudioContext | null,
+  gainNode: GainNode | null,
   mode: "in" | "out",
   callback: () => void,
 ) {
+  if (!audioCtx || !gainNode) {
+    return;
+  }
+
   const { currentTime } = audioCtx;
   const duration = 50;
   const nearZero = 0.0001;

@@ -1,66 +1,42 @@
-import { setEq, useUserStore } from "@/common/UserContextProvider";
+import {
+  type EqBand,
+  setEqBands,
+  useUserStore,
+} from "@/common/UserContextProvider";
 import { LoonSlider } from "@/components/Slider";
 import { TextInput } from "@/components/TextInput";
 
+const FILTER_TYPE_LABELS: Partial<Record<BiquadFilterType, string>> = {
+  lowshelf: "Low Shelf",
+  peaking: "Peaking",
+  highshelf: "High Shelf",
+};
+
+const cellClass = "border border-neutral-700 p-2";
+
 export default function Eq() {
-  const userState = useUserStore((state) => state.userState);
+  const eqBands = useUserStore((state) => state.userState.eqBands);
 
-  function handleSliderChange(value: number, name: string) {
-    const eqNum = name.substring(2, 3);
-    const field = name.substring(3);
-    setEq(eqNum, field, value);
-  }
-
-  const cellClass = "border border-neutral-700 p-2";
-
-  const eqs = [
-    {
-      name: "eq1",
-      frequency: userState.eq1Frequency,
-      gain: userState.eq1Gain,
-      type: "Low Shelf",
-    },
-    {
-      name: "eq2",
-      frequency: userState.eq2Frequency,
-      gain: userState.eq2Gain,
-      type: "Peaking",
-    },
-    {
-      name: "eq3",
-      frequency: userState.eq3Frequency,
-      gain: userState.eq3Gain,
-      type: "Peaking",
-    },
-    {
-      name: "eq4",
-      frequency: userState.eq4Frequency,
-      gain: userState.eq4Gain,
-      type: "High Shelf",
-    },
-  ];
+  const handleUpdate = (newBand: EqBand, id: number) =>
+    setEqBands(eqBands.map((band) => (band.id === id ? newBand : band)));
 
   const eqTable = (
     <table>
       <tbody>
         <tr>
           <td className={`text-center ${cellClass}`}>Freq</td>
-          {eqs.map((eq) => (
-            <td key={eq.name} className={cellClass}>
+          {eqBands.map((eq) => (
+            <td key={eq.id} className={cellClass}>
               <TextInput
-                className={"bg-neutral-800 text-right"}
-                name={`${eq.name}Frequency`}
-                type={"number"}
+                className="bg-neutral-800 text-right"
+                type="number"
                 min={20}
                 max={20000}
                 step={1}
-                defaultValue={eq.frequency}
+                value={eq.frequency}
                 onChange={(e) => {
-                  const eqNum = e.target.name.substring(2, 3);
-                  const field = e.target.name.substring(3);
-                  const value = e.target.value;
-
-                  setEq(eqNum, field, value);
+                  const frequency = Number(e.target.value);
+                  handleUpdate({ ...eq, frequency }, eq.id);
                 }}
               />
             </td>
@@ -68,16 +44,15 @@ export default function Eq() {
         </tr>
         <tr>
           <td className={`text-center ${cellClass}`}>Gain</td>
-          {eqs.map((eq) => (
-            <td key={eq.name} className={cellClass}>
+          {eqBands.map((eq) => (
+            <td key={eq.id} className={cellClass}>
               <div className="flex flex-col items-center h-56">
                 <LoonSlider
-                  name={`${eq.name}Gain`}
                   value={[eq.gain]}
                   onValueChange={(value) =>
-                    handleSliderChange(value[0], `${eq.name}Gain`)
+                    handleUpdate({ ...eq, gain: value[0] }, eq.id)
                   }
-                  onDoubleClick={() => handleSliderChange(0, `${eq.name}Gain`)}
+                  onDoubleClick={() => handleUpdate({ ...eq, gain: 0 }, eq.id)}
                   min={-12}
                   max={12}
                   step={1}
@@ -93,9 +68,9 @@ export default function Eq() {
         </tr>
         <tr>
           <td className={`text-center ${cellClass}`}>Type</td>
-          {eqs.map((eq) => (
-            <td key={eq.name} className={`text-center ${cellClass}`}>
-              {eq.type}
+          {eqBands.map((eq) => (
+            <td key={eq.id} className={`text-center ${cellClass}`}>
+              {FILTER_TYPE_LABELS[eq.type]}
             </td>
           ))}
         </tr>

@@ -44,7 +44,6 @@ const useCacheData = () => {
 };
 
 export default function App() {
-  console.log("yo");
   useInterval(() => fetch("/poll"), 1000 * 60 * 60);
   useTitle();
   const { isLoading } = useCacheData();

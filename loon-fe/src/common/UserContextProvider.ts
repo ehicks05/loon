@@ -2,6 +2,42 @@ import create from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import type { User } from "./types";
 
+export type PlaybackDirection = "prev" | "next";
+
+export interface EqBand {
+  id: number;
+  type: BiquadFilterType;
+  frequency: number;
+  gain: number;
+}
+
+export const DEFAULT_EQ_BANDS: EqBand[] = [
+  {
+    id: 0,
+    type: "lowshelf",
+    frequency: 100,
+    gain: 0,
+  },
+  {
+    id: 1,
+    type: "peaking",
+    frequency: 400,
+    gain: 0,
+  },
+  {
+    id: 2,
+    type: "peaking",
+    frequency: 1200,
+    gain: 0,
+  },
+  {
+    id: 3,
+    type: "highshelf",
+    frequency: 4000,
+    gain: 0,
+  },
+];
+
 export interface UserState {
   id?: number;
   selectedPlaylistId: string;
@@ -10,14 +46,7 @@ export interface UserState {
   shuffle: boolean;
   muted: boolean;
   volume: number;
-  eq1Frequency: number;
-  eq1Gain: number;
-  eq2Frequency: number;
-  eq2Gain: number;
-  eq3Frequency: number;
-  eq3Gain: number;
-  eq4Frequency: number;
-  eq4Gain: number;
+  eqBands: EqBand[];
   theme?: string; // remove?
   transcode: boolean;
 }
@@ -28,14 +57,7 @@ const DEFAULT_USER: UserState = {
   shuffle: false,
   muted: false,
   volume: 0,
-  eq1Frequency: 100,
-  eq1Gain: 0,
-  eq2Frequency: 400,
-  eq2Gain: 0,
-  eq3Frequency: 1200,
-  eq3Gain: 0,
-  eq4Frequency: 4000,
-  eq4Gain: 0,
+  eqBands: DEFAULT_EQ_BANDS,
   transcode: false,
   selectedContextMenuId: "",
 };
@@ -65,13 +87,12 @@ const setUserState = (update: Partial<UserState>) =>
 // helpers
 
 const updateUser = async (data) => {
-  const userId = useUserStore2.getState().user?.id;
   setUserState(data);
 };
 
 export const setSelectedPlaylistId = async (
-  selectedPlaylistId,
-  selectedTrackId,
+  selectedPlaylistId: string,
+  selectedTrackId: string,
 ) => {
   updateUser({
     selectedPlaylistId,
@@ -79,7 +100,7 @@ export const setSelectedPlaylistId = async (
   });
 };
 
-export const setSelectedTrackId = async (selectedTrackId) => {
+export const setSelectedTrackId = async (selectedTrackId: string) => {
   if (!selectedTrackId) return;
 
   updateUser({
@@ -88,23 +109,12 @@ export const setSelectedTrackId = async (selectedTrackId) => {
   });
 };
 
-export const setMuted = async (muted) => {
-  updateUser({ muted });
-};
-export const setShuffle = async (shuffle) => {
-  updateUser({ shuffle });
-};
-export const setVolume = async (volume) => {
-  updateUser({ volume });
-};
-export const setTranscode = async (transcode) => {
+export const setMuted = async (muted: boolean) => updateUser({ muted });
+export const setShuffle = async (shuffle: boolean) => updateUser({ shuffle });
+export const setVolume = async (volume: number) => updateUser({ volume });
+export const setTranscode = async (transcode: boolean) =>
   updateUser({ transcode });
-};
-
-export const setEq = async (eqNum, field, value) => {
-  const stateField = `eq${eqNum}${field}`;
-  updateUser({ [stateField]: value });
-};
+export const setEqBands = async (eqBands: EqBand[]) => updateUser({ eqBands });
 
 export const setSelectedContextMenuId = (selectedContextMenuId: string) =>
   updateUser({ selectedContextMenuId });

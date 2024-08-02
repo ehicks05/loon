@@ -5,18 +5,18 @@ import { FaVolumeUp } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 export default function Playlists() {
+  const utils = trpc.useUtils();
   const { data: user } = trpc.misc.me.useQuery();
   const playlists = useAppStore((state) => state.playlists);
   const selectedPlaylistId = useUserStore(
     (state) => state.userState.selectedPlaylistId,
   );
-  function handleDelete(playlistId: string) {
-    if (window.confirm("Do you really want to delete this playlist?")) {
-      deletePlaylist(playlistId);
-    }
-  }
 
-  const { mutate: deletePlaylist } = trpc.playlist.delete.useMutation();
+  const { mutate: deletePlaylist } = trpc.playlist.delete.useMutation({
+    onSuccess: () => {
+      utils.playlist.list.invalidate();
+    },
+  });
 
   if (!user) {
     return <section>Please log in to access your library.</section>;
@@ -71,7 +71,11 @@ export default function Playlists() {
                         <button
                           type="button"
                           className={"p-2 rounded bg-red-600"}
-                          onClick={() => handleDelete(playlist.id)}
+                          onClick={() => {
+                            if (window.confirm("Delete this playlist?")) {
+                              deletePlaylist(playlist.id);
+                            }
+                          }}
                         >
                           Delete
                         </button>

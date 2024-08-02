@@ -1,4 +1,5 @@
 import type { Playlist, Track } from "@/common/types";
+import { trpc } from "@/utils/trpc";
 import * as Popover from "@radix-ui/react-popover";
 import { partition } from "lodash";
 import { useState } from "react";
@@ -19,27 +20,56 @@ const playlistToOption = (playlist: Playlist) => (
   </option>
 );
 
-function toggleTracksInPlaylist(
+function getUpdatedTrackList(
   mode: "add" | "remove" | "replace",
-  trackIds: string[],
-  playlist?: Playlist,
+  _trackIds: string[],
+  playlist: Playlist,
 ) {
-  alert(JSON.stringify({ playlist, trackIds, mode }, null, 2));
+  const playlistTrackIds = playlist.playlistTracks.map(
+    ({ trackId }) => trackId,
+  );
+
+  return mode === "add"
+    ? [...new Set([...playlistTrackIds, ..._trackIds])]
+    : mode === "remove"
+      ? playlistTrackIds.filter((trackId) => !_trackIds.includes(trackId))
+      : _trackIds;
 }
 
+const isSaturated = (playlist: Playlist, trackIds: string[]) => {
+  const playlistTrackIds = playlist.playlistTracks.map(
+    ({ trackId }) => trackId,
+  );
+  return trackIds.every((trackId) => playlistTrackIds.includes(trackId));
+};
+
 export default function ActionMenu({ tracks }: { tracks: Track[] }) {
+  const utils = trpc.useUtils();
+  const { mutate } = trpc.playlist.upsert.useMutation({
+    onSuccess: () => {
+      utils.playlist.list.invalidate();
+    },
+  });
   const trackIds = tracks.map((track) => track.id);
   const playlists = useAppStore((state) => state.playlists);
 
-  const [saturatedPlaylists, unsaturatedPlaylists] = partition(
-    playlists,
-    (playlist) => {
-      const playlistTrackIds = playlist.playlistTracks.map(
-        ({ trackId }) => trackId,
-      );
-      trackIds.every((trackId) => playlistTrackIds.includes(trackId));
-    },
+  const favoritesPlaylist = playlists.find((playlist) => playlist.favorites);
+  const isFavorite = isSaturated(favoritesPlaylist, trackIds);
+
+  const queuePlaylist = playlists.find((playlist) => playlist.queue);
+  const isQueued = isSaturated(queuePlaylist, trackIds);
+
+  const regularPlaylists = playlists.filter(
+    (playlist) => !playlist.favorites && !playlist.queue,
   );
+
+  const [saturatedPlaylists, unsaturatedPlaylists] = partition(
+    regularPlaylists,
+    (playlist) => isSaturated(playlist, trackIds),
+  );
+
+  const addToPlaylistOptions = unsaturatedPlaylists.map(playlistToOption);
+  const removeFromPlaylistOptions = saturatedPlaylists.map(playlistToOption);
 
   const [playlistToAddTo, setPlaylistToAddTo] = useState(
     unsaturatedPlaylists[0]?.id || "",
@@ -47,20 +77,6 @@ export default function ActionMenu({ tracks }: { tracks: Track[] }) {
   const [playlistToRemoveFrom, setPlaylistToRemoveFrom] = useState(
     saturatedPlaylists[0]?.id || "",
   );
-
-  const favoritesPlaylist = playlists.find((playlist) => playlist.favorites);
-  const isFavorite = !!saturatedPlaylists.find(({ favorites }) => favorites);
-
-  const queuePlaylist = playlists.find((playlist) => playlist.queue);
-  const isQueued = !!saturatedPlaylists.find(({ queue }) => queue);
-
-  const addToPlaylistOptions = unsaturatedPlaylists
-    .filter((playlist) => !playlist.favorites && !playlist.queue)
-    .map(playlistToOption);
-
-  const removeFromPlaylistOptions = saturatedPlaylists
-    .filter((playlist) => !playlist.favorites && !playlist.queue)
-    .map(playlistToOption);
 
   if (!favoritesPlaylist || !queuePlaylist) {
     return null;
@@ -83,11 +99,16 @@ export default function ActionMenu({ tracks }: { tracks: Track[] }) {
             type="button"
             className="dropdown-item flex items-center gap-2 p-2"
             onClick={() => {
-              toggleTracksInPlaylist(
+              const updatedTrackIds = getUpdatedTrackList(
                 isFavorite ? "remove" : "add",
                 trackIds,
                 favoritesPlaylist,
               );
+              mutate({
+                id: favoritesPlaylist.id,
+                name: favoritesPlaylist.name,
+                trackIds: updatedTrackIds,
+              });
             }}
           >
             {isFavorite ? (
@@ -102,11 +123,16 @@ export default function ActionMenu({ tracks }: { tracks: Track[] }) {
             type="button"
             className="dropdown-item flex items-center gap-2 p-2"
             onClick={() => {
-              toggleTracksInPlaylist(
+              const updatedTrackIds = getUpdatedTrackList(
                 isQueued ? "remove" : "add",
                 trackIds,
                 queuePlaylist,
               );
+              mutate({
+                id: queuePlaylist.id,
+                name: queuePlaylist.name,
+                trackIds: updatedTrackIds,
+              });
             }}
           >
             <FaList
@@ -119,7 +145,16 @@ export default function ActionMenu({ tracks }: { tracks: Track[] }) {
             type="button"
             className="dropdown-item flex items-center gap-2 p-2"
             onClick={() => {
-              toggleTracksInPlaylist("replace", trackIds, queuePlaylist);
+              const updatedTrackIds = getUpdatedTrackList(
+                "replace",
+                trackIds,
+                queuePlaylist,
+              );
+              mutate({
+                id: queuePlaylist.id,
+                name: queuePlaylist.name,
+                trackIds: updatedTrackIds,
+              });
             }}
           >
             <FaSync className="text-neutral-500" />
@@ -142,13 +177,25 @@ export default function ActionMenu({ tracks }: { tracks: Track[] }) {
             <button
               type="button"
               className="p-2 bg-black rounded"
-              onClick={() =>
-                toggleTracksInPlaylist(
+              onClick={() => {
+                const playlist = playlists.find(
+                  (p) => p.id === playlistToAddTo,
+                );
+                if (!playlist) {
+                  return;
+                }
+                const updatedTrackIds = getUpdatedTrackList(
                   "add",
                   trackIds,
-                  playlists.find((p) => p.id === playlistToAddTo),
-                )
-              }
+                  playlist,
+                );
+                console.log({ playlist, updatedTrackIds });
+                mutate({
+                  id: playlist.id,
+                  name: playlist.name,
+                  trackIds: updatedTrackIds,
+                });
+              }}
               disabled={!playlistToAddTo}
             >
               Ok
@@ -171,13 +218,24 @@ export default function ActionMenu({ tracks }: { tracks: Track[] }) {
             <button
               type="button"
               className="p-2 bg-black rounded"
-              onClick={() =>
-                toggleTracksInPlaylist(
+              onClick={() => {
+                const playlist = playlists.find(
+                  (p) => p.id === playlistToRemoveFrom,
+                );
+                if (!playlist) {
+                  return;
+                }
+                const updatedTrackIds = getUpdatedTrackList(
                   "remove",
                   trackIds,
-                  playlists.find((p) => p.id === playlistToRemoveFrom),
-                )
-              }
+                  playlist,
+                );
+                mutate({
+                  id: playlist.id,
+                  name: playlist.name,
+                  trackIds: updatedTrackIds,
+                });
+              }}
               disabled={!playlistToRemoveFrom}
             >
               Ok

@@ -55,7 +55,7 @@ const EqPopover = () => {
       </Popover.Trigger>
       <Popover.Anchor />
       <Popover.Portal>
-        <Popover.Content sideOffset={24}>
+        <Popover.Content sideOffset={32}>
           <Popover.Close />
           <Popover.Arrow />
           <div className="p-2 rounded-lg shadow-2xl bg-neutral-950 text-white">

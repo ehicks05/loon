@@ -20,19 +20,16 @@ const playlistToOption = (playlist: Playlist) => (
 );
 
 function toggleTracksInPlaylist(
-  playlistId: string,
-  trackIds: string[],
   mode: "add" | "remove" | "replace",
+  trackIds: string[],
+  playlist?: Playlist,
 ) {
-  alert(JSON.stringify({ playlistId, trackIds, mode }, null, 2));
+  alert(JSON.stringify({ playlist, trackIds, mode }, null, 2));
 }
 
 export default function ActionMenu({ tracks }: { tracks: Track[] }) {
-  const [playlistToAddTo, setPlaylistToAddTo] = useState("");
-  const [playlistToRemoveFrom, setPlaylistToRemoveFrom] = useState("");
-  const playlists = useAppStore((state) => state.playlists);
-
   const trackIds = tracks.map((track) => track.id);
+  const playlists = useAppStore((state) => state.playlists);
 
   const [saturatedPlaylists, unsaturatedPlaylists] = partition(
     playlists,
@@ -42,6 +39,13 @@ export default function ActionMenu({ tracks }: { tracks: Track[] }) {
       );
       trackIds.every((trackId) => playlistTrackIds.includes(trackId));
     },
+  );
+
+  const [playlistToAddTo, setPlaylistToAddTo] = useState(
+    unsaturatedPlaylists[0]?.id || "",
+  );
+  const [playlistToRemoveFrom, setPlaylistToRemoveFrom] = useState(
+    saturatedPlaylists[0]?.id || "",
   );
 
   const favoritesPlaylist = playlists.find((playlist) => playlist.favorites);
@@ -80,9 +84,9 @@ export default function ActionMenu({ tracks }: { tracks: Track[] }) {
             className="dropdown-item flex items-center gap-2 p-2"
             onClick={() => {
               toggleTracksInPlaylist(
-                favoritesPlaylist.id,
-                trackIds,
                 isFavorite ? "remove" : "add",
+                trackIds,
+                favoritesPlaylist,
               );
             }}
           >
@@ -99,9 +103,9 @@ export default function ActionMenu({ tracks }: { tracks: Track[] }) {
             className="dropdown-item flex items-center gap-2 p-2"
             onClick={() => {
               toggleTracksInPlaylist(
-                queuePlaylist.id,
-                trackIds,
                 isQueued ? "remove" : "add",
+                trackIds,
+                queuePlaylist,
               );
             }}
           >
@@ -115,7 +119,7 @@ export default function ActionMenu({ tracks }: { tracks: Track[] }) {
             type="button"
             className="dropdown-item flex items-center gap-2 p-2"
             onClick={() => {
-              toggleTracksInPlaylist(queuePlaylist.id, trackIds, "replace");
+              toggleTracksInPlaylist("replace", trackIds, queuePlaylist);
             }}
           >
             <FaSync className="text-neutral-500" />
@@ -138,10 +142,14 @@ export default function ActionMenu({ tracks }: { tracks: Track[] }) {
             <button
               type="button"
               className="p-2 bg-black rounded"
-              onSubmit={() =>
-                toggleTracksInPlaylist(playlistToAddTo, trackIds, "add")
+              onClick={() =>
+                toggleTracksInPlaylist(
+                  "add",
+                  trackIds,
+                  playlists.find((p) => p.id === playlistToAddTo),
+                )
               }
-              disabled={!addToPlaylistOptions.length}
+              disabled={!playlistToAddTo}
             >
               Ok
             </button>
@@ -163,10 +171,14 @@ export default function ActionMenu({ tracks }: { tracks: Track[] }) {
             <button
               type="button"
               className="p-2 bg-black rounded"
-              onSubmit={() =>
-                toggleTracksInPlaylist(playlistToRemoveFrom, trackIds, "remove")
+              onClick={() =>
+                toggleTracksInPlaylist(
+                  "remove",
+                  trackIds,
+                  playlists.find((p) => p.id === playlistToRemoveFrom),
+                )
               }
-              disabled={!removeFromPlaylistOptions.length}
+              disabled={!playlistToRemoveFrom}
             >
               Ok
             </button>

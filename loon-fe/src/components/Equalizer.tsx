@@ -22,7 +22,7 @@ export const Equalizer = () => {
       <tbody>
         <tr>
           {eqBands.map((eq) => (
-            <td key={eq.id} className={"text-center text-sm p-1"}>
+            <td key={eq.id} className={"text-center text-xs p-1"}>
               {FILTER_TYPE_LABELS[eq.type]}
             </td>
           ))}
@@ -53,7 +53,7 @@ export const Equalizer = () => {
         <tr>
           {eqBands.map((eq) => (
             <td key={eq.id} className="p-1">
-              <div className="flex gap-1 pr-2 bg-neutral-800">
+              <div className="flex gap-1 items-baseline pr-2 bg-neutral-800">
                 <input
                   className="bg-neutral-800 w-12 text-right [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   type="number"
@@ -66,7 +66,7 @@ export const Equalizer = () => {
                     handleUpdate({ ...eq, frequency }, eq.id);
                   }}
                 />
-                <span className="">hz</span>
+                <span className="text-xs">hz</span>
               </div>
             </td>
           ))}

@@ -14,7 +14,7 @@ import Playlists from "@/app/Playlists";
 import Search from "@/app/Search";
 import SystemSettings from "@/app/admin/SystemSettings";
 import UserSettings from "@/app/admin/UserSettings";
-import Eq from "@/app/settings/Eq";
+import Eq from "@/app/settings/EqPage";
 import GeneralSettings from "@/app/settings/GeneralSettings";
 import { Login } from "./app/Login";
 import type { User } from "./common/types";

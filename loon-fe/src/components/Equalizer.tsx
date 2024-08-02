@@ -12,19 +12,18 @@ const FILTER_TYPE_LABELS: Partial<Record<BiquadFilterType, string>> = {
   highshelf: "High Shelf",
 };
 
-const cellClass = "border border-neutral-700 p-2";
+const cellClass = "border border-neutral-900 py-2";
 
-export default function Eq() {
+export const Equalizer = () => {
   const eqBands = useUserStore((state) => state.userState.eqBands);
 
   const handleUpdate = (newBand: EqBand, id: number) =>
     setEqBands(eqBands.map((band) => (band.id === id ? newBand : band)));
 
-  const eqTable = (
+  return (
     <table>
       <tbody>
         <tr>
-          <td className={`text-center ${cellClass}`}>Freq</td>
           {eqBands.map((eq) => (
             <td key={eq.id} className={cellClass}>
               <TextInput
@@ -43,7 +42,6 @@ export default function Eq() {
           ))}
         </tr>
         <tr>
-          <td className={`text-center ${cellClass}`}>Gain</td>
           {eqBands.map((eq) => (
             <td key={eq.id} className={cellClass}>
               <div className="flex flex-col items-center h-56">
@@ -67,7 +65,6 @@ export default function Eq() {
           ))}
         </tr>
         <tr>
-          <td className={`text-center ${cellClass}`}>Type</td>
           {eqBands.map((eq) => (
             <td key={eq.id} className={`text-center ${cellClass}`}>
               {FILTER_TYPE_LABELS[eq.type]}
@@ -77,15 +74,4 @@ export default function Eq() {
       </tbody>
     </table>
   );
-
-  return (
-    <section className={"flex flex-col gap-4 items-start"}>
-      <div>
-        <h1 className="font-bold text-2xl">Settings</h1>
-        <h2 className="">Equalizer</h2>
-      </div>
-
-      {eqTable}
-    </section>
-  );
-}
+};

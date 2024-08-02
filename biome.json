@@ -28,6 +28,7 @@
       }
     }
   ],
+  "files": { "ignore": ["./loon-be/drizzle/meta"] },
   "vcs": {
     "enabled": true,
     "clientKind": "git",

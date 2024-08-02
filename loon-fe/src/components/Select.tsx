@@ -10,7 +10,7 @@ export default function Select({ className, label, items, ...props }: Props) {
     <label className="flex flex-col gap-1">
       {label}
       <select
-        className={`overflow-auto p-2 rounded bg-neutral-800 w-full ${className}`}
+        className={`overflow-auto p-2 rounded bg-neutral-800 w-full border-r-8 border-neutral-800 ${className}`}
         {...props}
       >
         {items.map((item) => (

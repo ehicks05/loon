@@ -91,6 +91,7 @@ export default function ActionMenu({ tracks }: { tracks: Track[] }) {
       <Popover.Anchor />
       <Popover.Portal>
         <Popover.Content
+          align="end"
           sideOffset={12}
           className="flex flex-col text-neutral-400 p-2 rounded bg-neutral-800"
         >
@@ -170,7 +171,7 @@ export default function ActionMenu({ tracks }: { tracks: Track[] }) {
               <select
                 value={playlistToAddTo}
                 onChange={(e) => setPlaylistToAddTo(e.target.value)}
-                className="w-full bg-neutral-700 p-1"
+                className="w-full bg-neutral-700 p-1 border-r-4 border-neutral-700"
               >
                 {addToPlaylistOptions}
               </select>
@@ -211,7 +212,7 @@ export default function ActionMenu({ tracks }: { tracks: Track[] }) {
               <select
                 value={playlistToRemoveFrom}
                 onChange={(e) => setPlaylistToRemoveFrom(e.target.value)}
-                className="w-full bg-neutral-700 p-1"
+                className="w-full bg-neutral-700 p-1 border-r-4 border-neutral-700"
               >
                 {removeFromPlaylistOptions}
               </select>

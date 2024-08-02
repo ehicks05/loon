@@ -38,7 +38,7 @@ export default function SystemSettings() {
         <h1 className="font-bold text-2xl">Admin</h1>
         <h2>Modify System</h2>
       </section>
-      <section className="flex gap-4">
+      <section className="flex gap-4 items-start">
         <div className="flex flex-col gap-4 p-4 bg-black rounded">
           <div className={"flex flex-col gap-2"}>
             <div className="font-bold text-lg">General</div>

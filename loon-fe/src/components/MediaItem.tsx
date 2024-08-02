@@ -39,9 +39,8 @@ export default function MediaItem({
   snapshot,
 }: Props) {
   const [hover, setHover] = useState(false);
-  const { selectedTrackId, selectedContextMenuId } = useUserStore((state) => ({
+  const { selectedTrackId } = useUserStore((state) => ({
     selectedTrackId: state.userState.selectedTrackId,
-    selectedContextMenuId: state.userState.selectedContextMenuId,
   }));
 
   const artist = track.artist || "Missing!";
@@ -50,11 +49,8 @@ export default function MediaItem({
   const missingFile = track.missingFile;
   const highlightClass = track.id === selectedTrackId ? "text-green-500" : "";
 
-  const contextMenuId = `trackId=${track.id}`;
-  const isDropdownActive = selectedContextMenuId === contextMenuId;
   const isDragging = snapshot?.isDragging || false;
-
-  const showActionMenu = !isDragging && (hover || isDropdownActive);
+  const showActionMenu = !isDragging && hover;
 
   return (
     <div
@@ -102,9 +98,7 @@ export default function MediaItem({
           "mr-2 flex basis-5 items-center dark:text-neutral-400 hover:dark:text-neutral-300"
         }
       >
-        {showActionMenu && (
-          <ActionMenu tracks={[track]} contextMenuId={contextMenuId} />
-        )}
+        {showActionMenu && <ActionMenu tracks={[track]} />}
       </div>
 
       <div className="basis-5">{track.formattedDuration}</div>

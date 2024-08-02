@@ -1,5 +1,7 @@
-import type { Track } from "@/common/types";
+import type { Playlist, Track } from "@/common/types";
 import * as Popover from "@radix-ui/react-popover";
+import { partition } from "lodash";
+import { useState } from "react";
 import {
   FaEllipsisH,
   FaHeart,
@@ -9,142 +11,60 @@ import {
   FaRegHeart,
   FaSync,
 } from "react-icons/fa";
-import {
-  toggleTracksInPlaylist,
-  useAppStore,
-} from "../common/AppContextProvider";
-import {
-  setSelectedContextMenuId,
-  useUserStore,
-} from "../common/UserContextProvider";
+import { useAppStore } from "../common/AppContextProvider";
 
-const AddOrRemoveFromPlaylist = ({
-  contextMenuId,
-  options,
-  mode,
-  onSubmit,
-  disabled,
-}) => (
-  <div className="flex items-center">
-    <span className="p-2">{mode === "add" ? <FaPlus /> : <FaMinus />}</span>
-    <div className="flex-grow p-2">
-      <select
-        className="w-full bg-neutral-700 p-1"
-        id={`mediaItem${contextMenuId}${mode}FromPlaylistSelect`}
-      >
-        {options}
-      </select>
-    </div>
-    <button
-      type="button"
-      className="p-2 bg-black rounded"
-      onClick={onSubmit}
-      disabled={disabled}
-    >
-      Ok
-    </button>
-  </div>
+const playlistToOption = (playlist: Playlist) => (
+  <option key={playlist.id} value={playlist.id} title={playlist.name}>
+    {playlist.name.length > 24 ? playlist.name.substring(0, 24) : playlist.name}
+  </option>
 );
 
-export default function ActionMenu({
-  contextMenuId,
-  tracks,
-}: { contextMenuId: string; tracks: Track[] }) {
-  const selectedContextMenuId = useUserStore(
-    (state) => state.userState.selectedContextMenuId,
-  );
+function toggleTracksInPlaylist(
+  playlistId: string,
+  trackIds: string[],
+  mode: "add" | "remove" | "replace",
+) {
+  alert(JSON.stringify({ playlistId, trackIds, mode }, null, 2));
+}
+
+export default function ActionMenu({ tracks }: { tracks: Track[] }) {
+  const [playlistToAddTo, setPlaylistToAddTo] = useState("");
+  const [playlistToRemoveFrom, setPlaylistToRemoveFrom] = useState("");
   const playlists = useAppStore((state) => state.playlists);
-
-  function toggleDropdown() {
-    if (selectedContextMenuId === contextMenuId) setSelectedContextMenuId("");
-    else setSelectedContextMenuId(contextMenuId);
-  }
-
-  function handleToggleTracksInPlaylist(
-    playlistId,
-    trackIds,
-    action,
-    replaceExisting,
-  ) {
-    const formData = new FormData();
-    formData.append("trackIds", trackIds);
-    formData.append("mode", action);
-    formData.append(
-      "replaceExisting",
-      replaceExisting ? replaceExisting : false,
-    );
-
-    toggleTracksInPlaylist(playlistId, formData);
-  }
-
-  function addTracksToPlaylist(trackIds) {
-    const playlistId = document.getElementById(
-      `mediaItem${contextMenuId}AddToPlaylistSelect`,
-    ).value;
-    handleToggleTracksInPlaylist(playlistId, trackIds, "add");
-  }
-
-  function removeTracksFromPlaylist(trackIds) {
-    const playlistId = document.getElementById(
-      `mediaItem${contextMenuId}removeFromPlaylistSelect`,
-    ).value;
-    handleToggleTracksInPlaylist(playlistId, trackIds, "remove");
-  }
 
   const trackIds = tracks.map((track) => track.id);
 
+  const [saturatedPlaylists, unsaturatedPlaylists] = partition(
+    playlists,
+    (playlist) => {
+      const playlistTrackIds = playlist.playlistTracks.map(
+        ({ trackId }) => trackId,
+      );
+      trackIds.every((trackId) => playlistTrackIds.includes(trackId));
+    },
+  );
+
   const favoritesPlaylist = playlists.find((playlist) => playlist.favorites);
-  const favoritesIds = favoritesPlaylist?.playlistTracks.map(
-    (playlistTrack) => playlistTrack.trackId,
-  );
-  const isFavorite = trackIds.every((trackId) =>
-    favoritesIds.includes(trackId),
-  );
+  const isFavorite = !!saturatedPlaylists.find(({ favorites }) => favorites);
 
   const queuePlaylist = playlists.find((playlist) => playlist.queue);
-  const queueIds = queuePlaylist.playlistTracks.map(
-    (playlistTrack) => playlistTrack.trackId,
-  );
-  const isQueued = trackIds.every((trackId) => queueIds.includes(trackId));
+  const isQueued = !!saturatedPlaylists.find(({ queue }) => queue);
 
-  const addToPlaylistOptions = playlists
+  const addToPlaylistOptions = unsaturatedPlaylists
     .filter((playlist) => !playlist.favorites && !playlist.queue)
-    .filter((playlist) => {
-      const playlistTrackIds = playlist.playlistTracks.map(
-        (playlistTrack) => playlistTrack.trackId,
-      );
-      return !trackIds.every((trackId) => playlistTrackIds.includes(trackId));
-    })
-    .map((playlist) => (
-      <option key={playlist.id} value={playlist.id} title={playlist.name}>
-        {playlist.name.length > 24
-          ? playlist.name.substring(0, 24)
-          : playlist.name}
-      </option>
-    ));
+    .map(playlistToOption);
 
-  const removeFromPlaylistOptions = playlists
+  const removeFromPlaylistOptions = saturatedPlaylists
     .filter((playlist) => !playlist.favorites && !playlist.queue)
-    .filter((playlist) => {
-      const playlistTrackIds = playlist.playlistTracks.map(
-        (playlistTrack) => playlistTrack.trackId,
-      );
-      return trackIds.every((trackId) => playlistTrackIds.includes(trackId));
-    })
-    .map((playlist) => (
-      <option key={playlist.id} value={playlist.id} title={playlist.name}>
-        {playlist.name.length > 24
-          ? playlist.name.substring(0, 24)
-          : playlist.name}
-      </option>
-    ));
+    .map(playlistToOption);
+
+  if (!favoritesPlaylist || !queuePlaylist) {
+    return null;
+  }
 
   return (
     <Popover.Root>
-      <Popover.Trigger
-        className="p-2 rounded bg-black"
-        onClick={toggleDropdown}
-      >
+      <Popover.Trigger className="p-2 rounded bg-black">
         <FaEllipsisH />
       </Popover.Trigger>
       <Popover.Anchor />
@@ -158,8 +78,8 @@ export default function ActionMenu({
           <button
             type="button"
             className="dropdown-item flex items-center gap-2 p-2"
-            onClick={(e) => {
-              handleToggleTracksInPlaylist(
+            onClick={() => {
+              toggleTracksInPlaylist(
                 favoritesPlaylist.id,
                 trackIds,
                 isFavorite ? "remove" : "add",
@@ -171,14 +91,14 @@ export default function ActionMenu({
             ) : (
               <FaRegHeart className="text-neutral-500" />
             )}
-            {isFavorite ? "Remove " : "Add"} Favorite
+            {isFavorite ? "Remove " : "Add"} to Favorites
           </button>
 
           <button
             type="button"
             className="dropdown-item flex items-center gap-2 p-2"
-            onClick={(e) => {
-              handleToggleTracksInPlaylist(
+            onClick={() => {
+              toggleTracksInPlaylist(
                 queuePlaylist.id,
                 trackIds,
                 isQueued ? "remove" : "add",
@@ -194,33 +114,63 @@ export default function ActionMenu({
           <button
             type="button"
             className="dropdown-item flex items-center gap-2 p-2"
-            onClick={(e) => {
-              handleToggleTracksInPlaylist(
-                queuePlaylist.id,
-                trackIds,
-                "add",
-                true,
-              );
+            onClick={() => {
+              toggleTracksInPlaylist(queuePlaylist.id, trackIds, "replace");
             }}
           >
             <FaSync className="text-neutral-500" />
             Replace Queue
           </button>
 
-          <AddOrRemoveFromPlaylist
-            contextMenuId={contextMenuId}
-            options={addToPlaylistOptions}
-            mode={"add"}
-            onSubmit={() => addTracksToPlaylist(trackIds)}
-            disabled={!addToPlaylistOptions.length}
-          />
-          <AddOrRemoveFromPlaylist
-            contextMenuId={contextMenuId}
-            options={removeFromPlaylistOptions}
-            mode={"remove"}
-            onSubmit={() => removeTracksFromPlaylist(trackIds)}
-            disabled={!removeFromPlaylistOptions.length}
-          />
+          <div className="flex items-center">
+            <span className="p-2">
+              <FaPlus />
+            </span>
+            <div className="flex-grow p-2">
+              <select
+                value={playlistToAddTo}
+                onChange={(e) => setPlaylistToAddTo(e.target.value)}
+                className="w-full bg-neutral-700 p-1"
+              >
+                {addToPlaylistOptions}
+              </select>
+            </div>
+            <button
+              type="button"
+              className="p-2 bg-black rounded"
+              onSubmit={() =>
+                toggleTracksInPlaylist(playlistToAddTo, trackIds, "add")
+              }
+              disabled={!addToPlaylistOptions.length}
+            >
+              Ok
+            </button>
+          </div>
+
+          <div className="flex items-center">
+            <span className="p-2">
+              <FaMinus />
+            </span>
+            <div className="flex-grow p-2">
+              <select
+                value={playlistToRemoveFrom}
+                onChange={(e) => setPlaylistToRemoveFrom(e.target.value)}
+                className="w-full bg-neutral-700 p-1"
+              >
+                {removeFromPlaylistOptions}
+              </select>
+            </div>
+            <button
+              type="button"
+              className="p-2 bg-black rounded"
+              onSubmit={() =>
+                toggleTracksInPlaylist(playlistToRemoveFrom, trackIds, "remove")
+              }
+              disabled={!removeFromPlaylistOptions.length}
+            >
+              Ok
+            </button>
+          </div>
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>

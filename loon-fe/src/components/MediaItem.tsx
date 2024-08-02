@@ -68,7 +68,7 @@ export default function MediaItem({
         <button
           type="button"
           disabled={missingFile || undefined}
-          className="line-clamp-1 font-bold"
+          className="line-clamp-1 font-bold text-left"
           onClick={() => setSelectedPlaylistId(playlistId, track.id)}
         >
           {trackTitle}

@@ -4,15 +4,12 @@ import {
   useUserStore,
 } from "@/common/UserContextProvider";
 import { LoonSlider } from "@/components/Slider";
-import { TextInput } from "@/components/TextInput";
 
 const FILTER_TYPE_LABELS: Partial<Record<BiquadFilterType, string>> = {
   lowshelf: "Low Shelf",
   peaking: "Peaking",
   highshelf: "High Shelf",
 };
-
-const cellClass = "border border-neutral-900 py-2";
 
 export const Equalizer = () => {
   const eqBands = useUserStore((state) => state.userState.eqBands);
@@ -25,25 +22,14 @@ export const Equalizer = () => {
       <tbody>
         <tr>
           {eqBands.map((eq) => (
-            <td key={eq.id} className={cellClass}>
-              <TextInput
-                className="bg-neutral-800 text-right"
-                type="number"
-                min={20}
-                max={20000}
-                step={1}
-                value={eq.frequency}
-                onChange={(e) => {
-                  const frequency = Number(e.target.value);
-                  handleUpdate({ ...eq, frequency }, eq.id);
-                }}
-              />
+            <td key={eq.id} className={"text-center text-sm p-1"}>
+              {FILTER_TYPE_LABELS[eq.type]}
             </td>
           ))}
         </tr>
         <tr>
           {eqBands.map((eq) => (
-            <td key={eq.id} className={cellClass}>
+            <td key={eq.id} className="p-1">
               <div className="flex flex-col items-center h-56">
                 <LoonSlider
                   value={[eq.gain]}
@@ -66,8 +52,22 @@ export const Equalizer = () => {
         </tr>
         <tr>
           {eqBands.map((eq) => (
-            <td key={eq.id} className={`text-center ${cellClass}`}>
-              {FILTER_TYPE_LABELS[eq.type]}
+            <td key={eq.id} className="p-1">
+              <div className="flex gap-1 pr-2 bg-neutral-800">
+                <input
+                  className="bg-neutral-800 w-12 text-right [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  type="number"
+                  min={20}
+                  max={20000}
+                  step={1}
+                  value={eq.frequency}
+                  onChange={(e) => {
+                    const frequency = Number(e.target.value);
+                    handleUpdate({ ...eq, frequency }, eq.id);
+                  }}
+                />
+                <span className="">hz</span>
+              </div>
             </td>
           ))}
         </tr>

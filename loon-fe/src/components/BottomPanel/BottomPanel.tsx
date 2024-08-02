@@ -1,9 +1,13 @@
+import * as Popover from "@radix-ui/react-popover";
 import { FaRandom, FaVolumeOff, FaVolumeUp } from "react-icons/fa";
+import { FaSliders } from "react-icons/fa6";
 import {
   setMuted,
   setShuffle,
   useUserStore,
 } from "../../common/UserContextProvider";
+import { Button } from "../Button";
+import { Equalizer } from "../Equalizer";
 import PlaybackButtons from "./PlaybackButtons";
 import TrackDescription from "./TrackDescription";
 import TrackProgressBar from "./TrackProgressBar";
@@ -44,6 +48,28 @@ function MuteButton() {
   );
 }
 
+const EqPopover = () => {
+  return (
+    <Popover.Root modal>
+      <Popover.Trigger asChild>
+        <Button className="bg-black rounded text-neutral-300 p-2">
+          <FaSliders className="rotate-90" />
+        </Button>
+      </Popover.Trigger>
+      <Popover.Anchor />
+      <Popover.Portal>
+        <Popover.Content sideOffset={24}>
+          <Popover.Close />
+          <Popover.Arrow />
+          <div className="p-2 rounded-lg shadow-2xl bg-neutral-950 text-white">
+            <Equalizer />
+          </div>
+        </Popover.Content>
+      </Popover.Portal>
+    </Popover.Root>
+  );
+};
+
 export function BottomPanel() {
   return (
     <div className="flex flex-col items-center justify-between md:flex-row gap-4 p-3 bg-neutral-900">
@@ -61,6 +87,10 @@ export function BottomPanel() {
       <div className="w-full md:w-1/2">
         <div className="flex gap-2 items-center justify-center md:justify-end md:ml-4">
           <ShuffleButton />
+          <div>
+            {/* keep inside a div to handle an extra div created by Popover */}
+            <EqPopover />
+          </div>
           <MuteButton />
           <VolumeSlider />
         </div>

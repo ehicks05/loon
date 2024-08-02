@@ -9,7 +9,7 @@ export const playlistRouter = router({
   list: protectedProcedure.query(async ({ ctx: { user } }) => {
     return db.query.playlists.findMany({
       with: {
-        playlistTracks: true,
+        playlistTracks: { orderBy: playlist_tracks.index },
       },
       where: eq(playlists.userId, user.id),
     });
@@ -150,57 +150,60 @@ export const playlistRouter = router({
     )
     .mutation(
       async ({ ctx: { user }, input: { playlistId, oldIndex, newIndex } }) => {
-        const playlist = await db.query.playlists.findFirst({
-          where: eq(playlists.id, playlistId),
-          with: { playlistTracks: true },
-        });
-        const selectedPlaylistTrack = playlist?.playlistTracks.find(
-          (pt) => pt.index === oldIndex,
-        );
+        await db.transaction(async (tx) => {
+          const playlist = await tx.query.playlists.findFirst({
+            where: eq(playlists.id, playlistId),
+            with: { playlistTracks: true },
+          });
+          const selectedPlaylistTrack = playlist?.playlistTracks.find(
+            (pt) => pt.index === oldIndex,
+          );
 
-        if (!playlist || !selectedPlaylistTrack) {
-          throw new TRPCError({ code: "NOT_FOUND" });
-        }
-        if (user.id !== playlist.userId) {
-          throw new TRPCError({ code: "FORBIDDEN" });
-        }
-        if (oldIndex === newIndex) {
-          throw new TRPCError({ code: "BAD_REQUEST" });
-        }
+          if (!playlist || !selectedPlaylistTrack) {
+            throw new TRPCError({ code: "NOT_FOUND" });
+          }
+          if (user.id !== playlist.userId) {
+            throw new TRPCError({ code: "FORBIDDEN" });
+          }
+          if (oldIndex === newIndex) {
+            throw new TRPCError({ code: "BAD_REQUEST" });
+          }
 
-        // If we're moving a track forward, the other affected tracks will move back. and vice versa.
-        const otherTrackOffset = newIndex > oldIndex ? "- 1" : "+ 1";
+          const otherTrackIndexOne =
+            newIndex > oldIndex ? oldIndex + 1 : oldIndex - 1;
+          const otherTrackIndexTwo = newIndex;
 
-        const otherTrackStartIndex =
-          newIndex > oldIndex ? oldIndex + 1 : oldIndex - 1;
-        const otherTrackEndIndex = newIndex;
-
-        // move the other tracks
-        await db
-          .update(playlist_tracks)
-          .set({
-            index: sql`${playlist_tracks.index} ${otherTrackOffset}`,
-          })
-          .where(
-            and(
-              eq(playlist_tracks.playlistId, playlistId),
-              between(
-                playlist_tracks.index,
-                otherTrackStartIndex,
-                otherTrackEndIndex,
+          // move the other tracks one position, in opposite direction of selected track
+          await tx
+            .update(playlist_tracks)
+            .set({
+              index:
+                newIndex > oldIndex
+                  ? sql`${playlist_tracks.index} - 1`
+                  : sql`${playlist_tracks.index} + 1`,
+            })
+            .where(
+              and(
+                eq(playlist_tracks.playlistId, playlistId),
+                between(
+                  playlist_tracks.index,
+                  Math.min(otherTrackIndexOne, otherTrackIndexTwo),
+                  Math.max(otherTrackIndexOne, otherTrackIndexTwo),
+                ),
               ),
-            ),
-          );
+            );
 
-        await db
-          .update(playlist_tracks)
-          .set({ index: newIndex })
-          .where(
-            and(
-              eq(playlist_tracks.playlistId, playlistId),
-              eq(playlist_tracks.trackId, selectedPlaylistTrack.trackId),
-            ),
-          );
+          // move selected track
+          await tx
+            .update(playlist_tracks)
+            .set({ index: newIndex })
+            .where(
+              and(
+                eq(playlist_tracks.playlistId, playlistId),
+                eq(playlist_tracks.trackId, selectedPlaylistTrack.trackId),
+              ),
+            );
+        });
 
         return { success: "ok" };
       },

@@ -173,8 +173,8 @@ export default function Playlist() {
   );
 
   return (
-    <div className="flex h-full flex-col">
-      <section className={"flex flex-col"}>
+    <div className="flex h-full flex-col gap-4">
+      <section className={"flex flex-col gap-4"}>
         <h1 className="font-bold text-2xl">
           {playlist ? playlist.name : "Library"}
         </h1>
@@ -215,15 +215,13 @@ export default function Playlist() {
         )}
 
         {playlist && !playlist.queue && !playlist.favorites && (
-          <div className={"subtitle"}>
-            <span className="buttons">
-              <Link
-                to={`/playlists/${playlist.id}/edit`}
-                className="button is-small is-success"
-              >
-                Edit
-              </Link>
-            </span>
+          <div className="subtitle">
+            <Link
+              to={`/playlists/${playlist.id}/edit`}
+              className="p-2 bg-black rounded"
+            >
+              Edit
+            </Link>
           </div>
         )}
       </section>

@@ -51,10 +51,10 @@ export default function Routes() {
       <Route exact path="/settings/eq" render={() => <Eq />} />
       <Route exact path="/albums" render={() => <Albums />} />
       <Route exact path="/artists" render={() => <Artists />} />
-      <Route exact path="/artist/:artist" render={() => <Artist />} />
+      <Route exact path="/artists/:artist" render={() => <Artist />} />
       <Route
         exact
-        path="/artist/:artist/album/:album"
+        path="/artists/:artist/albums/:album"
         render={() => <Album />}
       />
       <Route exact path="/search" render={() => <Search />} />

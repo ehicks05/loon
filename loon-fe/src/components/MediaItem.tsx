@@ -79,14 +79,14 @@ export default function MediaItem({
         <span className="line-clamp-1 text-sm">
           <Link
             className="text-neutral-600 hover:text-neutral-300 dark:text-neutral-400 hover:dark:text-neutral-300"
-            to={`/artist/${artist}`}
+            to={`/artists/${artist}`}
           >
             {artist}
           </Link>
           {" - "}
           <Link
             className="text-neutral-600 hover:text-neutral-300 dark:text-neutral-400 hover:dark:text-neutral-300"
-            to={`/artist/${track.albumArtist}/album/${album}`}
+            to={`/artists/${track.albumArtist}/albums/${album}`}
           >
             <i>{album}</i>
           </Link>

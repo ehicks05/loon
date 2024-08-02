@@ -29,7 +29,7 @@ export default function AlbumCard({ album, hideAlbumArtist }: Props) {
   let albumArtistText = <span title={album.artist}>{album.artist}</span>;
   if (linkAlbumArtist)
     albumArtistText = (
-      <Link to={`/artist/${album.artist}`}>{albumArtistText}</Link>
+      <Link to={`/artists/${album.artist}`}>{albumArtistText}</Link>
     );
 
   return (
@@ -50,7 +50,7 @@ export default function AlbumCard({ album, hideAlbumArtist }: Props) {
           <span className="line-clamp-3">{albumArtistText}</span>
         )}
 
-        <Link to={`/artist/${album.artist}/album/${album.name}`}>
+        <Link to={`/artists/${album.artist}/albums/${album.name}`}>
           <span className="font-bold" title={`${album.artist} - ${album.name}`}>
             {album.name}
           </span>

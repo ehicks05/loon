@@ -27,7 +27,7 @@ export function ArtistCard({ artist }: { artist: Artist }) {
         </div>
       </div>
       <div className="p-3">
-        <Link to={`/artist/${artist.name}`}>{artist.name}</Link>
+        <Link to={`/artists/${artist.name}`}>{artist.name}</Link>
       </div>
     </div>
   );

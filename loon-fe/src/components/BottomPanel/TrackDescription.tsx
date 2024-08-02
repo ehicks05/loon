@@ -43,9 +43,9 @@ export default function TrackDescription() {
       >
         <b className="text-sm">{title}</b>
         <span id="artistAlbumText" className="text-sm">
-          <Link to={`/artist/${artist}`}>{artist}</Link>
+          <Link to={`/artists/${artist}`}>{artist}</Link>
           {" - "}
-          <Link to={`/artist/${albumArtist}/album/${album}`}>
+          <Link to={`/artists/${albumArtist}/albums/${album}`}>
             <i>{album}</i>
           </Link>
         </span>

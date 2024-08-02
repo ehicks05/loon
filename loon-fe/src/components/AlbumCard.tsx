@@ -18,8 +18,6 @@ export default function AlbumCard({ album, hideAlbumArtist }: Props) {
   const tracks = useAppStore((state) => state.tracks);
   const distinctArtists = useDistinctArtists();
 
-  const contextMenuId = `artist=${album.artist},album=${album.name}`;
-
   const albumTracks = tracks.filter(
     (track) => track.albumArtist === album.artist && track.album === album.name,
   );
@@ -33,7 +31,7 @@ export default function AlbumCard({ album, hideAlbumArtist }: Props) {
     );
 
   return (
-    <div>
+    <div className="flex flex-col items-start">
       <div className="group relative">
         <img
           src={PLACEHOLDER_IMAGE_URL}
@@ -42,7 +40,7 @@ export default function AlbumCard({ album, hideAlbumArtist }: Props) {
           className="lazyload rounded w-36 h-36 object-cover"
         />
         <div className="invisible group-hover:visible absolute top-2 right-2">
-          <ActionMenu tracks={albumTracks} contextMenuId={contextMenuId} />
+          <ActionMenu tracks={albumTracks} />
         </div>
       </div>
       <div className="p-3">

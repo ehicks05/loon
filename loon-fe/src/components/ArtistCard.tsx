@@ -10,11 +10,10 @@ export function ArtistCard({ artist }: { artist: Artist }) {
   const tracks = useAppStore((state) => state.tracks);
 
   const imageUrl = getImageUrl(artist.imageId);
-  const contextMenuId = `artist=${artist.name}`;
   const artistTracks = tracks.filter((track) => track.artist === artist.name);
 
   return (
-    <div>
+    <div className="flex flex-col items-start">
       <div className="group relative">
         <img
           src={PLACEHOLDER_IMAGE_URL}
@@ -23,7 +22,7 @@ export function ArtistCard({ artist }: { artist: Artist }) {
           className="lazyload rounded w-36 h-36 object-cover"
         />
         <div className="invisible group-hover:visible absolute top-2 right-2">
-          <ActionMenu tracks={artistTracks} contextMenuId={contextMenuId} />
+          <ActionMenu tracks={artistTracks} />
         </div>
       </div>
       <div className="p-3">

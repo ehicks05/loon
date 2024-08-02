@@ -50,10 +50,8 @@ function MuteButton() {
 const EqPopover = () => {
   return (
     <Popover.Root modal>
-      <Popover.Trigger asChild>
-        <button type="button" className="bg-black rounded text-neutral-300 p-2">
-          <FaSliders className="rotate-90" />
-        </button>
+      <Popover.Trigger className="p-2 bg-black rounded text-neutral-300">
+        <FaSliders className="rotate-90" />
       </Popover.Trigger>
       <Popover.Anchor />
       <Popover.Portal>

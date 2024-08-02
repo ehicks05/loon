@@ -44,9 +44,9 @@ export default function MediaItem({
     selectedContextMenuId: state.userState.selectedContextMenuId,
   }));
 
-  const artist = track.artist ? track.artist : "Missing!";
-  const trackTitle = track.title ? track.title : "Missing!";
-  const album = track.album ? track.album : "Missing!";
+  const artist = track.artist || "Missing!";
+  const trackTitle = track.title || "Missing!";
+  const album = track.album || "Missing!";
   const missingFile = track.missingFile;
   const highlightClass = track.id === selectedTrackId ? "text-green-500" : "";
 

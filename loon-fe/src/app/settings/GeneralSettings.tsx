@@ -12,24 +12,21 @@ export default function GeneralSettings() {
   }
 
   return (
-    <div>
-      <section className={"section"}>
-        <h1 className="title">Settings</h1>
+    <div className="flex flex-col gap-4">
+      <section>
+        <h1 className="text-2xl font-bold">Settings</h1>
         <h2 className="subtitle">General Settings</h2>
       </section>
-      <section className="section">
-        <div className="field">
+      <section>
+        <label className="flex gap-2 items-center">
           <input
             type="checkbox"
-            id="transcode"
             name="transcode"
             checked={transcode}
             onChange={(e) => setTranscode(e.target.checked)}
           />
-          <label htmlFor="transcode" style={{ padding: ".5rem" }}>
-            Prefer transcoded mp3 v{transcodeQuality} (if available)
-          </label>
-        </div>
+          Prefer transcoded mp3 v{transcodeQuality} (if available)
+        </label>
       </section>
     </div>
   );

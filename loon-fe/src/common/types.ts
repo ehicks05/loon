@@ -7,9 +7,8 @@ export type RouterOutput = inferRouterOutputs<AppRouter>;
 
 export type User = RouterOutput["misc"]["me"];
 
-export type Track = RouterOutput["tracks"]["list"][number] & {
-  formattedDuration: string;
-};
+export type RawTrackResponse = RouterOutput["tracks"]["list"][number];
+export type Track = RawTrackResponse & { formattedDuration: string };
 export type Playlist = RouterOutput["playlist"]["list"][number];
 
 export type SystemSettings = RouterOutput["misc"]["systemSettings"];

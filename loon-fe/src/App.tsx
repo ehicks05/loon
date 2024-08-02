@@ -8,9 +8,15 @@ import Routes from "./Routes";
 import { useAppStore } from "./common/AppContextProvider";
 import PageLoader from "./common/PageLoader";
 import { useUserStore2 } from "./common/UserContextProvider";
+import type { RawTrackResponse } from "./common/types";
 import { formatTime } from "./components/utils";
 import { useTitle } from "./hooks/useTitle";
 import { trpc } from "./utils/trpc";
+
+const addFormattedDuration = (track: RawTrackResponse) => ({
+  ...track,
+  formattedDuration: formatTime(track.duration),
+});
 
 const useCacheData = () => {
   const { data: user, isLoading: isLoadingUser } = trpc.misc.me.useQuery();
@@ -19,7 +25,6 @@ const useCacheData = () => {
   const { data: playlists, isLoading: isLoadingPlaylists } =
     trpc.playlist.list.useQuery(undefined, {
       enabled: !!user,
-      initialData: [],
     });
   const isLoading = isLoadingUser || isLoadingTracks || isLoadingPlaylists;
 
@@ -28,15 +33,15 @@ const useCacheData = () => {
       useUserStore2.setState((state) => ({ ...state, user }));
     }
 
-    if (tracks && playlists) {
+    if (tracks) {
       useAppStore.setState((state) => ({
         ...state,
-        tracks: tracks.map((track) => ({
-          ...track,
-          formattedDuration: formatTime(track.duration),
-        })),
-        playlists,
+        tracks: tracks.map(addFormattedDuration),
       }));
+    }
+
+    if (playlists) {
+      useAppStore.setState((state) => ({ ...state, playlists }));
     }
   }, [user, tracks, playlists]);
 

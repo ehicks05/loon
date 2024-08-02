@@ -84,9 +84,14 @@ export default function SidePanel() {
     { path: "/library", icon: <FaFolderOpen />, text: "Library" },
   ];
 
-  const playlistLinks = playlists.map((playlist) =>
-    playlistToLink(playlist, selectedPlaylistId),
-  );
+  const favorites = playlists.find((p) => p.favorites);
+  const queue = playlists.find((p) => p.queue);
+  const rest = playlists
+    .filter((p) => !p.favorites && !p.queue)
+    .sort((o1, o2) => o1.id.localeCompare(o2.id));
+  const playlistLinks = [favorites, queue, ...rest]
+    .filter((o): o is Playlist => !!o)
+    .map((playlist) => playlistToLink(playlist, selectedPlaylistId));
 
   return (
     <nav className={"flex flex-col bg-neutral-900 rounded-lg"}>

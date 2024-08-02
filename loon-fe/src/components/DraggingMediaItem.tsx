@@ -56,7 +56,9 @@ export default function DraggingMediaItem({
 
         <div className={"mr-2 flex basis-5 items-center"} />
 
-        <div className="basis-5">{track.formattedDuration}</div>
+        <div className="basis-5 text-neutral-300">
+          {track.formattedDuration}
+        </div>
       </div>
     </div>
   );

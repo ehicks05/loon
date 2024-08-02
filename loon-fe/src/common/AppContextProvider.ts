@@ -94,11 +94,11 @@ export const getPlaylistById = (id) => {
 };
 
 // Update indices locally for quick render, later backend will return authoritative results.
-export const dragAndDrop = async (formData) => {
-  const oldIndex = Number(formData.get("oldIndex"));
-  const newIndex = Number(formData.get("newIndex"));
-  const playlistId = Number(formData.get("playlistId"));
-
+export const dragAndDrop = async ({
+  playlistId,
+  oldIndex,
+  newIndex,
+}: { playlistId: string; oldIndex: number; newIndex: number }) => {
   const playlists = useAppStore.getState().playlists;
   const playlist = playlists.find((p) => p.id === playlistId);
   const rest = playlists.filter((p) => p.id !== playlistId);
@@ -107,6 +107,8 @@ export const dragAndDrop = async (formData) => {
     return;
   }
 
+  // splice the moving track from oldIndex to newIndex,
+  // then do a brute force reindexing
   const tracks = [...playlist.playlistTracks];
   const track = tracks[oldIndex];
   tracks.splice(oldIndex, 1);

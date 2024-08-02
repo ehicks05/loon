@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { eq } from "drizzle-orm";
+import { and, between, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../../db";
 import { playlist_tracks, playlists } from "../../drizzle/main";
@@ -152,17 +152,57 @@ export const playlistRouter = router({
       async ({ ctx: { user }, input: { playlistId, oldIndex, newIndex } }) => {
         const playlist = await db.query.playlists.findFirst({
           where: eq(playlists.id, playlistId),
+          with: { playlistTracks: true },
         });
-        if (!playlist) {
+        const selectedPlaylistTrack = playlist?.playlistTracks.find(
+          (pt) => pt.index === oldIndex,
+        );
+
+        if (!playlist || !selectedPlaylistTrack) {
           throw new TRPCError({ code: "NOT_FOUND" });
         }
         if (user.id !== playlist.userId) {
           throw new TRPCError({ code: "FORBIDDEN" });
         }
+        if (oldIndex === newIndex) {
+          throw new TRPCError({ code: "BAD_REQUEST" });
+        }
 
-        // handle the move of playlistTrack at oldIndex to newIndex
+        // If we're moving a track forward, the other affected tracks will move back. and vice versa.
+        const otherTrackOffset = newIndex > oldIndex ? "- 1" : "+ 1";
 
-        return "ok";
+        const otherTrackStartIndex =
+          newIndex > oldIndex ? oldIndex + 1 : oldIndex - 1;
+        const otherTrackEndIndex = newIndex;
+
+        // move the other tracks
+        await db
+          .update(playlist_tracks)
+          .set({
+            index: sql`${playlist_tracks.index} ${otherTrackOffset}`,
+          })
+          .where(
+            and(
+              eq(playlist_tracks.playlistId, playlistId),
+              between(
+                playlist_tracks.index,
+                otherTrackStartIndex,
+                otherTrackEndIndex,
+              ),
+            ),
+          );
+
+        await db
+          .update(playlist_tracks)
+          .set({ index: newIndex })
+          .where(
+            and(
+              eq(playlist_tracks.playlistId, playlistId),
+              eq(playlist_tracks.trackId, selectedPlaylistTrack.trackId),
+            ),
+          );
+
+        return { success: "ok" };
       },
     ),
 });

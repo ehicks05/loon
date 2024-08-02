@@ -5,7 +5,8 @@ import { trpc } from "../utils/trpc";
 
 function GithubLogin() {
   const { search } = useLocation();
-  const { data: user, refetch } = trpc.misc.me.useQuery();
+  const utils = trpc.useUtils();
+  const { data: user } = trpc.misc.me.useQuery();
   const history = useHistory();
 
   useEffect(() => {
@@ -22,13 +23,13 @@ function GithubLogin() {
   useEffect(() => {
     const doIt = async () => {
       await superFetch(`/login/github/callback${search}`, { method: "GET" });
-      refetch();
+      utils.invalidate();
     };
 
     if (search) {
       doIt();
     }
-  }, [search, refetch]);
+  }, [search, utils]);
 
   useEffect(() => {
     if (user) {

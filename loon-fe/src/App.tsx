@@ -22,28 +22,34 @@ const useCacheData = () => {
   const { data: user, isLoading: isLoadingUser } = trpc.misc.me.useQuery();
   const { data: tracks, isLoading: isLoadingTracks } =
     trpc.tracks.list.useQuery();
-  const { data: playlists, isLoading: isLoadingPlaylists } =
-    trpc.playlist.list.useQuery(undefined, {
-      enabled: !!user,
-    });
+  const {
+    data: playlists,
+    isLoading: isLoadingPlaylists,
+    refetch: refetchPlaylists,
+  } = trpc.playlist.list.useQuery();
   const isLoading = isLoadingUser || isLoadingTracks || isLoadingPlaylists;
 
   useEffect(() => {
     if (user) {
       useUserStore2.setState((state) => ({ ...state, user }));
     }
+    refetchPlaylists();
+  }, [user, refetchPlaylists]);
 
+  useEffect(() => {
     if (tracks) {
       useAppStore.setState((state) => ({
         ...state,
         tracks: tracks.map(addFormattedDuration),
       }));
     }
+  }, [tracks]);
 
+  useEffect(() => {
     if (playlists) {
       useAppStore.setState((state) => ({ ...state, playlists }));
     }
-  }, [user, tracks, playlists]);
+  }, [playlists]);
 
   return { isLoading, user, tracks, playlists };
 };

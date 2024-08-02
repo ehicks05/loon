@@ -27,14 +27,15 @@ function classNames(...classes) {
 }
 
 export default function Navbar() {
-  const { data: user, refetch } = trpc.misc.me.useQuery();
+  const utils = trpc.useUtils();
+  const { data: user } = trpc.misc.me.useQuery();
   const { pathname } = useLocation();
   const history = useHistory();
 
   async function handleLogout() {
     await superFetch("/logout", { method: "POST" });
+    utils.invalidate();
     history.push("/");
-    refetch();
   }
 
   const isAdmin = user?.isAdmin;

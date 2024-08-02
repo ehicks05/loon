@@ -3,10 +3,13 @@ import { and, between, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../../db";
 import { playlist_tracks, playlists } from "../../drizzle/main";
-import { protectedProcedure, router } from "../trpc";
+import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 export const playlistRouter = router({
-  list: protectedProcedure.query(async ({ ctx: { user } }) => {
+  list: publicProcedure.query(async ({ ctx: { user } }) => {
+    if (!user) {
+      return [];
+    }
     return db.query.playlists.findMany({
       with: {
         playlistTracks: { orderBy: playlist_tracks.index },

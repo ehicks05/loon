@@ -6,7 +6,6 @@ import {
   setShuffle,
   useUserStore,
 } from "../../common/UserContextProvider";
-import { Button } from "../Button";
 import { Equalizer } from "../Equalizer";
 import PlaybackButtons from "./PlaybackButtons";
 import TrackDescription from "./TrackDescription";
@@ -52,9 +51,9 @@ const EqPopover = () => {
   return (
     <Popover.Root modal>
       <Popover.Trigger asChild>
-        <Button className="bg-black rounded text-neutral-300 p-2">
+        <button type="button" className="bg-black rounded text-neutral-300 p-2">
           <FaSliders className="rotate-90" />
-        </Button>
+        </button>
       </Popover.Trigger>
       <Popover.Anchor />
       <Popover.Portal>

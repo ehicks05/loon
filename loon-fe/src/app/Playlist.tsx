@@ -199,7 +199,7 @@ export default function Playlist() {
         )}
 
         {playlist && !playlist.queue && !playlist.favorites && (
-          <div className="subtitle">
+          <div>
             <Link
               to={`/playlists/${playlist.id}/edit`}
               className="p-2 bg-black rounded"

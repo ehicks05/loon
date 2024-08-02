@@ -94,7 +94,7 @@ export const getPlaylistById = (id) => {
 };
 
 // Update indices locally for quick render, later backend will return authoritative results.
-export const dragAndDrop = async ({
+export const handleLocalDragAndDrop = ({
   playlistId,
   oldIndex,
   newIndex,
@@ -122,10 +122,4 @@ export const dragAndDrop = async ({
     ...state,
     playlists: [...rest, playlist],
   }));
-
-  await superFetch(`${playlistBaseUrl}dragAndDrop`, {
-    method: "POST",
-    body: formData,
-  });
-  fetchPlaylists();
 };

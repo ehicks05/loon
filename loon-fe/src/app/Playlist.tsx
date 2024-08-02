@@ -1,8 +1,8 @@
 import {
   clearPlaylist,
   copyPlaylist,
-  dragAndDrop,
   getPlaylistById,
+  handleLocalDragAndDrop,
   useAppStore,
   useTrackMap,
 } from "@/common/AppContextProvider";
@@ -15,6 +15,7 @@ import { Button } from "@/components/Button";
 import DraggingMediaItem from "@/components/DraggingMediaItem";
 import MediaItem from "@/components/MediaItem";
 import { TextInput } from "@/components/TextInput";
+import { trpc } from "@/utils/trpc";
 import {
   DragDropContext,
   Draggable,
@@ -74,6 +75,11 @@ export default function Playlist() {
     (state) => state.userState.selectedTrackId,
   );
 
+  const utils = trpc.useUtils();
+  const { mutate: persistDragAndDrop } = trpc.playlist.dragAndDrop.useMutation({
+    onSuccess: () => utils.playlist.list.invalidate(),
+  });
+
   const listRef = useRef<List>(null);
   const [containerRef, { height: containerHeight }] =
     useMeasure<HTMLDivElement>();
@@ -84,24 +90,20 @@ export default function Playlist() {
     };
   }, []);
 
-  function onDragEnd(result: DropResult) {
+  function onDragEnd({ source, destination }: DropResult) {
     // dropped outside the list
-    if (!result.destination) return;
+    if (!destination) return;
+    // didn't move
+    if (source.index === destination.index) return;
 
-    if (result.source.index !== result.destination.index)
-      persistDragAndDrop(
-        playlistId,
-        result.source.index,
-        result.destination.index,
-      );
-  }
+    const args = {
+      playlistId,
+      oldIndex: source.index,
+      newIndex: destination.index,
+    };
 
-  function persistDragAndDrop(
-    playlistId: string,
-    oldIndex: number,
-    newIndex: number,
-  ) {
-    dragAndDrop({ playlistId, oldIndex, newIndex });
+    handleLocalDragAndDrop(args);
+    persistDragAndDrop(args);
   }
 
   function saveAsPlaylist() {

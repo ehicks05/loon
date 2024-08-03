@@ -1,9 +1,7 @@
 import type {
   DraggableProvided,
   DraggableStateSnapshot,
-  DraggableStyle,
 } from "@hello-pangea/dnd";
-import type { CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import {
   setSelectedPlaylistId,
@@ -11,17 +9,6 @@ import {
 } from "../common/UserContextProvider";
 import type { Track } from "../common/types";
 import ActionMenu from "./ActionMenu";
-
-const getRowStyle = (
-  isDragging: boolean,
-  draggableStyle?: DraggableStyle | null,
-): CSSProperties => ({
-  // some basic styles to make the items look a bit nicer
-  userSelect: "none",
-  filter: isDragging ? "brightness(150%)" : "",
-  // styles we need to apply on draggables
-  ...draggableStyle,
-});
 
 interface Props {
   trackNumber: number;
@@ -36,7 +23,6 @@ export default function MediaItem({
   track,
   playlistId,
   provided,
-  snapshot,
 }: Props) {
   const { selectedTrackId } = useUserStore((state) => ({
     selectedTrackId: state.userState.selectedTrackId,
@@ -45,16 +31,13 @@ export default function MediaItem({
   const artist = track.artist || "Missing!";
   const trackTitle = track.title || "Missing!";
   const album = track.album || "Missing!";
-  const missingFile = !!track.missingFile;
+  const { missingFile } = track;
   const highlightClass = track.id === selectedTrackId ? "text-green-500" : "";
-
-  const isDragging = snapshot?.isDragging || false;
 
   return (
     <div
       className={`group flex h-full p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all ${highlightClass} ${missingFile ? "bg-red-400" : ""}`}
       ref={provided?.innerRef}
-      style={getRowStyle(isDragging, provided?.draggableProps.style)}
       {...provided?.draggableProps}
     >
       <div className={"mr-1 min-w-8 text-right"}>{trackNumber}</div>

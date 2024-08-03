@@ -139,7 +139,7 @@ export default function ActionMenu({ tracks }: { tracks: Track[] }) {
             </div>
           </DropdownMenu.SubTrigger>
           <DropdownMenu.Portal>
-            <DropdownMenu.SubContent className="flex flex-col p-1 rounded-lg bg-neutral-800">
+            <DropdownMenu.SubContent className="flex flex-col p-1 text-sm rounded-lg bg-neutral-800">
               {playlists.map((playlist) => (
                 <DropdownMenu.Item
                   key={playlist.id}
@@ -171,7 +171,7 @@ const Wrapper = ({ children }: { children: ReactNode }) => {
       </DropdownMenu.Trigger>
 
       <DropdownMenu.Portal>
-        <DropdownMenu.Content className="flex flex-col p-1 rounded-lg bg-neutral-800">
+        <DropdownMenu.Content className="flex flex-col p-1 text-sm rounded-lg bg-neutral-800">
           {children}
 
           <DropdownMenu.Arrow />

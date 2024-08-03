@@ -59,68 +59,107 @@ export const playlistRouter = router({
     }),
 
   /**
-   * Create or update a playlist and its track listing.
-   * The incoming trackIds will be used to create new playlistTracks or delete existing ones.
-   * Track ordering will be maintained with new tracks added at the end.
-   * This endpoint is not meant to manage ordering in general.
+   * Create a playlist and its playlistTracks.
    */
-  upsert: protectedProcedure
+  insert: protectedProcedure
     .input(
       z.object({
-        id: z.string().optional(),
         name: z.string(),
         trackIds: z.array(z.string()),
       }),
     )
-    .mutation(async ({ ctx: { user }, input: { id, name, trackIds } }) => {
+    .mutation(async ({ ctx: { user }, input: { name, trackIds } }) => {
       const results = await db
         .insert(playlists)
-        .values({ id, userId: user.id, name })
-        .onConflictDoUpdate({ target: playlists.id, set: { name } })
+        .values({ userId: user.id, name })
         .returning();
-      const upsertedPlaylist = results[0];
+      const playlist = results[0];
 
-      // handle playlistTracks
-      const existingPlaylistTracks = await db.query.playlist_tracks.findMany({
-        where: eq(playlist_tracks.playlistId, upsertedPlaylist.id),
-        orderBy: playlist_tracks.index,
-      });
-      const existingTrackIds = existingPlaylistTracks.map((pt) => pt.trackId);
-      const maxExistingIndex = existingPlaylistTracks.length
-        ? Math.max(...existingPlaylistTracks.map((pt) => pt.index))
-        : 0;
-
-      // keep existing tracks that are also in the input
-      const keptPlaylistTracks = existingPlaylistTracks.filter((pt) =>
-        trackIds.includes(pt.trackId),
-      );
-
-      // create new playlist tracks for input trackIds that aren't present in existing playlist tracks
-      const newTrackIds = trackIds.filter(
-        (id) => !existingTrackIds.includes(id),
-      );
-      const newPlaylistTracks = newTrackIds.map((trackId, index) => ({
-        playlistId: upsertedPlaylist.id,
+      // create new playlistTracks
+      const newPlaylistTracks = trackIds.map((trackId, index) => ({
+        playlistId: playlist.id,
         trackId,
-        index: maxExistingIndex + index,
+        index,
       }));
 
-      // combine kept and new playlist tracks, and remove any gaps in their indices
-      const updatedPlaylistTracks = [
-        ...keptPlaylistTracks,
-        ...newPlaylistTracks,
-      ].map((pt, index) => ({ ...pt, index }));
+      await db.insert(playlist_tracks).values(newPlaylistTracks);
 
-      // nuke the playlist's playlist tracks and recreate with out new list
-      await db
-        .delete(playlist_tracks)
-        .where(eq(playlist_tracks.playlistId, upsertedPlaylist.id));
-      if (updatedPlaylistTracks.length) {
-        await db.insert(playlist_tracks).values(updatedPlaylistTracks);
-      }
-
-      return upsertedPlaylist;
+      return playlist;
     }),
+
+  /**
+   * Update a playlist and its track listing.
+   * The incoming trackIds will be considered the desired set for this playlist.
+   * Track ordering will be maintained with new tracks added at the end.
+   * This endpoint is not meant to manage ordering in general.
+   * Use dragAndDrop for reordering.
+   */
+  update: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        name: z.string().optional(),
+        trackIds: z.array(z.string()),
+      }),
+    )
+    .mutation(
+      async ({ ctx: { user }, input: { id: playlistId, name, trackIds } }) => {
+        const playlist = await db.query.playlists.findFirst({
+          where: eq(playlists.id, playlistId),
+        });
+        if (!playlist) {
+          throw new TRPCError({ code: "NOT_FOUND" });
+        }
+        if (user.id !== playlist.userId) {
+          throw new TRPCError({ code: "FORBIDDEN" });
+        }
+
+        if (name) {
+          await db.update(playlists).set({ name });
+        }
+
+        // handle playlistTracks
+        const existingPlaylistTracks = await db.query.playlist_tracks.findMany({
+          where: eq(playlist_tracks.playlistId, playlistId),
+          orderBy: playlist_tracks.index,
+        });
+        const existingTrackIds = existingPlaylistTracks.map((pt) => pt.trackId);
+        const maxExistingIndex = existingPlaylistTracks.length
+          ? Math.max(...existingPlaylistTracks.map((pt) => pt.index))
+          : 0;
+
+        // keep existing tracks that are also in the input
+        const keptPlaylistTracks = existingPlaylistTracks.filter((pt) =>
+          trackIds.includes(pt.trackId),
+        );
+
+        // create new playlist tracks for input trackIds that aren't present in existing playlist tracks
+        const newTrackIds = trackIds.filter(
+          (id) => !existingTrackIds.includes(id),
+        );
+        const newPlaylistTracks = newTrackIds.map((trackId, index) => ({
+          playlistId,
+          trackId,
+          index: maxExistingIndex + index,
+        }));
+
+        // combine kept and new playlist tracks, and remove any gaps in their indices
+        const updatedPlaylistTracks = [
+          ...keptPlaylistTracks,
+          ...newPlaylistTracks,
+        ].map((pt, index) => ({ ...pt, index }));
+
+        // nuke the playlist's playlist tracks and recreate with out new list
+        await db
+          .delete(playlist_tracks)
+          .where(eq(playlist_tracks.playlistId, playlistId));
+        if (updatedPlaylistTracks.length) {
+          await db.insert(playlist_tracks).values(updatedPlaylistTracks);
+        }
+
+        return { success: "ok" };
+      },
+    ),
 
   delete: protectedProcedure
     .input(z.string())

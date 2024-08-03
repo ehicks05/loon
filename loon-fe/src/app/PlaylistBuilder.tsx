@@ -114,15 +114,23 @@ function PlaylistBuilder({
   const [checked, setChecked] = useState<string[]>(defaultChecked);
   const [expanded, setExpanded] = useState<string[]>(defaultExpanded);
 
-  const { mutate: upsertPlaylist, isPending } =
-    trpc.playlist.upsert.useMutation({
+  const { mutate: insertPlaylist, isPending: isInsertPending } =
+    trpc.playlist.insert.useMutation({
       onSuccess: ({ id }) => {
         utils.playlist.list.invalidate();
-        if (!playlist) {
-          history.push(`/playlists/${id}`);
-        }
+        history.push(`/playlists/${id}`);
       },
     });
+  const { mutate: updatePlaylist, isPending: isUpdatePending } =
+    trpc.playlist.update.useMutation({
+      onSuccess: () => utils.playlist.list.invalidate(),
+    });
+  const isPending = isInsertPending || isUpdatePending;
+
+  const onClick = () =>
+    playlist
+      ? updatePlaylist({ id: playlist.id, name, trackIds: checked })
+      : insertPlaylist({ name, trackIds: checked });
 
   return (
     <section className="flex flex-col justify-between h-full gap-4">
@@ -147,13 +155,7 @@ function PlaylistBuilder({
         />
       </div>
 
-      <Button
-        disabled={isPending}
-        className={"bg-green-600"}
-        onClick={() =>
-          upsertPlaylist({ id: playlist?.id, name, trackIds: checked })
-        }
-      >
+      <Button disabled={isPending} className={"bg-green-600"} onClick={onClick}>
         {playlist ? "Update" : "Create"} Playlist
       </Button>
     </section>

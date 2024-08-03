@@ -1,40 +1,16 @@
 import type { Playlist, Track } from "@/common/types";
 import { trpc } from "@/utils/trpc";
-import * as Popover from "@radix-ui/react-popover";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { partition } from "lodash";
-import { useState } from "react";
+import type { ReactNode } from "react";
 import {
+  FaChevronRight,
   FaEllipsisH,
   FaHeart,
   FaList,
-  FaMinus,
-  FaPlus,
   FaRegHeart,
-  FaSync,
 } from "react-icons/fa";
 import { useAppStore } from "../common/AppContextProvider";
-
-const playlistToOption = (playlist: Playlist) => (
-  <option key={playlist.id} value={playlist.id} title={playlist.name}>
-    {playlist.name.length > 24 ? playlist.name.substring(0, 24) : playlist.name}
-  </option>
-);
-
-function getUpdatedTrackList(
-  mode: "add" | "remove" | "replace",
-  _trackIds: string[],
-  playlist: Playlist,
-) {
-  const playlistTrackIds = playlist.playlistTracks.map(
-    ({ trackId }) => trackId,
-  );
-
-  return mode === "add"
-    ? [...new Set([...playlistTrackIds, ..._trackIds])]
-    : mode === "remove"
-      ? playlistTrackIds.filter((trackId) => !_trackIds.includes(trackId))
-      : _trackIds;
-}
 
 const isSaturated = (playlist: Playlist, trackIds: string[]) => {
   const playlistTrackIds = playlist.playlistTracks.map(
@@ -45,7 +21,7 @@ const isSaturated = (playlist: Playlist, trackIds: string[]) => {
 
 export default function ActionMenu({ tracks }: { tracks: Track[] }) {
   const utils = trpc.useUtils();
-  const { mutate } = trpc.playlist.upsert.useMutation({
+  const { mutate } = trpc.playlist.update.useMutation({
     onSuccess: () => {
       utils.playlist.list.invalidate();
     },
@@ -69,182 +45,153 @@ export default function ActionMenu({ tracks }: { tracks: Track[] }) {
     (playlist) => isSaturated(playlist, trackIds),
   );
 
-  const addToPlaylistOptions = unsaturatedPlaylists.map(playlistToOption);
-  const removeFromPlaylistOptions = saturatedPlaylists.map(playlistToOption);
-
-  const [playlistToAddTo, setPlaylistToAddTo] = useState(
-    unsaturatedPlaylists[0]?.id || "",
-  );
-  const [playlistToRemoveFrom, setPlaylistToRemoveFrom] = useState(
-    saturatedPlaylists[0]?.id || "",
-  );
-
   if (!favoritesPlaylist || !queuePlaylist) {
     return null;
   }
 
+  function getUpdatedTrackList(mode: "add" | "remove", playlist: Playlist) {
+    const playlistTrackIds = playlist.playlistTracks.map(
+      ({ trackId }) => trackId,
+    );
+
+    return mode === "add"
+      ? [...new Set([...playlistTrackIds, ...trackIds])]
+      : playlistTrackIds.filter((trackId) => !trackIds.includes(trackId));
+  }
+
+  const handleFavorites = () => {
+    mutate({
+      id: favoritesPlaylist.id,
+      trackIds: getUpdatedTrackList(
+        isFavorite ? "remove" : "add",
+        favoritesPlaylist,
+      ),
+    });
+  };
+  const favoritesIcon = isFavorite ? (
+    <FaHeart className="w-4 text-green-500" />
+  ) : (
+    <FaRegHeart className="w-4" />
+  );
+
+  const handleQueue = () => {
+    mutate({
+      id: queuePlaylist.id,
+      trackIds: getUpdatedTrackList(isQueued ? "remove" : "add", queuePlaylist),
+    });
+  };
+  const queueIcon = (
+    <FaList className={`w-4 ${isQueued ? "text-green-500" : ""}`} />
+  );
+
+  const itemClass =
+    "flex items-center gap-2 px-2 py-1 rounded cursor-pointer focus-visible:outline-none focus-visible:bg-neutral-700";
+
   return (
-    <Popover.Root modal>
-      <Popover.Trigger className="p-2 rounded bg-black">
-        <FaEllipsisH />
-      </Popover.Trigger>
-      <Popover.Anchor />
-      <Popover.Portal>
-        <Popover.Content
-          align="end"
-          sideOffset={12}
-          className="flex flex-col text-neutral-400 p-2 rounded bg-neutral-800"
+    <Wrapper open={tracks[0].id === "B0B9A994FB45A73D3315FD9DB93E0902"}>
+      <DropdownMenu.Item
+        className={itemClass}
+        onSelect={(e) => {
+          e.preventDefault();
+          handleFavorites();
+        }}
+      >
+        {favoritesIcon}
+        {isFavorite ? "Remove from" : "Add to"} Favorites
+      </DropdownMenu.Item>
+      <DropdownMenu.Item
+        className={itemClass}
+        onSelect={(e) => {
+          e.preventDefault();
+          handleQueue();
+        }}
+      >
+        {queueIcon}
+        {isQueued ? "Remove from" : "Add to"} Queue
+      </DropdownMenu.Item>
+
+      <DropdownMenu.Separator className="h-0.5 m-1 bg-neutral-500" />
+
+      <DropdownMenu.Sub>
+        <DropdownMenu.SubTrigger
+          disabled={unsaturatedPlaylists.length === 0}
+          className="flex gap-8 w-full items-center justify-between pl-6 px-2 py-1 rounded cursor-pointer focus-visible:outline-none focus-visible:bg-neutral-700"
         >
-          <Popover.Arrow />
-
-          <button
-            type="button"
-            className="dropdown-item flex items-center gap-2 p-2"
-            onClick={() => {
-              const updatedTrackIds = getUpdatedTrackList(
-                isFavorite ? "remove" : "add",
-                trackIds,
-                favoritesPlaylist,
-              );
-              mutate({
-                id: favoritesPlaylist.id,
-                name: favoritesPlaylist.name,
-                trackIds: updatedTrackIds,
-              });
-            }}
-          >
-            {isFavorite ? (
-              <FaHeart className="text-green-500" />
-            ) : (
-              <FaRegHeart className="text-neutral-500" />
-            )}
-            {isFavorite ? "Remove " : "Add"} to Favorites
-          </button>
-
-          <button
-            type="button"
-            className="dropdown-item flex items-center gap-2 p-2"
-            onClick={() => {
-              const updatedTrackIds = getUpdatedTrackList(
-                isQueued ? "remove" : "add",
-                trackIds,
-                queuePlaylist,
-              );
-              mutate({
-                id: queuePlaylist.id,
-                name: queuePlaylist.name,
-                trackIds: updatedTrackIds,
-              });
-            }}
-          >
-            <FaList
-              className={`${isQueued ? "text-green-500" : "text-neutral-500"}`}
-            />
-            {isQueued ? "Remove from " : "Add to "} Queue
-          </button>
-
-          <button
-            type="button"
-            className="dropdown-item flex items-center gap-2 p-2"
-            onClick={() => {
-              const updatedTrackIds = getUpdatedTrackList(
-                "replace",
-                trackIds,
-                queuePlaylist,
-              );
-              mutate({
-                id: queuePlaylist.id,
-                name: queuePlaylist.name,
-                trackIds: updatedTrackIds,
-              });
-            }}
-          >
-            <FaSync className="text-neutral-500" />
-            Replace Queue
-          </button>
-
-          <div className="flex items-center">
-            <span className="p-2">
-              <FaPlus />
-            </span>
-            <div className="flex-grow p-2">
-              <select
-                value={playlistToAddTo}
-                onChange={(e) => setPlaylistToAddTo(e.target.value)}
-                className="w-full bg-neutral-700 p-1 border-r-4 border-neutral-700"
+          <span>Add to...</span>
+          <FaChevronRight size={12} />
+        </DropdownMenu.SubTrigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.SubContent className="flex flex-col p-1 rounded-lg bg-neutral-800">
+            {unsaturatedPlaylists.map((playlist) => (
+              <DropdownMenu.Item
+                key={playlist.id}
+                className={itemClass}
+                onSelect={(e) => {
+                  e.preventDefault();
+                  mutate({
+                    id: playlist.id,
+                    trackIds: getUpdatedTrackList("add", playlist),
+                  });
+                }}
               >
-                {addToPlaylistOptions}
-              </select>
-            </div>
-            <button
-              type="button"
-              className="p-2 bg-black rounded"
-              onClick={() => {
-                const playlist = playlists.find(
-                  (p) => p.id === playlistToAddTo,
-                );
-                if (!playlist) {
-                  return;
-                }
-                const updatedTrackIds = getUpdatedTrackList(
-                  "add",
-                  trackIds,
-                  playlist,
-                );
-                console.log({ playlist, updatedTrackIds });
-                mutate({
-                  id: playlist.id,
-                  name: playlist.name,
-                  trackIds: updatedTrackIds,
-                });
-              }}
-              disabled={!playlistToAddTo}
-            >
-              Ok
-            </button>
-          </div>
+                {playlist.name}
+              </DropdownMenu.Item>
+            ))}
+          </DropdownMenu.SubContent>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Sub>
 
-          <div className="flex items-center">
-            <span className="p-2">
-              <FaMinus />
-            </span>
-            <div className="flex-grow p-2">
-              <select
-                value={playlistToRemoveFrom}
-                onChange={(e) => setPlaylistToRemoveFrom(e.target.value)}
-                className="w-full bg-neutral-700 p-1 border-r-4 border-neutral-700"
+      <DropdownMenu.Sub>
+        <DropdownMenu.SubTrigger
+          disabled={saturatedPlaylists.length === 0}
+          className="flex gap-8 w-full items-center justify-between pl-6 px-2 py-1 rounded cursor-pointer focus-visible:outline-none focus-visible:bg-neutral-700"
+        >
+          <span>Remove from...</span>
+          <FaChevronRight size={12} />
+        </DropdownMenu.SubTrigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.SubContent className="flex flex-col p-1 rounded-lg bg-neutral-800">
+            {saturatedPlaylists.map((playlist) => (
+              <DropdownMenu.Item
+                key={playlist.id}
+                className={itemClass}
+                onSelect={(e) => {
+                  e.preventDefault();
+                  mutate({
+                    id: playlist.id,
+                    trackIds: getUpdatedTrackList("remove", playlist),
+                  });
+                }}
               >
-                {removeFromPlaylistOptions}
-              </select>
-            </div>
-            <button
-              type="button"
-              className="p-2 bg-black rounded"
-              onClick={() => {
-                const playlist = playlists.find(
-                  (p) => p.id === playlistToRemoveFrom,
-                );
-                if (!playlist) {
-                  return;
-                }
-                const updatedTrackIds = getUpdatedTrackList(
-                  "remove",
-                  trackIds,
-                  playlist,
-                );
-                mutate({
-                  id: playlist.id,
-                  name: playlist.name,
-                  trackIds: updatedTrackIds,
-                });
-              }}
-              disabled={!playlistToRemoveFrom}
-            >
-              Ok
-            </button>
-          </div>
-        </Popover.Content>
-      </Popover.Portal>
-    </Popover.Root>
+                {playlist.name}
+              </DropdownMenu.Item>
+            ))}
+          </DropdownMenu.SubContent>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Sub>
+
+      <DropdownMenu.Separator />
+    </Wrapper>
   );
 }
+
+const Wrapper = ({
+  open,
+  children,
+}: { open: boolean; children: ReactNode }) => {
+  return (
+    <DropdownMenu.Root defaultOpen={open}>
+      <DropdownMenu.Trigger className="p-2 focus-visible:outline-none">
+        <FaEllipsisH />
+      </DropdownMenu.Trigger>
+
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content className="flex flex-col p-1 rounded-lg bg-neutral-800">
+          {children}
+
+          <DropdownMenu.Arrow />
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
+  );
+};

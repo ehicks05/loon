@@ -88,7 +88,7 @@ export default function ActionMenu({ tracks }: { tracks: Track[] }) {
     "flex items-center gap-2 px-2 py-1 rounded cursor-pointer focus-visible:outline-none focus-visible:bg-neutral-700";
 
   return (
-    <Wrapper open={tracks[0].id === "B0B9A994FB45A73D3315FD9DB93E0902"}>
+    <Wrapper>
       <DropdownMenu.Item
         className={itemClass}
         onSelect={(e) => {
@@ -175,12 +175,9 @@ export default function ActionMenu({ tracks }: { tracks: Track[] }) {
   );
 }
 
-const Wrapper = ({
-  open,
-  children,
-}: { open: boolean; children: ReactNode }) => {
+const Wrapper = ({ children }: { children: ReactNode }) => {
   return (
-    <DropdownMenu.Root defaultOpen={open}>
+    <DropdownMenu.Root>
       <DropdownMenu.Trigger className="p-2 focus-visible:outline-none">
         <FaEllipsisH />
       </DropdownMenu.Trigger>

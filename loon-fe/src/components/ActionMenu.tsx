@@ -84,7 +84,7 @@ export default function ActionMenu({ tracks }: { tracks: Track[] }) {
   }
 
   return (
-    <Popover.Root>
+    <Popover.Root modal>
       <Popover.Trigger className="p-2 rounded bg-black">
         <FaEllipsisH />
       </Popover.Trigger>

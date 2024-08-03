@@ -1,5 +1,5 @@
 import * as Popover from "@radix-ui/react-popover";
-import { FaRandom, FaVolumeOff, FaVolumeUp } from "react-icons/fa";
+import { FaRandom, FaVolumeMute, FaVolumeUp } from "react-icons/fa";
 import { FaSliders } from "react-icons/fa6";
 import {
   setMuted,
@@ -34,7 +34,7 @@ function MuteButton() {
   function handleMuteChange() {
     setMuted(!muted);
   }
-  const Icon = muted ? FaVolumeOff : FaVolumeUp;
+  const Icon = muted ? FaVolumeMute : FaVolumeUp;
 
   return (
     <button

@@ -84,6 +84,21 @@ export default function ActionMenu({ tracks }: { tracks: Track[] }) {
     <FaList className={`w-4 ${isQueued ? "text-green-500" : ""}`} />
   );
 
+  const subMenus = [
+    {
+      playlists: unsaturatedPlaylists,
+      disabled: unsaturatedPlaylists.length === 0,
+      label: "Add to...",
+      verb: "add",
+    },
+    {
+      playlists: saturatedPlaylists,
+      disabled: saturatedPlaylists.length === 0,
+      label: "Remove from...",
+      verb: "remove",
+    },
+  ] as const;
+
   const itemClass =
     "flex items-center gap-2 px-2 py-1 rounded cursor-pointer focus-visible:outline-none focus-visible:bg-neutral-700";
 
@@ -112,65 +127,38 @@ export default function ActionMenu({ tracks }: { tracks: Track[] }) {
 
       <DropdownMenu.Separator className="h-0.5 m-1 bg-neutral-500" />
 
-      <DropdownMenu.Sub>
-        <DropdownMenu.SubTrigger
-          disabled={unsaturatedPlaylists.length === 0}
-          className="flex gap-8 w-full items-center justify-between pl-6 px-2 py-1 rounded cursor-pointer focus-visible:outline-none focus-visible:bg-neutral-700"
-        >
-          <span>Add to...</span>
-          <FaChevronRight size={12} />
-        </DropdownMenu.SubTrigger>
-        <DropdownMenu.Portal>
-          <DropdownMenu.SubContent className="flex flex-col p-1 rounded-lg bg-neutral-800">
-            {unsaturatedPlaylists.map((playlist) => (
-              <DropdownMenu.Item
-                key={playlist.id}
-                className={itemClass}
-                onSelect={(e) => {
-                  e.preventDefault();
-                  mutate({
-                    id: playlist.id,
-                    trackIds: getUpdatedTrackList("add", playlist),
-                  });
-                }}
-              >
-                {playlist.name}
-              </DropdownMenu.Item>
-            ))}
-          </DropdownMenu.SubContent>
-        </DropdownMenu.Portal>
-      </DropdownMenu.Sub>
-
-      <DropdownMenu.Sub>
-        <DropdownMenu.SubTrigger
-          disabled={saturatedPlaylists.length === 0}
-          className="flex gap-8 w-full items-center justify-between pl-6 px-2 py-1 rounded cursor-pointer focus-visible:outline-none focus-visible:bg-neutral-700"
-        >
-          <span>Remove from...</span>
-          <FaChevronRight size={12} />
-        </DropdownMenu.SubTrigger>
-        <DropdownMenu.Portal>
-          <DropdownMenu.SubContent className="flex flex-col p-1 rounded-lg bg-neutral-800">
-            {saturatedPlaylists.map((playlist) => (
-              <DropdownMenu.Item
-                key={playlist.id}
-                className={itemClass}
-                onSelect={(e) => {
-                  e.preventDefault();
-                  mutate({
-                    id: playlist.id,
-                    trackIds: getUpdatedTrackList("remove", playlist),
-                  });
-                }}
-              >
-                {playlist.name}
-              </DropdownMenu.Item>
-            ))}
-          </DropdownMenu.SubContent>
-        </DropdownMenu.Portal>
-      </DropdownMenu.Sub>
-
-      <DropdownMenu.Separator />
+      {subMenus.map(({ playlists, disabled, label, verb }) => (
+        <DropdownMenu.Sub key={verb}>
+          <DropdownMenu.SubTrigger
+            disabled={disabled}
+            className={`${itemClass} ${disabled ? "cursor-not-allowed text-neutral-400" : ""}`}
+          >
+            <div className="flex gap-8 w-full items-center justify-between">
+              <span>{label}</span>
+              {!disabled && <FaChevronRight size={12} />}
+            </div>
+          </DropdownMenu.SubTrigger>
+          <DropdownMenu.Portal>
+            <DropdownMenu.SubContent className="flex flex-col p-1 rounded-lg bg-neutral-800">
+              {playlists.map((playlist) => (
+                <DropdownMenu.Item
+                  key={playlist.id}
+                  className={itemClass}
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    mutate({
+                      id: playlist.id,
+                      trackIds: getUpdatedTrackList(verb, playlist),
+                    });
+                  }}
+                >
+                  {playlist.name}
+                </DropdownMenu.Item>
+              ))}
+            </DropdownMenu.SubContent>
+          </DropdownMenu.Portal>
+        </DropdownMenu.Sub>
+      ))}
     </Wrapper>
   );
 }

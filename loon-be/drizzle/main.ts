@@ -46,7 +46,7 @@ export const tracks = pgTable("tracks", {
   discNumber: integer("disc_number"),
   duration: bigint("duration", { mode: "number" }).notNull(),
   extension: varchar("extension", { length: 255 }),
-  missingFile: boolean("missing_file"),
+  missingFile: boolean("missing_file").default(false).notNull(),
   musicBrainzTrackId: varchar("music_brainz_track_id", { length: 255 }),
   path: varchar("path", { length: 255 }).notNull(),
   sampleRate: integer("sample_rate"),

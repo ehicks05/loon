@@ -10,7 +10,8 @@
     "test": "node --test test/**/*.test.js",
     "start": "fastify start -l info app.js",
     "dev-fastify": "fastify start -w -l info -P app.js",
-    "dev": "tsx watch --env-file=.env server.ts"
+    "dev": "tsx watch --env-file=.env server.ts",
+    "push": "npx drizzle-kit push"
   },
   "keywords": [],
   "author": "",

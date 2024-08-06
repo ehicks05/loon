@@ -65,3 +65,17 @@ export const getTrackInput = async (path: string) => {
 
   return newtrack;
 };
+
+export const getPictures = async (path: string) => {
+  const result = await getMetadata(path);
+  if (!result) {
+    return null;
+  }
+  const {
+    metadata: {
+      common: { picture },
+    },
+  } = result;
+
+  return picture;
+};

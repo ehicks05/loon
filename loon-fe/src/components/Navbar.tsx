@@ -57,14 +57,14 @@ export default function Navbar() {
             </DisclosureButton>
           </div>
           <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-            <div className="flex flex-shrink-0 items-center">
+            <div className="flex flex-shrink-0 items-center h-14 w-14">
               <img
-                src="/images/loon.png"
-                className="h-8 w-auto invert"
+                src="/images/document (14b).png"
+                className="h-14 object-contain"
                 alt="Loon"
               />
             </div>
-            <div className="hidden sm:ml-6 sm:block">
+            <div className="hidden sm:ml-6 sm:flex items-center">
               <div className="flex space-x-4">
                 {navigation.map((item) => (
                   <Link

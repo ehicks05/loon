@@ -26,9 +26,9 @@ export default function Artists() {
     <>
       <div className="p-2">{artists.length} Artists:</div>
       <div className="flex p-2">
-        <div className="flex flex-wrap gap-2 justify-between">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {artists.map((artist: Artist) => (
-            <div key={artist.name} className="w-36">
+            <div key={artist.name} className="w-full">
               <ArtistCard artist={artist} />
             </div>
           ))}

@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import pMap from "p-map";
 import { db } from "../../db";
 import { system_settings, tracks } from "../../drizzle/main";
-import { listFiles } from "../../utils/files";
+import { listMediaFiles } from "../../utils/files";
 import { getTrackInput } from "../../utils/metadata";
 import { adminProcedure, router } from "../trpc";
 
@@ -41,7 +41,7 @@ const syncLibrary = async () => {
   await db.update(system_settings).set({ isSyncing: true });
 
   // scan music folder
-  const mediaFiles = await listFiles(systemSettings.musicFolder);
+  const mediaFiles = await listMediaFiles(systemSettings.musicFolder);
 
   try {
     const result = await pMap(mediaFiles, processFile, { concurrency: 4 });
@@ -60,7 +60,7 @@ export const systemRouter = router({
       return { mediaFiles: [] };
     }
 
-    const mediaFiles = await listFiles(systemSettings.musicFolder);
+    const mediaFiles = await listMediaFiles(systemSettings.musicFolder);
 
     return { mediaFiles };
   }),

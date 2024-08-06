@@ -9,7 +9,7 @@ const isSupportedFile = (file: Dirent) =>
 
 const toFullPath = (file: Dirent) => `${file.parentPath}\\${file.name}`;
 
-export const listFiles = async (path: string) => {
+export const listMediaFiles = async (path: string) => {
   const files = await readdir(path, { recursive: true, withFileTypes: true });
   const filtered = files.filter(isSupportedFile).map(toFullPath);
 

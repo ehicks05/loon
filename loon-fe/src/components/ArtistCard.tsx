@@ -13,19 +13,17 @@ export function ArtistCard({ artist }: { artist: Artist }) {
   const artistTracks = tracks.filter((track) => track.artist === artist.name);
 
   return (
-    <div className="flex flex-col items-start">
-      <div className="group relative">
-        <img
-          src={PLACEHOLDER_IMAGE_URL}
-          data-src={imageUrl}
-          alt="Placeholder"
-          className="lazyload rounded w-36 h-36 object-cover"
-        />
-        <div className="invisible group-hover:visible absolute top-2 right-2">
-          <ActionMenu tracks={artistTracks} />
-        </div>
+    <div className="group relative flex flex-col w-full items-start">
+      <img
+        src={PLACEHOLDER_IMAGE_URL}
+        data-src={imageUrl}
+        alt="Placeholder"
+        className="lazyload w-full rounded-full object-cover"
+      />
+      <div className="invisible group-hover:visible absolute top-2 right-2">
+        <ActionMenu tracks={artistTracks} />
       </div>
-      <div className="p-3">
+      <div className="absolute bottom-0 left-0 p-2 w-full bg-neutral-900 bg-opacity-75">
         <Link to={`/artists/${artist.name}`}>{artist.name}</Link>
       </div>
     </div>

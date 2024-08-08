@@ -4,6 +4,16 @@ import { env } from "../../env";
 const spotify = SpotifyApi.withClientCredentials(
   env.SPOTIFY_CLIENT_ID,
   env.SPOTIFY_CLIENT_SECRET,
+  undefined,
+  {
+    beforeRequest(url, options) {},
+    afterRequest(url, options, response) {
+      console.log(`${url} - ${response.status}`);
+      if (response.status !== 200) {
+        console.log(response.headers);
+      }
+    },
+  },
 );
 
 export { spotify };

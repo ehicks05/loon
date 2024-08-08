@@ -5,7 +5,12 @@ import { db } from "../../db";
 import { system_settings, tracks } from "../../drizzle/main";
 import { listMediaFiles } from "../../utils/files";
 import { getTrackInput } from "../../utils/metadata";
-import { type LoonItemTypes, fetchImages } from "../spotify";
+import {
+  type LoonItemTypes,
+  fetchImages,
+  imageCache,
+  toFullAndThumb,
+} from "../spotify";
 import type { TrackInput } from "../types";
 import { omitImageFields } from "./utils";
 
@@ -43,17 +48,16 @@ const updateTrackImage = async (track: TrackInput) => {
   // }
 
   // grab from spotify
-  const artistImages = await fetchImages({
-    q: track.artist,
-    itemType: "artist",
-  });
-  const albumImages = await fetchImages({ q: track.album, itemType: "album" });
+  const imageQueries = getUniqueImageQueries([track]);
+  const [artistImages, albumImages] = imageQueries
+    .map((query) => imageCache[query.itemType][query.q] || [])
+    .map((images) => toFullAndThumb(images));
 
   const update = {
-    spotifyArtistImage: artistImages.full.url,
-    spotifyArtistImageThumb: artistImages.thumb.url,
-    spotifyAlbumImage: albumImages.full.url,
-    spotifyAlbumImageThumb: albumImages.thumb.url,
+    spotifyArtistImage: artistImages?.full?.url,
+    spotifyArtistImageThumb: artistImages?.thumb?.url,
+    spotifyAlbumImage: albumImages?.full?.url,
+    spotifyAlbumImageThumb: albumImages?.thumb?.url,
   };
 
   const result = await db
@@ -68,7 +72,10 @@ const getUniqueImageQueries = (tracks: TrackInput[]) =>
   uniqBy(
     tracks.flatMap((track) => [
       { itemType: "artist" as LoonItemTypes, q: track.artist },
-      { itemType: "album" as LoonItemTypes, q: track.album },
+      {
+        itemType: "album" as LoonItemTypes,
+        q: `${track.artist} ${track.album}`,
+      },
     ]),
     (o) => `${o.itemType}:${o.q}`,
   );
@@ -76,11 +83,7 @@ const getUniqueImageQueries = (tracks: TrackInput[]) =>
 const cacheImages = async (tracks: TrackInput[]) => {
   const uniqueImageQueries = getUniqueImageQueries(tracks);
 
-  await pMap(
-    uniqueImageQueries,
-    async (imageQuery) => fetchImages(imageQuery),
-    { concurrency: 8 },
-  );
+  await pMap(uniqueImageQueries, fetchImages, { concurrency: 1 });
 };
 
 export const syncLibrary = async () => {

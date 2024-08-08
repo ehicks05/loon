@@ -4,12 +4,10 @@ import { LoonSlider } from "../Slider";
 import { formatTime } from "../utils";
 
 export default function TrackProgressBar() {
-  const { elapsedTime, duration, setForcedElapsedTime } = usePlayerStore(
-    (state) => ({
-      elapsedTime: state.elapsedTime,
-      duration: state.duration,
-      setForcedElapsedTime: state.setForcedElapsedTime,
-    }),
+  const elapsedTime = usePlayerStore((state) => state.elapsedTime);
+  const duration = usePlayerStore((state) => state.duration);
+  const setForcedElapsedTime = usePlayerStore(
+    (state) => state.setForcedElapsedTime,
   );
 
   const [localValue, setLocalValue] = useState(elapsedTime);

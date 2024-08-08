@@ -12,7 +12,7 @@ const FILTER_TYPE_LABELS: Partial<Record<BiquadFilterType, string>> = {
 };
 
 export const Equalizer = () => {
-  const eqBands = useUserStore((state) => state.userState.eqBands);
+  const eqBands = useUserStore((state) => state.eqBands);
 
   const handleUpdate = (newBand: EqBand, id: number) =>
     setEqBands(eqBands.map((band) => (band.id === id ? newBand : band)));

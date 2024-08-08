@@ -13,7 +13,7 @@ import TrackProgressBar from "./TrackProgressBar";
 import VolumeSlider from "./VolumeSlider";
 
 function ShuffleButton() {
-  const shuffle = useUserStore((state) => state.userState.shuffle);
+  const shuffle = useUserStore((state) => state.shuffle);
   function handleShuffleChange() {
     setShuffle(!shuffle);
   }
@@ -30,7 +30,7 @@ function ShuffleButton() {
 }
 
 function MuteButton() {
-  const muted = useUserStore((state) => state.userState.muted);
+  const muted = useUserStore((state) => state.muted);
   function handleMuteChange() {
     setMuted(!muted);
   }

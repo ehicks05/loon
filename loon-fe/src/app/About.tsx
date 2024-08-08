@@ -2,9 +2,7 @@ import { getTrackById } from "@/common/AppContextProvider";
 import { useUserStore } from "@/common/UserContextProvider";
 
 export default function About() {
-  const selectedTrackId = useUserStore(
-    (state) => state.userState.selectedTrackId,
-  );
+  const selectedTrackId = useUserStore((state) => state.selectedTrackId);
   const selectedTrack = getTrackById(selectedTrackId);
 
   return (

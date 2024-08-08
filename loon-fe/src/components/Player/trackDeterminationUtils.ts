@@ -6,7 +6,7 @@ import {
 
 export const getNewTrackId = (input: PlaybackDirection) => {
   const { selectedTrackId, selectedPlaylistId, shuffle } =
-    useUserStore.getState().userState;
+    useUserStore.getState();
 
   const currentPlaylistTrackIds =
     getCurrentPlaylistTrackIds(selectedPlaylistId);

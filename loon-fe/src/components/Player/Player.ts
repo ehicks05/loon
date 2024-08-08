@@ -16,7 +16,7 @@ import renderSpectrumFrame from "./spectrum";
 import { getNewTrackId } from "./trackDeterminationUtils";
 
 const Player = () => {
-  const userState = useUserStore((state) => state.userState);
+  const userState = useUserStore((state) => state);
   const {
     setElapsedTime,
     setDuration,

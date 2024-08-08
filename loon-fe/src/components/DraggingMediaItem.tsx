@@ -13,9 +13,7 @@ export default function DraggingMediaItem({
   track,
   provided,
 }: Props) {
-  const selectedTrackId = useUserStore(
-    (state) => state.userState.selectedTrackId,
-  );
+  const selectedTrackId = useUserStore((state) => state.selectedTrackId);
 
   const artist = track.artist || "Missing!";
   const trackTitle = track.title || "Missing!";

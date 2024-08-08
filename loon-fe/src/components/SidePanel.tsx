@@ -61,9 +61,7 @@ const SidebarLink = ({
 
 export default function SidePanel() {
   const playlists = useAppStore((state) => state.playlists);
-  const selectedPlaylistId = useUserStore(
-    (state) => state.userState.selectedPlaylistId,
-  );
+  const selectedPlaylistId = useUserStore((state) => state.selectedPlaylistId);
 
   const defaultLinks = [
     {

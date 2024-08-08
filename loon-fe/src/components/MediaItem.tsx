@@ -24,9 +24,7 @@ export default function MediaItem({
   playlistId,
   provided,
 }: Props) {
-  const { selectedTrackId } = useUserStore((state) => ({
-    selectedTrackId: state.userState.selectedTrackId,
-  }));
+  const selectedTrackId = useUserStore((state) => state.selectedTrackId);
 
   const artist = track.artist || "Missing!";
   const trackTitle = track.title || "Missing!";

@@ -7,9 +7,7 @@ import { useUserStore } from "../../common/UserContextProvider";
 import { PLACEHOLDER_IMAGE_URL, getImageUrl } from "../utils";
 
 export default function TrackDescription() {
-  const selectedTrackId = useUserStore(
-    (state) => state.userState.selectedTrackId,
-  );
+  const selectedTrackId = useUserStore((state) => state.selectedTrackId);
   const { width } = useWindowSize();
 
   const selectedTrack = getTrackById(selectedTrackId);

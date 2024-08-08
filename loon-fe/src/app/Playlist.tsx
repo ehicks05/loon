@@ -100,9 +100,7 @@ export default function Playlist() {
 
   const playlist = getPlaylistById(playlistId);
 
-  const selectedTrackId = useUserStore(
-    (state) => state.userState.selectedTrackId,
-  );
+  const selectedTrackId = useUserStore((state) => state.selectedTrackId);
   const selectedTrackIndex = playlist?.playlistTracks.findIndex(
     (t) => t.trackId === selectedTrackId,
   );

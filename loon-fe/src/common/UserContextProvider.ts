@@ -6,70 +6,61 @@ export type PlaybackDirection = "prev" | "next";
 
 export interface EqBand {
   id: number;
-  type: BiquadFilterType;
   frequency: number;
   gain: number;
+  type: BiquadFilterType;
 }
 
 export const DEFAULT_EQ_BANDS: EqBand[] = [
   {
     id: 0,
-    type: "lowshelf",
     frequency: 100,
     gain: 0,
+    type: "lowshelf",
   },
   {
     id: 1,
-    type: "peaking",
     frequency: 400,
     gain: 0,
+    type: "peaking",
   },
   {
     id: 2,
-    type: "peaking",
     frequency: 1200,
     gain: 0,
+    type: "peaking",
   },
   {
     id: 3,
-    type: "highshelf",
     frequency: 4000,
     gain: 0,
+    type: "highshelf",
   },
 ];
 
 export interface UserState {
-  id?: number;
+  eqBands: EqBand[];
+  muted: boolean;
+  selectedContextMenuId: string;
   selectedPlaylistId: string;
   selectedTrackId: string;
-  selectedContextMenuId: string;
   shuffle: boolean;
-  muted: boolean;
   volume: number;
-  eqBands: EqBand[];
-  theme?: string; // remove?
-  transcode: boolean;
 }
 
 const DEFAULT_USER: UserState = {
+  eqBands: DEFAULT_EQ_BANDS,
+  muted: false,
+  selectedContextMenuId: "",
   selectedPlaylistId: "",
   selectedTrackId: "",
   shuffle: false,
-  muted: false,
   volume: 0,
-  eqBands: DEFAULT_EQ_BANDS,
-  transcode: false,
-  selectedContextMenuId: "",
 };
 
-export const useUserStore = create<{ userState: UserState }>(
+export const useUserStore = create<UserState>(
   persist(
-    devtools(
-      () => ({
-        userState: DEFAULT_USER,
-      }),
-      { name: "userState" },
-    ),
+    devtools(() => DEFAULT_USER, { name: "userState" }),
     { name: "loon-storage" },
   ),
 );
@@ -78,17 +69,18 @@ export const useUserStore2 = create<{ user?: User }>(
   devtools(() => ({}), { name: "user" }),
 );
 
-const setUserState = (update: Partial<UserState>) =>
+const updateUser = (update: Partial<UserState>) =>
   useUserStore.setState((state) => ({
     ...state,
-    userState: { ...state.userState, ...update },
+    ...update,
   }));
 
-// helpers
+export const setEqBands = async (eqBands: EqBand[]) => updateUser({ eqBands });
 
-const updateUser = async (data) => {
-  setUserState(data);
-};
+export const setMuted = async (muted: boolean) => updateUser({ muted });
+
+export const setSelectedContextMenuId = (selectedContextMenuId: string) =>
+  updateUser({ selectedContextMenuId });
 
 export const setSelectedPlaylistId = async (
   selectedPlaylistId: string,
@@ -102,19 +94,9 @@ export const setSelectedPlaylistId = async (
 
 export const setSelectedTrackId = async (selectedTrackId: string) => {
   if (!selectedTrackId) return;
-
-  updateUser({
-    selectedPlaylistId: useUserStore.getState().userState.selectedPlaylistId,
-    selectedTrackId,
-  });
+  updateUser({ selectedTrackId });
 };
 
-export const setMuted = async (muted: boolean) => updateUser({ muted });
 export const setShuffle = async (shuffle: boolean) => updateUser({ shuffle });
-export const setVolume = async (volume: number) => updateUser({ volume });
-export const setTranscode = async (transcode: boolean) =>
-  updateUser({ transcode });
-export const setEqBands = async (eqBands: EqBand[]) => updateUser({ eqBands });
 
-export const setSelectedContextMenuId = (selectedContextMenuId: string) =>
-  updateUser({ selectedContextMenuId });
+export const setVolume = async (volume: number) => updateUser({ volume });

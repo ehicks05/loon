@@ -8,9 +8,7 @@ export default function Playlists() {
   const utils = trpc.useUtils();
   const { data: user } = trpc.misc.me.useQuery();
   const playlists = useAppStore((state) => state.playlists);
-  const selectedPlaylistId = useUserStore(
-    (state) => state.userState.selectedPlaylistId,
-  );
+  const selectedPlaylistId = useUserStore((state) => state.selectedPlaylistId);
 
   const { mutate: deletePlaylist } = trpc.playlist.delete.useMutation({
     onSuccess: () => {

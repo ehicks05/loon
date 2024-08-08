@@ -10,7 +10,7 @@ const VolumeLabel = ({ volume }: { volume: number }) => (
 );
 
 export default function VolumeSlider() {
-  const volume = useUserStore((state) => state.userState.volume);
+  const volume = useUserStore((state) => state.volume);
 
   return (
     <div className="w-32 max-w-32 md:w-auto md:flex-grow mr-1 relative group">

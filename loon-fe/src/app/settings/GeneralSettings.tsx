@@ -1,9 +1,7 @@
-import { setTranscode, useUserStore } from "@/common/UserContextProvider";
 import { trpc } from "@/utils/trpc";
 import { useState } from "react";
 
 export default function GeneralSettings() {
-  const transcode = useUserStore((state) => state.userState.transcode);
   const [transcodeQuality, _] = useState("");
 
   const { data: user } = trpc.misc.me.useQuery();
@@ -22,8 +20,8 @@ export default function GeneralSettings() {
           <input
             type="checkbox"
             name="transcode"
-            checked={transcode}
-            onChange={(e) => setTranscode(e.target.checked)}
+            checked={false}
+            onChange={() => alert("not implemented")}
           />
           Prefer transcoded mp3 v{transcodeQuality} (if available)
         </label>

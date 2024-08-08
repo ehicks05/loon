@@ -25,9 +25,7 @@ export const TrackListing = ({ tracks }: Props) => {
 
   const listRef = useRef<List>(null);
 
-  const selectedTrackId = useUserStore(
-    (state) => state.userState.selectedTrackId,
-  );
+  const selectedTrackId = useUserStore((state) => state.selectedTrackId);
   const selectedTrackIndex = tracks.findIndex((t) => t.id === selectedTrackId);
 
   useEffect(() => {

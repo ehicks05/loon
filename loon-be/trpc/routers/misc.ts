@@ -18,11 +18,7 @@ export const miscRouter = router({
   setSystemSettings: adminProcedure
     .input(
       z.object({
-        dataFolder: z.string(),
-        lastFmApiKey: z.string(),
         musicFolder: z.string(),
-        spotifyClientId: z.string(),
-        spotifyClientSecret: z.string(),
         transcodeFolder: z.string(),
         transcodeQuality: z.string(),
         watchFiles: z.boolean(),

@@ -25,7 +25,7 @@ export const LibrarySync = () => {
 
   const isDisableForm = isLoading || isPending || syncStatus?.inProgress;
 
-  useInterval(refetch, syncStatus?.inProgress ? 10000 : null);
+  useInterval(refetch, syncStatus?.inProgress ? 30_000 : null);
 
   const onChange = (name: string, value: string | boolean) => {
     setOptions({ ...options, [name]: value });

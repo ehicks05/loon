@@ -1,0 +1,126 @@
+import { eq } from "drizzle-orm";
+import { uniqBy } from "lodash-es";
+import pMap from "p-map";
+import { db } from "../../db";
+import { system_settings, tracks } from "../../drizzle/main";
+import { listMediaFiles } from "../../utils/files";
+import { getTrackInput } from "../../utils/metadata";
+import { type LoonItemTypes, fetchImages } from "../spotify";
+import type { TrackInput } from "../types";
+import { omitImageFields } from "./utils";
+
+const toTrackInputs = async (mediaFiles: string[]) => {
+  const results = await pMap(mediaFiles, getTrackInput, { concurrency: 64 });
+  const trackInputs = results.filter(
+    (result): result is TrackInput => !!result,
+  );
+  return trackInputs;
+};
+
+const updateTrack = async (trackInput: TrackInput) => {
+  // upsert, but if it already exists, leave the imageIds fields alone
+  const results = await db
+    .insert(tracks)
+    .values(trackInput)
+    .onConflictDoUpdate({
+      target: tracks.id,
+      set: omitImageFields(trackInput),
+    })
+    .returning();
+  const track = results[0];
+  return track;
+};
+
+const updateTrackImage = async (track: TrackInput) => {
+  // does the track already have images?
+  // if (
+  //   track.spotifyArtistImage &&
+  //   track.spotifyArtistImageThumb &&
+  //   track.spotifyAlbumImage &&
+  //   track.spotifyAlbumImageThumb
+  // ) {
+  //   return;
+  // }
+
+  // grab from spotify
+  const artistImages = await fetchImages({
+    q: track.artist,
+    itemType: "artist",
+  });
+  const albumImages = await fetchImages({ q: track.album, itemType: "album" });
+
+  const update = {
+    spotifyArtistImage: artistImages.full.url,
+    spotifyArtistImageThumb: artistImages.thumb.url,
+    spotifyAlbumImage: albumImages.full.url,
+    spotifyAlbumImageThumb: albumImages.thumb.url,
+  };
+
+  const result = await db
+    .update(tracks)
+    .set(update)
+    .where(eq(tracks.id, track.id))
+    .returning();
+  return result[0];
+};
+
+const getUniqueImageQueries = (tracks: TrackInput[]) =>
+  uniqBy(
+    tracks.flatMap((track) => [
+      { itemType: "artist" as LoonItemTypes, q: track.artist },
+      { itemType: "album" as LoonItemTypes, q: track.album },
+    ]),
+    (o) => `${o.itemType}:${o.q}`,
+  );
+
+const preloadImageCache = async (tracks: TrackInput[]) => {
+  const uniqueImageQueries = getUniqueImageQueries(tracks);
+
+  await pMap(
+    uniqueImageQueries,
+    async (imageQuery) => fetchImages(imageQuery),
+    { concurrency: 8 },
+  );
+};
+
+export const syncLibrary = async () => {
+  // get music file listing
+  const systemSettings = await db.query.system_settings.findFirst();
+  if (!systemSettings) {
+    throw new Error("missing systemSettings");
+  }
+  console.log("listing media files");
+  const mediaFiles = await listMediaFiles(systemSettings.musicFolder);
+  console.log("converting media files to trackInputs");
+  const trackInputs = await toTrackInputs(mediaFiles);
+
+  console.log("prewarming image cache");
+  await preloadImageCache(trackInputs);
+
+  console.log("mapping trackInputs onto the db");
+  await pMap(trackInputs, updateTrack, { concurrency: 64 });
+  console.log("saving image fields");
+  await pMap(trackInputs, updateTrackImage, { concurrency: 64 });
+};
+
+export const runLibrarySyncTask = async () => {
+  const systemSettings = await db.query.system_settings.findFirst();
+  if (!systemSettings) {
+    return { success: false, message: "Missing systemSettings" };
+  }
+
+  if (systemSettings.isSyncing) {
+    return { success: false, message: "Syncing in progress" };
+  }
+
+  await db.update(system_settings).set({ isSyncing: true });
+
+  try {
+    await syncLibrary();
+  } catch (e) {
+    console.log(e);
+  }
+
+  await db.update(system_settings).set({ isSyncing: false });
+  return { success: true, message: "Sync complete" };
+};

@@ -1,14 +1,27 @@
-import { v2 as cloudinary } from "cloudinary";
-import { env } from "../../env";
+import type { TrackInput } from "../types";
+import { cloudinary } from "./client";
 
-const {
-  CLOUDINARY_API_KEY: api_key,
-  CLOUDINARY_API_SECRET: api_secret,
-  CLOUDINARY_CLOUD: cloud_name,
-} = env;
+export const checkExistence = async (publicId: string) => {
+  const imageSize = await cloudinary.uploader.explicit(publicId);
+  return imageSize !== 0;
+};
 
-cloudinary.config({ api_key, api_secret, cloud_name });
+const getPublicImageIds = ({ artist, album }: TrackInput) => ({
+  artistImageId: `art/${artist}/${artist}`,
+  albumImageId: `art/${artist}/albums/${album}`,
+});
 
-console.log(cloudinary.url);
+export const syncImagesCloudinary = async (track: TrackInput) => {
+  // do we already have the images?
+  const { artistImageId, albumImageId } = getPublicImageIds(track);
+  const artistImageExists = await checkExistence(artistImageId);
+  const albumImageExists = await checkExistence(albumImageId);
 
-export { cloudinary };
+  if (artistImageExists && albumImageExists) {
+    return;
+  }
+
+  // if not, determine where they're coming from
+
+  // artist image source priority: embedded
+};

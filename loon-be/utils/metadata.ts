@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { openAsBlob } from "node:fs";
 import { parseBlob } from "music-metadata";
+import type { TrackInput } from "../services/types";
 
 export const getMetadata = async (path: string) => {
   const blob = await openAsBlob(path);
@@ -18,16 +19,23 @@ const dbGainToLinear = (db: number) => 10 ** (db / 20);
 export const getTrackInput = async (path: string) => {
   const result = await getMetadata(path);
   if (!result) {
+    console.log(`unable to grab metadata for ${path}`);
     return null;
   }
-  const { blob, metadata } = result;
-  const { common, format } = metadata;
+  const {
+    metadata: { common, format },
+  } = result;
 
-  let recordingId = common.musicbrainz_recordingid;
+  const { artist, album, title } = common;
+  if (!artist || !album || !title) {
+    console.log(`missing basic metadata on ${path}`);
+    return undefined;
+  }
 
-  if (!recordingId) {
+  let id = common.musicbrainz_trackid;
+  if (!id) {
     console.log(`missing a recordingId on ${path}`);
-    recordingId = createHash("md5")
+    id = createHash("md5")
       .update(`${common.artist}:${common.album}:${common.title}`)
       .digest("hex");
   }
@@ -38,26 +46,16 @@ export const getTrackInput = async (path: string) => {
   // const trackPeakDb = common.replaygain_track_peak?.dB || 0;
   // const trackPeakLinear = dbGainToLinear(trackPeakDb);
 
-  const newtrack = {
-    id: recordingId,
-    album: common.album || "",
+  const newtrack: TrackInput = {
+    id,
+    album,
     albumArtist: common.albumartist || "",
-    albumImageId: "",
-    albumThumbnailId: "",
-    artist: common.artist || "",
-    artistImageId: "",
-    artistThumbnailId: "",
-    bitDepth: format.bitsPerSample,
+    artist,
     discNumber: common.disk.no,
     duration: Math.round(format.duration || 0),
-    extension: "remove this field?",
-    missingFile: false,
     musicBrainzTrackId: common.musicbrainz_trackid,
-    path: path,
-    sampleRate: format.sampleRate,
-    size: blob.size,
-    title: common.title || "",
-    trackGain: String(trackGainDb),
+    path,
+    title,
     trackGainLinear: String(trackGainLinear),
     trackNumber: common.track.no,
     trackPeak: String(trackPeakRatio),

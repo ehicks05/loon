@@ -1,19 +1,40 @@
-import { SpotifyApi } from "@spotify/web-api-ts-sdk";
-import { env } from "../../env";
+import type { Image, ItemTypes } from "@spotify/web-api-ts-sdk";
+import { spotify } from "./client";
 
-const spotify = SpotifyApi.withClientCredentials(
-  env.SPOTIFY_CLIENT_ID,
-  env.SPOTIFY_CLIENT_SECRET,
-);
+export type LoonItemTypes = Extract<ItemTypes, "artist" | "album">;
 
-const items = await spotify.search("The Beatles", ["artist"]);
+const imageCache: Record<LoonItemTypes, Record<string, Image[]>> = {
+  artist: {},
+  album: {},
+};
 
-console.table(
-  items.artists.items.map((item) => ({
-    name: item.name,
-    followers: item.followers.total,
-    popularity: item.popularity,
-  })),
-);
+const toFullAndThumb = (images: Image[]) => ({
+  full: images[0] || "",
+  thumb: images.length === 2 ? images[1] : images[0] || "",
+});
 
-export { spotify };
+export const fetchImages = async ({
+  q,
+  itemType,
+}: { q: string; itemType: LoonItemTypes }) => {
+  const cachedResult = imageCache[itemType][q];
+  if (cachedResult) {
+    return toFullAndThumb(cachedResult);
+  }
+
+  const result = await spotify.search(q, [itemType]);
+  const resultEntity =
+    itemType === "artist" ? result.artists.items[0] : result.albums.items[0];
+  if (!resultEntity) {
+    console.log(`unable to find ${itemType} ${q}`);
+  }
+
+  const images = resultEntity?.images || [];
+  if (images.length === 0) {
+    console.log(`unable to find images for ${itemType} ${q}`);
+  }
+
+  imageCache[itemType][q] = images;
+
+  return toFullAndThumb(images);
+};

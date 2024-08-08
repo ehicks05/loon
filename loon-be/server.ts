@@ -15,6 +15,7 @@ import { serializeCookie } from "oslo/cookie";
 import { db } from "./db";
 import { userTable } from "./drizzle/lucia";
 import { playlists, tracks } from "./drizzle/main";
+import { env } from "./env";
 import { github } from "./lucia/github";
 import { lucia } from "./lucia/lucia";
 import { createContext } from "./trpc/context";
@@ -25,9 +26,17 @@ import { getMetadata, getTrackInput } from "./utils/metadata";
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 const __dirname = path.dirname(__filename); // get the name of the directory
 
+const envToLogger = {
+  development: {
+    transport: { target: "@fastify/one-line-logger" },
+  },
+  production: true,
+  test: false,
+};
+
 const server = fastify({
   maxParamLength: 5000,
-  logger: true,
+  logger: envToLogger[env.NODE_ENV] ?? true,
 });
 
 server.register(cors, { origin: true });

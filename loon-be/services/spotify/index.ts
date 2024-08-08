@@ -10,7 +10,7 @@ const imageCache: Record<LoonItemTypes, Record<string, Image[]>> = {
 
 const toFullAndThumb = (images: Image[]) => ({
   full: images[0] || "",
-  thumb: images.length === 2 ? images[1] : images[0] || "",
+  thumb: images.length > 1 ? images[1] : images[0] || "",
 });
 
 export const fetchImages = async ({

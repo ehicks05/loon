@@ -73,7 +73,7 @@ const getUniqueImageQueries = (tracks: TrackInput[]) =>
     (o) => `${o.itemType}:${o.q}`,
   );
 
-const preloadImageCache = async (tracks: TrackInput[]) => {
+const cacheImages = async (tracks: TrackInput[]) => {
   const uniqueImageQueries = getUniqueImageQueries(tracks);
 
   await pMap(
@@ -84,6 +84,7 @@ const preloadImageCache = async (tracks: TrackInput[]) => {
 };
 
 export const syncLibrary = async () => {
+  console.log("starting sync");
   // get music file listing
   const systemSettings = await db.query.system_settings.findFirst();
   if (!systemSettings) {
@@ -95,12 +96,13 @@ export const syncLibrary = async () => {
   const trackInputs = await toTrackInputs(mediaFiles);
 
   console.log("prewarming image cache");
-  await preloadImageCache(trackInputs);
+  await cacheImages(trackInputs);
 
   console.log("mapping trackInputs onto the db");
   await pMap(trackInputs, updateTrack, { concurrency: 64 });
   console.log("saving image fields");
   await pMap(trackInputs, updateTrackImage, { concurrency: 64 });
+  console.log("done");
 };
 
 export const runLibrarySyncTask = async () => {

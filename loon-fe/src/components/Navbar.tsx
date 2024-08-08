@@ -57,10 +57,10 @@ export default function Navbar() {
             </DisclosureButton>
           </div>
           <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-            <div className="flex flex-shrink-0 items-center h-14 w-14">
+            <div className="flex flex-shrink-0 items-center h-10">
               <img
                 src="/images/document (14b).png"
-                className="h-14 object-contain"
+                className="h-10 object-contain"
                 alt="Loon"
               />
             </div>

@@ -11,7 +11,13 @@ export const tracksRouter = router({
     const result = await db
       .select()
       .from(tracks)
-      .orderBy(asc(tracks.artist), asc(tracks.album), asc(tracks.title));
+      .orderBy(
+        asc(tracks.artist),
+        asc(tracks.album),
+        asc(tracks.discNumber),
+        asc(tracks.trackNumber),
+        asc(tracks.title),
+      );
     return result;
   }),
   pictures: publicProcedure

@@ -4,6 +4,7 @@ import MediaItem from "@/components/MediaItem";
 import { sortBy } from "lodash";
 import { useRouteMatch } from "react-router-dom";
 import Albums from "./Albums";
+import { trackToArtist } from "./Artists";
 
 export default function Artist() {
   const {
@@ -16,15 +17,12 @@ export default function Artist() {
     ["album", "discNumber", "trackNumber"],
   );
 
+  if (artistTracks.length === 0) return null;
+
   return (
     <section className="">
       <div className="flex flex-col gap-4">
-        <ArtistCard
-          artist={{
-            name: artistTracks[0]?.artist,
-            imageId: artistTracks[0]?.spotifyArtistImage,
-          }}
-        />
+        <ArtistCard artist={trackToArtist(artistTracks[0])} size="full" />
         <div className="">
           <div className="text-lg font-bold">Albums</div>
           <Albums tracks={artistTracks} hideAlbumArtist={true} />

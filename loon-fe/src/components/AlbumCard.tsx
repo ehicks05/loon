@@ -35,7 +35,6 @@ export default function AlbumCard({ album, hideAlbumArtist }: Props) {
       <div className="group relative">
         <img
           src={PLACEHOLDER_IMAGE_URL}
-          // data-src={getImageUrl(album.imageId)}
           data-src={album.imageId}
           alt="Placeholder"
           className="lazyload rounded w-36 h-36 object-cover"

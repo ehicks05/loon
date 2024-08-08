@@ -7,11 +7,13 @@ import { PLACEHOLDER_IMAGE_URL } from "@/constants";
 import { uniq } from "lodash";
 import { useAppStore } from "../common/AppContextProvider";
 
-export function ArtistCard({ artist }: { artist: Artist }) {
+export function ArtistCard({
+  artist,
+  size,
+}: { artist: Artist; size: "full" | "thumb" }) {
   const tracks = useAppStore((state) => state.tracks);
 
-  // const imageUrl = getImageUrl(artist.imageId);
-  const imageUrl = artist.imageId;
+  const imageUrl = size === "full" ? artist.image : artist.imageThumb;
   const artistTracks = tracks.filter((track) => track.artist === artist.name);
   const artistAlbums = uniq(artistTracks.map((track) => track.album));
 

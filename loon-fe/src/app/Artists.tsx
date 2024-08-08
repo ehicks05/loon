@@ -7,12 +7,14 @@ import { sortBy, uniqBy } from "lodash";
 
 export interface Artist {
   name: string;
-  imageId: string | null;
+  image: string | null;
+  imageThumb: string | null;
 }
 
-const trackToArtist = (track: Track): Artist => ({
+export const trackToArtist = (track: Track): Artist => ({
   name: track.artist,
-  imageId: track.spotifyArtistImageThumb,
+  image: track.spotifyArtistImage,
+  imageThumb: track.spotifyArtistImageThumb,
 });
 
 export default function Artists() {
@@ -29,7 +31,7 @@ export default function Artists() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {artists.map((artist: Artist) => (
             <div key={artist.name} className="w-full">
-              <ArtistCard artist={artist} />
+              <ArtistCard artist={artist} size="thumb" />
             </div>
           ))}
         </div>

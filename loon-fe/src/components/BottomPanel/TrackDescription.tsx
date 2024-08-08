@@ -21,7 +21,7 @@ export default function TrackDescription() {
 
   const textWidth = width >= 768 ? "calc(100vw - 408px)" : "100%";
 
-  const imageUrl = getImageUrl(selectedTrack?.albumThumbnailId);
+  const imageUrl = selectedTrack?.spotifyAlbumImageThumb;
 
   // todo: does this need to be lazyload?
   const albumArt = (

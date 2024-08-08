@@ -12,7 +12,7 @@ export interface Artist {
 
 const trackToArtist = (track: Track): Artist => ({
   name: track.artist,
-  imageId: track.artistThumbnailId,
+  imageId: track.spotifyArtistImageThumb,
 });
 
 export default function Artists() {

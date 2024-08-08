@@ -18,7 +18,7 @@ export default function Albums({ tracks: _tracks, hideAlbumArtist }: Props) {
       tracks.map((track) => ({
         name: track.album,
         artist: track.albumArtist,
-        imageId: track.albumThumbnailId,
+        imageId: track.spotifyAlbumImage,
       })),
       isEqual,
     ),

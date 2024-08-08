@@ -26,7 +26,7 @@ export default function Album() {
     return (
       <MediaItem
         key={track.id}
-        playlistId={0}
+        playlistId={""}
         track={track}
         trackNumber={`${track.discNumber}.${track.trackNumber}`}
       />
@@ -42,7 +42,7 @@ export default function Album() {
               album={{
                 artist: albumTracks[0].albumArtist,
                 name: albumTracks[0].album,
-                imageId: albumTracks[0].albumImageId,
+                imageId: albumTracks[0].spotifyAlbumImageThumb,
               }}
             />
           </div>

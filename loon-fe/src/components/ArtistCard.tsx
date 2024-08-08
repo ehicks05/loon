@@ -3,28 +3,47 @@ import ActionMenu from "./ActionMenu";
 import "lazysizes";
 import "lazysizes/plugins/attrchange/ls.attrchange";
 import type { Artist } from "@/app/Artists";
+import { uniq } from "lodash";
 import { useAppStore } from "../common/AppContextProvider";
 import { PLACEHOLDER_IMAGE_URL, getImageUrl } from "./utils";
 
 export function ArtistCard({ artist }: { artist: Artist }) {
   const tracks = useAppStore((state) => state.tracks);
 
-  const imageUrl = getImageUrl(artist.imageId);
+  // const imageUrl = getImageUrl(artist.imageId);
+  const imageUrl = artist.imageId;
   const artistTracks = tracks.filter((track) => track.artist === artist.name);
+  const artistAlbums = uniq(artistTracks.map((track) => track.album));
 
   return (
-    <div className="group relative flex flex-col w-full items-start">
-      <img
-        src={PLACEHOLDER_IMAGE_URL}
-        data-src={imageUrl}
-        alt="Placeholder"
-        className="lazyload w-full rounded-full object-cover"
-      />
-      <div className="invisible group-hover:visible absolute top-2 right-2">
-        <ActionMenu tracks={artistTracks} />
+    <div className="group relative flex w-full items-start">
+      <div className="flex flex-shrink-0 h-32 w-32">
+        <img
+          src={PLACEHOLDER_IMAGE_URL}
+          data-src={imageUrl}
+          alt="Placeholder"
+          className="lazyload rounded-lg w-32 h-32 object-cover"
+        />
+        <div className="invisible group-hover:visible absolute top-2 right-2">
+          <ActionMenu tracks={artistTracks} />
+        </div>
       </div>
-      <div className="absolute bottom-0 left-0 p-2 w-full bg-neutral-900 bg-opacity-75">
-        <Link to={`/artists/${artist.name}`}>{artist.name}</Link>
+      <div className="p-2 bg-neutral-900 bg-opacity-75">
+        <Link className="text-lg" to={`/artists/${artist.name}`}>
+          {artist.name}
+        </Link>
+        <div className="text-sm">
+          <span className="text-green-500 font-bold">
+            {artistAlbums.length}
+          </span>{" "}
+          album{artistAlbums.length !== 1 ? "s" : ""}
+        </div>
+        <div className="text-sm">
+          <span className="text-green-500 font-bold">
+            {artistTracks.length}
+          </span>{" "}
+          track{artistTracks.length !== 1 ? "s" : ""}
+        </div>
       </div>
     </div>
   );

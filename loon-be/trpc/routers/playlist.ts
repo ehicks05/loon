@@ -43,26 +43,6 @@ export const playlistRouter = router({
       return playlist;
     }),
 
-  create: protectedProcedure
-    .input(z.object({ name: z.string(), trackIds: z.array(z.string()) }))
-    .mutation(async ({ ctx: { user }, input: { name, trackIds } }) => {
-      const results = await db
-        .insert(playlists)
-        .values({ name, userId: user.id, favorites: false, queue: false })
-        .returning();
-      const newPlaylist = results[0];
-
-      // create playlistTracks
-      const playlistTracks = trackIds.map((trackId, index) => ({
-        playlistId: newPlaylist.id,
-        trackId,
-        index,
-      }));
-      await db.insert(playlist_tracks).values(playlistTracks);
-
-      return newPlaylist;
-    }),
-
   /**
    * Create a playlist and its playlistTracks.
    */
@@ -79,15 +59,18 @@ export const playlistRouter = router({
         .values({ userId: user.id, name })
         .returning();
       const playlist = results[0];
+      if (!playlist) {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      }
 
       // create new playlistTracks
-      const newPlaylistTracks = trackIds.map((trackId, index) => ({
+      const playlistTracks = trackIds.map((trackId, index) => ({
         playlistId: playlist.id,
         trackId,
         index,
       }));
 
-      await db.insert(playlist_tracks).values(newPlaylistTracks);
+      await db.insert(playlist_tracks).values(playlistTracks);
 
       return playlist;
     }),
@@ -195,12 +178,6 @@ export const playlistRouter = router({
       }
       const { id, ...values } = playlist;
       return db.insert(playlists).values({ id: "TODO", ...values });
-    }),
-
-  addOrModify: protectedProcedure
-    .input(z.string())
-    .mutation(async ({ input }) => {
-      return db.select().from(playlists).where(eq(playlists.id, input));
     }),
 
   dragAndDrop: protectedProcedure

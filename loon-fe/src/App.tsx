@@ -7,7 +7,6 @@ import { useInterval } from "usehooks-ts";
 import Routes from "./Routes";
 import { useAppStore } from "./common/AppContextProvider";
 import PageLoader from "./common/PageLoader";
-import { useUserStore2 } from "./common/UserContextProvider";
 import type { RawTrackResponse } from "./common/types";
 import { formatTime } from "./components/utils";
 import { useTitle } from "./hooks/useTitle";
@@ -30,10 +29,8 @@ const useCacheData = () => {
   const isLoading = isLoadingUser || isLoadingTracks || isLoadingPlaylists;
 
   useEffect(() => {
-    if (user) {
-      useUserStore2.setState((state) => ({ ...state, user }));
-    }
-    refetchPlaylists();
+    if (user) refetchPlaylists();
+    if (!user) refetchPlaylists();
   }, [user, refetchPlaylists]);
 
   useEffect(() => {

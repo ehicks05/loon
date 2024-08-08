@@ -1,6 +1,4 @@
 import { Redirect, Route, Switch } from "react-router-dom";
-import { useUserStore2 } from "./common/UserContextProvider";
-
 import About from "@/app/About";
 import Album from "@/app/Album";
 import Albums from "@/app/Albums";
@@ -16,10 +14,11 @@ import UserSettings from "@/app/admin/UserSettings";
 import Eq from "@/app/settings/EqPage";
 import GeneralSettings from "@/app/settings/GeneralSettings";
 import { Login } from "./app/Login";
+import { trpc } from "./utils/trpc";
 
 export default function Routes() {
-  const user = useUserStore2((state) => state.user);
-  const isAdmin = user?.isAdmin;
+  const { data: user } = trpc.misc.me.useQuery();
+  const isAdmin = user?.isAdmin || false;
 
   return (
     <>

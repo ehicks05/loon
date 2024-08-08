@@ -1,10 +1,9 @@
-import { useUserStore2 } from "@/common/UserContextProvider";
 import { Button } from "@/components/Button";
 import { CheckboxInput } from "@/components/TextInput";
 import { trpc } from "@/utils/trpc";
 
 export default function UserSettings() {
-  const { user: currentUser } = useUserStore2();
+  const { data: currentUser } = trpc.misc.me.useQuery();
   const { data: users } = trpc.misc.users.useQuery();
   const { mutate: deleteUser } = trpc.misc.deleteUser.useMutation();
   const { mutate: updateUser } = trpc.misc.updateUser.useMutation();

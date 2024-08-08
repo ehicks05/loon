@@ -1,6 +1,5 @@
 import create from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import type { User } from "./types";
 
 export type PlaybackDirection = "prev" | "next";
 
@@ -63,10 +62,6 @@ export const useUserStore = create<UserState>(
     devtools(() => DEFAULT_USER, { name: "userState" }),
     { name: "loon-storage" },
   ),
-);
-
-export const useUserStore2 = create<{ user?: User }>(
-  devtools(() => ({}), { name: "user" }),
 );
 
 const updateUser = (update: Partial<UserState>) =>

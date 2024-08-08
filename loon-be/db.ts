@@ -22,6 +22,9 @@ const seed = async () => {
   if (systemSettingsRows === 0) {
     console.log("..creating system_settings table");
     await db.insert(system_settings).values({});
+  } else {
+    console.log("..setting system_settings.isSyncing = false");
+    await db.update(system_settings).set({ isSyncing: false });
   }
 
   const users = await db.query.userTable.findMany();
@@ -41,6 +44,7 @@ const seed = async () => {
   });
 
   if (newPlaylists.length) {
+    console.log("..ensuring all users have playlists for favorites and queue");
     await db.insert(playlists).values(newPlaylists);
   }
   console.log("done");

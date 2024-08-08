@@ -1,7 +1,8 @@
 import { Button } from "@/components/Button";
 import { CheckboxInput } from "@/components/TextInput";
 import { trpc } from "@/utils/trpc";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useInterval } from "usehooks-ts";
 
 const DEFAULT_SYNC_OPTIONS = {
   scanTracks: false,
@@ -11,23 +12,20 @@ const DEFAULT_SYNC_OPTIONS = {
 
 export const LibrarySync = () => {
   const [options, setOptions] = useState(DEFAULT_SYNC_OPTIONS);
-  const [isSyncing, setIsSyncing] = useState(false);
 
-  const { data } = trpc.system.librarySyncStatus.useQuery();
-  const { mutate, isPending } = trpc.system.runLibrarySync.useMutation();
+  const {
+    data: syncStatus,
+    isLoading,
+    refetch,
+  } = trpc.system.librarySyncStatus.useQuery();
+  const { mutate: runLibrarySync, isPending } =
+    trpc.system.runLibrarySync.useMutation({
+      onSuccess: () => refetch(),
+    });
 
-  const isDisableForm = isPending || isSyncing;
+  const isDisableForm = isLoading || isPending || syncStatus?.inProgress;
 
-  useEffect(() => {
-    if (data) {
-      setIsSyncing(data.inProgress);
-    }
-  }, [data]);
-
-  const runLibrarySync = () => {
-    mutate();
-    setIsSyncing(true);
-  };
+  useInterval(refetch, syncStatus?.inProgress ? 10000 : null);
 
   const onChange = (name: string, value: string | boolean) => {
     setOptions({ ...options, [name]: value });
@@ -61,7 +59,7 @@ export const LibrarySync = () => {
         <Button
           className="bg-green-600"
           disabled={isDisableForm}
-          onClick={runLibrarySync}
+          onClick={() => runLibrarySync()}
         >
           Sync Library
         </Button>

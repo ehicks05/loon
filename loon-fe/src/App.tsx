@@ -58,8 +58,9 @@ export default function App() {
   useInterval(() => fetch("/poll"), 1000 * 60 * 60);
   useTitle();
   const { isLoading } = useCacheData();
+  const tracks = useAppStore((state) => state.tracks);
 
-  if (isLoading) {
+  if (isLoading || !tracks) {
     return <PageLoader />;
   }
 

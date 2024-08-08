@@ -3,9 +3,9 @@ import ActionMenu from "./ActionMenu";
 import "lazysizes";
 import "lazysizes/plugins/attrchange/ls.attrchange";
 import type { Artist } from "@/app/Artists";
+import { PLACEHOLDER_IMAGE_URL } from "@/constants";
 import { uniq } from "lodash";
 import { useAppStore } from "../common/AppContextProvider";
-import { PLACEHOLDER_IMAGE_URL, getImageUrl } from "./utils";
 
 export function ArtistCard({ artist }: { artist: Artist }) {
   const tracks = useAppStore((state) => state.tracks);

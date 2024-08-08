@@ -2,9 +2,9 @@ import { Link } from "react-router-dom";
 import { getTrackById } from "../../common/AppContextProvider";
 import "lazysizes";
 import "lazysizes/plugins/attrchange/ls.attrchange";
+import { PLACEHOLDER_IMAGE_URL } from "@/constants";
 import { useWindowSize } from "usehooks-ts";
 import { useUserStore } from "../../common/UserContextProvider";
-import { PLACEHOLDER_IMAGE_URL, getImageUrl } from "../utils";
 
 export default function TrackDescription() {
   const selectedTrackId = useUserStore((state) => state.selectedTrackId);

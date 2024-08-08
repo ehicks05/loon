@@ -1,7 +1,7 @@
+import { PLACEHOLDER_IMAGE_URL } from "@/constants";
 import { Link } from "react-router-dom";
 import { useAppStore, useDistinctArtists } from "../common/AppContextProvider";
 import ActionMenu from "./ActionMenu";
-import { PLACEHOLDER_IMAGE_URL, getImageUrl } from "./utils";
 
 interface Album {
   name: string;

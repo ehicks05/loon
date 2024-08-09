@@ -1,5 +1,4 @@
 import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
-// @ts-ignore
 import type { AppRouter } from "../../../loon-be/trpc/router";
 
 export type RouterInput = inferRouterInputs<AppRouter>;

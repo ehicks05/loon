@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "preinstall": "cd ../loon-be && npm i",
     "build": "tsc -b && vite build",
     "format": "npx @biomejs/biome format --write ./",
     "lint": "npx @biomejs/biome lint --write ./",

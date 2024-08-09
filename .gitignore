@@ -1,11 +1,1 @@
-# Created by .ignore support plugin (hsz.mobi)
-.gradle/
-.idea/
-build/
-logs/
-node_modules/
-package-lock.json
-src/main/resources/static/js/dist/
-static/
-transcode/
-src/main/resources/application-dev.properties
+node_modules

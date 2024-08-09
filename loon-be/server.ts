@@ -1,5 +1,3 @@
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import cookie from "@fastify/cookie";
 import cors from "@fastify/cors";
 import fastifyStatic from "@fastify/static";
@@ -22,9 +20,6 @@ import { createContext } from "./trpc/context";
 import { type AppRouter, appRouter } from "./trpc/router";
 import { doesFileExist } from "./utils/files";
 import { getMetadata, getTrackInput } from "./utils/metadata";
-
-const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
-const __dirname = path.dirname(__filename); // get the name of the directory
 
 const envToLogger = {
   development: {

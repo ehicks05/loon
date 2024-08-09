@@ -8,8 +8,8 @@
   },
   "scripts": {
     "test": "node --test test/**/*.test.js",
-    "start": "fastify start -l info src/app.js",
-    "dev-fastify": "fastify start -w -l info -P app.js",
+    "start": "fastify start -l info dist/server.js",
+    "dev-fastify": "fastify start -w -l info -P src/server.js",
     "dev": "set NODE_ENV=development&& tsx watch --env-file=.env src/server.ts",
     "push": "npx drizzle-kit push"
   },

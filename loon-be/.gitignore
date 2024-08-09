@@ -60,3 +60,4 @@ profile*
 .env
 
 static
+dist

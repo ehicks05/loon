@@ -91,11 +91,11 @@ export default function Playlist() {
   }
 
   function saveAsPlaylist() {
-    const queueId = playlists.find((playlist) => playlist.queue)?.id;
-    const args = {
-      fromPlaylistId: queueId,
-      name: "TODO",
-    };
+    // const queueId = playlists.find((playlist) => playlist.queue)?.id;
+    // const args = {
+    //   fromPlaylistId: queueId,
+    //   name: "TODO",
+    // };
   }
 
   const playlist = getPlaylistById(playlistId);

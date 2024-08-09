@@ -11,7 +11,7 @@ import type { Track } from "../common/types";
 import ActionMenu from "./ActionMenu";
 
 interface Props {
-  trackNumber: number;
+  trackNumber: string | number;
   track: Track;
   playlistId: string;
   provided?: DraggableProvided;

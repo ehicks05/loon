@@ -15,16 +15,12 @@
     "isolatedModules": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "lib": ["ESNext"]
+    "lib": ["ESNext"], 
+    "composite": true,    
+    "outDir": "dist",
+    "baseUrl": "src"
   },
   "include": [
-    "trpc",
-    "lucia",
-    "utils",
-    "db.ts",
-    "seed.ts",
-    "env.ts",
-    "server.ts",
-    "services"
+    "src"
   ]
 }

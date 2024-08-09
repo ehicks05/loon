@@ -18,6 +18,7 @@ import { trpc } from "./utils/trpc";
 
 export default function Routes() {
   const { data: user } = trpc.misc.me.useQuery();
+  // @ts-ignore: revisit this
   const isAdmin = user?.isAdmin || false;
 
   return (

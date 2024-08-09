@@ -35,6 +35,7 @@ export default function Navbar() {
     history.push("/");
   }
 
+  // @ts-ignore: revisit this
   const isAdmin = user?.isAdmin;
 
   return (

@@ -3,7 +3,6 @@ import Navbar from "@/components/Navbar";
 import Player from "@/components/Player/Player";
 import SidePanel from "@/components/SidePanel";
 import { useEffect } from "react";
-import { useInterval } from "usehooks-ts";
 import Routes from "./Routes";
 import { useAppStore } from "./common/AppContextProvider";
 import PageLoader from "./common/PageLoader";
@@ -52,12 +51,11 @@ const useCacheData = () => {
 };
 
 export default function App() {
-  useInterval(() => fetch("/poll"), 1000 * 60 * 60);
   useTitle();
-  const { isLoading } = useCacheData();
-  const tracks = useAppStore((state) => state.tracks);
+  useCacheData();
+  const { data: tracks, isLoading } = trpc.tracks.list.useQuery();
 
-  if (isLoading || !tracks) {
+  if (isLoading) {
     return <PageLoader />;
   }
 
@@ -76,7 +74,13 @@ export default function App() {
           </div>
         </div>
         <div className="w-full rounded-lg overflow-y-auto overflow-x-hidden p-2 bg-neutral-100 dark:bg-neutral-900">
-          <Routes />
+          {!tracks && (
+            <div className="flex flex-col gap-4 p-4 -m-2 bg-red-600 rounded-lg">
+              <div className="text-3xl">Uh oh!</div>
+              <div className="text-lg">Unable to fetch the music library!</div>
+            </div>
+          )}
+          {tracks && <Routes />}
         </div>
       </div>
       <Player />

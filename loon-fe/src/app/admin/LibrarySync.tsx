@@ -1,25 +1,15 @@
 import { Button } from "@/components/Button";
-import { CheckboxInput } from "@/components/TextInput";
 import { trpc } from "@/utils/trpc";
-import { useState } from "react";
 import { useInterval } from "usehooks-ts";
 
-const DEFAULT_SYNC_OPTIONS = {
-  scanTracks: false,
-  scanImages: false,
-  transcode: false,
-};
-
 export const LibrarySync = () => {
-  const [options, setOptions] = useState(DEFAULT_SYNC_OPTIONS);
-
   const {
     data: syncStatus,
     isLoading,
     refetch,
-  } = trpc.system.librarySyncStatus.useQuery();
+  } = trpc.system.status.useQuery();
   const { mutate: runLibrarySync, isPending } =
-    trpc.system.runLibrarySync.useMutation({
+    trpc.system.syncLibrary.useMutation({
       onSuccess: () => refetch(),
     });
 
@@ -27,35 +17,10 @@ export const LibrarySync = () => {
 
   useInterval(refetch, syncStatus?.inProgress ? 30_000 : null);
 
-  const onChange = (name: string, value: string | boolean) => {
-    setOptions({ ...options, [name]: value });
-  };
-
   return (
     <div className="flex flex-col gap-8 bg-black p-4 rounded">
-      <div>
+      <div className="flex flex-col gap-2">
         <div className="font-bold text-lg">Sync</div>
-        <CheckboxInput
-          label="Tracks"
-          name="scanTracks"
-          checked={options.scanTracks}
-          onChange={(e) => onChange(e.target.name, e.target.checked)}
-          disabled={isDisableForm}
-        />
-        <CheckboxInput
-          label="Images"
-          name="scanImages"
-          checked={options.scanImages}
-          onChange={(e) => onChange(e.target.name, e.target.checked)}
-          disabled={isDisableForm}
-        />
-        <CheckboxInput
-          label="Transcode"
-          name="transcode"
-          checked={options.transcode}
-          onChange={(e) => onChange(e.target.name, e.target.checked)}
-          disabled={isDisableForm}
-        />
         <Button
           className="bg-green-600"
           disabled={isDisableForm}

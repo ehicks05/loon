@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { uniqBy } from "lodash-es";
 import pMap from "p-map";
 import { db } from "../../db";
-import { system_settings, tracks } from "../../drizzle/main";
+import { system_status, tracks } from "../../drizzle/main";
 import { listMediaFiles } from "../../utils/files";
 import { getTrackInput } from "../../utils/metadata";
 import {
@@ -109,16 +109,16 @@ export const syncLibrary = async () => {
 };
 
 export const runLibrarySyncTask = async () => {
-  const systemSettings = await db.query.system_settings.findFirst();
-  if (!systemSettings) {
-    return { success: false, message: "Missing systemSettings" };
+  const status = await db.query.system_status.findFirst();
+  if (!status) {
+    return { success: false, message: "Missing systemStatus" };
   }
 
-  if (systemSettings.isSyncing) {
+  if (status.isSyncing) {
     return { success: false, message: "Syncing in progress" };
   }
 
-  await db.update(system_settings).set({ isSyncing: true });
+  await db.update(system_status).set({ isSyncing: true });
 
   try {
     await syncLibrary();
@@ -126,6 +126,6 @@ export const runLibrarySyncTask = async () => {
     console.log(e);
   }
 
-  await db.update(system_settings).set({ isSyncing: false });
+  await db.update(system_status).set({ isSyncing: false });
   return { success: true, message: "Sync complete" };
 };

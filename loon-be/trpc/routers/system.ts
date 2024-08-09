@@ -15,16 +15,16 @@ export const systemRouter = router({
     return { mediaFiles };
   }),
 
-  runLibrarySync: adminProcedure.mutation(async () => {
+  syncLibrary: adminProcedure.mutation(async () => {
     // don't await
     runLibrarySyncTask();
     return;
   }),
 
-  librarySyncStatus: adminProcedure.query(async () => {
-    const systemSettings = await db.query.system_settings.findFirst();
+  status: adminProcedure.query(async () => {
+    const status = await db.query.system_status.findFirst();
 
-    return { inProgress: systemSettings?.isSyncing || false };
+    return { inProgress: status?.isSyncing || false };
   }),
 });
 

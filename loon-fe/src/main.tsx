@@ -11,25 +11,12 @@ import { API_URL } from "./apiUrl";
 
 const TRPC_URL = `${API_URL}/trpc`;
 
-const UserFetchWrapper = () => {
-  const { isLoading } = trpc.misc.me.useQuery();
-
-  if (isLoading) return null;
-
-  return (
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  );
+const QUERY_CLIENT_OPTIONS = {
+  defaultOptions: { queries: { staleTime: 1000 * 60 * 5, retry: false } },
 };
 
 export const AppWrap = () => {
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
-      }),
-  );
+  const [queryClient] = useState(() => new QueryClient(QUERY_CLIENT_OPTIONS));
   const [trpcClient] = useState(() =>
     trpc.createClient({
       links: [
@@ -49,7 +36,9 @@ export const AppWrap = () => {
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
-        <UserFetchWrapper />
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
       </QueryClientProvider>
     </trpc.Provider>
   );

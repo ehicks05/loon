@@ -12,9 +12,11 @@ import { userTable } from "./lucia";
 export const system_settings = pgTable("system_settings", {
   id: text("id").primaryKey().notNull().default("system"),
   musicFolder: text("music_folder").notNull().default(""),
-  transcodeFolder: text("transcode_folder").notNull().default(""),
-  transcodeQuality: text("transcode_quality").notNull().default(""),
-  watchFiles: boolean("watch_files").notNull().default(false),
+  syncImages: boolean("sync_images").notNull().default(false),
+});
+
+export const system_status = pgTable("system_status", {
+  id: text("id").primaryKey().notNull().default("status"),
   isSyncing: boolean("is_syncing").notNull().default(false),
 });
 

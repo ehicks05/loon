@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { openAsBlob } from "node:fs";
+import nodepath from "node:path";
 import { parseBlob } from "music-metadata";
 import type { TrackInput } from "../services/types";
 
@@ -54,7 +55,7 @@ export const getTrackInput = async (path: string) => {
     discNumber: common.disk.no,
     duration: Math.round(format.duration || 0),
     musicBrainzTrackId: common.musicbrainz_trackid,
-    path,
+    path: path.replaceAll(nodepath.sep, nodepath.posix.sep),
     title,
     trackGainLinear: String(trackGainLinear),
     trackNumber: common.track.no,

@@ -19,9 +19,7 @@ export const miscRouter = router({
     .input(
       z.object({
         musicFolder: z.string(),
-        transcodeFolder: z.string(),
-        transcodeQuality: z.string(),
-        watchFiles: z.boolean(),
+        syncImages: z.boolean(),
       }),
     )
     .mutation(async ({ input }) => {

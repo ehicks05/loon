@@ -22,6 +22,7 @@
     "lucia",
     "utils",
     "db.ts",
+    "seed.ts",
     "env.ts",
     "server.ts",
     "services"

@@ -1,8 +1,6 @@
-### note: in the process of being split into backend/frontend repos
-
 ## Loon
 Music Player
-![Screenshot](https://i.imgur.com/GQD7KeL.jpg)
+<!-- ![Screenshot](https://i.imgur.com/GQD7KeL.jpg) -->
 
 ### Motivation
 Stream your music library from your browser. Support desktop or mobile device.
@@ -16,40 +14,34 @@ Stream your music library from your browser. Support desktop or mobile device.
 * Drag and drop re-ordering for playlists
 * Equalizer
 * Replaygain support
-* Transcode to various mp3 quality levels
-* Watch your music folder for changes and automatically sync
+* ~~Transcode to various mp3 quality levels~~
+* ~~Watch your music folder for changes and automatically sync~~
 * Keyboard shortcuts for playback controls.
   * space = play/pause, left arrow = previous track, right arrow = next track
 
 ### Known Issues / Todo
-* Consider Redux?
-* Performance, specifically with re-rendering. One example being updating the track's
-  progress bar seems to cause the entire PlaybackControls component to re-render. 
+* scan embedded album art
+
 
 ### Getting Started
 
 #### Prerequisites
-* Windows (linux is untested)
-* Java
+* Node
 * Postgres
 * Music collection:
-  * Cleanly tagged with artist, album, albumartist, title, musicBrainzTrackId, replaygain
+  * In the format you want to stream (mp3)
+  * Cleanly tagged with artist, album, albumartist, title, musicBrainzTrackId, replaygain. Maybe use MusicBrainz Picard to help.
   * Album art embedded in the files or in the same folder and named folder.jpg
 
-#### Building
+### Running it Locally (WIP)
 1. Clone project
-2. Build with Gradle
+2. Configure `./loon-be/.env` and `./loon-be/.env`
+3. Fire up backend: `cd loon-be && npm i && npm run dev`
+4. Fire up frontend: `cd loon-fe && npm i && npm run dev`
+5. Create account via GitHub OAuth
+6. Go in to db and manually set your user in users table to `isAdmin=true`
+7. Go to system settings and set up the music folder and scan
 
-### Deployment (WIP)
-1. Configure application.properties for DB connection info, etc...
-2. Build with Gradle
-3. Place jar file where you want to run Loon
-4. Run 'java -jar nameofjar.jar'
-5. Default port is 8082
-5. Log in as admin@test.com, pw: pw.
-6. Once logged in, go to Admin -> Manage System to specify where music is stored.
-
-### Built With (partial listing)
-* [Spring Boot](https://spring.io/projects/spring-boot) - Backend Framework
-* [React](https://reactjs.org/) - Frontend Framework
-* [Bulma](https://bulma.io/) - CSS Framework
+### Built With (WIP)
+* [React](https://reactjs.org/) - Frontend
+* [Tailwind](https://https://tailwindcss.com) - Styling

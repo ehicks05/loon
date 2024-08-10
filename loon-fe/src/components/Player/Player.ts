@@ -138,21 +138,15 @@ const Player = () => {
     documentRef,
   );
 
-  const renders = useRef(0);
+  const prevTrackId = useRef("");
 
-  // handle track change
   useEffect(() => {
-    if (renders.current === 0) {
-      renders.current = renders.current + 1;
-      return;
-    }
-
-    const handleTrackChange = (newTrackId: string) => {
-      console.log(`handleTrackChange(${newTrackId})`);
+    const trackId = userState.selectedTrackId;
+    if (trackId && prevTrackId.current !== trackId) {
+      console.log(`handleTrackChange(${trackId})`);
+      prevTrackId.current = trackId;
       initAudioSource();
-    };
-
-    handleTrackChange(userState.selectedTrackId);
+    }
   }, [userState.selectedTrackId]);
 
   useEffect(() => {

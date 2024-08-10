@@ -143,7 +143,6 @@ const Player = () => {
   useEffect(() => {
     const trackId = userState.selectedTrackId;
     if (trackId && prevTrackId.current !== trackId) {
-      console.log(`handleTrackChange(${trackId})`);
       prevTrackId.current = trackId;
       initAudioSource();
     }

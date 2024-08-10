@@ -103,7 +103,10 @@ export const playlistRouter = router({
         }
 
         if (name) {
-          await db.update(playlists).set({ name });
+          await db
+            .update(playlists)
+            .set({ name })
+            .where(eq(playlists.id, playlistId));
         }
 
         // handle playlistTracks

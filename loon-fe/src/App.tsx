@@ -54,6 +54,7 @@ export default function App() {
   useTitle();
   useCacheData();
   const { data: tracks, isLoading } = trpc.tracks.list.useQuery();
+  const { tracks: trackz } = useAppStore();
 
   if (isLoading) {
     return <PageLoader />;
@@ -83,7 +84,7 @@ export default function App() {
           {tracks && <Routes />}
         </div>
       </div>
-      <Player />
+      {trackz.length !== 0 && <Player />}
       <BottomPanel />
     </div>
   );

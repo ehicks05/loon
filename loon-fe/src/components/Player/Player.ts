@@ -179,26 +179,24 @@ const Player = () => {
   };
 
   useEffect(() => {
-    const handlePlaybackStateChange = async (
-      newPlaybackState: PlaybackState,
-    ) => {
-      if (newPlaybackState === "paused") {
-        // pause
-        fade(audioCtxRef.current, fadeGainNodeRef.current, "out", () =>
-          audioCtxRef.current?.suspend(),
-        );
+    const handlePlaybackStateChange = (playbackState: PlaybackState) => {
+      const audioCtx = audioCtxRef.current;
+      const audio = audioRef.current;
+      const fadeGainNode = fadeGainNodeRef.current;
+
+      if (playbackState === "paused") {
+        fade(audioCtx, fadeGainNode, "out", () => audioCtx?.suspend());
         return;
       }
 
       if (
-        newPlaybackState === "playing" &&
-        audioRef.current?.currentSrc &&
-        audioCtxRef.current?.state === "suspended"
+        playbackState === "playing" &&
+        audio?.currentSrc &&
+        audioCtx?.state === "suspended"
       ) {
-        // resume
-        fade(audioCtxRef.current, fadeGainNodeRef.current, "in", () => {
-          audioRef.current?.play();
-          audioCtxRef.current?.resume();
+        fade(audioCtx, fadeGainNode, "in", () => {
+          audio?.play();
+          audioCtx?.resume();
         });
         return;
       }

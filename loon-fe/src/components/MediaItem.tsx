@@ -34,7 +34,7 @@ export default function MediaItem({
 
   return (
     <div
-      className={`group flex h-full p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all ${highlightClass} ${missingFile ? "bg-red-400" : ""}`}
+      className={`group flex h-full p-2 rounded-lg hover:bg-neutral-800 transition-all ${highlightClass} ${missingFile ? "bg-red-400" : ""}`}
       ref={provided?.innerRef}
       {...provided?.draggableProps}
     >
@@ -52,16 +52,13 @@ export default function MediaItem({
         {missingFile && (
           <span className={"tag is-normal is-danger ml-4"}>Track Missing</span>
         )}
-        <span className="line-clamp-1 text-sm">
-          <Link
-            className="text-neutral-600 hover:text-neutral-300 dark:text-neutral-400 hover:dark:text-neutral-300"
-            to={`/artists/${artist}`}
-          >
+        <span className="line-clamp-1 text-sm text-neutral-400">
+          <Link className="hover:text-neutral-300" to={`/artists/${artist}`}>
             {artist}
           </Link>
           {" - "}
           <Link
-            className="text-neutral-600 hover:text-neutral-300 dark:text-neutral-400 hover:dark:text-neutral-300"
+            className="hover:text-neutral-300"
             to={`/artists/${track.albumArtist}/albums/${album}`}
           >
             <i>{album}</i>
@@ -69,7 +66,7 @@ export default function MediaItem({
         </span>
       </div>
 
-      <div className="invisible group-hover:visible mr-2 flex basis-5 items-center dark:text-neutral-400 hover:dark:text-neutral-300">
+      <div className="invisible group-hover:visible mr-2 flex basis-5 items-center text-neutral-400 hover:text-neutral-300">
         <ActionMenu tracks={[track]} />
       </div>
 

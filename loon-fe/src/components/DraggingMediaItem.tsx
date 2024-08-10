@@ -31,7 +31,7 @@ export default function DraggingMediaItem({
       className={`select-none border border-neutral-500 bg-neutral-800 ${highlightClass}`}
     >
       <div
-        className={`group flex p-1 transition-all hover:bg-neutral-100 dark:hover:bg-neutral-800 ${missingFile ? "text-red-500" : null}`}
+        className={`group flex p-1 transition-all hover:bg-neutral-800 ${missingFile ? "text-red-500" : null}`}
       >
         <div className="mr-1 min-w-8 text-right">{trackNumber}</div>
 

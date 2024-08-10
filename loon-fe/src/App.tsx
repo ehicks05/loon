@@ -74,7 +74,7 @@ export default function App() {
             </div>
           </div>
         </div>
-        <div className="w-full rounded-lg overflow-y-auto overflow-x-hidden p-2 bg-neutral-100 dark:bg-neutral-900">
+        <div className="w-full rounded-lg overflow-y-auto overflow-x-hidden p-2 bg-neutral-900">
           {!tracks && (
             <div className="flex flex-col gap-4 p-4 -m-2 bg-red-600 rounded-lg">
               <div className="text-3xl">Uh oh!</div>

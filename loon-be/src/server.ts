@@ -8,7 +8,7 @@ import { appRouter } from "./trpc/router.js";
 
 const app = express();
 
-app.use(cors({ origin: "all" }));
+app.use(cors({ origin: "https://loon.ehicks.net" }));
 app.use(serveStatic("/"));
 
 app.use("/", router);

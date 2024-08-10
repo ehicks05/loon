@@ -1,8 +1,8 @@
-import { miscRouter } from "./routers/misc";
-import { playlistRouter } from "./routers/playlist";
-import { systemRouter } from "./routers/system";
-import { tracksRouter } from "./routers/tracks";
-import { router } from "./trpc";
+import { miscRouter } from "./routers/misc.js";
+import { playlistRouter } from "./routers/playlist.js";
+import { systemRouter } from "./routers/system.js";
+import { tracksRouter } from "./routers/tracks.js";
+import { router } from "./trpc.js";
 
 export const appRouter = router({
   misc: miscRouter,

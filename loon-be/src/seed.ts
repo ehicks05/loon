@@ -1,5 +1,5 @@
-import { db } from "./db";
-import { playlists, system_settings, system_status } from "./drizzle/main";
+import { db } from "./db.js";
+import { playlists, system_settings, system_status } from "./drizzle/main.js";
 
 export const seed = async () => {
   console.log("seeding");

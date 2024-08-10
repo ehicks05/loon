@@ -1,9 +1,9 @@
 import { TRPCError } from "@trpc/server";
 import { and, between, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
-import { db } from "../../db";
-import { playlist_tracks, playlists } from "../../drizzle/main";
-import { protectedProcedure, publicProcedure, router } from "../trpc";
+import { db } from "../../db.js";
+import { playlist_tracks, playlists } from "../../drizzle/main.js";
+import { protectedProcedure, publicProcedure, router } from "../trpc.js";
 
 export const playlistRouter = router({
   list: publicProcedure.query(async ({ ctx: { user } }) => {

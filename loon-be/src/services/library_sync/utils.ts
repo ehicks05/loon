@@ -1,4 +1,4 @@
-import type { TrackInput } from "../types";
+import type { TrackInput } from "../types.js";
 
 export const omitImageFields = (track: TrackInput) => {
   const {

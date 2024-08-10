@@ -1,10 +1,10 @@
 import { asc, eq } from "drizzle-orm";
 import { uint8ArrayToBase64 } from "uint8array-extras";
 import { z } from "zod";
-import { db } from "../../db";
-import { tracks } from "../../drizzle/main";
-import { getPictures } from "../../utils/metadata";
-import { publicProcedure, router } from "../trpc";
+import { db } from "../../db.js";
+import { tracks } from "../../drizzle/main.js";
+import { getPictures } from "../../utils/metadata.js";
+import { publicProcedure, router } from "../trpc.js";
 
 export const tracksRouter = router({
   list: publicProcedure.query(async () => {

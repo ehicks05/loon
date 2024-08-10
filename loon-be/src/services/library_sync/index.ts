@@ -1,18 +1,18 @@
 import { eq } from "drizzle-orm";
 import { uniqBy } from "lodash-es";
 import pMap from "p-map";
-import { db } from "../../db";
-import { system_status, tracks } from "../../drizzle/main";
-import { listMediaFiles } from "../../utils/files";
-import { getTrackInput } from "../../utils/metadata";
+import { db } from "../../db.js";
+import { system_status, tracks } from "../../drizzle/main.js";
+import { listMediaFiles } from "../../utils/files.js";
+import { getTrackInput } from "../../utils/metadata.js";
 import {
   type LoonItemTypes,
   fetchImages,
   imageCache,
   toFullAndThumb,
-} from "../spotify";
-import type { TrackInput } from "../types";
-import { omitImageFields } from "./utils";
+} from "../spotify/index.js";
+import type { TrackInput } from "../types.js";
+import { omitImageFields } from "./utils.js";
 
 const toTrackInputs = async (mediaFiles: string[]) => {
   const results = await pMap(mediaFiles, getTrackInput, { concurrency: 64 });

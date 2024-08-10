@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm/relations";
-import { playlist_tracks, playlists, tracks } from "./main";
+import { playlist_tracks, playlists, tracks } from "./main.js";
 
 export const playlistTracksRelations = relations(
   playlist_tracks,

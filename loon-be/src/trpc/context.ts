@@ -1,10 +1,13 @@
-import type { CreateFastifyContextOptions } from "@trpc/server/adapters/fastify";
-import { validateRequest } from "../server";
+import type * as trpcExpress from "@trpc/server/adapters/express";
+import { validateRequest } from "../utils/validate.js";
 
-export async function createContext({ req, res }: CreateFastifyContextOptions) {
+export const createContext = async ({
+  req,
+  res,
+}: trpcExpress.CreateExpressContextOptions) => {
   const { user } = await validateRequest(req, res);
 
   return { user };
-}
+};
 
 export type Context = Awaited<ReturnType<typeof createContext>>;

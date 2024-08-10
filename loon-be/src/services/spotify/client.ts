@@ -1,5 +1,5 @@
 import { SpotifyApi } from "@spotify/web-api-ts-sdk";
-import { env } from "../../env";
+import { env } from "../../env.js";
 
 const spotify = SpotifyApi.withClientCredentials(
   env.SPOTIFY_CLIENT_ID,

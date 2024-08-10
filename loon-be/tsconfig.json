@@ -1,12 +1,11 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    "target": "ES2022",
+    "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "Bundler",
+    "moduleResolution": "Node",
     "esModuleInterop": true,
     "strict": true,
-    "resolveJsonModule": true,
     "removeComments": true,
     "newLine": "lf",
     "noUnusedLocals": true,
@@ -15,12 +14,12 @@
     "isolatedModules": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "lib": ["ESNext"], 
-    "composite": true,    
+    "lib": ["ESNext"],
+    "composite": true,
     "outDir": "dist",
-    "baseUrl": "src"
+    "baseUrl": "src",
+    "sourceMap": true,
+    "declarationMap": true
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src/**/*.ts"]
 }

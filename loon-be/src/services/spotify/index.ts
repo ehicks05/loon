@@ -1,5 +1,5 @@
 import type { Image, ItemTypes } from "@spotify/web-api-ts-sdk";
-import { spotify } from "./client";
+import { spotify } from "./client.js";
 
 export type LoonItemTypes = Extract<ItemTypes, "artist" | "album">;
 

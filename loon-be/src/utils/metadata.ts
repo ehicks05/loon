@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { openAsBlob } from "node:fs";
 import nodepath from "node:path";
 import { parseBlob } from "music-metadata";
-import type { TrackInput } from "../services/types";
+import type { TrackInput } from "../services/types.js";
 
 export const getMetadata = async (path: string) => {
   const blob = await openAsBlob(path);

@@ -26,6 +26,10 @@
           "allowComments": true
         }
       }
+    },
+    {
+      "include": ["./loon-be/**"],
+      "linter": { "rules": { "nursery": { "useImportExtensions": "error" } } }
     }
   ],
   "files": { "ignore": ["./loon-be/drizzle/meta"] },

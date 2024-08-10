@@ -1,13 +1,24 @@
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { db } from "../../db";
-import { userTable } from "../../drizzle/lucia";
-import { system_settings } from "../../drizzle/main";
-import { adminProcedure, publicProcedure, router } from "../trpc";
+import { db } from "../../db.js";
+import { userTable } from "../../drizzle/lucia.js";
+import { system_settings } from "../../drizzle/main.js";
+import { adminProcedure, publicProcedure, router } from "../trpc.js";
+
+const UserSchema = z
+  .object({
+    id: z.string(),
+    githubId: z.number(),
+    username: z.string(),
+    isAdmin: z.boolean(),
+  })
+  .nullable();
 
 export const miscRouter = router({
   health: publicProcedure.query(() => "ok"),
-  me: publicProcedure.query(({ ctx }) => {
+
+  // specify output to fix a FE ts error
+  me: publicProcedure.output(UserSchema).query(({ ctx }) => {
     return ctx.user;
   }),
 

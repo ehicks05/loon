@@ -1,7 +1,7 @@
-import { db } from "../../db";
-import { runLibrarySyncTask } from "../../services/library_sync";
-import { listMediaFiles } from "../../utils/files";
-import { adminProcedure, router } from "../trpc";
+import { db } from "../../db.js";
+import { runLibrarySyncTask } from "../../services/library_sync/index.js";
+import { listMediaFiles } from "../../utils/files.js";
+import { adminProcedure, router } from "../trpc.js";
 
 export const systemRouter = router({
   listMusicFolder: adminProcedure.query(async () => {

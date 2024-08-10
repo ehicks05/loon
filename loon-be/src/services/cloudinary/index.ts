@@ -1,5 +1,5 @@
-import type { TrackInput } from "../types";
-import { cloudinary } from "./client";
+import type { TrackInput } from "../types.js";
+import { cloudinary } from "./client.js";
 
 export const checkExistence = async (publicId: string) => {
   const imageSize = await cloudinary.uploader.explicit(publicId);

@@ -1,4 +1,5 @@
 import * as trpcExpress from "@trpc/server/adapters/express";
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
 import serveStatic from "serve-static";
@@ -9,6 +10,7 @@ import { appRouter } from "./trpc/router.js";
 const app = express();
 
 app.use(cors({ origin: "https://loon.ehicks.net", credentials: true }));
+app.use(cookieParser());
 app.use(serveStatic("/"));
 
 app.use("/", router);

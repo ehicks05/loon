@@ -65,6 +65,12 @@ const Player = () => {
       audio.onplaying = () => renderSpectrumFrame();
       audio.onpause = (e) => console.log(e);
       audio.ontimeupdate = () => setElapsedTime(audio.currentTime);
+
+      const track = getTrackById(userState.selectedTrackId);
+      if (track) {
+        audio.src = `${API_URL}/media?id=${track?.id}`;
+      }
+
       document.body.appendChild(audio);
       return audio;
     }
@@ -212,6 +218,7 @@ const Player = () => {
     // set new audio source
     if (audioRef.current) {
       audioRef.current.src = `${API_URL}/media?id=${track.id}`;
+      audioRef.current.load();
 
       if (trackGainNodeRef.current) {
         const gain = getMaxSafeGain(

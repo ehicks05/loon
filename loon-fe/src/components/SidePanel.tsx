@@ -12,7 +12,7 @@ import {
   FaVolumeUp,
 } from "react-icons/fa";
 import type { IconType } from "react-icons/lib";
-import { NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 
 interface PlaylistLink {
@@ -45,7 +45,7 @@ const SidebarLink = ({
   const linkClasses = `flex items-center justify-between p-2 ${isPlaylist ? "pl-6" : "pl-4"} hover:bg-neutral-800 transition-all rounded-lg`;
 
   return (
-    <NavLink key={path} to={path} exact className={linkClasses}>
+    <Link key={path} to={path} className={linkClasses}>
       <div
         className={`flex gap-2 items-center ${isActive ? "text-white" : ""}`}
       >
@@ -55,7 +55,7 @@ const SidebarLink = ({
       {currentlyPlaying && (
         <FaVolumeUp className="text-green-500" title="Now Playing" />
       )}
-    </NavLink>
+    </Link>
   );
 };
 

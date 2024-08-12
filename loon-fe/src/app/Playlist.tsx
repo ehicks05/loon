@@ -19,7 +19,7 @@ import {
   Droppable,
 } from "@hello-pangea/dnd";
 import { type CSSProperties, useEffect, useRef } from "react";
-import { Link, useRouteMatch } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useMeasure } from "react-use";
 import { FixedSizeList as List } from "react-window";
 
@@ -59,9 +59,10 @@ const Row = ({
 };
 
 export default function Playlist() {
-  const {
-    params: { id: playlistId },
-  } = useRouteMatch<{ id: string }>();
+  const [searchParams] = useSearchParams();
+  const playlistId = searchParams.get("id");
+  if (!playlistId) return null;
+
   const playlists = useAppStore((state) => state.playlists);
   const trackMap = useTrackMap();
 
@@ -79,6 +80,8 @@ export default function Playlist() {
     if (!destination) return;
     // didn't move
     if (source.index === destination.index) return;
+
+    if (!playlistId) return;
 
     const args = {
       playlistId,
@@ -120,7 +123,7 @@ export default function Playlist() {
           droppableId="droppable"
           mode="virtual"
           renderClone={(provided, _snapshot, rubric) =>
-            renderDraggingMediaItem(rubric.source.index, provided)
+            renderDraggingMediaItem(rubric.source.index, provided, playlistId)
           }
         >
           {(provided, _snapshot) => (
@@ -187,7 +190,11 @@ export default function Playlist() {
     </div>
   );
 
-  function renderDraggingMediaItem(index: number, provided: DraggableProvided) {
+  function renderDraggingMediaItem(
+    index: number,
+    provided: DraggableProvided,
+    playlistId: string,
+  ) {
     const playlistTrack = getPlaylistById(playlistId)?.playlistTracks[index];
     if (!playlistTrack) return null;
 

@@ -12,7 +12,7 @@ import {
 
 import { FaUserCircle } from "react-icons/fa";
 import { FaBars, FaXmark } from "react-icons/fa6";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
 
@@ -27,12 +27,12 @@ export default function Navbar() {
   const utils = trpc.useUtils();
   const { data: user } = trpc.misc.me.useQuery();
   const { pathname } = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   async function handleLogout() {
     await superFetch("/logout", { method: "POST" });
     utils.invalidate();
-    history.push("/");
+    navigate("/");
   }
 
   // @ts-ignore: revisit this

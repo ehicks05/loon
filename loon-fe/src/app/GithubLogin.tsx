@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useHistory, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import superFetch from "../common/SuperFetch";
 import { trpc } from "../utils/trpc";
 
@@ -7,7 +7,7 @@ function GithubLogin() {
   const { search } = useLocation();
   const utils = trpc.useUtils();
   const { data: user } = trpc.misc.me.useQuery();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const doIt = async () => {
@@ -33,9 +33,9 @@ function GithubLogin() {
 
   useEffect(() => {
     if (user) {
-      history.push("/");
+      navigate("/");
     }
-  }, [user, history]);
+  }, [user, navigate]);
 
   return null;
 }

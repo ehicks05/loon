@@ -12,75 +12,45 @@ import SystemSettings from "@/app/admin/SystemSettings";
 import UserSettings from "@/app/admin/UserSettings";
 import Eq from "@/app/settings/EqPage";
 import GeneralSettings from "@/app/settings/GeneralSettings";
-import { Redirect, Route, Switch } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { Login } from "./app/Login";
 import { trpc } from "./utils/trpc";
 
-export default function Routes() {
+export default function Router() {
   const { data: user } = trpc.misc.me.useQuery();
   const isAdmin = user?.isAdmin || false;
 
   return (
     <>
-      <Switch>
+      <Routes>
         <Route
-          exact
           path="/admin/systemSettings"
-          render={() => (isAdmin ? <SystemSettings /> : <Redirect to={"/"} />)}
+          element={isAdmin ? <SystemSettings /> : <Navigate to="/" />}
         />
         <Route
-          exact
           path="/admin/users"
-          render={() => (isAdmin ? <UserSettings /> : <Redirect to={"/"} />)}
+          element={isAdmin ? <UserSettings /> : <Navigate to="/" />}
         />
         <Route
-          exact
           path="/admin/about"
-          render={() => (isAdmin ? <About /> : <Redirect to={"/"} />)}
+          element={isAdmin ? <About /> : <Navigate to="/" />}
         />
 
-        <Route exact path="/" render={() => <Redirect to="/search" />} />
-        <Route exact path="/login/github">
-          <GithubLogin />
-        </Route>
-        <Route exact path="/login">
-          <Login />
-        </Route>
-        <Route exact path="/settings/general">
-          <GeneralSettings />
-        </Route>
-        <Route exact path="/settings/eq">
-          <Eq />
-        </Route>
-        <Route exact path="/albums">
-          <Albums />
-        </Route>
-        <Route exact path="/artists">
-          <Artists />
-        </Route>
-        <Route exact path="/artists/:artist">
-          <Artist />
-        </Route>
-        <Route exact path="/artists/:artist/albums/:album">
-          <Album />
-        </Route>
-        <Route exact path="/search">
-          <Search />
-        </Route>
-
-        <Route exact path="/library">
-          <Playlists />
-        </Route>
-        <Route exact path="/playlists/new">
-          <PlaylistBuilder />
-        </Route>
-        <Route exact path="/playlists/:id">
-          <Playlist />
-        </Route>
-        <Route exact path="/playlists/:id/edit">
-          <PlaylistBuilder />
-        </Route>
-      </Switch>
+        <Route path="/" element={<Navigate to="/search" />} />
+        <Route path="/login/github" element={<GithubLogin />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/settings/general" element={<GeneralSettings />} />
+        <Route path="/settings/eq" element={<Eq />} />
+        <Route path="/albums" element={<Albums />} />
+        <Route path="/artists" element={<Artists />} />
+        <Route path="/artists/:artist" element={<Artist />} />
+        <Route path="/artists/:artist/albums/:album" element={<Album />} />
+        <Route path="/search" element={<Search />} />
+        <Route path="/library" element={<Playlists />} />
+        <Route path="/playlists/new" element={<PlaylistBuilder />} />
+        <Route path="/playlists/:id" element={<Playlist />} />
+        <Route path="/playlists/:id/edit" element={<PlaylistBuilder />} />
+      </Routes>
     </>
   );
 }

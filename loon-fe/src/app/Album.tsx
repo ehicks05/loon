@@ -4,12 +4,10 @@ import "lazysizes/plugins/attrchange/ls.attrchange";
 import { useAppStore } from "@/common/AppContextProvider";
 import AlbumCard from "@/components/AlbumCard";
 import { sortBy } from "lodash-es";
-import { useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 export default function Album() {
-  const [searchParams] = useSearchParams();
-  const artist = searchParams.get("artist");
-  const album = searchParams.get("album");
+  const { artist, album } = useParams();
 
   const tracks = useAppStore((state) => state.tracks);
   const albumTracks = sortBy(

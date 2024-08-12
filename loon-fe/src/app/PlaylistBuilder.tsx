@@ -13,7 +13,7 @@ import {
   FaRegPlusSquare,
   FaRegSquare,
 } from "react-icons/fa";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "react-checkbox-tree/lib/react-checkbox-tree.css";
 import type { Playlist, RawTrackResponse } from "@/common/types";
 import { trpc } from "@/utils/trpc";
@@ -163,8 +163,7 @@ function PlaylistBuilder({
 }
 
 export default function Wrapper() {
-  const [searchParams] = useSearchParams();
-  const id = searchParams.get("id");
+  const { id } = useParams();
 
   const { data: tracks } = trpc.tracks.list.useQuery();
   const { data: playlist, isLoading: isLoadingPlaylist } =

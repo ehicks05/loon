@@ -2,13 +2,12 @@ import { useAppStore } from "@/common/AppContextProvider";
 import { ArtistCard } from "@/components/ArtistCard";
 import MediaItem from "@/components/MediaItem";
 import { sortBy } from "lodash-es";
-import { useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Albums from "./Albums";
 import { trackToArtist } from "./Artists";
 
 export default function Artist() {
-  const [searchParams] = useSearchParams();
-  const artist = searchParams.get("artist");
+  const { artist } = useParams();
   const tracks = useAppStore((state) => state.tracks);
 
   const artistTracks = sortBy(

@@ -19,9 +19,9 @@ import {
   Droppable,
 } from "@hello-pangea/dnd";
 import { type CSSProperties, useEffect, useRef } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import { useMeasure } from "react-use";
+import { Link, useParams } from "react-router-dom";
 import { FixedSizeList as List } from "react-window";
+import { useResizeObserver } from "usehooks-ts";
 
 interface RowProps {
   data: {
@@ -59,8 +59,8 @@ const Row = ({
 };
 
 export default function Playlist() {
-  const [searchParams] = useSearchParams();
-  const playlistId = searchParams.get("id");
+  const { id } = useParams();
+  const playlistId = id;
   if (!playlistId) return null;
 
   const playlists = useAppStore((state) => state.playlists);
@@ -72,8 +72,10 @@ export default function Playlist() {
   });
 
   const listRef = useRef<List>(null);
-  const [containerRef, { height: containerHeight }] =
-    useMeasure<HTMLDivElement>();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { height: containerHeight = 0 } = useResizeObserver<HTMLDivElement>({
+    ref: containerRef,
+  });
 
   function onDragEnd({ source, destination }: DropResult) {
     // dropped outside the list

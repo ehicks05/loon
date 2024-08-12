@@ -97,15 +97,17 @@ export const syncLibrary = async () => {
   const mediaFiles = await listMediaFiles(systemSettings.musicFolder);
   console.log("converting media files to trackInputs");
   const trackInputs = await toTrackInputs(mediaFiles);
-
-  console.log("prewarming image cache");
-  await cacheImages(trackInputs);
-
-  console.log("mapping trackInputs onto the db");
+  console.log("saving trackInputs to the db");
   await pMap(trackInputs, updateTrack, { concurrency: 64 });
-  console.log("saving image fields");
-  await pMap(trackInputs, updateTrackImage, { concurrency: 64 });
-  console.log("done");
+
+  if (systemSettings.syncImages) {
+    console.log("fetching images");
+    await cacheImages(trackInputs);
+    console.log("saving image urls to tracks");
+    await pMap(trackInputs, updateTrackImage, { concurrency: 64 });
+  }
+
+  console.log("finished sync");
 };
 
 export const runLibrarySyncTask = async () => {

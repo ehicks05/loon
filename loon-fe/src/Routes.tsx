@@ -1,4 +1,3 @@
-import { Redirect, Route, Switch } from "react-router-dom";
 import About from "@/app/About";
 import Album from "@/app/Album";
 import Albums from "@/app/Albums";
@@ -13,6 +12,7 @@ import SystemSettings from "@/app/admin/SystemSettings";
 import UserSettings from "@/app/admin/UserSettings";
 import Eq from "@/app/settings/EqPage";
 import GeneralSettings from "@/app/settings/GeneralSettings";
+import { Redirect, Route, Switch } from "react-router-dom";
 import { Login } from "./app/Login";
 import { trpc } from "./utils/trpc";
 
@@ -22,51 +22,64 @@ export default function Routes() {
 
   return (
     <>
-      {/* ADMIN */}
-      <Route
-        exact
-        path="/admin/systemSettings"
-        render={() => (isAdmin ? <SystemSettings /> : <Redirect to={"/"} />)}
-      />
-      <Route
-        exact
-        path="/admin/users"
-        render={() => (isAdmin ? <UserSettings /> : <Redirect to={"/"} />)}
-      />
-      <Route
-        exact
-        path="/admin/about"
-        render={() => (isAdmin ? <About /> : <Redirect to={"/"} />)}
-      />
-
-      <Route exact path="/" render={() => <Redirect to="/search" />} />
-      <Route exact path="/login/github" render={() => <GithubLogin />} />
-      <Route exact path="/login" render={() => <Login />} />
-      <Route
-        exact
-        path="/settings/general"
-        render={() => <GeneralSettings />}
-      />
-      <Route exact path="/settings/eq" render={() => <Eq />} />
-      <Route exact path="/albums" render={() => <Albums />} />
-      <Route exact path="/artists" render={() => <Artists />} />
-      <Route exact path="/artists/:artist" render={() => <Artist />} />
-      <Route
-        exact
-        path="/artists/:artist/albums/:album"
-        render={() => <Album />}
-      />
-      <Route exact path="/search" render={() => <Search />} />
-
       <Switch>
-        <Route exact path="/library" render={() => <Playlists />} />
-        <Route exact path="/playlists/new" render={() => <PlaylistBuilder />} />
-        <Route exact path="/playlists/:id" render={() => <Playlist />} />
         <Route
           exact
-          path="/playlists/:id/edit"
-          render={() => <PlaylistBuilder />}
+          path="/admin/systemSettings"
+          render={() => (isAdmin ? <SystemSettings /> : <Redirect to={"/"} />)}
         />
+        <Route
+          exact
+          path="/admin/users"
+          render={() => (isAdmin ? <UserSettings /> : <Redirect to={"/"} />)}
+        />
+        <Route
+          exact
+          path="/admin/about"
+          render={() => (isAdmin ? <About /> : <Redirect to={"/"} />)}
+        />
+
+        <Route exact path="/" render={() => <Redirect to="/search" />} />
+        <Route exact path="/login/github">
+          <GithubLogin />
+        </Route>
+        <Route exact path="/login">
+          <Login />
+        </Route>
+        <Route exact path="/settings/general">
+          <GeneralSettings />
+        </Route>
+        <Route exact path="/settings/eq">
+          <Eq />
+        </Route>
+        <Route exact path="/albums">
+          <Albums />
+        </Route>
+        <Route exact path="/artists">
+          <Artists />
+        </Route>
+        <Route exact path="/artists/:artist">
+          <Artist />
+        </Route>
+        <Route exact path="/artists/:artist/albums/:album">
+          <Album />
+        </Route>
+        <Route exact path="/search">
+          <Search />
+        </Route>
+
+        <Route exact path="/library">
+          <Playlists />
+        </Route>
+        <Route exact path="/playlists/new">
+          <PlaylistBuilder />
+        </Route>
+        <Route exact path="/playlists/:id">
+          <Playlist />
+        </Route>
+        <Route exact path="/playlists/:id/edit">
+          <PlaylistBuilder />
+        </Route>
       </Switch>
     </>
   );

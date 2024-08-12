@@ -1,4 +1,4 @@
-import { clamp } from "lodash";
+import { clamp } from "lodash-es";
 
 function isScrolledIntoView(el: Element) {
   const rect = el.getBoundingClientRect();

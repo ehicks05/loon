@@ -1,4 +1,4 @@
-import _ from "lodash";
+import { keyBy, map, uniq } from "lodash-es";
 import create from "zustand";
 import { devtools } from "zustand/middleware";
 import type { Playlist, Track } from "./types";
@@ -14,11 +14,11 @@ export const useAppStore = create<{ tracks: Track[]; playlists: Playlist[] }>(
 );
 
 export const useTrackMap = () => {
-  return useAppStore((state) => _.keyBy(state.tracks, "id"));
+  return useAppStore((state) => keyBy(state.tracks, "id"));
 };
 
 export const useDistinctArtists = () => {
-  return useAppStore((state) => _.uniq(_.map(state.tracks, "artist")));
+  return useAppStore((state) => uniq(map(state.tracks, "artist")));
 };
 
 export const getTrackById = (id: string) => {

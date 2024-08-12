@@ -1,7 +1,7 @@
 import type { Playlist, Track } from "@/common/types";
 import { trpc } from "@/utils/trpc";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { partition } from "lodash";
+import { partition } from "lodash-es";
 import type { ReactNode } from "react";
 import {
   FaChevronRight,

@@ -1,7 +1,7 @@
 import { useAppStore } from "@/common/AppContextProvider";
 import { ArtistCard } from "@/components/ArtistCard";
 import MediaItem from "@/components/MediaItem";
-import { sortBy } from "lodash";
+import { sortBy } from "lodash-es";
 import { useSearchParams } from "react-router-dom";
 import Albums from "./Albums";
 import { trackToArtist } from "./Artists";

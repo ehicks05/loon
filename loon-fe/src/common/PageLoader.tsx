@@ -1,9 +1,7 @@
-import { RevolvingDot } from "react-loader-spinner";
+import { FaSpinner } from "react-icons/fa6";
 
-export default function PageLoader() {
-  return (
-    <div className="h-dvh w-dvw flex items-center justify-center bg-neutral-950">
-      <RevolvingDot color="#44CC44" height={150} width={150} />
-    </div>
-  );
-}
+export const PageLoader = () => (
+  <div className="h-dvh w-dvw flex items-center justify-center bg-neutral-950">
+    <FaSpinner color="#44CC44" size={48} className="animate-spin" />
+  </div>
+);

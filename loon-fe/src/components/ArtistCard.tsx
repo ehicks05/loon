@@ -4,7 +4,7 @@ import "lazysizes";
 import "lazysizes/plugins/attrchange/ls.attrchange";
 import type { Artist } from "@/app/Artists";
 import { PLACEHOLDER_IMAGE_URL } from "@/constants";
-import { uniq } from "lodash";
+import { uniq } from "lodash-es";
 import { useAppStore } from "../common/AppContextProvider";
 
 export function ArtistCard({

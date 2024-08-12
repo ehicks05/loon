@@ -3,7 +3,7 @@ import "lazysizes/plugins/attrchange/ls.attrchange";
 import { useAppStore } from "@/common/AppContextProvider";
 import type { Track } from "@/common/types";
 import { ArtistCard } from "@/components/ArtistCard";
-import { sortBy, uniqBy } from "lodash";
+import { sortBy, uniqBy } from "lodash-es";
 
 export interface Artist {
   name: string;

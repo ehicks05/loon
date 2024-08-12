@@ -3,7 +3,7 @@ import "lazysizes";
 import "lazysizes/plugins/attrchange/ls.attrchange";
 import { useAppStore } from "@/common/AppContextProvider";
 import AlbumCard from "@/components/AlbumCard";
-import { sortBy } from "lodash";
+import { sortBy } from "lodash-es";
 import { useSearchParams } from "react-router-dom";
 
 export default function Album() {

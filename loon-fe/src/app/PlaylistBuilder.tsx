@@ -140,7 +140,7 @@ function PlaylistBuilder({
         label="Name"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        size={50}
+        disabled={playlist?.favorites || playlist?.queue}
       />
 
       <div className="flex flex-col h-full overflow-auto">

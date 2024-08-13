@@ -1,13 +1,8 @@
+import type { Album } from "@/common/types";
 import { PLACEHOLDER_IMAGE_URL } from "@/constants";
 import { Link } from "react-router-dom";
-import { useAppStore, useDistinctArtists } from "../common/AppContextProvider";
+import { useDistinctArtists } from "../common/AppContextProvider";
 import ActionMenu from "./ActionMenu";
-
-interface Album {
-  name: string;
-  artist: string;
-  imageId: string | null;
-}
 
 interface Props {
   album: Album;
@@ -15,12 +10,7 @@ interface Props {
 }
 
 export default function AlbumCard({ album, hideAlbumArtist }: Props) {
-  const tracks = useAppStore((state) => state.tracks);
   const distinctArtists = useDistinctArtists();
-
-  const albumTracks = tracks.filter(
-    (track) => track.albumArtist === album.artist && track.album === album.name,
-  );
 
   const linkAlbumArtist = distinctArtists.includes(album.artist);
 
@@ -35,12 +25,12 @@ export default function AlbumCard({ album, hideAlbumArtist }: Props) {
       <div className="group relative">
         <img
           src={PLACEHOLDER_IMAGE_URL}
-          data-src={album.imageId}
-          alt="Placeholder"
-          className="lazyload rounded w-36 h-36 object-cover"
+          data-src={album.image}
+          alt="album"
+          className="lazyload rounded-lg w-full aspect-square object-cover"
         />
         <div className="invisible group-hover:visible absolute top-2 right-2">
-          <ActionMenu tracks={albumTracks} />
+          <ActionMenu tracks={album.tracks} />
         </div>
       </div>
       <div className="p-3">

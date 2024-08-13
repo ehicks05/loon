@@ -1,37 +1,28 @@
 import "lazysizes";
 import "lazysizes/plugins/attrchange/ls.attrchange";
 import { useAppStore } from "@/common/AppContextProvider";
-import type { Track } from "@/common/types";
 import AlbumCard from "@/components/AlbumCard";
-import { isEqual, sortBy, uniqWith } from "lodash-es";
 
 interface Props {
-  tracks?: Track[];
+  artist?: string;
   hideAlbumArtist?: boolean;
 }
 
-export default function Albums({ tracks: _tracks, hideAlbumArtist }: Props) {
-  const tracks = _tracks || useAppStore((state) => state.tracks);
-
-  const albums = sortBy(
-    uniqWith(
-      tracks.map((track) => ({
-        name: track.album,
-        artist: track.albumArtist,
-        imageId: track.spotifyAlbumImage,
-      })),
-      isEqual,
-    ),
-    ["artist", "name"],
+export default function Albums({ artist, hideAlbumArtist }: Props) {
+  const albums = useAppStore((state) => state.albums).filter((o) =>
+    artist ? o.artist === artist : true,
   );
 
   return (
-    <div className="flex p-2">
-      <div className="flex flex-wrap gap-2 justify-between">
+    <div className="flex flex-col gap-4">
+      <h2 className="text-xl font-bold">{albums.length} Albums</h2>
+      <div className="grid gap-4 w-full grid-cols-[repeat(auto-fill,_minmax(12rem,_1fr))]">
         {albums.map((album) => (
-          <div key={`${album.artist}-${album.name}`} className="w-36">
-            <AlbumCard album={album} hideAlbumArtist={hideAlbumArtist} />
-          </div>
+          <AlbumCard
+            key={`${album.artist}-${album.name}`}
+            album={album}
+            hideAlbumArtist={hideAlbumArtist}
+          />
         ))}
       </div>
     </div>

@@ -1,41 +1,63 @@
 import "lazysizes";
 import "lazysizes/plugins/attrchange/ls.attrchange";
 import { useAppStore } from "@/common/AppContextProvider";
-import type { Track } from "@/common/types";
 import { ArtistCard } from "@/components/ArtistCard";
-import { sortBy, uniqBy } from "lodash-es";
+import { Button } from "@/components/Button";
+import { type Dispatch, type SetStateAction, useState } from "react";
+import { FaSortAlphaDown, FaSortAmountDown } from "react-icons/fa";
+import { twMerge } from "tailwind-merge";
 
-export interface Artist {
-  name: string;
-  image: string | null;
-  imageThumb: string | null;
-}
+type ArtistSort = "name" | "tracks";
 
-export const trackToArtist = (track: Track): Artist => ({
-  name: track.artist,
-  image: track.spotifyArtistImage,
-  imageThumb: track.spotifyArtistImageThumb,
-});
+const SortButtons = ({
+  orderBy,
+  setOrderBy,
+}: { orderBy: string; setOrderBy: Dispatch<SetStateAction<ArtistSort>> }) => (
+  <div>
+    <Button
+      className={twMerge(
+        "rounded-r-none text-neutral-400 bg-neutral-800",
+        orderBy === "tracks" ? "text-green-400" : "",
+      )}
+      onClick={() => setOrderBy("tracks")}
+    >
+      <FaSortAmountDown />
+    </Button>
+    <Button
+      className={twMerge(
+        "rounded-l-none text-neutral-400 bg-neutral-800",
+        orderBy === "name" ? "text-green-400" : "",
+      )}
+      onClick={() => setOrderBy("name")}
+    >
+      <FaSortAlphaDown />
+    </Button>
+  </div>
+);
 
 export default function Artists() {
-  const tracks = useAppStore((state) => state.tracks);
-  const artists = sortBy(
-    uniqBy(tracks.map(trackToArtist), (o: Artist) => o.name),
-    ["name"],
+  const [orderBy, setOrderBy] = useState<ArtistSort>("tracks");
+  const artists = useAppStore((state) => state.artists).sort((o1, o2) =>
+    orderBy === "name"
+      ? o1.name.localeCompare(o2.name)
+      : o2.tracks.length - o1.tracks.length,
   );
 
   return (
-    <>
-      <div className="p-2">{artists.length} Artists:</div>
-      <div className="flex p-2">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {artists.map((artist: Artist) => (
+    <div className="flex flex-col gap-4">
+      <div className="flex justify-between">
+        <h2 className="text-xl font-bold">{artists.length} Artists</h2>
+        <SortButtons orderBy={orderBy} setOrderBy={setOrderBy} />
+      </div>
+      <div className="flex">
+        <div className="grid gap-4 w-full grid-cols-[repeat(auto-fill,_minmax(12rem,_1fr))]">
+          {artists.map((artist) => (
             <div key={artist.name} className="w-full">
               <ArtistCard artist={artist} size="thumb" />
             </div>
           ))}
         </div>
       </div>
-    </>
+    </div>
   );
 }

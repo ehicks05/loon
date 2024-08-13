@@ -7,25 +7,21 @@ import { sortBy } from "lodash-es";
 import { useParams } from "react-router-dom";
 
 export default function Album() {
-  const { artist, album } = useParams();
+  const { artist, album: albumName } = useParams();
 
-  const tracks = useAppStore((state) => state.tracks);
-  const albumTracks = sortBy(
-    tracks.filter(
-      (track) => track.albumArtist === artist && track.album === album,
-    ),
-    ["discNumber", "trackNumber"],
+  const album = useAppStore((state) => state.albums).find(
+    (o) => o.artist === artist && o.name === albumName,
   );
+
+  if (!album) return null;
+
+  const albumTracks = sortBy(album.tracks, ["discNumber", "trackNumber"]);
 
   return (
     <section>
-      <AlbumCard
-        album={{
-          artist: albumTracks[0]?.albumArtist,
-          name: albumTracks[0]?.album,
-          imageId: albumTracks[0]?.spotifyAlbumImageThumb,
-        }}
-      />
+      <div className="max-w-96">
+        <AlbumCard album={album} />
+      </div>
       <ul className="flex flex-col">
         {albumTracks.map((track) => (
           <MediaItem

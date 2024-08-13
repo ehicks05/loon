@@ -18,7 +18,7 @@ import { trpc } from "./utils/trpc";
 
 export default function Router() {
   const { data: user } = trpc.misc.me.useQuery();
-  const isAdmin = user?.isAdmin || false;
+  const isAdmin = user?.isAdmin;
 
   return (
     <>

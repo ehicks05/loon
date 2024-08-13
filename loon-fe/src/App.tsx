@@ -4,7 +4,7 @@ import Player from "@/components/Player/Player";
 import SidePanel from "@/components/SidePanel";
 import { useEffect } from "react";
 import Routes from "./Routes";
-import { useAppStore } from "./common/AppContextProvider";
+import { setTracks, useAppStore } from "./common/AppContextProvider";
 import { PageLoader } from "./common/PageLoader";
 import type { RawTrackResponse } from "./common/types";
 import { formatTime } from "./components/utils";
@@ -34,10 +34,7 @@ const useCacheData = () => {
 
   useEffect(() => {
     if (tracks) {
-      useAppStore.setState((state) => ({
-        ...state,
-        tracks: tracks.map(addFormattedDuration),
-      }));
+      setTracks(tracks.map(addFormattedDuration));
     }
   }, [tracks]);
 

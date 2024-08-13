@@ -13,3 +13,19 @@ export type PlaylistTrack =
   RouterOutput["playlist"]["list"][number]["playlistTracks"][number];
 
 export type SystemSettings = RouterOutput["misc"]["systemSettings"];
+
+export interface Album {
+  artist: string;
+  name: string;
+  image: string | null;
+  imageThumb: string | null;
+  tracks: Track[];
+}
+
+export interface Artist {
+  name: string;
+  image: string | null;
+  imageThumb: string | null;
+  tracks: Track[];
+  albums: Album[];
+}

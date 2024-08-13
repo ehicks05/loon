@@ -1,12 +1,19 @@
-import { keyBy, map, uniq } from "lodash-es";
+import { groupBy, keyBy, map, uniq } from "lodash-es";
 import create from "zustand";
 import { devtools } from "zustand/middleware";
-import type { Playlist, Track } from "./types";
+import type { Album, Artist, Playlist, Track } from "./types";
 
-export const useAppStore = create<{ tracks: Track[]; playlists: Playlist[] }>(
+export const useAppStore = create<{
+  tracks: Track[];
+  albums: Album[];
+  artists: Artist[];
+  playlists: Playlist[];
+}>(
   devtools(
     () => ({
       tracks: [] as Track[],
+      albums: [] as Album[],
+      artists: [] as Artist[],
       playlists: [] as Playlist[],
     }),
     { name: "app" },
@@ -58,4 +65,34 @@ export const handleLocalDragAndDrop = ({
     ...state,
     playlists: [...rest, playlist],
   }));
+};
+
+const tracksToArtist = (tracks: Track[]): Artist => ({
+  name: tracks[0].artist,
+  image: tracks[0].spotifyArtistImage,
+  imageThumb: tracks[0].spotifyArtistImageThumb,
+  tracks,
+  albums: Object.entries(groupBy(tracks, (o) => o.album)).map(
+    ([_, tracks]) => ({
+      artist: tracks[0].artist,
+      name: tracks[0].album,
+      image: tracks[0].spotifyAlbumImage,
+      imageThumb: tracks[0].spotifyAlbumImageThumb,
+      tracks,
+    }),
+  ),
+});
+
+const tracksToArtists = (tracks: Track[]): Artist[] => {
+  const _artists = groupBy(tracks, (o) => o.artist);
+  const artists = Object.entries(_artists).map(([_, tracks]) => ({
+    ...tracksToArtist(tracks),
+  }));
+  return artists;
+};
+
+export const setTracks = (tracks: Track[]) => {
+  const artists = tracksToArtists(tracks);
+  const albums = artists.flatMap((o) => o.albums);
+  useAppStore.setState((state) => ({ ...state, tracks, albums, artists }));
 };

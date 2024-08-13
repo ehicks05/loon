@@ -35,16 +35,15 @@ export default function Navbar() {
     navigate("/");
   }
 
-  // @ts-ignore: revisit this
   const isAdmin = user?.isAdmin;
 
   return (
-    <Disclosure as="nav" className="bg-green-600">
+    <Disclosure as="nav" className="bg-neutral-900">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
           <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
             {/* Mobile menu button*/}
-            <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-inset">
+            <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md p-2 text-gray-300 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-inset">
               <span className="-inset-0.5 absolute" />
               <span className="sr-only">Open main menu</span>
               <FaBars
@@ -74,8 +73,8 @@ export default function Navbar() {
                     aria-current={pathname === item.href ? "page" : undefined}
                     className={twMerge(
                       pathname === item.href
-                        ? "bg-green-900 text-white"
-                        : "text-gray-100 hover:bg-green-800 hover:text-white",
+                        ? "bg-green-800 text-white"
+                        : "text-gray-100 hover:bg-green-700 hover:text-white",
                       "rounded-md px-3 py-2 font-medium text-sm",
                     )}
                   >
@@ -164,8 +163,8 @@ export default function Navbar() {
               aria-current={pathname === item.href ? "page" : undefined}
               className={twMerge(
                 pathname === item.href
-                  ? "bg-green-900 text-white"
-                  : "text-gray-100 hover:bg-green-800 hover:text-white",
+                  ? "bg-green-800 text-white"
+                  : "text-gray-100 hover:bg-green-700 hover:text-white",
                 "block rounded-md px-3 py-2 font-medium text-base",
               )}
             >

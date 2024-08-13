@@ -19,7 +19,8 @@
     "outDir": "dist",
     "baseUrl": "src",
     "sourceMap": true,
-    "declarationMap": true
+    "declarationMap": true,
+    "types": ["node"]
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "./drizzle.config.ts"]
 }

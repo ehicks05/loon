@@ -37,8 +37,11 @@ export const DEFAULT_EQ_BANDS: EqBand[] = [
   },
 ];
 
+export type Loop = false | "playlist" | "track";
+
 export interface UserState {
   eqBands: EqBand[];
+  loop: Loop;
   muted: boolean;
   selectedContextMenuId: string;
   selectedPlaylistId: string;
@@ -49,6 +52,7 @@ export interface UserState {
 
 const DEFAULT_USER: UserState = {
   eqBands: DEFAULT_EQ_BANDS,
+  loop: "playlist",
   muted: false,
   selectedContextMenuId: "",
   selectedPlaylistId: "",
@@ -71,6 +75,8 @@ const updateUser = (update: Partial<UserState>) =>
   }));
 
 export const setEqBands = async (eqBands: EqBand[]) => updateUser({ eqBands });
+
+export const setLoop = async (loop: Loop) => updateUser({ loop });
 
 export const setMuted = async (muted: boolean) => updateUser({ muted });
 

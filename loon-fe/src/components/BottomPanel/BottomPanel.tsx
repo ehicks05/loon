@@ -14,15 +14,12 @@ import VolumeSlider from "./VolumeSlider";
 
 function ShuffleButton() {
   const shuffle = useUserStore((state) => state.shuffle);
-  function handleShuffleChange() {
-    setShuffle(!shuffle);
-  }
 
   return (
     <button
       type="button"
       className={`bg-black p-2 rounded ${shuffle ? " bg-green-700" : ""}`}
-      onClick={handleShuffleChange}
+      onClick={() => setShuffle(!shuffle)}
     >
       <FaRandom />
     </button>
@@ -31,16 +28,13 @@ function ShuffleButton() {
 
 function MuteButton() {
   const muted = useUserStore((state) => state.muted);
-  function handleMuteChange() {
-    setMuted(!muted);
-  }
   const Icon = muted ? FaVolumeMute : FaVolumeUp;
 
   return (
     <button
       type="button"
       className="bg-black p-2 rounded"
-      onClick={handleMuteChange}
+      onClick={() => setMuted(!muted)}
     >
       <Icon />
     </button>

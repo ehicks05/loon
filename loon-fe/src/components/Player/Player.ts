@@ -128,12 +128,15 @@ const Player = () => {
     setAnalyser(analyserRef);
   }, []);
 
+  const changeTrack = (direction: PlaybackDirection) => {
+    setSelectedTrackId(getNewTrackId(direction));
+  };
+
   useKeyboardControls(playbackState, setPlaybackState, changeTrack);
 
   useEffect(() => {
     const trackId = userState.selectedTrackId;
-    if (trackId && prevTrackId.current !== trackId) {
-      prevTrackId.current = trackId;
+    if (trackId) {
       initAudioSource();
     }
   }, [userState.selectedTrackId]);
@@ -150,16 +153,13 @@ const Player = () => {
   }, [userState.muted]);
 
   useEffect(() => {
-    userState.eqBands.forEach((band, i) => {
-      bandsRef.current[i].type = band.type;
-      bandsRef.current[i].frequency.value = band.frequency;
-      bandsRef.current[i].gain.value = band.gain;
+    userState.eqBands.forEach((eqBand, i) => {
+      const band = bandsRef.current[i];
+      band.type = eqBand.type;
+      band.frequency.value = eqBand.frequency;
+      band.gain.value = eqBand.gain;
     });
   }, [userState.eqBands]);
-
-  const changeTrack = (direction: PlaybackDirection) => {
-    setSelectedTrackId(getNewTrackId(direction));
-  };
 
   useEffect(() => {
     const handlePlaybackStateChange = (playbackState: PlaybackState) => {
@@ -189,6 +189,10 @@ const Player = () => {
   }, [playbackState]);
 
   const initAudioSource = async () => {
+    const audioCtx = audioCtxRef.current;
+    const audio = audioRef.current;
+    const fadeNode = fadeGainNodeRef.current;
+    const trackGainNode = trackGainNodeRef.current;
     setElapsedTime(0);
 
     const track = getTrackById(userState.selectedTrackId);
@@ -199,33 +203,28 @@ const Player = () => {
       return;
     }
 
+    if (!audio) return;
+
     // set new audio source
-    if (audioRef.current) {
-      audioRef.current.src = `${API_URL}/media?id=${track.id}`;
-      audioRef.current.load();
+    audio.src = `${API_URL}/media?id=${track.id}`;
+    audio.load();
 
-      if (trackGainNodeRef.current) {
-        const gain = getMaxSafeGain(
-          Number(track.trackGainLinear),
-          Number(track.trackPeak),
-        );
-        trackGainNodeRef.current.gain.value = gain;
-      }
-
-      if (playbackState === "playing") {
-        fade(audioCtxRef.current, fadeGainNodeRef.current, "in", () =>
-          audioRef.current?.play(),
-        );
-      }
-
-      if (playbackState !== "playing") {
-        fade(audioCtxRef.current, fadeGainNodeRef.current, "out", () =>
-          audioCtxRef.current?.suspend(),
-        );
-      }
-
-      scrollIntoView(track.id);
+    if (trackGainNode) {
+      trackGainNode.gain.value = getMaxSafeGain(
+        Number(track.trackGainLinear),
+        Number(track.trackPeak),
+      );
     }
+
+    if (playbackState === "playing") {
+      fade(audioCtx, fadeNode, "in", () => audio?.play());
+    }
+
+    if (playbackState !== "playing") {
+      fade(audioCtx, fadeNode, "out", () => audioCtx?.suspend());
+    }
+
+    scrollIntoView(track.id);
   };
 
   return null;

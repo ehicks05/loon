@@ -7,6 +7,7 @@ import Routes from "./Routes";
 import { setTracks, useAppStore } from "./common/AppContextProvider";
 import { PageLoader } from "./common/PageLoader";
 import type { RawTrackResponse } from "./common/types";
+import { MediaColumn } from "./components/MediaColumn";
 import { formatTime } from "./components/utils";
 import { useTitle } from "./hooks/useTitle";
 import { trpc } from "./utils/trpc";
@@ -71,7 +72,7 @@ export default function App() {
             </div>
           </div>
         </div>
-        <div className="w-full rounded-lg overflow-y-auto overflow-x-hidden p-2 bg-neutral-900">
+        <div className="w-full lg:w-2/3 max-w-screen-lg rounded-lg overflow-y-auto overflow-x-hidden p-2 bg-neutral-900">
           {!tracks && (
             <div className="flex flex-col gap-4 p-4 -m-2 bg-red-600 rounded-lg">
               <div className="text-3xl">Uh oh!</div>
@@ -79,6 +80,11 @@ export default function App() {
             </div>
           )}
           {tracks && <Routes />}
+        </div>
+        <div className="hidden lg:block h-full w-1/3 max-w-screen-sm overflow-y-auto overflow-x-hidden">
+          <div className="p-4 bg-neutral-900 rounded-lg">
+            <MediaColumn />
+          </div>
         </div>
       </div>
       {trackz.length !== 0 && <Player />}

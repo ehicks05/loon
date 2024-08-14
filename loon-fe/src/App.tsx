@@ -1,6 +1,6 @@
 import { BottomPanel } from "@/components/BottomPanel/BottomPanel";
 import Navbar from "@/components/Navbar";
-import Player from "@/components/Player/Player";
+import { Player } from "@/components/Player/Player";
 import SidePanel from "@/components/SidePanel";
 import { useEffect } from "react";
 import Routes from "./Routes";

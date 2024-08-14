@@ -15,7 +15,7 @@ import renderSpectrumFrame from "./spectrum";
 import { getNewTrackId } from "./trackDeterminationUtils";
 import { useKeyboardControls } from "./useKeyboardControls";
 
-const Player = () => {
+export const Player = () => {
   const userState = useUserStore((state) => state);
   const {
     setElapsedTime,
@@ -260,5 +260,3 @@ function fade(
 
   setTimeout(callback, duration);
 }
-
-export default Player;

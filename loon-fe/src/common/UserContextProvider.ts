@@ -41,6 +41,7 @@ export type Loop = false | "playlist" | "track";
 
 export interface UserState {
   eqBands: EqBand[];
+  expandMediaColumn: boolean;
   loop: Loop;
   muted: boolean;
   selectedContextMenuId: string;
@@ -52,6 +53,7 @@ export interface UserState {
 
 const DEFAULT_USER: UserState = {
   eqBands: DEFAULT_EQ_BANDS,
+  expandMediaColumn: true,
   loop: "playlist",
   muted: false,
   selectedContextMenuId: "",
@@ -75,6 +77,9 @@ const updateUser = (update: Partial<UserState>) =>
   }));
 
 export const setEqBands = async (eqBands: EqBand[]) => updateUser({ eqBands });
+
+export const setExpandMediaColumn = async (expandMediaColumn: boolean) =>
+  updateUser({ expandMediaColumn });
 
 export const setLoop = async (loop: Loop) => updateUser({ loop });
 

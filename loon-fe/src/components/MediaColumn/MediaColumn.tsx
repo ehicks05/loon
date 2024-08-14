@@ -1,5 +1,8 @@
 import { getTrackById, useAppStore } from "@/common/AppContextProvider";
-import { useUserStore } from "@/common/UserContextProvider";
+import {
+  setExpandMediaColumn,
+  useUserStore,
+} from "@/common/UserContextProvider";
 import { PLACEHOLDER_IMAGE_URL } from "@/constants";
 import { trpc } from "@/utils/trpc";
 import { useState } from "react";
@@ -88,7 +91,7 @@ export const Content = () => {
 };
 
 export const MediaColumn = () => {
-  const [expanded, setExpanded] = useState(true);
+  const expanded = useUserStore((state) => state.expandMediaColumn);
 
   return (
     <div
@@ -97,7 +100,7 @@ export const MediaColumn = () => {
       <div className="flex flex-col gap-2 items-end p-4 bg-neutral-900 rounded-lg">
         <Button
           className="aspect-square"
-          onClick={() => setExpanded((expanded) => !expanded)}
+          onClick={() => setExpandMediaColumn(!expanded)}
         >
           {expanded ? <FaMinus /> : <FaPlus />}
         </Button>

@@ -14,16 +14,14 @@ export const Paragraphs = ({
   expanded,
 }: { text?: string; expanded: boolean }) =>
   text
-    ?.split("\n\n")
+    ?.split("\n")
     .filter((_, i) => expanded || i === 0)
     .map((p) => (
       <div
         key={p}
         className={`flex flex-col gap-1 ${expanded ? "" : "line-clamp-6"}`}
       >
-        {p.split("\n").map((subP) => (
-          <div key={subP}>{subP}</div>
-        ))}
+        {p}
       </div>
     ));
 
@@ -36,11 +34,13 @@ const InfoBlock = ({
 
   return (
     <div className="flex flex-col gap-2">
-      <img
-        src={image || PLACEHOLDER_IMAGE_URL}
-        alt={name}
-        className="rounded-lg"
-      />
+      <div className="max-w-xs">
+        <img
+          src={image || PLACEHOLDER_IMAGE_URL}
+          alt={name}
+          className="rounded-lg"
+        />
+      </div>
       <h1 className="text-2xl font-bold">{name}</h1>
       <div className="flex flex-col items-start gap-2 text-sm">
         <Paragraphs text={content} expanded={expanded} />

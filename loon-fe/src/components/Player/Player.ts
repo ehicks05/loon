@@ -10,10 +10,10 @@ import {
   useUserStore,
 } from "@/common/UserContextProvider";
 import { useEffect, useRef } from "react";
-import { useEventListener } from "usehooks-ts";
 import { getMaxSafeGain, scaleVolume, scrollIntoView } from "./playerUtils";
 import renderSpectrumFrame from "./spectrum";
 import { getNewTrackId } from "./trackDeterminationUtils";
+import { useKeyboardControls } from "./useKeyboardControls";
 
 const Player = () => {
   const userState = useUserStore((state) => state);
@@ -128,23 +128,7 @@ const Player = () => {
     setAnalyser(analyserRef);
   }, []);
 
-  const documentRef = useRef<Document>(document);
-
-  useEventListener(
-    "keydown",
-    (e: KeyboardEvent) => {
-      const target = e.target as HTMLInputElement | null;
-      if (target?.tagName === "INPUT") return;
-
-      if (e.key === " ")
-        setPlaybackState(playbackState === "playing" ? "paused" : "playing");
-      if (e.key === "ArrowRight") changeTrack("next");
-      if (e.key === "ArrowLeft") changeTrack("prev");
-    },
-    documentRef,
-  );
-
-  const prevTrackId = useRef("");
+  useKeyboardControls(playbackState, setPlaybackState, changeTrack);
 
   useEffect(() => {
     const trackId = userState.selectedTrackId;

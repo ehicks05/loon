@@ -1,4 +1,4 @@
-import { lastFm } from "services/lastfm/client.js";
+import { lastFm } from "../../services/lastfm/client.js";
 import { z } from "zod";
 import { publicProcedure, router } from "../trpc.js";
 

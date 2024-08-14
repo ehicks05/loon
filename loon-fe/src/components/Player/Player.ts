@@ -1,5 +1,5 @@
 import { API_URL } from "@/apiUrl";
-import { getTrackById } from "@/common/AppContextProvider";
+import { getPlaylistById, getTrackById } from "@/common/AppContextProvider";
 import {
   type PlaybackState,
   usePlayerStore,
@@ -63,7 +63,7 @@ const Player = () => {
       audio.ondurationchange = () => setDuration(audio.duration);
       audio.onerror = () => console.log(audio.error);
       audio.onplaying = () => renderSpectrumFrame();
-      audio.onpause = (e) => console.log(e);
+      audio.onpause = () => {};
       audio.ontimeupdate = () => setElapsedTime(audio.currentTime);
 
       const track = getTrackById(userState.selectedTrackId);
@@ -140,6 +140,14 @@ const Player = () => {
       initAudioSource();
     }
   }, [userState.selectedTrackId]);
+
+  useEffect(() => {
+    const playlist = getPlaylistById(userState.selectedPlaylistId);
+    const loop = playlist?.playlistTracks.length === 1;
+    if (audioRef.current) {
+      audioRef.current.loop = loop;
+    }
+  }, [userState.selectedPlaylistId]);
 
   useEffect(() => {
     if (userGainNodeRef.current)

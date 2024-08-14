@@ -63,27 +63,29 @@ const EqPopover = () => {
 
 export function BottomPanel() {
   return (
-    <div className="flex flex-col items-center justify-between md:flex-row gap-4 p-3 bg-neutral-900">
-      <div className="w-full md:w-1/2">
-        <TrackDescription />
-      </div>
-
-      <div className="flex flex-col gap-4 md:gap-2 w-full items-center">
-        <div className="w-full md:w-5/6">
-          <TrackProgressBar />
+    <div className="flex justify-center w-full bg-neutral-900">
+      <div className="flex flex-col items-center w-full max-w-screen-2xl justify-between md:flex-row gap-4 p-3">
+        <div className="w-full md:w-1/2">
+          <TrackDescription />
         </div>
-        <PlaybackButtons />
-      </div>
 
-      <div className="w-full md:w-1/2">
-        <div className="flex gap-2 items-center justify-center md:justify-end md:ml-4">
-          <ShuffleButton />
-          <div>
-            {/* keep inside a div to handle an extra div created by Popover */}
-            <EqPopover />
+        <div className="flex flex-col gap-4 md:gap-2 w-full items-center">
+          <div className="w-full md:w-5/6">
+            <TrackProgressBar />
           </div>
-          <MuteButton />
-          <VolumeSlider />
+          <PlaybackButtons />
+        </div>
+
+        <div className="w-full md:w-1/2">
+          <div className="flex gap-2 items-center justify-center md:justify-end md:ml-4">
+            <ShuffleButton />
+            <div>
+              {/* keep inside a div to handle an extra div created by Popover */}
+              <EqPopover />
+            </div>
+            <MuteButton />
+            <VolumeSlider />
+          </div>
         </div>
       </div>
     </div>

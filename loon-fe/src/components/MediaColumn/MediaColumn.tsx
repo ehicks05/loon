@@ -19,7 +19,7 @@ export const Paragraphs = ({
     .map((p) => (
       <div
         key={p}
-        className={`flex flex-col gap-1 ${expanded ? "" : "line-clamp-6"}`}
+        className={`flex flex-col gap-1 max-w-prose ${expanded ? "" : "line-clamp-6"}`}
       >
         {p}
       </div>
@@ -34,7 +34,7 @@ const InfoBlock = ({
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="max-w-xs">
+      <div className="max-w-64">
         <img
           src={image || PLACEHOLDER_IMAGE_URL}
           alt={name}
@@ -95,7 +95,7 @@ export const MediaColumn = () => {
 
   return (
     <div
-      className={`hidden lg:block h-full ${expanded ? "w-1/3" : "w-min"} max-w-screen-sm overflow-y-auto overflow-x-hidden`}
+      className={`hidden lg:block h-full ${expanded ? "max-w-1/3" : "w-min"} overflow-y-auto overflow-x-hidden`}
     >
       <div className="flex flex-col gap-2 items-end p-4 bg-neutral-900 rounded-lg">
         <Button

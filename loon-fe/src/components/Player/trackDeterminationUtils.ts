@@ -36,6 +36,14 @@ function getCurrentPlaylistTrackIds(selectedPlaylistId: string) {
   return tracks.map((track) => track.id);
 }
 
+/**
+ * Get a random new index that cannot be the currentIndex
+ */
+const getShuffleIndex = (currentIndex: number, playlistLength: number) => {
+  const roll = Math.floor(Math.random() * (playlistLength - 1)) + 1;
+  return (currentIndex + roll) % playlistLength;
+};
+
 function getNewIndex(
   input: PlaybackDirection,
   currentTrackIndex: number,
@@ -43,7 +51,7 @@ function getNewIndex(
   shuffle: boolean,
 ) {
   let newIndex = shuffle
-    ? Math.floor(Math.random() * currentPlaylistTrackIds.length)
+    ? getShuffleIndex(currentTrackIndex, currentPlaylistTrackIds.length)
     : input === "prev"
       ? currentTrackIndex - 1
       : input === "next"

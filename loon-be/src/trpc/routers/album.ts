@@ -1,5 +1,5 @@
-import { lastFm } from "../../services/lastfm/client.js";
 import { z } from "zod";
+import { lastFm } from "../../services/lastfm/client.js";
 import { publicProcedure, router } from "../trpc.js";
 
 export const albumRouter = router({

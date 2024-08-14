@@ -26,5 +26,6 @@ export interface Artist {
   name: string;
   image: string | null;
   imageThumb: string | null;
+  tracks: Track[];
   albums: Album[];
 }

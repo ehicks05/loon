@@ -71,6 +71,7 @@ const tracksToArtist = (tracks: Track[]): Artist => ({
   name: tracks[0].artist,
   image: tracks[0].spotifyArtistImage,
   imageThumb: tracks[0].spotifyArtistImageThumb,
+  tracks,
   albums: Object.entries(groupBy(tracks, (o) => o.album)).map(
     ([_, tracks]) => ({
       artist: tracks[0].artist,

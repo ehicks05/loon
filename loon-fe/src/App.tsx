@@ -7,7 +7,7 @@ import Routes from "./Routes";
 import { setTracks, useAppStore } from "./common/AppContextProvider";
 import { PageLoader } from "./common/PageLoader";
 import type { RawTrackResponse } from "./common/types";
-import { MediaColumn } from "./components/MediaColumn";
+import { MediaColumn } from "./components/MediaColumn/MediaColumn";
 import { formatTime } from "./components/utils";
 import { useTitle } from "./hooks/useTitle";
 import { trpc } from "./utils/trpc";
@@ -61,7 +61,7 @@ export default function App() {
   return (
     <div className="h-dvh flex flex-col text-neutral-300 bg-neutral-950">
       <Navbar />
-      <div className={"flex flex-grow m-2 gap-2 overflow-hidden"}>
+      <div className="flex flex-grow m-2 gap-2 justify-center overflow-hidden">
         <div className="hidden sm:block h-full w-60 overflow-y-auto overflow-x-hidden">
           <div className="h-full flex flex-col justify-between">
             <div className="overflow-y-auto">
@@ -81,11 +81,7 @@ export default function App() {
           )}
           {tracks && <Routes />}
         </div>
-        <div className="hidden lg:block h-full w-1/3 max-w-screen-sm overflow-y-auto overflow-x-hidden">
-          <div className="p-4 bg-neutral-900 rounded-lg">
-            <MediaColumn />
-          </div>
-        </div>
+        <MediaColumn />
       </div>
       {trackz.length !== 0 && <Player />}
       <BottomPanel />

@@ -5,11 +5,14 @@
     "module": "ESNext",
     "moduleResolution": "Node",
     "esModuleInterop": true,
+
     "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+
     "removeComments": true,
     "newLine": "lf",
-    "noUnusedLocals": true,
-    "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
     "isolatedModules": true,
     "forceConsistentCasingInFileNames": true,
@@ -22,5 +25,5 @@
     "declarationMap": true,
     "types": ["node"]
   },
-  "include": ["src/**/*.ts", "./drizzle.config.ts"]
+  "include": ["src"]
 }

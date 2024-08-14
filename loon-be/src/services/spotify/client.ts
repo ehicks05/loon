@@ -6,8 +6,7 @@ const spotify = SpotifyApi.withClientCredentials(
   env.SPOTIFY_CLIENT_SECRET,
   undefined,
   {
-    beforeRequest(url, options) {},
-    afterRequest(url, options, response) {
+    afterRequest(url, _, response) {
       console.log(`${url} - ${response.status}`);
       if (response.status !== 200) {
         console.log(response.headers);

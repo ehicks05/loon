@@ -13,7 +13,7 @@ import { validateRequest } from "../utils/validate.js";
 
 const router = express.Router();
 
-router.get("/poll", (req, res) => res.send({ success: true }));
+router.get("/poll", (_, res) => res.send({ success: true }));
 
 router.get<unknown, unknown, unknown, { id?: string }>(
   "/media",
@@ -35,7 +35,7 @@ router.get<unknown, unknown, unknown, { id?: string }>(
   },
 );
 
-router.get("/login/github", async (req, res) => {
+router.get("/login/github", async (_, res) => {
   const state = generateState();
   const url = await github.createAuthorizationURL(state);
   res.header(

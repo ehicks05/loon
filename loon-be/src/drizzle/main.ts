@@ -10,18 +10,19 @@ import {
 import { userTable } from "./lucia.js";
 
 export const system_settings = pgTable("system_settings", {
-  id: text("id").primaryKey().notNull().default("system"),
+  id: text("id").primaryKey().default("system"),
   musicFolder: text("music_folder").notNull().default(""),
+  syncDb: boolean("sync_db").notNull().default(false),
   syncImages: boolean("sync_images").notNull().default(false),
 });
 
 export const system_status = pgTable("system_status", {
-  id: text("id").primaryKey().notNull().default("status"),
+  id: text("id").primaryKey().default("status"),
   isSyncing: boolean("is_syncing").notNull().default(false),
 });
 
 export const playlists = pgTable("playlists", {
-  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  id: uuid("id").primaryKey().defaultRandom(),
   favorites: boolean("favorites").notNull().default(false),
   name: text("name").notNull(),
   queue: boolean("queue").notNull().default(false),
@@ -31,7 +32,7 @@ export const playlists = pgTable("playlists", {
 });
 
 export const tracks = pgTable("tracks", {
-  id: text("id").primaryKey().notNull(),
+  id: text("id").primaryKey(),
   album: text("album").notNull(),
   albumArtist: text("album_artist").notNull(),
   artist: text("artist").notNull(),

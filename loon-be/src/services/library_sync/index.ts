@@ -97,8 +97,11 @@ export const syncLibrary = async () => {
   const mediaFiles = await listMediaFiles(systemSettings.musicFolder);
   console.log("converting media files to trackInputs");
   const trackInputs = await toTrackInputs(mediaFiles);
-  console.log("saving trackInputs to the db");
-  await pMap(trackInputs, updateTrack, { concurrency: 64 });
+
+  if (systemSettings.syncDb) {
+    console.log("saving trackInputs to the db");
+    await pMap(trackInputs, updateTrack, { concurrency: 64 });
+  }
 
   if (systemSettings.syncImages) {
     console.log("fetching images");

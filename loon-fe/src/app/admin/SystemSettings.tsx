@@ -50,7 +50,12 @@ export default function SystemSettings() {
           </div>
           <div className={"flex flex-col gap-2"}>
             <div className="font-bold text-lg">Library Sync Settings</div>
-
+            <CheckboxInput
+              label="Sync DB"
+              name="syncDb"
+              checked={settings.syncDb}
+              onChange={(e) => onChange(e.target.name, e.target.checked)}
+            />
             <CheckboxInput
               label="Sync Images"
               name="syncImages"

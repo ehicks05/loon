@@ -1,8 +1,8 @@
 import { eq } from "drizzle-orm";
 import { z } from "zod";
+import { userTable } from "#/drizzle/lucia.js";
+import { system_settings } from "#/drizzle/main.js";
 import { db } from "../../db.js";
-import { userTable } from "../../drizzle/lucia.js";
-import { system_settings } from "../../drizzle/main.js";
 import { adminProcedure, publicProcedure, router } from "../trpc.js";
 
 const UserSchema = z

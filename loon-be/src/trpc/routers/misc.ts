@@ -30,6 +30,7 @@ export const miscRouter = router({
     .input(
       z.object({
         musicFolder: z.string(),
+        syncDb: z.boolean(),
         syncImages: z.boolean(),
       }),
     )

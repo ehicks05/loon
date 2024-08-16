@@ -34,7 +34,7 @@ export const MusicFolderSummary = () => {
             <span
               className={`font-bold ${fileCount ? "text-green-500" : "text-red-500"}`}
             >
-              {fileCount}
+              {fileCount && Intl.NumberFormat().format(fileCount)}
             </span>
           )}{" "}
           media files

@@ -2,91 +2,169 @@ import { eq } from "drizzle-orm";
 import { uniqBy } from "lodash-es";
 import pMap from "p-map";
 import { db } from "../../db.js";
-import { system_status, tracks } from "../../drizzle/main.js";
+import {
+  album_artists,
+  albums,
+  artists,
+  system_status,
+  track_artists,
+  tracks,
+} from "../../drizzle/main.js";
 import { listMediaFiles } from "../../utils/files.js";
-import { getTrackInput } from "../../utils/metadata.js";
+import { parseMediaFile } from "../../utils/metadata.js";
 import {
   type LoonItemTypes,
   fetchImages,
   imageCache,
   toFullAndThumb,
 } from "../spotify/index.js";
-import type { TrackInput } from "../types.js";
-import { omitImageFields } from "./utils.js";
+import type {
+  AlbumArtistInput,
+  AlbumInput,
+  ArtistInput,
+  ArtistWithAlbumArtists,
+  TrackArtistInput,
+  TrackInput,
+} from "../types.js";
 
-const toTrackInputs = async (mediaFiles: string[]) => {
-  const results = await pMap(mediaFiles, getTrackInput, { concurrency: 64 });
-  const trackInputs = results.filter(
-    (result): result is TrackInput => !!result,
-  );
-  return trackInputs;
+export interface TrackInputBundle {
+  track: TrackInput;
+  trackArtists: TrackArtistInput[];
+}
+
+type ParsedMediaFile = Awaited<ReturnType<typeof parseMediaFile>>;
+
+const isParsed = (input: ParsedMediaFile | null) => !!input;
+
+const parseMediaFiles = async (mediaFiles: string[]) => {
+  const results = await pMap(mediaFiles, parseMediaFile, { concurrency: 8 });
+  const parsedMediaFiles = results.filter(isParsed);
+
+  const tracks = parsedMediaFiles.map((o) => o.track);
+  const artists = parsedMediaFiles.flatMap((o) => o.artists);
+  const albums = parsedMediaFiles.map((o) => o?.album);
+  const trackArtists = parsedMediaFiles.flatMap((o) => o?.trackArtists);
+  const albumArtists = parsedMediaFiles.flatMap((o) => o?.albumArtists);
+
+  return { tracks, artists, albums, trackArtists, albumArtists };
 };
 
-const updateTrack = async (trackInput: TrackInput) => {
-  // upsert, but if it already exists, leave the imageIds fields alone
+const upsertArtist = async (artist: ArtistInput) => {
   const results = await db
-    .insert(tracks)
-    .values(trackInput)
+    .insert(artists)
+    .values(artist)
     .onConflictDoUpdate({
-      target: tracks.id,
-      set: omitImageFields(trackInput),
+      target: artists.id,
+      set: artist,
     })
     .returning();
-  const track = results[0];
-  return track;
+  const result = results[0];
+  return result;
 };
 
-const updateTrackImage = async (track: TrackInput) => {
-  // does the track already have images?
-  // if (
-  //   track.spotifyArtistImage &&
-  //   track.spotifyArtistImageThumb &&
-  //   track.spotifyAlbumImage &&
-  //   track.spotifyAlbumImageThumb
-  // ) {
-  //   return;
-  // }
+const upsertAlbum = async (album: AlbumInput) => {
+  const results = await db
+    .insert(albums)
+    .values(album)
+    .onConflictDoUpdate({
+      target: albums.id,
+      set: album,
+    })
+    .returning();
+  const result = results[0];
+  return result;
+};
 
-  // grab from spotify
-  const imageQueries = getUniqueImageQueries([track]);
-  const [artistImages, albumImages] = imageQueries
+const upsertTrack = async (track: TrackInput) => {
+  const results = await db
+    .insert(tracks)
+    .values(track)
+    .onConflictDoUpdate({
+      target: tracks.id,
+      set: track,
+    })
+    .returning();
+  const result = results[0];
+  return result;
+};
+
+const upsertTrackArtist = async (trackArtist: TrackArtistInput) => {
+  const results = await db
+    .insert(track_artists)
+    .values(trackArtist)
+    .onConflictDoUpdate({
+      target: [track_artists.trackId, track_artists.artistId],
+      set: trackArtist,
+    })
+    .returning();
+  const result = results[0];
+  return result;
+};
+
+const upsertAlbumArtist = async (albumArtist: AlbumArtistInput) => {
+  const results = await db
+    .insert(album_artists)
+    .values(albumArtist)
+    .onConflictDoUpdate({
+      target: [album_artists.albumId, album_artists.artistId],
+      set: albumArtist,
+    })
+    .returning();
+  const result = results[0];
+  return result;
+};
+
+const updateImages = async (artist: ArtistWithAlbumArtists) => {
+  const imageQueries = getUniqueImageQueries([artist]);
+  const [artistImages, ...albumImages] = imageQueries
     .map((query) => imageCache[query.itemType][query.q] || [])
     .map((images) => toFullAndThumb(images));
 
-  const update = {
-    spotifyArtistImage: artistImages?.full?.url,
-    spotifyArtistImageThumb: artistImages?.thumb?.url,
-    spotifyAlbumImage: albumImages?.full?.url,
-    spotifyAlbumImageThumb: albumImages?.thumb?.url,
+  const artistUpdate = {
+    image: artistImages?.full?.url,
+    imageThumb: artistImages?.thumb?.url,
   };
 
-  const result = await db
-    .update(tracks)
-    .set(update)
-    .where(eq(tracks.id, track.id))
-    .returning();
-  return result[0];
+  if (artistUpdate.image || artistUpdate.imageThumb) {
+    await db
+      .update(artists)
+      .set(artistUpdate)
+      .where(eq(artists.id, artist.id))
+      .returning();
+  }
+
+  await Promise.all(
+    artist.albumArtists.map(async (albumArtist, i) => {
+      const images = albumImages[i];
+      const update = {
+        image: images?.full?.url,
+        imageThumb: images?.thumb?.url,
+      };
+
+      if (update.image || update.image) {
+        await db
+          .update(albums)
+          .set(update)
+          .where(eq(albums.id, albumArtist.album.id));
+      }
+    }),
+  );
 };
 
-const getUniqueImageQueries = (tracks: TrackInput[]) =>
+const getUniqueImageQueries = (artists: ArtistWithAlbumArtists[]) =>
   uniqBy(
-    tracks.flatMap((track) => [
-      { itemType: "artist" as LoonItemTypes, q: track.artist },
-      {
+    artists.flatMap((artist) => [
+      { itemType: "artist" as LoonItemTypes, q: artist.name },
+      ...artist.albumArtists.map((albumArtist) => ({
         itemType: "album" as LoonItemTypes,
-        q: `${track.artist} ${track.album}`,
-      },
+        q: `${artist.name} ${albumArtist.album.name}`,
+      })),
     ]),
     (o) => `${o.itemType}:${o.q}`,
   );
 
-const cacheImages = async (tracks: TrackInput[]) => {
-  const uniqueImageQueries = getUniqueImageQueries(tracks);
-
-  await pMap(uniqueImageQueries, fetchImages, { concurrency: 1 });
-};
-
 export const syncLibrary = async () => {
+  const start = new Date();
   console.log("starting sync");
   // get music file listing
   const systemSettings = await db.query.system_settings.findFirst();
@@ -95,22 +173,41 @@ export const syncLibrary = async () => {
   }
   console.log("listing media files");
   const mediaFiles = await listMediaFiles(systemSettings.musicFolder);
-  console.log("converting media files to trackInputs");
-  const trackInputs = await toTrackInputs(mediaFiles);
+  console.log("parsing media files to db inputs");
+  const parsedMediaFiles = await parseMediaFiles(mediaFiles);
 
   if (systemSettings.syncDb) {
-    console.log("saving trackInputs to the db");
-    await pMap(trackInputs, updateTrack, { concurrency: 64 });
+    console.log("saving to the db");
+    // upsert artists
+    await pMap(parsedMediaFiles.artists, upsertArtist, { concurrency: 8 });
+    // upsert albums
+    await pMap(parsedMediaFiles.albums, upsertAlbum, { concurrency: 8 });
+    // upsert tracks
+    await pMap(parsedMediaFiles.tracks, upsertTrack, { concurrency: 8 });
+    // upsert trackArtists
+    await pMap(parsedMediaFiles.trackArtists, upsertTrackArtist, {
+      concurrency: 8,
+    });
+    // upsert albumArtists
+    await pMap(parsedMediaFiles.albumArtists, upsertAlbumArtist, {
+      concurrency: 8,
+    });
   }
 
   if (systemSettings.syncImages) {
+    const artists = await db.query.artists.findMany({
+      with: { albumArtists: { with: { album: true } } },
+    });
     console.log("fetching images");
-    await cacheImages(trackInputs);
-    console.log("saving image urls to tracks");
-    await pMap(trackInputs, updateTrackImage, { concurrency: 64 });
+    const uniqueImageQueries = getUniqueImageQueries(artists);
+    await pMap(uniqueImageQueries, fetchImages, { concurrency: 1 });
+
+    console.log("saving image urls to db");
+    await pMap(artists, updateImages, { concurrency: 64 });
   }
 
-  console.log("finished sync");
+  const duration = new Date().getTime() - start.getTime();
+  console.log(`finished sync in ${duration / 1000} seconds`);
 };
 
 export const runLibrarySyncTask = async () => {

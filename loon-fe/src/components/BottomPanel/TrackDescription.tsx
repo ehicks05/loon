@@ -11,8 +11,7 @@ export default function TrackDescription() {
   const selectedTrackId = useUserStore((state) => state.selectedTrackId);
   const selectedTrack = getTrackById(selectedTrackId);
 
-  const artist = selectedTrack?.artist;
-  const albumArtist = selectedTrack?.albumArtist;
+  const artists = selectedTrack?.artists || [];
   const album = selectedTrack?.album;
   const title = selectedTrack?.title;
   const imageUrl = selectedTrack?.spotifyAlbumImageThumb;
@@ -31,10 +30,16 @@ export default function TrackDescription() {
           style={{ maxWidth: textWidth }}
         >
           <b className="text-sm">{title}</b>
-          <span className="text-sm">
-            <Link to={`/artists/${artist}`}>{artist}</Link>
-            {" - "}
-            <Link to={`/artists/${albumArtist}/albums/${album}`}>
+          <span className="flex flex-col text-sm">
+            <div>
+              {artists.map((artist, i) => (
+                <span key={artist}>
+                  {i !== 0 && ", "}
+                  <Link to={`/artists/${artist}`}>{artist}</Link>
+                </span>
+              ))}
+            </div>
+            <Link to={`/artists/${artists[0]}/albums/${album}`}>
               <i>{album}</i>
             </Link>
           </span>

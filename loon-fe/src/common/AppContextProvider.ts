@@ -67,14 +67,14 @@ export const handleLocalDragAndDrop = ({
   }));
 };
 
-const tracksToArtist = (tracks: Track[]): Artist => ({
-  name: tracks[0].artist,
+const tracksToArtist = (artist: string, tracks: Track[]): Artist => ({
+  name: artist,
   image: tracks[0].spotifyArtistImage,
   imageThumb: tracks[0].spotifyArtistImageThumb,
   tracks,
   albums: Object.entries(groupBy(tracks, (o) => o.album)).map(
     ([_, tracks]) => ({
-      artist: tracks[0].artist,
+      artist: artist,
       name: tracks[0].album,
       image: tracks[0].spotifyAlbumImage,
       imageThumb: tracks[0].spotifyAlbumImageThumb,
@@ -84,9 +84,25 @@ const tracksToArtist = (tracks: Track[]): Artist => ({
 });
 
 const tracksToArtists = (tracks: Track[]): Artist[] => {
-  const _artists = groupBy(tracks, (o) => o.artist);
-  const artists = Object.entries(_artists).map(([_, tracks]) => ({
-    ...tracksToArtist(tracks),
+  const _artists = tracks.reduce(
+    (agg, track) => {
+      track.artists.forEach((artist) => {
+        agg[artist] = [...(agg[artist] || []), track];
+      });
+      return agg;
+
+      // return {
+      //   ...agg,
+      //   ...track.artists.map(({ artist }) => ({
+      //     [artist]: agg[artist].push(track),
+      //   })),
+      // };
+    },
+    {} as Record<string, Track[]>,
+  );
+
+  const artists = Object.entries(_artists).map(([artist, tracks]) => ({
+    ...tracksToArtist(artist, tracks),
   }));
   return artists;
 };

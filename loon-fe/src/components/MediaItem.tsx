@@ -26,7 +26,7 @@ export default function MediaItem({
 }: Props) {
   const selectedTrackId = useUserStore((state) => state.selectedTrackId);
 
-  const artist = track.artist || "Missing!";
+  const artist = track.artists[0] || "Missing!";
   const trackTitle = track.title || "Missing!";
   const album = track.album || "Missing!";
   const { missingFile } = track;
@@ -53,13 +53,24 @@ export default function MediaItem({
           <span className={"tag is-normal is-danger ml-4"}>Track Missing</span>
         )}
         <span className="line-clamp-1 text-sm text-neutral-400">
-          <Link className="hover:text-neutral-300" to={`/artists/${artist}`}>
+          {/* <Link className="hover:text-neutral-300" to={`/artists/${artist}`}>
             {artist}
-          </Link>
+          </Link> */}
+          {track.artists.map((artist, i) => (
+            <span key={artist}>
+              {i !== 0 && ", "}
+              <Link
+                className="hover:text-neutral-300"
+                to={`/artists/${artist}`}
+              >
+                {artist}
+              </Link>
+            </span>
+          ))}
           {" - "}
           <Link
             className="hover:text-neutral-300"
-            to={`/artists/${track.albumArtist}/albums/${album}`}
+            to={`/artists/${artist}/albums/${album}`}
           >
             <i>{album}</i>
           </Link>

@@ -33,27 +33,74 @@ export const playlists = pgTable("playlists", {
 
 export const tracks = pgTable("tracks", {
   id: text("id").primaryKey(),
-  album: text("album").notNull(),
-  albumArtist: text("album_artist").notNull(),
-  artist: text("artist").notNull(),
+  albumId: text("album_id")
+    .notNull()
+    .references(() => albums.id, { onDelete: "no action" }),
   discNumber: integer("disc_number"),
   duration: bigint("duration", { mode: "number" }).notNull(),
   missingFile: boolean("missing_file").notNull().default(false),
-  musicBrainzTrackId: text("music_brainz_track_id"),
   path: text("path").notNull(),
-  spotifyAlbumImage: text("spotify_album_image").notNull().default(""),
-  spotifyAlbumImageThumb: text("spotify_album_image_thumb")
-    .notNull()
-    .default(""),
-  spotifyArtistImage: text("spotify_artist_image").notNull().default(""),
-  spotifyArtistImageThumb: text("spotify_artist_image_thumb")
-    .notNull()
-    .default(""),
   title: text("title").notNull(),
   trackGainLinear: text("track_gain_linear").notNull(),
   trackNumber: integer("track_number"),
   trackPeak: text("track_peak").notNull(),
 });
+
+export const artists = pgTable("artists", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  image: text("image").notNull().default(""),
+  imageThumb: text("image_thumb").notNull().default(""),
+});
+
+export const albums = pgTable("albums", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  image: text("image").notNull().default(""),
+  imageThumb: text("image_thumb").notNull().default(""),
+});
+
+export const track_artists = pgTable(
+  "track_artists",
+  {
+    trackId: text("track_id")
+      .references(() => tracks.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
+    artistId: text("artist_id").notNull(),
+    index: integer("index").notNull(),
+  },
+  (table) => {
+    return {
+      track_artists_pkey: primaryKey({
+        columns: [table.trackId, table.artistId],
+        name: "track_artists_pkey",
+      }),
+    };
+  },
+);
+
+export const album_artists = pgTable(
+  "album_artists",
+  {
+    albumId: text("album_id")
+      .references(() => albums.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
+    artistId: text("artist_id").notNull(),
+    index: integer("index").notNull(),
+  },
+  (table) => {
+    return {
+      album_artists_pkey: primaryKey({
+        columns: [table.albumId, table.artistId],
+        name: "album_artists_pkey",
+      }),
+    };
+  },
+);
 
 export const playlist_tracks = pgTable(
   "playlist_tracks",

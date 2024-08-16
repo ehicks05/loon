@@ -2,9 +2,15 @@ import { createHash } from "node:crypto";
 import { openAsBlob } from "node:fs";
 import nodepath from "node:path";
 import { parseBlob } from "music-metadata";
-import type { TrackInput } from "../services/types.js";
+import type {
+  AlbumArtistInput,
+  AlbumInput,
+  ArtistInput,
+  TrackArtistInput,
+  TrackInput,
+} from "../services/types.js";
 
-export const getMetadata = async (path: string) => {
+const getMetadata = async (path: string) => {
   const blob = await openAsBlob(path);
   if (!blob) {
     return null;
@@ -14,10 +20,13 @@ export const getMetadata = async (path: string) => {
   return { blob, metadata };
 };
 
+export const generateId = (input: string) =>
+  createHash("md5").update(input).digest("hex");
+
 // https://sound.stackexchange.com/a/38725
 const dbGainToLinear = (db: number) => 10 ** (db / 20);
 
-export const getTrackInput = async (path: string) => {
+export const parseMediaFile = async (path: string) => {
   const result = await getMetadata(path);
   if (!result) {
     console.log(`unable to grab metadata for ${path}`);
@@ -27,18 +36,30 @@ export const getTrackInput = async (path: string) => {
     metadata: { common, format },
   } = result;
 
-  const { artist, album, title } = common;
-  if (!artist || !album || !title) {
-    console.log(`missing basic metadata on ${path}`);
-    return undefined;
+  const trackId = common.musicbrainz_trackid;
+  if (!trackId) {
+    return null;
   }
 
-  let id = common.musicbrainz_trackid;
-  if (!id) {
-    console.log(`missing a recordingId on ${path}`);
-    id = createHash("md5")
-      .update(`${common.artist}:${common.album}:${common.title}`)
-      .digest("hex");
+  const {
+    album: albumName,
+    musicbrainz_albumid: albumId,
+    title,
+    musicbrainz_artistid: artistIds,
+    musicbrainz_albumartistid: albumArtistIds,
+    artists: artistNames,
+  } = common;
+
+  if (
+    !albumName ||
+    !albumId ||
+    !title ||
+    !artistIds ||
+    !albumArtistIds ||
+    !artistNames
+  ) {
+    console.log(`missing required metadata on ${path}`);
+    return null;
   }
 
   const trackGainDb = common.replaygain_track_gain?.dB || 0;
@@ -47,14 +68,11 @@ export const getTrackInput = async (path: string) => {
   // const trackPeakDb = common.replaygain_track_peak?.dB || 0;
   // const trackPeakLinear = dbGainToLinear(trackPeakDb);
 
-  const newtrack: TrackInput = {
-    id,
-    album,
-    albumArtist: common.albumartist || "",
-    artist,
+  const track: TrackInput = {
+    id: trackId,
+    albumId,
     discNumber: common.disk.no,
     duration: Math.round(format.duration || 0),
-    musicBrainzTrackId: common.musicbrainz_trackid,
     path: path.replaceAll(nodepath.sep, nodepath.posix.sep),
     title,
     trackGainLinear: String(trackGainLinear),
@@ -62,7 +80,35 @@ export const getTrackInput = async (path: string) => {
     trackPeak: String(trackPeakRatio),
   };
 
-  return newtrack;
+  if (artistNames.length !== artistIds.length) {
+    console.log({ title: common.title, artists: artistNames, artistIds });
+  }
+
+  const artists: ArtistInput[] = artistIds.map((id, i) => ({
+    id,
+    name: artistNames[i] || "missing",
+  }));
+
+  const album: AlbumInput = {
+    id: albumId,
+    name: albumName,
+  };
+
+  const trackArtists: TrackArtistInput[] = artistIds.map((artistId, index) => ({
+    trackId,
+    artistId,
+    index,
+  }));
+
+  const albumArtists: AlbumArtistInput[] = albumArtistIds.map(
+    (artistId, index) => ({
+      albumId,
+      artistId,
+      index,
+    }),
+  );
+
+  return { track, artists, album, albumArtists, trackArtists };
 };
 
 export const getPictures = async (path: string) => {

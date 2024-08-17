@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 import ActionMenu from "./ActionMenu";
 import "lazysizes";
 import "lazysizes/plugins/attrchange/ls.attrchange";
-import type { Artist } from "@/common/types";
 import { PLACEHOLDER_IMAGE_URL } from "@/constants";
+import type { Artist } from "@/types/trpc";
 
 interface Props {
   artist: Artist;

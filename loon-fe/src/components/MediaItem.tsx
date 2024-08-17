@@ -7,7 +7,7 @@ import {
   setSelectedPlaylistId,
   useUserStore,
 } from "../common/UserContextProvider";
-import type { Track } from "../common/types";
+import type { Track } from "../types/trpc";
 import ActionMenu from "./ActionMenu";
 
 interface Props {

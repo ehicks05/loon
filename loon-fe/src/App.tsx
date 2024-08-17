@@ -6,10 +6,10 @@ import { useEffect } from "react";
 import Routes from "./Routes";
 import { setTracks, useAppStore } from "./common/AppContextProvider";
 import { PageLoader } from "./common/PageLoader";
-import type { RawTrackResponse } from "./common/types";
 import { MediaColumn } from "./components/MediaColumn/MediaColumn";
 import { formatTime } from "./components/utils";
 import { useTitle } from "./hooks/useTitle";
+import type { RawTrackResponse } from "./types/trpc";
 import { trpc } from "./utils/trpc";
 
 const addFormattedDuration = (track: RawTrackResponse) => ({

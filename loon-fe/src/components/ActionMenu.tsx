@@ -1,4 +1,4 @@
-import type { Playlist, Track } from "@/common/types";
+import type { Playlist, Track } from "@/types/trpc";
 import { trpc } from "@/utils/trpc";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { partition } from "lodash-es";

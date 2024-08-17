@@ -5,7 +5,7 @@ import {
   useTrackMap,
 } from "@/common/AppContextProvider";
 import { useUserStore } from "@/common/UserContextProvider";
-import type { PlaylistTrack, Track } from "@/common/types";
+import type { PlaylistTrack, Track } from "@/types/trpc";
 import { Button } from "@/components/Button";
 import DraggingMediaItem from "@/components/DraggingMediaItem";
 import MediaItem from "@/components/MediaItem";

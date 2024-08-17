@@ -15,7 +15,7 @@ import {
 } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import "react-checkbox-tree/lib/react-checkbox-tree.css";
-import type { Playlist, RawTrackResponse } from "@/common/types";
+import type { Playlist, RawTrackResponse } from "@/types/trpc";
 import { trpc } from "@/utils/trpc";
 
 const icons = {

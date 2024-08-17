@@ -1,5 +1,5 @@
-import type { Album } from "@/common/types";
 import { PLACEHOLDER_IMAGE_URL } from "@/constants";
+import type { Album } from "@/types/trpc";
 import { Link } from "react-router-dom";
 import { useDistinctArtists } from "../common/AppContextProvider";
 import ActionMenu from "./ActionMenu";

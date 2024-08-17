@@ -1,6 +1,6 @@
 import { useAppStore } from "@/common/AppContextProvider";
 import { useUserStore } from "@/common/UserContextProvider";
-import type { Playlist } from "@/common/types";
+import type { Playlist } from "@/types/trpc";
 import {
   FaCompactDisc,
   FaFolderOpen,

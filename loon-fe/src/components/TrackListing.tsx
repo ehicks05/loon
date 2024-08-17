@@ -1,5 +1,5 @@
 import { useUserStore } from "@/common/UserContextProvider";
-import type { Track } from "@/common/types";
+import type { Track } from "@/types/trpc";
 import { useEffect, useRef } from "react";
 import { FixedSizeList as List } from "react-window";
 import { useResizeObserver } from "usehooks-ts";

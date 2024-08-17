@@ -1,7 +1,7 @@
 import { groupBy, keyBy, map, uniq } from "lodash-es";
 import create from "zustand";
 import { devtools } from "zustand/middleware";
-import type { Album, Artist, Playlist, Track } from "./types";
+import type { Album, Artist, Playlist, Track } from "../types/trpc";
 
 export const useAppStore = create<{
   tracks: Track[];

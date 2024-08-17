@@ -1,4 +1,4 @@
-import type { SystemSettings as ISystemSettings } from "@/common/types";
+import type { SystemSettings as ISystemSettings } from "@/types/trpc";
 import { Button } from "@/components/Button";
 import { CheckboxInput, TextInput } from "@/components/TextInput";
 import { trpc } from "@/utils/trpc";

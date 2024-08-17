@@ -1,6 +1,6 @@
 import { useAppStore } from "@/common/AppContextProvider";
 import { setSelectedContextMenuId } from "@/common/UserContextProvider";
-import type { Track } from "@/common/types";
+import type { Track } from "@/types/trpc";
 import { TextInput } from "@/components/TextInput";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";

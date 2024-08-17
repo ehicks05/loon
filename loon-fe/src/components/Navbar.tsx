@@ -1,4 +1,4 @@
-import superFetch from "@/common/SuperFetch";
+import { authedFetch } from "@/utils/authedFetch";
 import { trpc } from "@/utils/trpc";
 import {
   Disclosure,
@@ -30,7 +30,7 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   async function handleLogout() {
-    await superFetch("/logout", { method: "POST" });
+    await authedFetch("/logout", { method: "POST" });
     utils.invalidate();
     navigate("/");
   }

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import superFetch from "../common/SuperFetch";
+import { authedFetch } from "../utils/authedFetch";
 import { trpc } from "../utils/trpc";
 
 function GithubLogin() {
@@ -11,7 +11,7 @@ function GithubLogin() {
 
   useEffect(() => {
     const doIt = async () => {
-      const response = await superFetch("/login/github", { method: "GET" });
+      const response = await authedFetch("/login/github", { method: "GET" });
       document.location.href = await response.text();
     };
 
@@ -22,7 +22,7 @@ function GithubLogin() {
 
   useEffect(() => {
     const doIt = async () => {
-      await superFetch(`/login/github/callback${search}`, { method: "GET" });
+      await authedFetch(`/login/github/callback${search}`, { method: "GET" });
       utils.invalidate();
     };
 

@@ -38,6 +38,7 @@ export const tracks = pgTable("tracks", {
     .references(() => albums.id, { onDelete: "no action" }),
   discNumber: integer("disc_number"),
   duration: bigint("duration", { mode: "number" }).notNull(),
+  formattedDuration: text("formatted_duration").notNull(),
   missingFile: boolean("missing_file").notNull().default(false),
   path: text("path").notNull(),
   title: text("title").notNull(),

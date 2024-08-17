@@ -26,6 +26,13 @@ export const generateId = (input: string) =>
 // https://sound.stackexchange.com/a/38725
 const dbGainToLinear = (db: number) => 10 ** (db / 20);
 
+const formatTime = (input: number) => {
+  const secs = Math.round(input);
+  const minutes = Math.floor(secs / 60) || 0;
+  const seconds = Math.round(secs - minutes * 60) || 0;
+  return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+};
+
 export const parseMediaFile = async (path: string) => {
   const result = await getMetadata(path);
   if (!result) {
@@ -67,12 +74,14 @@ export const parseMediaFile = async (path: string) => {
   const trackPeakRatio = common.replaygain_track_peak?.ratio || 0;
   // const trackPeakDb = common.replaygain_track_peak?.dB || 0;
   // const trackPeakLinear = dbGainToLinear(trackPeakDb);
+  const duration = Math.round(format.duration || 0);
 
   const track: TrackInput = {
     id: trackId,
     albumId,
     discNumber: common.disk.no,
-    duration: Math.round(format.duration || 0),
+    duration,
+    formattedDuration: formatTime(duration),
     path: path.replaceAll(nodepath.sep, nodepath.posix.sep),
     title,
     trackGainLinear: String(trackGainLinear),

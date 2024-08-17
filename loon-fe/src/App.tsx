@@ -5,7 +5,7 @@ import SidePanel from "@/components/SidePanel";
 import { useEffect } from "react";
 import Routes from "./Routes";
 import { setTracks, useAppStore } from "./common/AppContextProvider";
-import { PageLoader } from "./common/PageLoader";
+import { PageLoader } from "./components/PageLoader";
 import { MediaColumn } from "./components/MediaColumn/MediaColumn";
 import { formatTime } from "./components/utils";
 import { useTitle } from "./hooks/useTitle";

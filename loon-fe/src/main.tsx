@@ -7,7 +7,7 @@ import { trpc } from "./utils/trpc";
 import "./index.css";
 import React from "react";
 import { BrowserRouter } from "react-router-dom";
-import { API_URL } from "./apiUrl";
+import { API_URL } from "./env";
 
 const TRPC_URL = `${API_URL}/trpc`;
 

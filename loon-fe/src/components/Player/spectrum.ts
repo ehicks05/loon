@@ -1,4 +1,4 @@
-import { usePlayerStore } from "@/common/PlayerContextProvider";
+import { usePlayerStore } from "@/hooks/usePlayerStore";
 
 const OCTAVES = [
   { distance: -6, from: 0, to: 20 },

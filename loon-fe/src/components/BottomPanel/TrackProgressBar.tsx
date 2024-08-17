@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { usePlayerStore } from "../../common/PlayerContextProvider";
+import { usePlayerStore } from "../../hooks/usePlayerStore";
 import { LoonSlider } from "../Slider";
 import { formatTime } from "../utils";
 

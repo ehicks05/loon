@@ -1,5 +1,5 @@
 import { FaPause, FaPlay, FaStepBackward, FaStepForward } from "react-icons/fa";
-import { usePlayerStore } from "../../common/PlayerContextProvider";
+import { usePlayerStore } from "../../hooks/usePlayerStore";
 import { setSelectedTrackId } from "../../hooks/useUserStore";
 import { getNewTrackId } from "../Player/trackDeterminationUtils";
 

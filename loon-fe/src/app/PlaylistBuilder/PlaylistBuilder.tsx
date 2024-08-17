@@ -2,102 +2,14 @@ import { Button } from "@/components/Button";
 import { TextInput } from "@/components/TextInput";
 import { useState } from "react";
 import CheckboxTree, { type Node } from "react-checkbox-tree";
-import {
-  FaChevronDown,
-  FaChevronRight,
-  FaRegCheckSquare,
-  FaRegFile,
-  FaRegFolder,
-  FaRegFolderOpen,
-  FaRegMinusSquare,
-  FaRegPlusSquare,
-  FaRegSquare,
-} from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import "react-checkbox-tree/lib/react-checkbox-tree.css";
-import type { Playlist, RawTrackResponse } from "@/types/trpc";
+import type { Playlist } from "@/types/trpc";
 import { trpc } from "@/utils/trpc";
+import { icons } from "./icons";
+import { tracksToNodes } from "./helpers";
 
-const icons = {
-  check: <FaRegCheckSquare className="rct-icon rct-icon-check" />,
-  uncheck: <FaRegSquare className="rct-icon rct-icon-uncheck" />,
-  halfCheck: <FaRegCheckSquare className="rct-icon rct-icon-half-check" />,
-  expandClose: <FaChevronRight className="rct-icon rct-icon-expand-close" />,
-  expandOpen: <FaChevronDown className="rct-icon rct-icon-expand-open" />,
-  expandAll: <FaRegPlusSquare className="rct-icon rct-icon-expand-all" />,
-  collapseAll: <FaRegMinusSquare className="rct-icon rct-icon-collapse-all" />,
-  parentClose: <FaRegFolder className="rct-icon rct-icon-parent-close" />,
-  parentOpen: <FaRegFolderOpen className="rct-icon rct-icon-parent-open" />,
-  leaf: <FaRegFile className="rct-icon rct-icon-leaf-close" />,
-};
-
-// expand the tree recursively until we expand a node with multiple children
-const expandTree = (rootNode: Node, expandedIds: string[]) => {
-  let node = rootNode;
-  while (true) {
-    expandedIds.push(node.value);
-
-    const { children } = node;
-    if (!children || children.length !== 1) {
-      break;
-    }
-    node = children[0];
-  }
-};
-
-const expandForest = (nodes: Node[]) => {
-  const expandedIds: string[] = [];
-
-  // each top-level node is a tree, we will expand one
-  nodes.forEach((rootNode) => expandTree(rootNode, expandedIds));
-
-  return expandedIds;
-};
-
-const tracksToNodes = (tracks: RawTrackResponse[]) => {
-  let nodes: Node[] = [];
-
-  tracks.forEach((track) => {
-    const { path } = track;
-    const parts = path.split("/").slice(1);
-
-    let partialPath = "";
-    let parent: Node;
-    parts.forEach((part, i) => {
-      let node =
-        i === 0
-          ? nodes.find((n) => n.value === part)
-          : parent?.children?.find((c) => c.value === `${partialPath}/${part}`);
-
-      if (!node) {
-        const isLeaf = part.endsWith(".mp3") || part.endsWith(".flac");
-        const value = isLeaf
-          ? track.id
-          : i === 0
-            ? part
-            : `${partialPath}/${part}`;
-        node = {
-          label: part,
-          value,
-          children: isLeaf ? undefined : [],
-        };
-        if (parent) {
-          parent.children = [...(parent?.children || []), node];
-        } else {
-          nodes = [...nodes, node];
-        }
-      }
-
-      partialPath = `${partialPath}/${part}`;
-      parent = node;
-    });
-  });
-
-  const expandedIds = expandForest(nodes);
-  return { nodes, expandedIds };
-};
-
-function PlaylistBuilder({
+function PlaylistBuilderForm({
   playlist,
   nodes,
   defaultChecked,
@@ -162,7 +74,7 @@ function PlaylistBuilder({
   );
 }
 
-export default function Wrapper() {
+export function PlaylistBuilder() {
   const { id } = useParams();
 
   const { data: tracks } = trpc.tracks.list.useQuery();
@@ -180,7 +92,7 @@ export default function Wrapper() {
     playlist?.playlistTracks.map(({ trackId }) => trackId) || [];
 
   return (
-    <PlaylistBuilder
+    <PlaylistBuilderForm
       playlist={playlist}
       nodes={nodes}
       defaultChecked={defaultChecked}

@@ -5,7 +5,7 @@ import Artist from "@/app/Artist";
 import Artists from "@/app/Artists";
 import { GithubLogin } from "@/app/GithubLogin";
 import Playlist from "@/app/Playlist";
-import PlaylistBuilder from "@/app/PlaylistBuilder";
+import { PlaylistBuilder } from "@/app/PlaylistBuilder";
 import Playlists from "@/app/Playlists";
 import Search from "@/app/Search";
 import SystemSettings from "@/app/admin/SystemSettings";

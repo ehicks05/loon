@@ -1,11 +1,7 @@
 import * as Popover from "@radix-ui/react-popover";
 import { FaRandom, FaVolumeMute, FaVolumeUp } from "react-icons/fa";
 import { FaSliders } from "react-icons/fa6";
-import {
-  setMuted,
-  setShuffle,
-  useUserStore,
-} from "../../common/UserContextProvider";
+import { setMuted, setShuffle, useUserStore } from "../../hooks/useUserStore";
 import { Equalizer } from "../Equalizer";
 import PlaybackButtons from "./PlaybackButtons";
 import TrackDescription from "./TrackDescription";

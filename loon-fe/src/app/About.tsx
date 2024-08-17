@@ -1,5 +1,5 @@
 import { getTrackById } from "@/common/AppContextProvider";
-import { useUserStore } from "@/common/UserContextProvider";
+import { useUserStore } from "@/hooks/useUserStore";
 
 export default function About() {
   const selectedTrackId = useUserStore((state) => state.selectedTrackId);

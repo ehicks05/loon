@@ -1,5 +1,5 @@
 import { useAppStore } from "@/common/AppContextProvider";
-import { useUserStore } from "@/common/UserContextProvider";
+import { useUserStore } from "@/hooks/useUserStore";
 import type { Playlist } from "@/types/trpc";
 import {
   FaCompactDisc,

@@ -1,7 +1,7 @@
 import { useAppStore } from "@/common/AppContextProvider";
-import { setSelectedContextMenuId } from "@/common/UserContextProvider";
-import type { Track } from "@/types/trpc";
 import { TextInput } from "@/components/TextInput";
+import { setSelectedContextMenuId } from "@/hooks/useUserStore";
+import type { Track } from "@/types/trpc";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { useDebounceValue } from "usehooks-ts";

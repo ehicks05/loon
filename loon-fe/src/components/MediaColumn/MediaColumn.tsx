@@ -1,9 +1,6 @@
 import { getTrackById, useAppStore } from "@/common/AppContextProvider";
-import {
-  setExpandMediaColumn,
-  useUserStore,
-} from "@/common/UserContextProvider";
 import { PLACEHOLDER_IMAGE_URL } from "@/constants";
+import { setExpandMediaColumn, useUserStore } from "@/hooks/useUserStore";
 import { trpc } from "@/utils/trpc";
 import { useState } from "react";
 import { FaMinus, FaPlus } from "react-icons/fa6";

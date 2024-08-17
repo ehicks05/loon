@@ -1,9 +1,5 @@
-import {
-  type EqBand,
-  setEqBands,
-  useUserStore,
-} from "@/common/UserContextProvider";
 import { LoonSlider } from "@/components/Slider";
+import { type EqBand, setEqBands, useUserStore } from "@/hooks/useUserStore";
 
 const FILTER_TYPE_LABELS: Partial<Record<BiquadFilterType, string>> = {
   lowshelf: "Low Shelf",

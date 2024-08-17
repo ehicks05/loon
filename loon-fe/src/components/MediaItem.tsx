@@ -3,10 +3,7 @@ import type {
   DraggableStateSnapshot,
 } from "@hello-pangea/dnd";
 import { Link } from "react-router-dom";
-import {
-  setSelectedPlaylistId,
-  useUserStore,
-} from "../common/UserContextProvider";
+import { setSelectedPlaylistId, useUserStore } from "../hooks/useUserStore";
 import type { Track } from "../types/trpc";
 import ActionMenu from "./ActionMenu";
 

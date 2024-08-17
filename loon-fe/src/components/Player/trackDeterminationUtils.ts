@@ -1,8 +1,5 @@
 import { getPlaylistById, useAppStore } from "@/common/AppContextProvider";
-import {
-  type PlaybackDirection,
-  useUserStore,
-} from "@/common/UserContextProvider";
+import { type PlaybackDirection, useUserStore } from "@/hooks/useUserStore";
 
 export const getNewTrackId = (input: PlaybackDirection) => {
   const { selectedTrackId, selectedPlaylistId, shuffle } =

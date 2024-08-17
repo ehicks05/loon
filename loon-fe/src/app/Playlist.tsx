@@ -4,12 +4,12 @@ import {
   useAppStore,
   useTrackMap,
 } from "@/common/AppContextProvider";
-import { useUserStore } from "@/common/UserContextProvider";
-import type { PlaylistTrack, Track } from "@/types/trpc";
 import { Button } from "@/components/Button";
 import DraggingMediaItem from "@/components/DraggingMediaItem";
 import MediaItem from "@/components/MediaItem";
 import { TextInput } from "@/components/TextInput";
+import { useUserStore } from "@/hooks/useUserStore";
+import type { PlaylistTrack, Track } from "@/types/trpc";
 import { trpc } from "@/utils/trpc";
 import {
   DragDropContext,

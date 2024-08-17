@@ -2,7 +2,7 @@ import { PLACEHOLDER_IMAGE_URL } from "@/constants";
 import { Link } from "react-router-dom";
 import { useWindowSize } from "usehooks-ts";
 import { getTrackById } from "../../common/AppContextProvider";
-import { useUserStore } from "../../common/UserContextProvider";
+import { useUserStore } from "../../hooks/useUserStore";
 
 export default function TrackDescription() {
   const { width } = useWindowSize();

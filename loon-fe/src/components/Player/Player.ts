@@ -8,7 +8,7 @@ import {
   type PlaybackDirection,
   setSelectedTrackId,
   useUserStore,
-} from "@/common/UserContextProvider";
+} from "@/hooks/useUserStore";
 import { useEffect, useRef } from "react";
 import { getMaxSafeGain, scaleVolume, scrollIntoView } from "./playerUtils";
 import renderSpectrumFrame from "./spectrum";

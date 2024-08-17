@@ -1,6 +1,6 @@
 import { FaPause, FaPlay, FaStepBackward, FaStepForward } from "react-icons/fa";
 import { usePlayerStore } from "../../common/PlayerContextProvider";
-import { setSelectedTrackId } from "../../common/UserContextProvider";
+import { setSelectedTrackId } from "../../hooks/useUserStore";
 import { getNewTrackId } from "../Player/trackDeterminationUtils";
 
 export default function PlaybackButtons() {

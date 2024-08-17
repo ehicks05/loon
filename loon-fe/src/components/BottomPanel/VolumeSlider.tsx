@@ -1,4 +1,4 @@
-import { setVolume, useUserStore } from "../../common/UserContextProvider";
+import { setVolume, useUserStore } from "../../hooks/useUserStore";
 import { LoonSlider } from "../Slider";
 
 const VolumeLabel = ({ volume }: { volume: number }) => (

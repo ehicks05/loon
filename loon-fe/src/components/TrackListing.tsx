@@ -1,4 +1,4 @@
-import { useUserStore } from "@/common/UserContextProvider";
+import { useUserStore } from "@/hooks/useUserStore";
 import type { Track } from "@/types/trpc";
 import { useEffect, useRef } from "react";
 import { FixedSizeList as List } from "react-window";

@@ -1,5 +1,5 @@
 import { useAppStore } from "@/common/AppContextProvider";
-import { useUserStore } from "@/common/UserContextProvider";
+import { useUserStore } from "@/hooks/useUserStore";
 import { trpc } from "@/utils/trpc";
 import { FaVolumeUp } from "react-icons/fa";
 import { Link } from "react-router-dom";

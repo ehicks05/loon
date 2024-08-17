@@ -1,5 +1,5 @@
 import type { PlaybackState } from "@/common/PlayerContextProvider";
-import type { PlaybackDirection } from "@/common/UserContextProvider";
+import type { PlaybackDirection } from "@/hooks/useUserStore";
 import { useRef } from "react";
 import { useEventListener } from "usehooks-ts";
 

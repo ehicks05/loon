@@ -1,4 +1,4 @@
-import type { RawTrackResponse } from "@/types/trpc";
+import type { Track } from "@/types/trpc";
 import type { Node } from "react-checkbox-tree";
 
 // expand the tree recursively until we expand a node with multiple children
@@ -28,7 +28,7 @@ const SUPPORTED_MEDIA_TYPES = ["flac", "mp3"];
 const isLeaf = (input: string) =>
   SUPPORTED_MEDIA_TYPES.some((type) => input.endsWith(`.${type}`));
 
-export const tracksToNodes = (tracks: RawTrackResponse[]) => {
+export const tracksToNodes = (tracks: Track[]) => {
   let nodes: Node[] = [];
 
   tracks.forEach((track) => {

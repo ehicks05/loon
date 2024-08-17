@@ -1,5 +1,5 @@
 import { API_URL } from "@/env";
-import { getPlaylistById, getTrackById } from "@/hooks/useLibraryStore";
+import { getPlaylistById, getTrackByIdBasic } from "@/hooks/useLibraryStore";
 import { type PlaybackState, usePlayerStore } from "@/hooks/usePlayerStore";
 import {
   type PlaybackDirection,
@@ -63,9 +63,8 @@ export const Player = () => {
       audio.onpause = () => {};
       audio.ontimeupdate = () => setElapsedTime(audio.currentTime);
 
-      const track = getTrackById(userState.selectedTrackId);
-      if (track) {
-        audio.src = `${API_URL}/media?id=${track?.id}`;
+      if (userState.selectedTrackId) {
+        audio.src = `${API_URL}/media?id=${userState.selectedTrackId}`;
       }
 
       document.body.appendChild(audio);
@@ -200,7 +199,7 @@ export const Player = () => {
     const trackGainNode = trackGainNodeRef.current;
     setElapsedTime(0);
 
-    const track = getTrackById(userState.selectedTrackId);
+    const track = getTrackByIdBasic(userState.selectedTrackId);
     if (!track || track.missingFile) {
       if (!track) console.log("no track found...");
       else if (track.missingFile) console.log("track is missing file...");

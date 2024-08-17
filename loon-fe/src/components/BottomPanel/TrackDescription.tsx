@@ -9,12 +9,9 @@ export default function TrackDescription() {
   const textWidth = width >= 768 ? "calc(100vw - 408px)" : "100%";
 
   const selectedTrackId = useUserStore((state) => state.selectedTrackId);
-  const selectedTrack = getTrackById(selectedTrackId);
+  const track = getTrackById(selectedTrackId);
 
-  const artists = selectedTrack?.artists || [];
-  const album = selectedTrack?.album;
-  const title = selectedTrack?.title;
-  const imageUrl = selectedTrack?.spotifyAlbumImageThumb;
+  const imageUrl = track?.album?.imageThumb;
 
   return (
     <div className="flex items-center justify-center md:justify-start gap-2">
@@ -24,23 +21,23 @@ export default function TrackDescription() {
         alt="albumArt"
         className="h-20 m-0 rounded"
       />
-      {selectedTrack && (
+      {track && (
         <span
           className="flex flex-col max-h-20 overflow-auto"
           style={{ maxWidth: textWidth }}
         >
-          <b className="text-sm">{title}</b>
+          <b className="text-sm">{track.title}</b>
           <span className="flex flex-col text-sm">
             <div>
-              {artists.map((artist, i) => (
-                <span key={artist}>
+              {track.artists.map(({ id, name }, i) => (
+                <span key={id}>
                   {i !== 0 && ", "}
-                  <Link to={`/artists/${artist}`}>{artist}</Link>
+                  <Link to={`/artists/${id}`}>{name}</Link>
                 </span>
               ))}
             </div>
-            <Link to={`/artists/${artists[0]}/albums/${album}`}>
-              <i>{album}</i>
+            <Link to={`/albums/${track.album.id}`}>
+              <i>{track.album.name}</i>
             </Link>
           </span>
         </span>

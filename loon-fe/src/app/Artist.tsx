@@ -1,14 +1,12 @@
 import AlbumCard from "@/components/AlbumCard";
 import { ArtistCard } from "@/components/ArtistCard";
 import MediaItem from "@/components/MediaItem";
-import { useLibraryStore } from "@/hooks/useLibraryStore";
+import { getArtistById } from "@/hooks/useLibraryStore";
 import { useParams } from "react-router-dom";
 
 export default function Artist() {
-  const { artist: artistName } = useParams();
-  const artist = useLibraryStore((state) => state.artists).find(
-    (o) => o.name === artistName,
-  );
+  const { id } = useParams();
+  const artist = getArtistById(id);
 
   if (!artist) return null;
 

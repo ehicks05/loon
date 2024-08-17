@@ -1,6 +1,6 @@
 import { Button } from "@/components/Button";
-import DraggingMediaItem from "@/components/DraggingMediaItem";
 import MediaItem from "@/components/MediaItem";
+import { MediaItemDrag } from "@/components/MediaItemDrag";
 import { TextInput } from "@/components/TextInput";
 import {
   getPlaylistById,
@@ -203,7 +203,7 @@ export default function Playlist() {
     const track = trackMap[playlistTrack.trackId];
 
     return (
-      <DraggingMediaItem
+      <MediaItemDrag
         key={track.id}
         provided={provided}
         track={track}

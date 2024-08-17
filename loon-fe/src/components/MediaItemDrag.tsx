@@ -8,18 +8,10 @@ interface Props {
   provided: DraggableProvided;
 }
 
-export default function DraggingMediaItem({
-  trackNumber,
-  track,
-  provided,
-}: Props) {
+export function MediaItemDrag({ trackNumber, track, provided }: Props) {
   const selectedTrackId = useUserStore((state) => state.selectedTrackId);
 
-  const artist = track.artist || "Missing!";
-  const trackTitle = track.title || "Missing!";
-  const album = track.album || "Missing!";
   const { missingFile } = track;
-
   const highlightClass =
     track.id === selectedTrackId ? "text-green-500" : "text-neutral-300";
 
@@ -36,13 +28,19 @@ export default function DraggingMediaItem({
         <div className="mr-1 min-w-8 text-right">{trackNumber}</div>
 
         <div {...provided.dragHandleProps} className="flex-grow">
-          <div className="line-clamp-1 font-bold">{trackTitle}</div>
+          <div className="line-clamp-1 font-bold">{track.title}</div>
 
           {missingFile && (
             <span className="tag is-normal is-danger ml-4">Track Missing</span>
           )}
           <span className="line-clamp-1 text-sm text-neutral-400">
-            {artist} - <i>{album}</i>
+            {track.artists.map(({ id, name }, i) => (
+              <span key={id}>
+                {i !== 0 && ", "}
+                {name}
+              </span>
+            ))}{" "}
+            - <i>{track.album.name}</i>
           </span>
         </div>
 

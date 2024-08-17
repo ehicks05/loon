@@ -6,8 +6,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import "react-checkbox-tree/lib/react-checkbox-tree.css";
 import type { Playlist } from "@/types/trpc";
 import { trpc } from "@/utils/trpc";
-import { icons } from "./icons";
 import { tracksToNodes } from "./helpers";
+import { icons } from "./icons";
 
 function PlaylistBuilderForm({
   playlist,
@@ -77,7 +77,9 @@ function PlaylistBuilderForm({
 export function PlaylistBuilder() {
   const { id } = useParams();
 
-  const { data: tracks } = trpc.tracks.list.useQuery();
+  const {
+    data: { tracks } = {},
+  } = trpc.library.list.useQuery();
   const { data: playlist, isLoading: isLoadingPlaylist } =
     trpc.playlist.getById.useQuery(id || "", {
       enabled: !!id,

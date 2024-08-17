@@ -1,19 +1,26 @@
-import { groupBy, keyBy, map, uniq } from "lodash-es";
+import { keyBy, map, uniq } from "lodash-es";
 import create from "zustand";
 import { devtools } from "zustand/middleware";
-import type { Album, Artist, Playlist, Track } from "../types/trpc";
+import type {
+  Album,
+  Artist,
+  ArtistWithCounts,
+  LibraryResponse,
+  Playlist,
+  Track,
+} from "../types/trpc";
 
 export const useLibraryStore = create<{
   tracks: Track[];
   albums: Album[];
-  artists: Artist[];
+  artists: ArtistWithCounts[];
   playlists: Playlist[];
 }>(
   devtools(
     () => ({
       tracks: [] as Track[],
       albums: [] as Album[],
-      artists: [] as Artist[],
+      artists: [] as ArtistWithCounts[],
       playlists: [] as Playlist[],
     }),
     { name: "app" },
@@ -28,8 +35,68 @@ export const useDistinctArtists = () => {
   return useLibraryStore((state) => uniq(map(state.tracks, "artist")));
 };
 
+export const getTrackByIdBasic = (id: string) => {
+  const track = useLibraryStore
+    .getState()
+    .tracks.find((track) => track.id === id);
+  return track;
+};
 export const getTrackById = (id: string) => {
-  return useLibraryStore.getState().tracks.find((t) => t.id === id);
+  const track = useLibraryStore
+    .getState()
+    .tracks.find((track) => track.id === id);
+  const album = useLibraryStore
+    .getState()
+    .albums.find((album) => album.id === track?.album.id);
+  const artists = useLibraryStore((state) =>
+    state.artists.filter((artist) =>
+      (track?.artists || []).map((artist) => artist.id).includes(artist.id),
+    ),
+  );
+
+  if (!track || !album || !artists) return undefined;
+  return { ...track, album, artists };
+};
+
+export const getAlbumById = (id?: string) => {
+  const album = useLibraryStore
+    .getState()
+    .albums.find((album) => album.id === id);
+  const tracks = useLibraryStore
+    .getState()
+    .tracks.filter((track) => track.album.id === album?.id);
+  const artists = useLibraryStore((state) =>
+    state.artists.filter((artist) =>
+      album?.albumArtists
+        ?.map((albumArtist) => albumArtist?.id)
+        .includes(artist.id),
+    ),
+  );
+
+  if (!album || !tracks || !artists) return undefined;
+  return { ...album, tracks, artists };
+};
+
+export const getArtistById = (id?: string) => {
+  const artist = useLibraryStore
+    .getState()
+    .artists.find((artist) => artist.id === id);
+  const albumIds = artist?.albums.map((album) => album.id);
+
+  const tracks = useLibraryStore((state) =>
+    state.tracks.filter((track) => albumIds?.includes(track.album.id)),
+  );
+
+  const albums = useLibraryStore
+    .getState()
+    .albums.filter((album) => albumIds?.includes(album.id))
+    .map((album) => ({
+      ...album,
+      tracks: tracks.filter((track) => track.album.id === album.id),
+    }));
+
+  if (!artist || !albums || !tracks) return undefined;
+  return { ...artist, albums, tracks };
 };
 
 export const getPlaylistById = (id: string) => {
@@ -67,48 +134,18 @@ export const handleLocalDragAndDrop = ({
   }));
 };
 
-const tracksToArtist = (artist: string, tracks: Track[]): Artist => ({
-  name: artist,
-  image: tracks[0].spotifyArtistImage,
-  imageThumb: tracks[0].spotifyArtistImageThumb,
-  tracks,
-  albums: Object.entries(groupBy(tracks, (o) => o.album)).map(
-    ([_, tracks]) => ({
-      artist: artist,
-      name: tracks[0].album,
-      image: tracks[0].spotifyAlbumImage,
-      imageThumb: tracks[0].spotifyAlbumImageThumb,
-      tracks,
-    }),
-  ),
-});
-
-const tracksToArtists = (tracks: Track[]): Artist[] => {
-  const _artists = tracks.reduce(
-    (agg, track) => {
-      track.artists.forEach((artist) => {
-        agg[artist] = [...(agg[artist] || []), track];
-      });
-      return agg;
-
-      // return {
-      //   ...agg,
-      //   ...track.artists.map(({ artist }) => ({
-      //     [artist]: agg[artist].push(track),
-      //   })),
-      // };
-    },
-    {} as Record<string, Track[]>,
-  );
-
-  const artists = Object.entries(_artists).map(([artist, tracks]) => ({
-    ...tracksToArtist(artist, tracks),
+export const setLibrary = ({ tracks, artists, albums }: LibraryResponse) => {
+  // const artists = tracksToArtists(library);
+  // const albums = artists.flatMap((o) => o.albums);
+  useLibraryStore.setState((state) => ({
+    ...state,
+    tracks,
+    albums,
+    artists: artists.map((artist) => ({
+      ...artist,
+      trackCount: tracks.filter((track) =>
+        artist.albums.map((album) => album.id).includes(track.album.id),
+      ).length,
+    })),
   }));
-  return artists;
-};
-
-export const setTracks = (tracks: Track[]) => {
-  const artists = tracksToArtists(tracks);
-  const albums = artists.flatMap((o) => o.albums);
-  useLibraryStore.setState((state) => ({ ...state, tracks, albums, artists }));
 };

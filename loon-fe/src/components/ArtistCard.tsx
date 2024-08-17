@@ -3,6 +3,7 @@ import ActionMenu from "./ActionMenu";
 import "lazysizes";
 import "lazysizes/plugins/attrchange/ls.attrchange";
 import { PLACEHOLDER_IMAGE_URL } from "@/constants";
+import { getArtistById } from "@/hooks/useLibraryStore";
 import type { Artist } from "@/types/trpc";
 
 interface Props {
@@ -10,7 +11,10 @@ interface Props {
   size: "full" | "thumb";
 }
 
-export function ArtistCard({ artist, size }: Props) {
+export function ArtistCard({ artist: _artist, size }: Props) {
+  const artist = getArtistById(_artist.id);
+  if (!artist) return null;
+
   const imageUrl = size === "full" ? artist.image : artist.imageThumb;
   const { albums, tracks } = artist;
 
@@ -28,7 +32,7 @@ export function ArtistCard({ artist, size }: Props) {
         </div>
       </div>
       <div className="p-2 bg-neutral-900 bg-opacity-75">
-        <Link className="text-lg" to={`/artists/${artist.name}`}>
+        <Link className="text-lg" to={`/artists/${artist.id}`}>
           {artist.name}
         </Link>
         <div className="text-sm">

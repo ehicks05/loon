@@ -6,21 +6,14 @@ import { useEffect } from "react";
 import Routes from "./Routes";
 import { MediaColumn } from "./components/MediaColumn/MediaColumn";
 import { PageLoader } from "./components/PageLoader";
-import { formatTime } from "./components/utils";
-import { setTracks, useLibraryStore } from "./hooks/useLibraryStore";
+import { setLibrary, useLibraryStore } from "./hooks/useLibraryStore";
 import { useTitle } from "./hooks/useTitle";
-import type { RawTrackResponse } from "./types/trpc";
 import { trpc } from "./utils/trpc";
-
-const addFormattedDuration = (track: RawTrackResponse) => ({
-  ...track,
-  formattedDuration: formatTime(track.duration),
-});
 
 const useCacheData = () => {
   const { data: user, isLoading: isLoadingUser } = trpc.misc.me.useQuery();
-  const { data: tracks, isLoading: isLoadingTracks } =
-    trpc.tracks.list.useQuery();
+  const { data: library, isLoading: isLoadingTracks } =
+    trpc.library.list.useQuery();
   const {
     data: playlists,
     isLoading: isLoadingPlaylists,
@@ -34,10 +27,10 @@ const useCacheData = () => {
   }, [user, refetchPlaylists]);
 
   useEffect(() => {
-    if (tracks) {
-      setTracks(tracks.map(addFormattedDuration));
+    if (library) {
+      setLibrary(library);
     }
-  }, [tracks]);
+  }, [library]);
 
   useEffect(() => {
     if (playlists) {
@@ -45,13 +38,16 @@ const useCacheData = () => {
     }
   }, [playlists]);
 
-  return { isLoading, user, tracks, playlists };
+  return { isLoading, user, library, playlists };
 };
 
 export default function App() {
   useTitle();
   useCacheData();
-  const { data: tracks, isLoading } = trpc.tracks.list.useQuery();
+  const {
+    data: { tracks } = {},
+    isLoading,
+  } = trpc.library.list.useQuery();
   const { tracks: trackz } = useLibraryStore();
 
   if (isLoading) {

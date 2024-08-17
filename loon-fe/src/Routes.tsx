@@ -41,10 +41,10 @@ export default function Router() {
         <Route path="/login" element={<Login />} />
         <Route path="/settings/general" element={<GeneralSettings />} />
         <Route path="/settings/eq" element={<Eq />} />
-        <Route path="/albums" element={<Albums />} />
         <Route path="/artists" element={<Artists />} />
-        <Route path="/artists/:artist" element={<Artist />} />
-        <Route path="/artists/:artist/albums/:album" element={<Album />} />
+        <Route path="/artists/:id" element={<Artist />} />
+        <Route path="/albums" element={<Albums />} />
+        <Route path="/albums/:id" element={<Album />} />
         <Route path="/search" element={<Search />} />
         <Route path="/library" element={<Playlists />} />
         <Route path="/playlists/new" element={<PlaylistBuilder />} />

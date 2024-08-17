@@ -40,7 +40,7 @@ export default function Artists() {
   const artists = useLibraryStore((state) => state.artists).sort((o1, o2) =>
     orderBy === "name"
       ? o1.name.localeCompare(o2.name)
-      : o2.tracks.length - o1.tracks.length,
+      : o2.trackCount - o1.trackCount,
   );
 
   return (

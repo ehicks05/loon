@@ -1,5 +1,5 @@
 import { PLACEHOLDER_IMAGE_URL } from "@/constants";
-import { getTrackById, useLibraryStore } from "@/hooks/useLibraryStore";
+import { getTrackById } from "@/hooks/useLibraryStore";
 import { setExpandMediaColumn, useUserStore } from "@/hooks/useUserStore";
 import { trpc } from "@/utils/trpc";
 import { useState } from "react";
@@ -54,10 +54,8 @@ const InfoBlock = ({
 export const Content = () => {
   const selectedTrackId = useUserStore((state) => state.selectedTrackId);
   const track = getTrackById(selectedTrackId);
-  const artist = useLibraryStore((state) => state.artists).find(
-    (o) => o.name === track?.artist,
-  );
-  const album = artist?.albums.find((o) => o.name === track?.album);
+  const artist = track?.artists[0];
+  const album = track?.album;
 
   const { data: artistInfo } = trpc.artist.info.useQuery(
     { artist: artist?.name || "" },
@@ -69,7 +67,7 @@ export const Content = () => {
     { enabled: !!artist?.name && !!album?.name },
   );
 
-  if (!artist || !album) return "Welcome!";
+  if (!track || !artist || !album) return "Welcome!";
 
   return (
     <div className="flex flex-col gap-8">
@@ -79,8 +77,8 @@ export const Content = () => {
         content={artistInfo?.bio.content}
       />
       <InfoBlock
-        image={album.image}
-        name={album.name}
+        image={track.album.image}
+        name={track.album.name}
         content={albumInfo?.wiki.content}
       />
     </div>

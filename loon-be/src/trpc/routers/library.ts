@@ -75,11 +75,18 @@ const assembleLibrary = async () => {
       orderBy: [asc(artistsTable.name)],
     })
     .then((artists) =>
-      artists.map((artist) => ({
-        ...artist,
-        albums: artist.albumArtists.map((albumArtist) => albumArtist.album),
-        albumArtists: undefined,
-      })),
+      artists
+        .map((artist) => ({
+          ...artist,
+          albums: artist.albumArtists.map((albumArtist) => albumArtist.album),
+          albumArtists: undefined,
+        }))
+        .map((artist) => ({
+          ...artist,
+          trackCount: tracks.filter((track) =>
+            artist.albums.map((album) => album.id).includes(track.album.id),
+          ).length,
+        })),
     );
 
   return { tracks, artists, albums };

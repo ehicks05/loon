@@ -10,7 +10,6 @@ export type Artist = LibraryResponse["artists"][number];
 export type Album = LibraryResponse["albums"][number];
 export type Track = LibraryResponse["tracks"][number];
 
-export type ArtistWithCounts = Artist & { trackCount: number };
 export type User = RouterOutput["misc"]["me"];
 export type SystemSettings = RouterOutput["misc"]["systemSettings"];
 

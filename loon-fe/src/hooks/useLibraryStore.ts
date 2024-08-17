@@ -4,7 +4,6 @@ import { devtools } from "zustand/middleware";
 import type {
   Album,
   Artist,
-  ArtistWithCounts,
   LibraryResponse,
   Playlist,
   Track,
@@ -13,14 +12,14 @@ import type {
 export const useLibraryStore = create<{
   tracks: Track[];
   albums: Album[];
-  artists: ArtistWithCounts[];
+  artists: Artist[];
   playlists: Playlist[];
 }>(
   devtools(
     () => ({
       tracks: [] as Track[],
       albums: [] as Album[],
-      artists: [] as ArtistWithCounts[],
+      artists: [] as Artist[],
       playlists: [] as Playlist[],
     }),
     { name: "app" },
@@ -141,11 +140,6 @@ export const setLibrary = ({ tracks, artists, albums }: LibraryResponse) => {
     ...state,
     tracks,
     albums,
-    artists: artists.map((artist) => ({
-      ...artist,
-      trackCount: tracks.filter((track) =>
-        artist.albums.map((album) => album.id).includes(track.album.id),
-      ).length,
-    })),
+    artists,
   }));
 };

@@ -1,4 +1,4 @@
-import { useAppStore } from "@/common/AppContextProvider";
+import { useLibraryStore } from "@/hooks/useLibraryStore";
 import { useUserStore } from "@/hooks/useUserStore";
 import type { Playlist } from "@/types/trpc";
 import {
@@ -60,7 +60,7 @@ const SidebarLink = ({
 };
 
 export default function SidePanel() {
-  const playlists = useAppStore((state) => state.playlists);
+  const playlists = useLibraryStore((state) => state.playlists);
   const selectedPlaylistId = useUserStore((state) => state.selectedPlaylistId);
 
   const defaultLinks = [

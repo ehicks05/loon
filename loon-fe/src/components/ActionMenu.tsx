@@ -10,7 +10,7 @@ import {
   FaList,
   FaRegHeart,
 } from "react-icons/fa";
-import { useAppStore } from "../common/AppContextProvider";
+import { useLibraryStore } from "../hooks/useLibraryStore";
 
 const isSaturated = (playlist: Playlist, trackIds: string[]) => {
   const playlistTrackIds = playlist.playlistTracks.map(
@@ -27,7 +27,7 @@ export default function ActionMenu({ tracks }: { tracks: Track[] }) {
     },
   });
   const trackIds = tracks.map((track) => track.id);
-  const playlists = useAppStore((state) => state.playlists);
+  const playlists = useLibraryStore((state) => state.playlists);
 
   const favoritesPlaylist = playlists.find((playlist) => playlist.favorites);
   const isFavorite =

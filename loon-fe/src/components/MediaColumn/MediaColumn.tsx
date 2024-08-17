@@ -1,5 +1,5 @@
-import { getTrackById, useAppStore } from "@/common/AppContextProvider";
 import { PLACEHOLDER_IMAGE_URL } from "@/constants";
+import { getTrackById, useLibraryStore } from "@/hooks/useLibraryStore";
 import { setExpandMediaColumn, useUserStore } from "@/hooks/useUserStore";
 import { trpc } from "@/utils/trpc";
 import { useState } from "react";
@@ -54,7 +54,7 @@ const InfoBlock = ({
 export const Content = () => {
   const selectedTrackId = useUserStore((state) => state.selectedTrackId);
   const track = getTrackById(selectedTrackId);
-  const artist = useAppStore((state) => state.artists).find(
+  const artist = useLibraryStore((state) => state.artists).find(
     (o) => o.name === track?.artist,
   );
   const album = artist?.albums.find((o) => o.name === track?.album);

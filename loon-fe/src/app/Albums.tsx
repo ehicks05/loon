@@ -1,7 +1,7 @@
 import "lazysizes";
 import "lazysizes/plugins/attrchange/ls.attrchange";
-import { useAppStore } from "@/common/AppContextProvider";
 import AlbumCard from "@/components/AlbumCard";
+import { useLibraryStore } from "@/hooks/useLibraryStore";
 
 interface Props {
   artist?: string;
@@ -9,7 +9,7 @@ interface Props {
 }
 
 export default function Albums({ artist, hideAlbumArtist }: Props) {
-  const albums = useAppStore((state) => state.albums).filter((o) =>
+  const albums = useLibraryStore((state) => state.albums).filter((o) =>
     artist ? o.artist === artist : true,
   );
 

@@ -1,13 +1,13 @@
-import {
-  getPlaylistById,
-  handleLocalDragAndDrop,
-  useAppStore,
-  useTrackMap,
-} from "@/common/AppContextProvider";
 import { Button } from "@/components/Button";
 import DraggingMediaItem from "@/components/DraggingMediaItem";
 import MediaItem from "@/components/MediaItem";
 import { TextInput } from "@/components/TextInput";
+import {
+  getPlaylistById,
+  handleLocalDragAndDrop,
+  useLibraryStore,
+  useTrackMap,
+} from "@/hooks/useLibraryStore";
 import { useUserStore } from "@/hooks/useUserStore";
 import type { PlaylistTrack, Track } from "@/types/trpc";
 import { trpc } from "@/utils/trpc";
@@ -63,7 +63,7 @@ export default function Playlist() {
   const playlistId = id;
   if (!playlistId) return null;
 
-  const playlists = useAppStore((state) => state.playlists);
+  const playlists = useLibraryStore((state) => state.playlists);
   const trackMap = useTrackMap();
 
   const utils = trpc.useUtils();

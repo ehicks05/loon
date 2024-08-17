@@ -1,4 +1,4 @@
-import { useAppStore } from "@/common/AppContextProvider";
+import { useLibraryStore } from "@/hooks/useLibraryStore";
 import { useUserStore } from "@/hooks/useUserStore";
 import { trpc } from "@/utils/trpc";
 import { FaVolumeUp } from "react-icons/fa";
@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 export default function Playlists() {
   const utils = trpc.useUtils();
   const { data: user } = trpc.misc.me.useQuery();
-  const playlists = useAppStore((state) => state.playlists);
+  const playlists = useLibraryStore((state) => state.playlists);
   const selectedPlaylistId = useUserStore((state) => state.selectedPlaylistId);
 
   const { mutate: deletePlaylist } = trpc.playlist.delete.useMutation({

@@ -4,10 +4,10 @@ import { Player } from "@/components/Player/Player";
 import SidePanel from "@/components/SidePanel";
 import { useEffect } from "react";
 import Routes from "./Routes";
-import { setTracks, useAppStore } from "./common/AppContextProvider";
-import { PageLoader } from "./components/PageLoader";
 import { MediaColumn } from "./components/MediaColumn/MediaColumn";
+import { PageLoader } from "./components/PageLoader";
 import { formatTime } from "./components/utils";
+import { setTracks, useLibraryStore } from "./hooks/useLibraryStore";
 import { useTitle } from "./hooks/useTitle";
 import type { RawTrackResponse } from "./types/trpc";
 import { trpc } from "./utils/trpc";
@@ -41,7 +41,7 @@ const useCacheData = () => {
 
   useEffect(() => {
     if (playlists) {
-      useAppStore.setState((state) => ({ ...state, playlists }));
+      useLibraryStore.setState((state) => ({ ...state, playlists }));
     }
   }, [playlists]);
 
@@ -52,7 +52,7 @@ export default function App() {
   useTitle();
   useCacheData();
   const { data: tracks, isLoading } = trpc.tracks.list.useQuery();
-  const { tracks: trackz } = useAppStore();
+  const { tracks: trackz } = useLibraryStore();
 
   if (isLoading) {
     return <PageLoader />;

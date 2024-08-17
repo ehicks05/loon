@@ -1,5 +1,5 @@
-import { useAppStore } from "@/common/AppContextProvider";
 import { TextInput } from "@/components/TextInput";
+import { useLibraryStore } from "@/hooks/useLibraryStore";
 import { setSelectedContextMenuId } from "@/hooks/useUserStore";
 import type { Track } from "@/types/trpc";
 import { useEffect, useState } from "react";
@@ -15,7 +15,7 @@ export default function Search() {
   );
   const [searchResults, setSearchResults] = useState<Track[]>([]);
 
-  const tracks = useAppStore((state) => state.tracks);
+  const tracks = useLibraryStore((state) => state.tracks);
 
   useEffect(() => {
     return function cleanup() {

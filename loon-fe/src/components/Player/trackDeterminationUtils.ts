@@ -1,4 +1,4 @@
-import { getPlaylistById, useAppStore } from "@/common/AppContextProvider";
+import { getPlaylistById, useLibraryStore } from "@/hooks/useLibraryStore";
 import { type PlaybackDirection, useUserStore } from "@/hooks/useUserStore";
 
 export const getNewTrackId = (input: PlaybackDirection) => {
@@ -23,7 +23,7 @@ export const getNewTrackId = (input: PlaybackDirection) => {
 };
 
 function getCurrentPlaylistTrackIds(selectedPlaylistId: string) {
-  const tracks = useAppStore.getState().tracks;
+  const tracks = useLibraryStore.getState().tracks;
   const currentPlaylist = getPlaylistById(selectedPlaylistId);
   if (currentPlaylist)
     return currentPlaylist.playlistTracks.map(

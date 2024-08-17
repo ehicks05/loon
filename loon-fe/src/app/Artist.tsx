@@ -1,12 +1,12 @@
-import { useAppStore } from "@/common/AppContextProvider";
 import AlbumCard from "@/components/AlbumCard";
 import { ArtistCard } from "@/components/ArtistCard";
 import MediaItem from "@/components/MediaItem";
+import { useLibraryStore } from "@/hooks/useLibraryStore";
 import { useParams } from "react-router-dom";
 
 export default function Artist() {
   const { artist: artistName } = useParams();
-  const artist = useAppStore((state) => state.artists).find(
+  const artist = useLibraryStore((state) => state.artists).find(
     (o) => o.name === artistName,
   );
 

@@ -1,4 +1,4 @@
-import { getTrackById } from "@/common/AppContextProvider";
+import { getTrackById } from "@/hooks/useLibraryStore";
 import { useUserStore } from "@/hooks/useUserStore";
 
 export default function About() {

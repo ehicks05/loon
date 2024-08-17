@@ -1,8 +1,8 @@
 import "lazysizes";
 import "lazysizes/plugins/attrchange/ls.attrchange";
-import { useAppStore } from "@/common/AppContextProvider";
 import { ArtistCard } from "@/components/ArtistCard";
 import { Button } from "@/components/Button";
+import { useLibraryStore } from "@/hooks/useLibraryStore";
 import { type Dispatch, type SetStateAction, useState } from "react";
 import { FaSortAlphaDown, FaSortAmountDown } from "react-icons/fa";
 import { twMerge } from "tailwind-merge";
@@ -37,7 +37,7 @@ const SortButtons = ({
 
 export default function Artists() {
   const [orderBy, setOrderBy] = useState<ArtistSort>("tracks");
-  const artists = useAppStore((state) => state.artists).sort((o1, o2) =>
+  const artists = useLibraryStore((state) => state.artists).sort((o1, o2) =>
     orderBy === "name"
       ? o1.name.localeCompare(o2.name)
       : o2.tracks.length - o1.tracks.length,

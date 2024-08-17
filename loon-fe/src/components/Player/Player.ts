@@ -1,5 +1,5 @@
 import { API_URL } from "@/apiUrl";
-import { getPlaylistById, getTrackById } from "@/common/AppContextProvider";
+import { getPlaylistById, getTrackById } from "@/hooks/useLibraryStore";
 import { type PlaybackState, usePlayerStore } from "@/hooks/usePlayerStore";
 import {
   type PlaybackDirection,

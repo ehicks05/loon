@@ -1,7 +1,7 @@
 import { PLACEHOLDER_IMAGE_URL } from "@/constants";
 import type { Album } from "@/types/trpc";
 import { Link } from "react-router-dom";
-import { useDistinctArtists } from "../common/AppContextProvider";
+import { useDistinctArtists } from "../hooks/useLibraryStore";
 import ActionMenu from "./ActionMenu";
 
 interface Props {

@@ -200,7 +200,7 @@ export const syncLibrary = async () => {
     });
     console.log("fetching images");
     const uniqueImageQueries = getUniqueImageQueries(artists);
-    await pMap(uniqueImageQueries, fetchImages, { concurrency: 1 });
+    await pMap(uniqueImageQueries, fetchImages, { concurrency: 2 });
 
     console.log("saving image urls to db");
     await pMap(artists, updateImages, { concurrency: 64 });

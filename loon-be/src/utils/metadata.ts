@@ -98,6 +98,15 @@ export const parseMediaFile = async (path: string) => {
     name: artistNames[i] || "missing",
   }));
 
+  if (albumArtistIds.includes("89ad4ac3-39f7-470e-963a-56509c546377")) {
+    artists.push({
+      name: "Various Artists",
+      id: "89ad4ac3-39f7-470e-963a-56509c546377",
+      image: "",
+      imageThumb: "",
+    });
+  }
+
   const album: AlbumInput = {
     id: albumId,
     name: albumName,

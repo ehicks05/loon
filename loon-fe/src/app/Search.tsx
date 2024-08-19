@@ -7,6 +7,13 @@ import { FaSearch } from "react-icons/fa";
 import { useDebounceValue } from "usehooks-ts";
 import { TrackListing } from "../components/TrackListing";
 
+const toSearchFields = (track: Track) =>
+  [
+    track.title,
+    track.album.name,
+    ...track.artists.map((artist) => artist.name),
+  ].map((o) => o.toLocaleLowerCase());
+
 export default function Search() {
   const [searchKey, setSearchKey] = useState("");
   const [debouncedSearchKey, setDebouncedSearchKey] = useDebounceValue(
@@ -27,14 +34,11 @@ export default function Search() {
     const key = debouncedSearchKey.toLowerCase();
     const filteredTracks =
       key.length > 0
-        ? tracks.filter((track) => {
-            return (
-              track.title.toLowerCase().includes(key) ||
-              track.artist.toLowerCase().includes(key) ||
-              track.albumArtist.toLowerCase().includes(key) ||
-              track.album.toLowerCase().includes(key)
-            );
-          })
+        ? tracks.filter((track) =>
+            toSearchFields(track).some((searchField) =>
+              searchField.includes(key),
+            ),
+          )
         : tracks;
 
     setSearchResults(filteredTracks);

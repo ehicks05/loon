@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { setSelectedPlaylistId, useUserStore } from "../hooks/useUserStore";
 import type { Track } from "../types/trpc";
 import ActionMenu from "./ActionMenu";
+import { ArtistLinks } from "./ArtistLinks";
 
 interface Props {
   trackNumber: string | number;
@@ -47,14 +48,10 @@ export default function MediaItem({
           <span className={"tag is-normal is-danger ml-4"}>Track Missing</span>
         )}
         <span className="line-clamp-1 text-sm text-neutral-400">
-          {track.artists.map(({ id, name }, i) => (
-            <span key={id}>
-              {i !== 0 && ", "}
-              <Link className="hover:text-neutral-300" to={`/artists/${id}`}>
-                {name}
-              </Link>
-            </span>
-          ))}
+          <ArtistLinks
+            artists={track.artists}
+            linkClass="hover:text-neutral-300"
+          />
           {" - "}
           <Link
             className="hover:text-neutral-300"

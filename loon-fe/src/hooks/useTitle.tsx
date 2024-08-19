@@ -7,7 +7,7 @@ export function useTitle() {
   const selectedTrack = getTrackById(selectedTrackId);
 
   const title = selectedTrack
-    ? `${selectedTrack.title} by ${selectedTrack.artist}`
+    ? `${selectedTrack.title} by ${selectedTrack.artists.map((artist) => artist.name).join(", ")}`
     : "Loon";
 
   useDocumentTitle(title);

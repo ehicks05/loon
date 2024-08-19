@@ -31,7 +31,7 @@ export function ArtistCard({ artist: _artist, size }: Props) {
           <ActionMenu tracks={tracks} />
         </div>
       </div>
-      <div className="p-2 bg-neutral-900 bg-opacity-75">
+      <div className="p-2">
         <Link className="text-lg" to={`/artists/${artist.id}`}>
           {artist.name}
         </Link>

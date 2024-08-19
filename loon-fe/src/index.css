@@ -14,9 +14,3 @@
 }
 
 /* THEMING */
-@media (prefers-color-scheme: dark) {
-  /* checkbox tree */
-  .rct-node-icon {
-    color: #23d160 !important;
-  }
-}

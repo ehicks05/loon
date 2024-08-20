@@ -95,16 +95,7 @@ export default function Playlist() {
     persistDragAndDrop(args);
   }
 
-  function saveAsPlaylist() {
-    // const queueId = playlists.find((playlist) => playlist.queue)?.id;
-    // const args = {
-    //   fromPlaylistId: queueId,
-    //   name: "TODO",
-    // };
-  }
-
   const playlist = getPlaylistById(playlistId);
-
   const selectedTrackId = useUserStore((state) => state.selectedTrackId);
   const selectedTrackIndex = playlist?.playlistTracks.findIndex(
     (t) => t.trackId === selectedTrackId,
@@ -164,21 +155,6 @@ export default function Playlist() {
       <section className={"flex flex-col gap-2"}>
         <h1 className="font-bold text-2xl">{playlist.name}</h1>
         <div className="flex gap-4">
-          {playlist.queue && (
-            <>
-              <Button disabled={playlist.playlistTracks.length === 0}>
-                Save as Playlist
-              </Button>
-              <Button disabled={playlist.playlistTracks.length === 0}>
-                Clear
-              </Button>
-
-              <div className="hidden">
-                <TextInput id="playlistName" />
-                <Button onClick={saveAsPlaylist}>Ok</Button>
-              </div>
-            </>
-          )}
           <Link
             to={`/playlists/${playlist.id}/edit`}
             className="p-2 bg-black rounded"

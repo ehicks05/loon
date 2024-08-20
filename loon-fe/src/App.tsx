@@ -75,7 +75,7 @@ export default function App() {
               <div className="text-lg">Unable to fetch the music library!</div>
             </div>
           )}
-          {tracks && <Routes />}
+          {tracks && tracks.length === trackz.length && <Routes />}
         </div>
         <MediaColumn />
       </div>

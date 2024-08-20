@@ -1,3 +1,4 @@
+import { albums, artists, tracks } from "#drizzle/main.js";
 import { db } from "../../db.js";
 import { runLibrarySyncTask } from "../../services/library_sync/index.js";
 import { listMediaFiles } from "../../utils/files.js";
@@ -25,6 +26,16 @@ export const systemRouter = router({
     const status = await db.query.system_status.findFirst();
 
     return { inProgress: status?.isSyncing || false };
+  }),
+
+  clearLibrary: adminProcedure.mutation(async () => {
+    await db.delete(tracks);
+    await db.delete(artists);
+    await db.delete(albums);
+
+    // todo: cascade rules
+
+    return { success: true };
   }),
 });
 

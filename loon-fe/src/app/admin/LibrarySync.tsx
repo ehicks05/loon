@@ -12,8 +12,11 @@ export const LibrarySync = () => {
     trpc.system.syncLibrary.useMutation({
       onSuccess: () => refetch(),
     });
+  const { mutate: deleteLibrary, isPending: isDeletingLibrary } =
+    trpc.system.clearLibrary.useMutation();
 
-  const isDisableForm = isLoading || isPending || syncStatus?.inProgress;
+  const isDisableForm =
+    isLoading || isPending || syncStatus?.inProgress || isDeletingLibrary;
 
   useInterval(refetch, syncStatus?.inProgress ? 30_000 : null);
 
@@ -43,7 +46,11 @@ export const LibrarySync = () => {
         <Button
           className="bg-red-700"
           disabled={isDisableForm}
-          onClick={() => alert("not implemented")}
+          onClick={() => {
+            if (confirm("Delete Library?")) {
+              deleteLibrary();
+            }
+          }}
         >
           Delete Library
         </Button>

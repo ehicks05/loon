@@ -10,6 +10,7 @@ export default function Album() {
 
   const album = getAlbumById(id || "");
   if (!album) return null;
+  const multiDisc = (album.tracks.at(-1)?.discNumber || 0) > 1;
 
   return (
     <section>
@@ -20,9 +21,12 @@ export default function Album() {
         {album.tracks.map((track) => (
           <MediaItem
             key={track.id}
-            playlistId={""}
+            playlistId=""
             track={track}
-            trackNumber={`${track.discNumber}.${track.trackNumber}`}
+            trackNumber={
+              `${multiDisc ? `${track.discNumber}.` : ""}${track.trackNumber}` ||
+              0
+            }
           />
         ))}
       </ul>

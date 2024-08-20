@@ -7,7 +7,7 @@ import {
   useTrackMap,
 } from "@/hooks/useLibraryStore";
 import { useUserStore } from "@/hooks/useUserStore";
-import type { PlaylistTrack, Track } from "@/types/trpc";
+import type { Track } from "@/types/trpc";
 import { trpc } from "@/utils/trpc";
 import {
   DragDropContext,
@@ -22,21 +22,15 @@ import { useResizeObserver } from "usehooks-ts";
 
 interface RowProps {
   data: {
-    playlistTracks: PlaylistTrack[];
-    trackMap: Record<string, Track>;
+    tracks: Track[];
     playlistId: string;
   };
   index: number;
   style: CSSProperties;
 }
 
-const Row = ({
-  data: { playlistTracks, trackMap, playlistId },
-  index,
-  style,
-}: RowProps) => {
-  const playlistTrack = playlistTracks[index];
-  const track = trackMap[playlistTrack.trackId];
+const Row = ({ data: { tracks, playlistId }, index, style }: RowProps) => {
+  const track = tracks[index];
 
   return (
     <Draggable draggableId={track.id} index={index}>
@@ -136,14 +130,15 @@ export default function Playlist() {
                 width="100%"
                 height={containerHeight}
                 itemData={{
-                  playlistTracks: playlist.playlistTracks.slice(),
-                  trackMap,
+                  tracks: playlist.playlistTracks.map(
+                    (pt) => trackMap[pt.trackId],
+                  ),
                   playlistId,
                 }}
                 overscanCount={3}
                 outerRef={provided.innerRef}
                 itemCount={playlist.playlistTracks.length}
-                itemKey={(index, data) => data.playlistTracks[index].trackId}
+                itemKey={(index, data) => data.tracks[index].id}
                 itemSize={60}
                 initialScrollOffset={(selectedTrackIndex || 0) * 60}
               >

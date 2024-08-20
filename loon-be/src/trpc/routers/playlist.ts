@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { and, between, desc, eq, sql } from "drizzle-orm";
+import { and, asc, between, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../../db.js";
 import { playlist_tracks, playlists } from "../../drizzle/main.js";
@@ -18,7 +18,7 @@ export const playlistRouter = router({
       orderBy: [
         desc(playlists.favorites),
         desc(playlists.queue),
-        desc(playlists.name),
+        asc(playlists.name),
       ],
     });
   }),

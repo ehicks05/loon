@@ -1,9 +1,7 @@
-import { Button } from "@/components/Button";
 import MediaItem from "@/components/MediaItem";
 import { MediaItemDrag } from "@/components/MediaItemDrag";
-import { TextInput } from "@/components/TextInput";
 import {
-  getPlaylistById,
+  getTrackById,
   handleLocalDragAndDrop,
   useLibraryStore,
   useTrackMap,
@@ -14,7 +12,6 @@ import { trpc } from "@/utils/trpc";
 import {
   DragDropContext,
   Draggable,
-  type DraggableProvided,
   type DropResult,
   Droppable,
 } from "@hello-pangea/dnd";
@@ -25,7 +22,7 @@ import { useResizeObserver } from "usehooks-ts";
 
 interface RowProps {
   data: {
-    tracks: PlaylistTrack[];
+    playlistTracks: PlaylistTrack[];
     trackMap: Record<string, Track>;
     playlistId: string;
   };
@@ -34,11 +31,11 @@ interface RowProps {
 }
 
 const Row = ({
-  data: { tracks, trackMap, playlistId },
+  data: { playlistTracks, trackMap, playlistId },
   index,
   style,
 }: RowProps) => {
-  const playlistTrack = tracks[index];
+  const playlistTrack = playlistTracks[index];
   const track = trackMap[playlistTrack.trackId];
 
   return (
@@ -59,12 +56,18 @@ const Row = ({
 };
 
 export default function Playlist() {
-  const { id } = useParams();
-  const playlistId = id;
+  const { id: playlistId } = useParams();
   if (!playlistId) return null;
 
-  const playlists = useLibraryStore((state) => state.playlists);
+  const playlist = useLibraryStore((state) => state.playlists).find(
+    (p) => p.id === playlistId,
+  );
   const trackMap = useTrackMap();
+
+  const selectedTrackId = useUserStore((state) => state.selectedTrackId);
+  const selectedTrackIndex = playlist?.playlistTracks.findIndex(
+    (t) => t.trackId === selectedTrackId,
+  );
 
   const utils = trpc.useUtils();
   const { mutate: persistDragAndDrop } = trpc.playlist.dragAndDrop.useMutation({
@@ -95,19 +98,13 @@ export default function Playlist() {
     persistDragAndDrop(args);
   }
 
-  const playlist = getPlaylistById(playlistId);
-  const selectedTrackId = useUserStore((state) => state.selectedTrackId);
-  const selectedTrackIndex = playlist?.playlistTracks.findIndex(
-    (t) => t.trackId === selectedTrackId,
-  );
-
   useEffect(() => {
     if (selectedTrackIndex) {
       listRef.current?.scrollToItem(selectedTrackIndex, "smart");
     }
   }, [selectedTrackIndex]);
 
-  if (!playlists || !playlist) return <div>Loading...</div>;
+  if (!playlist) return <div>Loading...</div>;
 
   const mediaList = (
     <div ref={containerRef} className="h-full overflow-hidden">
@@ -115,13 +112,22 @@ export default function Playlist() {
         <Droppable
           droppableId="droppable"
           mode="virtual"
-          renderClone={(provided, _snapshot, rubric) =>
-            renderDraggingMediaItem(rubric.source.index, provided, playlistId)
-          }
+          renderClone={(provided, _snapshot, { source: { index } }) => {
+            const trackId = playlist.playlistTracks[index]?.trackId;
+            const track = trackId && getTrackById(trackId);
+            if (!track) return null;
+            return (
+              <MediaItemDrag
+                key={track.id}
+                provided={provided}
+                track={track}
+                trackNumber={index + 1}
+              />
+            );
+          }}
         >
           {(provided, _snapshot) => (
             <div
-              id="list"
               ref={provided.innerRef}
               className="flex h-full flex-grow flex-col"
             >
@@ -130,14 +136,14 @@ export default function Playlist() {
                 width="100%"
                 height={containerHeight}
                 itemData={{
-                  tracks: playlist.playlistTracks.slice(),
+                  playlistTracks: playlist.playlistTracks.slice(),
                   trackMap,
                   playlistId,
                 }}
                 overscanCount={3}
                 outerRef={provided.innerRef}
                 itemCount={playlist.playlistTracks.length}
-                itemKey={(index, data) => data.tracks[index].trackId}
+                itemKey={(index, data) => data.playlistTracks[index].trackId}
                 itemSize={60}
                 initialScrollOffset={(selectedTrackIndex || 0) * 60}
               >
@@ -167,24 +173,4 @@ export default function Playlist() {
       {mediaList}
     </div>
   );
-
-  function renderDraggingMediaItem(
-    index: number,
-    provided: DraggableProvided,
-    playlistId: string,
-  ) {
-    const playlistTrack = getPlaylistById(playlistId)?.playlistTracks[index];
-    if (!playlistTrack) return null;
-
-    const track = trackMap[playlistTrack.trackId];
-
-    return (
-      <MediaItemDrag
-        key={track.id}
-        provided={provided}
-        track={track}
-        trackNumber={playlistTrack.index + 1}
-      />
-    );
-  }
 }

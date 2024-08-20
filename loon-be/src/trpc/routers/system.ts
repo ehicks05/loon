@@ -1,6 +1,6 @@
 import { albums, artists, tracks } from "#drizzle/main.js";
 import { db } from "../../db.js";
-import { runLibrarySyncTask } from "../../services/library_sync/index.js";
+import { runLibrarySyncTask } from "../../services/library/sync.js";
 import { listMediaFiles } from "../../utils/files.js";
 import { adminProcedure, router } from "../trpc.js";
 

@@ -11,7 +11,6 @@ import {
   tracks,
 } from "../../drizzle/main.js";
 import { listMediaFiles } from "../../utils/files.js";
-import { parseMediaFile } from "../../utils/metadata.js";
 import {
   type LoonItemTypes,
   fetchImages,
@@ -26,6 +25,8 @@ import type {
   TrackArtistInput,
   TrackInput,
 } from "../types.js";
+import { clearLibraryCache } from "./fetch.js";
+import { parseMediaFile } from "./metadata.js";
 
 export interface TrackInputBundle {
   track: TrackInput;
@@ -226,6 +227,8 @@ export const runLibrarySyncTask = async () => {
     await syncLibrary();
   } catch (e) {
     console.log(e);
+  } finally {
+    clearLibraryCache();
   }
 
   await db.update(system_status).set({ isSyncing: false });

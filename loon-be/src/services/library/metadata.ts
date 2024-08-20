@@ -8,7 +8,7 @@ import type {
   ArtistInput,
   TrackArtistInput,
   TrackInput,
-} from "../services/types.js";
+} from "../types.js";
 
 const getMetadata = async (path: string) => {
   const blob = await openAsBlob(path);

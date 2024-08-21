@@ -1,4 +1,5 @@
-import { getPlaylistById, useLibraryStore } from "@/hooks/useLibraryStore";
+import { useLibraryStore } from "@/hooks/useLibraryStore";
+import { getPlaylistById } from "@/hooks/usePlaylistStore";
 import { type PlaybackDirection, useUserStore } from "@/hooks/useUserStore";
 
 export const getNewTrackId = (input: PlaybackDirection) => {

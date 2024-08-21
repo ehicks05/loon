@@ -1,3 +1,4 @@
+import { usePlaylistStore } from "@/hooks/usePlaylistStore";
 import type { Playlist, Track } from "@/types/trpc";
 import { trpc } from "@/utils/trpc";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
@@ -10,7 +11,6 @@ import {
   FaList,
   FaRegHeart,
 } from "react-icons/fa";
-import { useLibraryStore } from "../hooks/useLibraryStore";
 
 const isSaturated = (playlist: Playlist, trackIds: string[]) => {
   const playlistTrackIds = playlist.playlistTracks.map(
@@ -27,7 +27,7 @@ export default function ActionMenu({ tracks }: { tracks: Track[] }) {
     },
   });
   const trackIds = tracks.map((track) => track.id);
-  const playlists = useLibraryStore((state) => state.playlists);
+  const playlists = usePlaylistStore((state) => state.playlists);
 
   const favoritesPlaylist = playlists.find((playlist) => playlist.favorites);
   const isFavorite =

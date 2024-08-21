@@ -1,28 +1,20 @@
-import { keyBy, map, uniq } from "lodash-es";
+import { keyBy } from "lodash-es";
 import create from "zustand";
 import { devtools } from "zustand/middleware";
-import type {
-  Album,
-  Artist,
-  LibraryResponse,
-  Playlist,
-  Track,
-} from "../types/trpc";
+import type { Album, Artist, Track } from "../types/trpc";
 
 export const useLibraryStore = create<{
   tracks: Track[];
   albums: Album[];
   artists: Artist[];
-  playlists: Playlist[];
 }>(
   devtools(
     () => ({
       tracks: [] as Track[],
       albums: [] as Album[],
       artists: [] as Artist[],
-      playlists: [] as Playlist[],
     }),
-    { name: "app" },
+    { name: "library" },
   ),
 );
 
@@ -92,39 +84,4 @@ export const getArtistById = (id?: string) => {
 
   if (!artist || !albums || !tracks) return undefined;
   return { ...artist, albums, tracks };
-};
-
-export const getPlaylistById = (id: string) => {
-  return useLibraryStore.getState().playlists.find((p) => p.id === id);
-};
-
-// Update indices locally for quick render, later backend will return authoritative results.
-export const handleLocalDragAndDrop = ({
-  playlistId,
-  oldIndex,
-  newIndex,
-}: { playlistId: string; oldIndex: number; newIndex: number }) => {
-  const playlists = useLibraryStore.getState().playlists;
-  const playlist = playlists.find((p) => p.id === playlistId);
-  const rest = playlists.filter((p) => p.id !== playlistId);
-
-  if (!playlist) {
-    return;
-  }
-
-  // splice the moving track from oldIndex to newIndex,
-  // then do a brute force reindexing
-  const tracks = [...playlist.playlistTracks];
-  const track = tracks[oldIndex];
-  tracks.splice(oldIndex, 1);
-  tracks.splice(newIndex, 0, track);
-  tracks.forEach((track, i) => {
-    track.index = i;
-  });
-
-  playlist.playlistTracks = tracks;
-  useLibraryStore.setState((state) => ({
-    ...state,
-    playlists: [...rest, playlist],
-  }));
 };

@@ -1,11 +1,7 @@
 import MediaItem from "@/components/MediaItem";
 import { MediaItemDrag } from "@/components/MediaItemDrag";
-import {
-  getTrackById,
-  handleLocalDragAndDrop,
-  useLibraryStore,
-  useTrackMap,
-} from "@/hooks/useLibraryStore";
+import { getTrackById, useTrackMap } from "@/hooks/useLibraryStore";
+import { usePlaylistStore } from "@/hooks/usePlaylistStore";
 import { useUserStore } from "@/hooks/useUserStore";
 import type { Track } from "@/types/trpc";
 import { trpc } from "@/utils/trpc";
@@ -53,9 +49,10 @@ export default function Playlist() {
   const { id: playlistId } = useParams();
   if (!playlistId) return null;
 
-  const playlist = useLibraryStore((state) => state.playlists).find(
-    (p) => p.id === playlistId,
-  );
+  const { playlist, handleDragAndDrop } = usePlaylistStore((state) => ({
+    playlist: state.playlists.find((p) => p.id === playlistId),
+    handleDragAndDrop: state.handleDragAndDrop,
+  }));
   const trackMap = useTrackMap();
 
   const selectedTrackId = useUserStore((state) => state.selectedTrackId);
@@ -88,7 +85,7 @@ export default function Playlist() {
       newIndex: destination.index,
     };
 
-    handleLocalDragAndDrop(args);
+    handleDragAndDrop(args);
     persistDragAndDrop(args);
   }
 

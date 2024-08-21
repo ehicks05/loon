@@ -6,7 +6,8 @@ import { useEffect } from "react";
 import Routes from "./Routes";
 import { MediaColumn } from "./components/MediaColumn/MediaColumn";
 import { PageLoader } from "./components/PageLoader";
-import { setLibrary, useLibraryStore } from "./hooks/useLibraryStore";
+import { useLibraryStore } from "./hooks/useLibraryStore";
+import { usePlaylistStore } from "./hooks/usePlaylistStore";
 import { useTitle } from "./hooks/useTitle";
 import { trpc } from "./utils/trpc";
 
@@ -28,13 +29,13 @@ const useCacheData = () => {
 
   useEffect(() => {
     if (library) {
-      setLibrary(library);
+      useLibraryStore.setState((state) => ({ ...state, ...library }));
     }
   }, [library]);
 
   useEffect(() => {
     if (playlists) {
-      useLibraryStore.setState((state) => ({ ...state, playlists }));
+      usePlaylistStore.setState((state) => ({ ...state, playlists }));
     }
   }, [playlists]);
 

@@ -30,7 +30,7 @@ const InfoBlock = ({
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 items-center">
       <div className="max-w-64">
         <img
           src={image || PLACEHOLDER_IMAGE_URL}
@@ -39,7 +39,7 @@ const InfoBlock = ({
         />
       </div>
       <h1 className="text-2xl font-bold">{name}</h1>
-      <div className="flex flex-col items-start gap-2 text-sm">
+      <div className="flex flex-col items-start gap-2 text-sm text-justify">
         <Paragraphs text={content} expanded={expanded} />
         {content && (
           <Button onClick={() => setExpanded((expanded) => !expanded)}>

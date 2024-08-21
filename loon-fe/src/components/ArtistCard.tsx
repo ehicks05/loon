@@ -20,17 +20,16 @@ export function ArtistCard({ artist: _artist, size }: Props) {
   return (
     <div className="flex flex-col w-full items-start">
       <ActionableImage src={image} tracks={tracks} />
-      <div className="p-2">
-        <div className="text-lg">
-          <ArtistLinks artists={[artist]} />
-        </div>
-        <div className="text-sm">
+      <div className="flex flex-col p-2 w-full">
+        <div className="text-xs text-center">
+          <span className="text-green-500 font-bold">{tracks.length}</span>{" "}
+          track{tracks.length !== 1 ? "s" : ""}
+          {" · "}
           <span className="text-green-500 font-bold">{albums.length}</span>{" "}
           album{albums.length !== 1 ? "s" : ""}
         </div>
-        <div className="text-sm">
-          <span className="text-green-500 font-bold">{tracks.length}</span>{" "}
-          track{tracks.length !== 1 ? "s" : ""}
+        <div className="text-lg text-center">
+          <ArtistLinks artists={[artist]} />
         </div>
       </div>
     </div>

@@ -55,12 +55,20 @@ const assembleLibrary = async () => {
       orderBy: [asc(albumsTable.name)],
     })
     .then((albums) =>
-      albums.map((album) => ({
-        ...album,
-        albumArtists: album.albumArtists.map(
-          (albumArtist) => albumArtist.artist,
-        ),
-      })),
+      albums
+        .map((album) => ({
+          ...album,
+          albumArtists: album.albumArtists.map(
+            (albumArtist) => albumArtist.artist,
+          ),
+        }))
+        .sort((album1, album2) => {
+          const artist1 = album1.albumArtists[0]?.name || "";
+          const artist2 = album2.albumArtists[0]?.name || "";
+          if (!artist1) return 1;
+          if (!artist2) return -1;
+          return artist1.localeCompare(artist2);
+        }),
     );
 
   const artists = await db.query.artists
@@ -74,18 +82,17 @@ const assembleLibrary = async () => {
       orderBy: [asc(artistsTable.name)],
     })
     .then((artists) =>
-      artists
-        .map((artist) => ({
-          ...artist,
-          albums: artist.albumArtists.map((albumArtist) => albumArtist.album),
-          albumArtists: undefined,
-        }))
-        .map((artist) => ({
-          ...artist,
-          trackCount: tracks.filter((track) =>
-            artist.albums.map((album) => album.id).includes(track.album.id),
-          ).length,
-        })),
+      artists.map((artist) => ({
+        ...artist,
+        albums: artist.albumArtists.map((albumArtist) => albumArtist.album),
+        albumArtists: undefined,
+        trackCount: tracks.filter((track) =>
+          artist.albumArtists
+            .map((albumArtist) => albumArtist.album)
+            .map((album) => album.id)
+            .includes(track.album.id),
+        ).length,
+      })),
     );
 
   return { tracks, artists, albums };

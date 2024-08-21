@@ -20,7 +20,6 @@
     "lib": ["ESNext"],
     "composite": true,
     "outDir": "dist",
-    "paths": { "#*": ["./src/*"] },
     "sourceMap": true,
     "declarationMap": true,
     "types": ["node"]

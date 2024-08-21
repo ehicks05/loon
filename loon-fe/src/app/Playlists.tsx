@@ -1,7 +1,9 @@
+import { Button } from "@/components/Button";
 import { useLibraryStore } from "@/hooks/useLibraryStore";
 import { useUserStore } from "@/hooks/useUserStore";
 import { trpc } from "@/utils/trpc";
 import { FaVolumeUp } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 
 export default function Playlists() {
@@ -27,70 +29,48 @@ export default function Playlists() {
       </section>
 
       <section className="flex flex-col gap-2 items-start">
-        <table>
-          <tbody>
-            <tr>
-              <td className="p-2"> </td>
-              <td className="p-2">Name</td>
-              <td className="p-2 text-right">Tracks</td>
-              <td className="p-2"> </td>
-            </tr>
-            {playlists.map((playlist, index) => {
-              return (
-                <tr key={playlist.id}>
-                  <td className="p-2"> {index + 1}. </td>
-                  <td className="p-2 font-bold">
-                    <Link
-                      to={`/playlists/${playlist.id}`}
-                      className="flex items-center"
-                    >
-                      {playlist.name}
+        {playlists.map((playlist, index) => {
+          const handleClickDelete = () => {
+            window.confirm("Delete this playlist?")
+              ? deletePlaylist(playlist.id)
+              : undefined;
+          };
 
-                      {playlist.id === selectedPlaylistId && (
-                        <span className="w-4 h-4 text-green-500 ml-3">
-                          <FaVolumeUp aria-hidden="true" />
-                        </span>
-                      )}
-                    </Link>
-                  </td>
-                  <td className="p-2 text-right">
-                    {playlist.playlistTracks.length}
-                  </td>
-                  <td className="p-2">
-                    <span className="flex gap-2">
-                      <Link
-                        className={"p-2 rounded bg-black"}
-                        to={`/playlists/${playlist.id}/edit`}
-                      >
-                        Edit
-                      </Link>
+          return (
+            <div className="flex gap-4 w-full items-center" key={playlist.id}>
+              <div> {index + 1}. </div>
+              <Link
+                to={`/playlists/${playlist.id}`}
+                className="flex-grow font-bold flex items-center"
+              >
+                {playlist.name}
 
-                      {!(playlist.queue || playlist.favorites) && (
-                        <button
-                          type="button"
-                          className={"p-2 rounded bg-red-600"}
-                          onClick={() => {
-                            if (window.confirm("Delete this playlist?")) {
-                              deletePlaylist(playlist.id);
-                            }
-                          }}
-                        >
-                          Delete
-                        </button>
-                      )}
-                    </span>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        <Link
-          className={"p-2 rounded bg-green-600 text-white"}
-          to={"/playlists/new"}
-        >
-          New Playlist
-        </Link>
+                {playlist.id === selectedPlaylistId && (
+                  <span className="w-4 h-4 text-green-500 ml-3">
+                    <FaVolumeUp aria-hidden="true" />
+                  </span>
+                )}
+              </Link>
+              <div>{playlist.playlistTracks.length} tracks</div>
+              <div className="flex gap-2">
+                <Button>
+                  <Link to={`/playlists/${playlist.id}/edit`}>Edit</Link>
+                </Button>
+
+                <Button
+                  disabled={playlist.queue || playlist.favorites}
+                  className="bg-red-600"
+                  onClick={handleClickDelete}
+                >
+                  <FaTrash />
+                </Button>
+              </div>
+            </div>
+          );
+        })}
+        <Button className="bg-green-600">
+          <Link to="/playlists/new">New Playlist</Link>
+        </Button>
       </section>
     </div>
   );

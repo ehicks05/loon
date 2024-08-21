@@ -1,5 +1,4 @@
 import { ActionableImage } from "@/components/ActionableImage";
-import AlbumCard from "@/components/AlbumCard";
 import { ArtistCard } from "@/components/ArtistCard";
 import MediaItem from "@/components/MediaItem";
 import { getArtistById } from "@/hooks/useLibraryStore";

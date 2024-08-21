@@ -45,7 +45,7 @@ const InfoBlock = ({
         />
       </div>
       <h1 className="text-lg text-center font-bold">{name}</h1>
-      <div className="flex flex-col items-start gap-2 text-sm text-justify">
+      <div className="flex flex-col items-start gap-2 text-sm text-justify text-neutral-400">
         <Paragraphs text={content} expanded={expanded} />
         {content && (
           <Button onClick={() => setExpanded((expanded) => !expanded)}>
@@ -94,17 +94,23 @@ export const Content = () => {
 export const MediaColumn = () => {
   const expanded = useUserStore((state) => state.expandMediaColumn);
 
-  return (
-    <div
-      className={`hidden lg:block h-full ${expanded ? "max-w-1/3" : "w-min"} overflow-y-auto overflow-x-hidden`}
+  const button = (
+    <Button
+      className="aspect-square"
+      onClick={() => setExpandMediaColumn(!expanded)}
     >
+      {expanded ? <FaMinus /> : <FaPlus />}
+    </Button>
+  );
+
+  if (!expanded) {
+    return <div className="w-min p-2">{button}</div>;
+  }
+
+  return (
+    <div className="hidden lg:block h-full max-w-1/3 overflow-y-auto overflow-x-hidden">
       <div className="flex flex-col gap-2 items-end p-4 bg-neutral-900 rounded-lg">
-        <Button
-          className="aspect-square"
-          onClick={() => setExpandMediaColumn(!expanded)}
-        >
-          {expanded ? <FaMinus /> : <FaPlus />}
-        </Button>
+        {button}
         {expanded && <Content />}
       </div>
     </div>

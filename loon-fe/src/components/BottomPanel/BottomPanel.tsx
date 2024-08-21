@@ -8,13 +8,15 @@ import TrackDescription from "./TrackDescription";
 import TrackProgressBar from "./TrackProgressBar";
 import VolumeSlider from "./VolumeSlider";
 
+export const BUTTON_CLASS = "p-2 rounded hover:bg-neutral-800";
+
 function ShuffleButton() {
   const shuffle = useUserStore((state) => state.shuffle);
 
   return (
     <button
       type="button"
-      className={`bg-black p-2 rounded ${shuffle ? " bg-green-700" : ""}`}
+      className={`${BUTTON_CLASS} ${shuffle ? " text-green-500" : ""}`}
       onClick={() => setShuffle(!shuffle)}
     >
       <FaRandom />
@@ -29,7 +31,7 @@ function MuteButton() {
   return (
     <button
       type="button"
-      className="bg-black p-2 rounded"
+      className={BUTTON_CLASS}
       onClick={() => setMuted(!muted)}
     >
       <Icon />
@@ -39,21 +41,24 @@ function MuteButton() {
 
 const EqPopover = () => {
   return (
-    <Popover.Root modal>
-      <Popover.Trigger className="p-2 bg-black rounded text-neutral-300">
-        <FaSliders className="rotate-90" />
-      </Popover.Trigger>
-      <Popover.Anchor />
-      <Popover.Portal>
-        <Popover.Content sideOffset={32}>
-          <Popover.Close />
-          <Popover.Arrow />
-          <div className="p-2 rounded-lg shadow-2xl bg-neutral-950 text-white">
-            <Equalizer />
-          </div>
-        </Popover.Content>
-      </Popover.Portal>
-    </Popover.Root>
+    // keep inside a div to handle an extra div created by Popover
+    <div>
+      <Popover.Root modal>
+        <Popover.Trigger className={BUTTON_CLASS}>
+          <FaSliders className="rotate-90" />
+        </Popover.Trigger>
+        <Popover.Anchor />
+        <Popover.Portal>
+          <Popover.Content sideOffset={32}>
+            <Popover.Close />
+            <Popover.Arrow />
+            <div className="p-2 rounded-lg shadow-2xl bg-neutral-950 text-white">
+              <Equalizer />
+            </div>
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>{" "}
+    </div>
   );
 };
 
@@ -75,10 +80,7 @@ export function BottomPanel() {
         <div className="w-full md:w-1/2">
           <div className="flex gap-2 items-center justify-center md:justify-end md:ml-4">
             <ShuffleButton />
-            <div>
-              {/* keep inside a div to handle an extra div created by Popover */}
-              <EqPopover />
-            </div>
+            <EqPopover />
             <MuteButton />
             <VolumeSlider />
           </div>

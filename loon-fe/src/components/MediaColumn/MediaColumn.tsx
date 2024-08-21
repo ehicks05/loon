@@ -13,6 +13,12 @@ export const Paragraphs = ({
   text
     ?.split("\n")
     .filter((_, i) => expanded || i === 0)
+    .map((text) => {
+      const i1 = text.indexOf("<a");
+      const i2 = text.lastIndexOf("</a>") + 6;
+      if (i1 === -1 || i2 === -1) return text;
+      return text.slice(0, i1) + text.slice(i2, text.length - 1);
+    })
     .map((p) => (
       <div
         key={p}
@@ -38,7 +44,7 @@ const InfoBlock = ({
           className="rounded-lg"
         />
       </div>
-      <h1 className="text-2xl font-bold">{name}</h1>
+      <h1 className="text-lg text-center font-bold">{name}</h1>
       <div className="flex flex-col items-start gap-2 text-sm text-justify">
         <Paragraphs text={content} expanded={expanded} />
         {content && (

@@ -30,10 +30,6 @@ export const useTrackMap = () => {
   return useLibraryStore((state) => keyBy(state.tracks, "id"));
 };
 
-export const useDistinctArtists = () => {
-  return useLibraryStore((state) => uniq(map(state.tracks, "artist")));
-};
-
 export const getTrackByIdBasic = (id: string) => {
   const track = useLibraryStore
     .getState()
@@ -130,16 +126,5 @@ export const handleLocalDragAndDrop = ({
   useLibraryStore.setState((state) => ({
     ...state,
     playlists: [...rest, playlist],
-  }));
-};
-
-export const setLibrary = ({ tracks, artists, albums }: LibraryResponse) => {
-  // const artists = tracksToArtists(library);
-  // const albums = artists.flatMap((o) => o.albums);
-  useLibraryStore.setState((state) => ({
-    ...state,
-    tracks,
-    albums,
-    artists,
   }));
 };

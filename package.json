@@ -8,7 +8,7 @@
     "check": "npx biome check",
     "dev-be": "cd loon-be && npm run dev",
     "dev-fe": "cd loon-fe && npm run dev",
-    "dev": "concurrently -n=be,fe -p={time}-{name} \"npm run dev-be\" \"npm run dev-fe\" "
+    "dev": "concurrently -n=be,fe -c=blue,green -p={time}-{name} \"npm run dev-be\" \"npm run dev-fe\" "
   },
   "author": "",
   "license": "ISC",

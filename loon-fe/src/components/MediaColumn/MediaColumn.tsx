@@ -13,6 +13,7 @@ export const Paragraphs = ({
   text
     ?.split("\n")
     .filter((_, i) => expanded || i === 0)
+    .filter((text) => !!text)
     .map((text) => {
       const i1 = text.indexOf("<a");
       const i2 = text.lastIndexOf("</a>") + 6;
@@ -108,8 +109,8 @@ export const MediaColumn = () => {
   }
 
   return (
-    <div className="hidden xl:block h-full flex-shrink-0 w-[28rem] overflow-y-auto overflow-x-hidden">
-      <div className="flex flex-col gap-2 items-end p-4 bg-neutral-900 rounded-lg">
+    <div className="hidden xl:block flex-shrink-0 w-[28rem]">
+      <div className="flex flex-col gap-2 items-end h-full p-4 bg-neutral-900 rounded-lg overflow-y-auto overflow-x-hidden">
         {button}
         {expanded && <Content />}
       </div>

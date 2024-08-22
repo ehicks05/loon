@@ -8,7 +8,7 @@ import {
   useUserStore,
 } from "@/hooks/useUserStore";
 import { useEffect, useRef } from "react";
-import { getMaxSafeGain, scaleVolume, scrollIntoView } from "./playerUtils";
+import { getMaxSafeGain, scaleVolume } from "./playerUtils";
 import renderSpectrumFrame from "./spectrum";
 import { getNewTrackId } from "./trackDeterminationUtils";
 import { useKeyboardControls } from "./useKeyboardControls";
@@ -119,8 +119,6 @@ export const Player = () => {
     bandsRef.current = eqBands;
     analyserRef.current = analyser;
 
-    scrollIntoView(userState.selectedTrackId);
-
     setAudioCtx(audioCtxRef);
     setAnalyser(analyserRef);
   }, []);
@@ -228,8 +226,6 @@ export const Player = () => {
     if (playbackState !== "playing") {
       fade(audioCtx, fadeNode, "out", () => audioCtx?.suspend());
     }
-
-    scrollIntoView(track.id);
   };
 
   return null;

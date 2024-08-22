@@ -4,7 +4,7 @@
   "scripts": {
     "test": "node --test test/**/*.test.js",
     "start": "set NODE_ENV=production&&node dist/src/server.js",
-    "dev": "set NODE_ENV=development&& tsx watch --env-file=.env src/server.ts",
+    "dev": "set NODE_ENV=development&& tsx watch --clear-screen=false --env-file=.env src/server.ts",
     "push": "npx drizzle-kit push --config=src/drizzle.config.ts",
     "studio": "npx drizzle-kit studio  --config=src/drizzle.config.ts",
     "build": "tsc -b"

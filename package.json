@@ -5,15 +5,15 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "check": "npx biome check"
+    "check": "npx biome check",
+    "dev-be": "cd loon-be && npm run dev",
+    "dev-fe": "cd loon-fe && npm run dev",
+    "dev": "concurrently -n=be,fe -p={time}-{name} \"npm run dev-be\" \"npm run dev-fe\" "
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@biomejs/biome": "1.8.3"
   },
-  "workspaces": [
-    "loon-be",
-    "loon-fe"
-  ]
+  "workspaces": ["loon-be", "loon-fe"]
 }

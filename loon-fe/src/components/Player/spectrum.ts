@@ -52,8 +52,8 @@ function getMergedFrequencyBins(dataArray: Uint8Array, binWidth: number) {
 }
 
 export default function renderSpectrumFrame() {
-  const audioCtx = usePlayerStore.getState().audioCtx;
-  const analyser = usePlayerStore.getState().analyser;
+  const audioCtx = usePlayerStore.getState().audioCtx?.current;
+  const analyser = usePlayerStore.getState().analyser?.current;
   const playbackState = usePlayerStore.getState().playbackState;
 
   requestAnimationFrame(() => renderSpectrumFrame());
@@ -62,10 +62,8 @@ export default function renderSpectrumFrame() {
   const ctx = canvas.getContext("2d");
 
   if (
-    !audioCtx ||
-    audioCtx.current?.state !== "running" ||
+    audioCtx?.state !== "running" ||
     !analyser ||
-    !analyser.current ||
     playbackState !== "playing" ||
     !canvas ||
     !ctx
@@ -83,10 +81,9 @@ export default function renderSpectrumFrame() {
   const WIDTH = canvas.width;
   const HEIGHT = canvas.height;
 
-  const dataArray = new Uint8Array(analyser.current.frequencyBinCount);
-  const binWidth =
-    audioCtx.current.sampleRate / analyser.current.frequencyBinCount;
-  analyser.current.getByteFrequencyData(dataArray);
+  const dataArray = new Uint8Array(analyser.frequencyBinCount);
+  const binWidth = audioCtx.sampleRate / analyser.frequencyBinCount;
+  analyser.getByteFrequencyData(dataArray);
 
   const mergedData = getMergedFrequencyBins(dataArray, binWidth);
   const bufferLength = mergedData.length;

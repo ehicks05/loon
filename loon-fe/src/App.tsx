@@ -59,7 +59,7 @@ export default function App() {
     <div className="h-dvh flex flex-col text-neutral-300 bg-neutral-950">
       <Navbar />
       <div className="flex flex-grow m-2 gap-2 justify-center overflow-hidden">
-        <div className="hidden sm:block h-full w-60 overflow-y-auto overflow-x-hidden">
+        <div className="hidden flex-shrink-0 md:block h-full w-60 overflow-y-auto overflow-x-hidden">
           <div className="h-full flex flex-col justify-between">
             <div className="overflow-y-auto">
               <SidePanel />
@@ -69,7 +69,7 @@ export default function App() {
             </div>
           </div>
         </div>
-        <div className="w-full lg:w-2/3 max-w-screen-lg rounded-lg overflow-y-auto overflow-x-hidden p-2 bg-neutral-900">
+        <div className="w-full max-w-screen-lg rounded-lg overflow-y-auto overflow-x-hidden p-2 bg-neutral-900">
           {!tracks && (
             <div className="flex flex-col gap-4 p-4 -m-2 bg-red-600 rounded-lg">
               <div className="text-3xl">Uh oh!</div>

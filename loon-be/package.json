@@ -31,7 +31,6 @@
     "lodash-es": "^4.17.21",
     "lucia": "^3.2.0",
     "music-metadata": "^10.0.0",
-    "musicbrainz-api": "^0.17.0",
     "oslo": "^1.2.1",
     "p-map": "^7.0.2",
     "postgres": "^3.4.4",

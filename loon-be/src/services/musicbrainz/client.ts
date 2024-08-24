@@ -1,8 +1,28 @@
-import { MusicBrainzApi } from "musicbrainz-api";
 import { env } from "../../env.js";
+import type { IArtist } from "./types.js";
 
-export const musicBrainz = new MusicBrainzApi({
-  appName: "loon",
-  appVersion: "0.1.0",
-  appContactInfo: env.MUSICBRAINZ_CONTACT_EMAIL,
-});
+const BASE = "https://musicbrainz.org/ws/2";
+
+const APP_NAME = "loon";
+const APP_VERSION = "0.1.0";
+const APP_CONTACT = env.APP_CONTACT_EMAIL;
+const userAgent = `${APP_NAME}/${APP_VERSION} (${APP_CONTACT})`;
+const headers = {
+  headers: { "User-Agent": userAgent },
+};
+
+const PARAMS = new URLSearchParams({ fmt: "json" }).toString();
+
+export const musicBrainz = {
+  lookup: async (entity: "artist", id: string) => {
+    const url = `${BASE}/${entity}/${id}?${PARAMS}`;
+    const response = await fetch(url, headers);
+
+    if (response.status !== 200) {
+      console.log(url, response);
+    }
+
+    const json = (await response.json()) as IArtist;
+    return json;
+  },
+};

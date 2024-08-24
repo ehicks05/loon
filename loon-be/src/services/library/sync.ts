@@ -11,6 +11,7 @@ import {
   tracks,
 } from "../../drizzle/main.js";
 import { listMediaFiles } from "../../utils/files.js";
+import { musicBrainz } from "../musicbrainz/client.js";
 import {
   type LoonItemTypes,
   fetchImages,
@@ -47,7 +48,22 @@ const parseMediaFiles = async (mediaFiles: string[]) => {
   const trackArtists = parsedMediaFiles.flatMap((o) => o?.trackArtists);
   const albumArtists = parsedMediaFiles.flatMap((o) => o?.albumArtists);
 
-  return { tracks, artists, albums, trackArtists, albumArtists };
+  return {
+    tracks: uniqBy(tracks, ({ id }) => id),
+    artists: uniqBy(artists, ({ id }) => id),
+    albums: uniqBy(albums, ({ id }) => id),
+    trackArtists,
+    albumArtists,
+  };
+};
+
+const attachArtistName = async (_artist: ArtistInput) => {
+  const mbArtist = await musicBrainz.lookup("artist", _artist.id);
+  if (mbArtist === null) {
+    console.log(_artist);
+  }
+  const artist = { ..._artist, name: mbArtist.name };
+  return artist;
 };
 
 const upsertArtist = async (artist: ArtistInput) => {
@@ -178,9 +194,14 @@ export const syncLibrary = async () => {
   const parsedMediaFiles = await parseMediaFiles(mediaFiles);
 
   if (systemSettings.syncDb) {
+    console.log("fetching artist names from musicBrainz");
+    const artists = await pMap(parsedMediaFiles.artists, attachArtistName, {
+      concurrency: 1,
+    });
+
     console.log("saving to the db");
     // upsert artists
-    await pMap(parsedMediaFiles.artists, upsertArtist, { concurrency: 8 });
+    await pMap(artists, upsertArtist, { concurrency: 8 });
     // upsert albums
     await pMap(parsedMediaFiles.albums, upsertAlbum, { concurrency: 8 });
     // upsert tracks

@@ -54,17 +54,9 @@ export const parseMediaFile = async (path: string) => {
     title,
     musicbrainz_artistid: artistIds,
     musicbrainz_albumartistid: albumArtistIds,
-    artists: artistNames,
   } = common;
 
-  if (
-    !albumName ||
-    !albumId ||
-    !title ||
-    !artistIds ||
-    !albumArtistIds ||
-    !artistNames
-  ) {
+  if (!albumName || !albumId || !title || !artistIds || !albumArtistIds) {
     console.log(`missing required metadata on ${path}`);
     return null;
   }
@@ -89,23 +81,9 @@ export const parseMediaFile = async (path: string) => {
     trackPeak: String(trackPeakRatio),
   };
 
-  if (artistNames.length !== artistIds.length) {
-    console.log({ title: common.title, artists: artistNames, artistIds });
-  }
-
-  const artists: ArtistInput[] = artistIds.map((id, i) => ({
-    id,
-    name: artistNames[i] || "missing",
-  }));
-
-  if (albumArtistIds.includes("89ad4ac3-39f7-470e-963a-56509c546377")) {
-    artists.push({
-      name: "Various Artists",
-      id: "89ad4ac3-39f7-470e-963a-56509c546377",
-      image: "",
-      imageThumb: "",
-    });
-  }
+  const artists: ArtistInput[] = [...artistIds, ...albumArtistIds].map(
+    (id) => ({ id, name: "" }),
+  );
 
   const album: AlbumInput = {
     id: albumId,

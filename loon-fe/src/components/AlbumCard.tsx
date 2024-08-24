@@ -1,4 +1,4 @@
-import type { Album } from "@/types/trpc";
+import type { Album } from "@/types/library";
 import { Link } from "react-router-dom";
 import { getAlbumById } from "../hooks/useLibraryStore";
 import { ActionableImage } from "./ActionableImage";

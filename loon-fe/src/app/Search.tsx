@@ -1,7 +1,7 @@
 import { TextInput } from "@/components/TextInput";
 import { useLibraryStore } from "@/hooks/useLibraryStore";
 import { setSelectedContextMenuId } from "@/hooks/useUserStore";
-import type { Track } from "@/types/trpc";
+import type { Track } from "@/types/library";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { useDebounceValue } from "usehooks-ts";

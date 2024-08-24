@@ -3,7 +3,7 @@ import { MediaItemDrag } from "@/components/MediaItemDrag";
 import { getTrackById, useTrackMap } from "@/hooks/useLibraryStore";
 import { usePlaylistStore } from "@/hooks/usePlaylistStore";
 import { useUserStore } from "@/hooks/useUserStore";
-import type { Track } from "@/types/trpc";
+import type { Track } from "@/types/library";
 import { trpc } from "@/utils/trpc";
 import {
   DragDropContext,

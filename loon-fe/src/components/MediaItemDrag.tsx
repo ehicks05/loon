@@ -1,6 +1,6 @@
 import type { DraggableProvided } from "@hello-pangea/dnd";
 import { useUserStore } from "../hooks/useUserStore";
-import type { Track } from "../types/trpc";
+import type { Track } from "../types/library";
 
 interface Props {
   trackNumber: number;

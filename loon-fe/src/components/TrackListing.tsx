@@ -1,5 +1,5 @@
 import { useUserStore } from "@/hooks/useUserStore";
-import type { Track } from "@/types/trpc";
+import type { Track } from "@/types/library";
 import { useEffect, useRef } from "react";
 import { FixedSizeList as List } from "react-window";
 import { useResizeObserver } from "usehooks-ts";

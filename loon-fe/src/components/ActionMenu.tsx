@@ -1,5 +1,5 @@
 import { usePlaylistStore } from "@/hooks/usePlaylistStore";
-import type { Playlist, Track } from "@/types/trpc";
+import type { Playlist } from "@/types/trpc";
 import { trpc } from "@/utils/trpc";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { partition } from "lodash-es";
@@ -19,14 +19,13 @@ const isSaturated = (playlist: Playlist, trackIds: string[]) => {
   return trackIds.every((trackId) => playlistTrackIds.includes(trackId));
 };
 
-export default function ActionMenu({ tracks }: { tracks: Track[] }) {
+export default function ActionMenu({ trackIds }: { trackIds: string[] }) {
   const utils = trpc.useUtils();
   const { mutate } = trpc.playlist.update.useMutation({
     onSuccess: () => {
       utils.playlist.list.invalidate();
     },
   });
-  const trackIds = tracks.map((track) => track.id);
   const playlists = usePlaylistStore((state) => state.playlists);
 
   const favoritesPlaylist = playlists.find((playlist) => playlist.favorites);

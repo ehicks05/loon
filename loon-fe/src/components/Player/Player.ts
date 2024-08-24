@@ -1,5 +1,5 @@
 import { API_URL } from "@/env";
-import { getTrackByIdBasic } from "@/hooks/useLibraryStore";
+import { getTrackById } from "@/hooks/useLibraryStore";
 import { type PlaybackState, usePlayerStore } from "@/hooks/usePlayerStore";
 import { getPlaylistById } from "@/hooks/usePlaylistStore";
 import {
@@ -198,7 +198,7 @@ export const Player = () => {
     const trackGainNode = trackGainNodeRef.current;
     setElapsedTime(0);
 
-    const track = getTrackByIdBasic(userState.selectedTrackId);
+    const track = getTrackById(userState.selectedTrackId);
     if (!track || track.missingFile) {
       if (!track) console.log("no track found...");
       else if (track.missingFile) console.log("track is missing file...");

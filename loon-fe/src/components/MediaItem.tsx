@@ -4,7 +4,7 @@ import type {
 } from "@hello-pangea/dnd";
 import { Link } from "react-router-dom";
 import { setSelectedPlaylistId, useUserStore } from "../hooks/useUserStore";
-import type { Track } from "../types/trpc";
+import type { Track } from "../types/library";
 import ActionMenu from "./ActionMenu";
 import { ArtistLinks } from "./ArtistLinks";
 
@@ -63,7 +63,7 @@ export default function MediaItem({
       </div>
 
       <div className="invisible group-hover:visible mr-2 flex basis-5 items-center text-neutral-400 hover:text-neutral-300">
-        <ActionMenu tracks={[track]} />
+        <ActionMenu trackIds={[track.id]} />
       </div>
 
       <div className="basis-5">{track.formattedDuration}</div>

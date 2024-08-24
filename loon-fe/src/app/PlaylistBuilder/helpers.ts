@@ -1,4 +1,4 @@
-import type { Track } from "@/types/trpc";
+import type { Track } from "@/types/library";
 import type { Node } from "react-checkbox-tree";
 
 // expand the tree recursively until we expand a node with multiple children

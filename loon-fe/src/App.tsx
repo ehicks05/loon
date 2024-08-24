@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import Routes from "./Routes";
 import { MediaColumn } from "./components/MediaColumn/MediaColumn";
 import { PageLoader } from "./components/PageLoader";
+import { denormalizeLibrary } from "./hooks/denormalize";
 import { useLibraryStore } from "./hooks/useLibraryStore";
 import { usePlaylistStore } from "./hooks/usePlaylistStore";
 import { useTitle } from "./hooks/useTitle";
@@ -29,7 +30,10 @@ const useCacheData = () => {
 
   useEffect(() => {
     if (library) {
-      useLibraryStore.setState((state) => ({ ...state, ...library }));
+      useLibraryStore.setState((state) => ({
+        ...state,
+        ...denormalizeLibrary(library),
+      }));
     }
   }, [library]);
 

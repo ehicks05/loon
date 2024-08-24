@@ -9,7 +9,8 @@ import { appRouter } from "./trpc/router.js";
 
 const app = express();
 
-app.use(cors({ origin: "https://loon.ehicks.net", credentials: true }));
+const origins = ["https://loon.ehicks.net", "http://localhost:5173"];
+app.use(cors({ origin: origins, credentials: true }));
 app.use(cookieParser());
 app.use(serveStatic("/"));
 

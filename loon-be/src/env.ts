@@ -11,6 +11,7 @@ const envSchema = z.object({
   GITHUB_CLIENT_ID: z.string(),
   GITHUB_CLIENT_SECRET: z.string(),
   LAST_FM_API_KEY: z.string(),
+  MUSICBRAINZ_CONTACT_EMAIL: z.string(),
   NODE_ENV: z.enum(["development", "production"]),
   SPOTIFY_CLIENT_ID: z.string(),
   SPOTIFY_CLIENT_SECRET: z.string(),

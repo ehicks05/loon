@@ -1,4 +1,4 @@
-import { uniq } from "lodash-es";
+import { uniq } from "es-toolkit";
 import type { LibraryResponse } from "../types/trpc";
 
 export type Library = ReturnType<typeof denormalizeLibrary>;

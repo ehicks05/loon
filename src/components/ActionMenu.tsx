@@ -2,7 +2,7 @@ import { usePlaylistStore } from "@/hooks/usePlaylistStore";
 import type { Playlist } from "@/types/trpc";
 import { trpc } from "@/utils/trpc";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { partition } from "lodash-es";
+import { partition } from "es-toolkit";
 import type { ReactNode } from "react";
 import {
   FaChevronRight,

@@ -1,4 +1,4 @@
-import { keyBy } from "lodash-es";
+import { keyBy } from "es-toolkit";
 import create from "zustand";
 import { devtools } from "zustand/middleware";
 import type { Album, Artist, Track } from "../types/library";
@@ -19,7 +19,7 @@ export const useLibraryStore = create<{
 );
 
 export const useTrackMap = () => {
-  return useLibraryStore((state) => keyBy(state.tracks, "id"));
+  return useLibraryStore((state) => keyBy(state.tracks, track => track.id));
 };
 
 export const getTrackById = (id: string) =>

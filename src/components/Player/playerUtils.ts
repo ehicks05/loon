@@ -1,4 +1,4 @@
-import { clamp } from "lodash-es";
+import { clamp } from "es-toolkit";
 
 function scaleVolume(inputDecibel: number) {
   const dB = clamp(inputDecibel, -60, 0);

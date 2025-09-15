@@ -1,63 +1,59 @@
-import { TextInput } from "@/components/TextInput";
-import { useLibraryStore } from "@/hooks/useLibraryStore";
-import { setSelectedContextMenuId } from "@/hooks/useUserStore";
-import type { Track } from "@/types/library";
-import { useEffect, useState } from "react";
-import { FaSearch } from "react-icons/fa";
-import { useDebounceValue } from "usehooks-ts";
-import { TrackListing } from "../components/TrackListing";
+import { useEffect, useState } from 'react';
+import { FaSearch } from 'react-icons/fa';
+import { useDebounceValue } from 'usehooks-ts';
+import { TextInput } from '@/components/TextInput';
+import { useLibraryStore } from '@/hooks/useLibraryStore';
+import { setSelectedContextMenuId } from '@/hooks/useUserStore';
+import type { Track } from '@/types/library';
+import { TrackListing } from '../components/TrackListing';
 
 const toSearchFields = (track: Track) =>
-  [
-    track.title,
-    track.album.name,
-    ...track.artists.map((artist) => artist.name),
-  ].map((o) => o.toLocaleLowerCase());
+	[track.title, track.album.name, ...track.artists.map((artist) => artist.name)].map(
+		(o) => o.toLocaleLowerCase(),
+	);
 
 export default function Search() {
-  const [searchKey, setSearchKey] = useState("");
-  const [debouncedSearchKey, setDebouncedSearchKey] = useDebounceValue(
-    searchKey,
-    300,
-  );
-  const [searchResults, setSearchResults] = useState<Track[]>([]);
+	const [searchKey, setSearchKey] = useState('');
+	const [debouncedSearchKey, setDebouncedSearchKey] = useDebounceValue(
+		searchKey,
+		300,
+	);
+	const [searchResults, setSearchResults] = useState<Track[]>([]);
 
-  const tracks = useLibraryStore((state) => state.tracks);
+	const tracks = useLibraryStore((state) => state.tracks);
 
-  useEffect(() => {
-    return function cleanup() {
-      setSelectedContextMenuId("");
-    };
-  }, []);
+	useEffect(() => {
+		return function cleanup() {
+			setSelectedContextMenuId('');
+		};
+	}, []);
 
-  useEffect(() => {
-    const key = debouncedSearchKey.toLowerCase();
-    const filteredTracks =
-      key.length > 0
-        ? tracks.filter((track) =>
-            toSearchFields(track).some((searchField) =>
-              searchField.includes(key),
-            ),
-          )
-        : tracks;
+	useEffect(() => {
+		const key = debouncedSearchKey.toLowerCase();
+		const filteredTracks =
+			key.length > 0
+				? tracks.filter((track) =>
+						toSearchFields(track).some((searchField) => searchField.includes(key)),
+					)
+				: tracks;
 
-    setSearchResults(filteredTracks);
-  }, [tracks, debouncedSearchKey]);
+		setSearchResults(filteredTracks);
+	}, [tracks, debouncedSearchKey]);
 
-  return (
-    <div className="flex h-full flex-col overflow-hidden">
-      <TextInput
-        leftIcon={<FaSearch color="gray" />}
-        value={searchKey}
-        onChange={(e) => {
-          setSearchKey(e.target.value);
-          setDebouncedSearchKey(e.target.value);
-        }}
-        isHorizontal={false}
-        autoComplete="off"
-      />
+	return (
+		<div className="flex h-full flex-col overflow-hidden">
+			<TextInput
+				leftIcon={<FaSearch color="gray" />}
+				value={searchKey}
+				onChange={(e) => {
+					setSearchKey(e.target.value);
+					setDebouncedSearchKey(e.target.value);
+				}}
+				isHorizontal={false}
+				autoComplete="off"
+			/>
 
-      <TrackListing tracks={searchResults} />
-    </div>
-  );
+			<TrackListing tracks={searchResults} />
+		</div>
+	);
 }

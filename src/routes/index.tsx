@@ -1,8 +1,8 @@
-import { AppWrap } from '@/main';
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
 import { QueryClient } from '@tanstack/react-query';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { createFileRoute } from '@tanstack/react-router';
+import { AppWrap } from '@/main';
 
 export const Route = createFileRoute('/')({
 	component: Index,

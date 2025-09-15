@@ -1,77 +1,77 @@
-import { Button } from "@/components/Button";
-import { usePlaylistStore } from "@/hooks/usePlaylistStore";
-import { useUserStore } from "@/hooks/useUserStore";
-import { trpc } from "@/utils/trpc";
-import { FaVolumeUp } from "react-icons/fa";
-import { FaTrash } from "react-icons/fa6";
-import { Link } from "react-router-dom";
+import { FaVolumeUp } from 'react-icons/fa';
+import { FaTrash } from 'react-icons/fa6';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/Button';
+import { usePlaylistStore } from '@/hooks/usePlaylistStore';
+import { useUserStore } from '@/hooks/useUserStore';
+import { trpc } from '@/utils/trpc';
 
 export default function Playlists() {
-  const utils = trpc.useUtils();
-  const { data: user } = trpc.misc.me.useQuery();
-  const playlists = usePlaylistStore((state) => state.playlists);
-  const selectedPlaylistId = useUserStore((state) => state.selectedPlaylistId);
+	const utils = trpc.useUtils();
+	const { data: user } = trpc.misc.me.useQuery();
+	const playlists = usePlaylistStore((state) => state.playlists);
+	const selectedPlaylistId = useUserStore((state) => state.selectedPlaylistId);
 
-  const { mutate: deletePlaylist } = trpc.playlist.delete.useMutation({
-    onSuccess: () => {
-      utils.playlist.list.invalidate();
-    },
-  });
+	const { mutate: deletePlaylist } = trpc.playlist.delete.useMutation({
+		onSuccess: () => {
+			utils.playlist.list.invalidate();
+		},
+	});
 
-  if (!user) {
-    return <section>Please log in to access your library.</section>;
-  }
+	if (!user) {
+		return <section>Please log in to access your library.</section>;
+	}
 
-  return (
-    <div>
-      <section>
-        <h1 className="font-bold text-2xl">Library</h1>
-      </section>
+	return (
+		<div>
+			<section>
+				<h1 className="font-bold text-2xl">Library</h1>
+			</section>
 
-      <section className="flex flex-col gap-2 items-start">
-        {playlists.map((playlist, index) => {
-          const handleClickDelete = () => {
-            window.confirm("Delete this playlist?")
-              ? deletePlaylist(playlist.id)
-              : undefined;
-          };
+			<section className="flex flex-col gap-2 items-start">
+				{playlists.map((playlist, index) => {
+					const handleClickDelete = () => {
+						window.confirm('Delete this playlist?')
+							? deletePlaylist(playlist.id)
+							: undefined;
+					};
 
-          return (
-            <div className="flex gap-4 w-full items-center" key={playlist.id}>
-              <div> {index + 1}. </div>
-              <Link
-                to={`/playlists/${playlist.id}`}
-                className="flex-grow font-bold flex items-center"
-              >
-                {playlist.name}
+					return (
+						<div className="flex gap-4 w-full items-center" key={playlist.id}>
+							<div> {index + 1}. </div>
+							<Link
+								to={`/playlists/${playlist.id}`}
+								className="flex-grow font-bold flex items-center"
+							>
+								{playlist.name}
 
-                {playlist.id === selectedPlaylistId && (
-                  <span className="w-4 h-4 text-green-500 ml-3">
-                    <FaVolumeUp aria-hidden="true" />
-                  </span>
-                )}
-              </Link>
-              <div>{playlist.playlistTracks.length} tracks</div>
-              <div className="flex gap-2">
-                <Button>
-                  <Link to={`/playlists/${playlist.id}/edit`}>Edit</Link>
-                </Button>
+								{playlist.id === selectedPlaylistId && (
+									<span className="w-4 h-4 text-green-500 ml-3">
+										<FaVolumeUp aria-hidden="true" />
+									</span>
+								)}
+							</Link>
+							<div>{playlist.playlistTracks.length} tracks</div>
+							<div className="flex gap-2">
+								<Button>
+									<Link to={`/playlists/${playlist.id}/edit`}>Edit</Link>
+								</Button>
 
-                <Button
-                  disabled={playlist.queue || playlist.favorites}
-                  className="bg-red-600"
-                  onClick={handleClickDelete}
-                >
-                  <FaTrash />
-                </Button>
-              </div>
-            </div>
-          );
-        })}
-        <Button className="bg-green-600">
-          <Link to="/playlists/new">New Playlist</Link>
-        </Button>
-      </section>
-    </div>
-  );
+								<Button
+									disabled={playlist.queue || playlist.favorites}
+									className="bg-red-600"
+									onClick={handleClickDelete}
+								>
+									<FaTrash />
+								</Button>
+							</div>
+						</div>
+					);
+				})}
+				<Button className="bg-green-600">
+					<Link to="/playlists/new">New Playlist</Link>
+				</Button>
+			</section>
+		</div>
+	);
 }

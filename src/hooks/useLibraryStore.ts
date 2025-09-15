@@ -1,32 +1,32 @@
-import { keyBy } from "es-toolkit";
-import create from "zustand";
-import { devtools } from "zustand/middleware";
-import type { Album, Artist, Track } from "../types/library";
+import { keyBy } from 'es-toolkit';
+import create from 'zustand';
+import { devtools } from 'zustand/middleware';
+import type { Album, Artist, Track } from '../types/library';
 
 export const useLibraryStore = create<{
-  tracks: Track[];
-  albums: Album[];
-  artists: Artist[];
+	tracks: Track[];
+	albums: Album[];
+	artists: Artist[];
 }>(
-  devtools(
-    () => ({
-      tracks: [] as Track[],
-      albums: [] as Album[],
-      artists: [] as Artist[],
-    }),
-    { name: "library" },
-  ),
+	devtools(
+		() => ({
+			tracks: [] as Track[],
+			albums: [] as Album[],
+			artists: [] as Artist[],
+		}),
+		{ name: 'library' },
+	),
 );
 
 export const useTrackMap = () => {
-  return useLibraryStore((state) => keyBy(state.tracks, track => track.id));
+	return useLibraryStore((state) => keyBy(state.tracks, (track) => track.id));
 };
 
 export const getTrackById = (id: string) =>
-  useLibraryStore.getState().tracks.find((track) => track.id === id);
+	useLibraryStore.getState().tracks.find((track) => track.id === id);
 
 export const getAlbumById = (id?: string) =>
-  useLibraryStore.getState().albums.find((track) => track.id === id);
+	useLibraryStore.getState().albums.find((track) => track.id === id);
 
 export const getArtistById = (id?: string) =>
-  useLibraryStore.getState().artists.find((track) => track.id === id);
+	useLibraryStore.getState().artists.find((track) => track.id === id);

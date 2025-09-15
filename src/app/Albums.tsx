@@ -1,19 +1,19 @@
-import "lazysizes";
-import "lazysizes/plugins/attrchange/ls.attrchange";
-import AlbumCard from "@/components/AlbumCard";
-import { useLibraryStore } from "@/hooks/useLibraryStore";
+import 'lazysizes';
+import 'lazysizes/plugins/attrchange/ls.attrchange';
+import AlbumCard from '@/components/AlbumCard';
+import { useLibraryStore } from '@/hooks/useLibraryStore';
 
 export default function Albums() {
-  const albums = useLibraryStore((state) => state.albums);
+	const albums = useLibraryStore((state) => state.albums);
 
-  return (
-    <div className="flex flex-col gap-4">
-      <h2 className="text-xl font-bold">{albums.length} Albums</h2>
-      <div className="grid gap-4 w-full grid-cols-[repeat(auto-fill,_minmax(12rem,_1fr))]">
-        {albums.map((album) => (
-          <AlbumCard key={album.id} album={album} />
-        ))}
-      </div>
-    </div>
-  );
+	return (
+		<div className="flex flex-col gap-4">
+			<h2 className="text-xl font-bold">{albums.length} Albums</h2>
+			<div className="grid gap-4 w-full grid-cols-[repeat(auto-fill,_minmax(12rem,_1fr))]">
+				{albums.map((album) => (
+					<AlbumCard key={album.id} album={album} />
+				))}
+			</div>
+		</div>
+	);
 }

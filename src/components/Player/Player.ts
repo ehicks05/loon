@@ -1,4 +1,4 @@
-import { API_URL } from "@/env";
+import { API_URL } from "env";
 import { getTrackById } from "@/hooks/useLibraryStore";
 import { type PlaybackState, usePlayerStore } from "@/hooks/usePlayerStore";
 import { getPlaylistById } from "@/hooks/usePlaylistStore";

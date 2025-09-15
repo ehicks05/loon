@@ -1,13 +1,10 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/client";
 import { useState } from "react";
-import ReactDOM from "react-dom/client";
 import App from "./App";
 import { trpc } from "./utils/trpc";
-import "./index.css";
-import React from "react";
 import { BrowserRouter } from "react-router-dom";
-import { API_URL } from "./env";
+import { API_URL } from "../env";
 
 const TRPC_URL = `${API_URL}/trpc`;
 
@@ -43,10 +40,3 @@ export const AppWrap = () => {
     </trpc.Provider>
   );
 };
-
-// biome-ignore lint/style/noNonNullAssertion: <explanation>
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <AppWrap />
-  </React.StrictMode>,
-);

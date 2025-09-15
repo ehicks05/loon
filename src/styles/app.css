@@ -1,0 +1,49 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@plugin 'tailwind-scrollbar';
+
+@theme {
+	--font-sans:
+		"Noto Sans", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+		"Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+	--font-mono:
+		ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+		"Courier New", monospace;
+	--font-logo: "Proza Libre";
+}
+
+html {
+	height: -webkit-fill-available;
+}
+
+body {
+	min-height: 100vh;
+	color: #eee;
+	background-color: #111;
+}
+
+body {
+	color: #eee;
+	background-color: #111;
+}
+
+input {
+	background-color: #444;
+}
+
+#root {
+	min-height: 100vh;
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #777;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}

@@ -1,42 +1,44 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
-  "organizeImports": {
-    "enabled": true
-  },
-  "linter": {
-    "enabled": true,
-    "rules": {
-      "recommended": true,
-      "complexity": {
-        "noForEach": "off"
-      }
-    }
-  },
-  "formatter": {
-    "indentStyle": "space"
-  },
-  "overrides": [
-    {
-      "include": [
-        "./loon-fe/tsconfig.app.json",
-        "./loon-fe/tsconfig.node.json"
-      ],
-      "json": {
-        "parser": {
-          "allowComments": true
-        }
-      }
-    },
-    {
-      "include": ["./loon-be/**"],
-      "linter": { "rules": { "nursery": { "useImportExtensions": "error" } } }
-    }
-  ],
-  "files": { "ignore": ["./loon-be/drizzle/meta"] },
-  "vcs": {
-    "enabled": true,
-    "clientKind": "git",
-    "useIgnoreFile": true,
-    "defaultBranch": "main"
-  }
+	"$schema": "https://biomejs.dev/schemas/2.1.3/schema.json",
+	"assist": {
+		"actions": {
+			"source": {
+				"organizeImports": "on"
+			}
+		}
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"performance": { "noAccumulatingSpread": "off" },
+			"complexity": { "noForEach": "off" },
+			"style": {
+				"noParameterAssign": "error",
+				"useAsConstAssertion": "error",
+				"useDefaultParameterLast": "error",
+				"useEnumInitializers": "error",
+				"useSelfClosingElements": "error",
+				"useSingleVarDeclarator": "error",
+				"noUnusedTemplateLiteral": "error",
+				"useNumberNamespace": "error",
+				"noInferrableTypes": "error",
+				"noUselessElse": "error"
+			},
+			"a11y": {
+				"noSvgWithoutTitle": "off"
+			}
+		}
+	},
+	"formatter": {
+		"lineWidth": 85
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "single"
+		}
+	},
+	"files": {
+		"includes": ["src/**"]
+	}
 }

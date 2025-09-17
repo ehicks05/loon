@@ -1,13 +1,22 @@
+import { TanStackDevtools } from '@tanstack/react-devtools';
+import type { QueryClient } from '@tanstack/react-query';
 import {
-	createRootRoute,
+	createRootRouteWithContext,
 	HeadContent,
-	Outlet,
 	Scripts,
 } from '@tanstack/react-router';
+import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 import type { ReactNode } from 'react';
+import Header from '@/components/Header';
 import appCss from '@/styles/app.css?url';
+import ClerkProvider from '../integrations/clerk/provider';
+import TanStackQueryDevtools from '../integrations/tanstack-query/devtools';
 
-export const Route = createRootRoute({
+interface MyRouterContext {
+	queryClient: QueryClient;
+}
+
+export const Route = createRootRouteWithContext<MyRouterContext>()({
 	head: () => ({
 		meta: [
 			{ charSet: 'utf-8' },
@@ -42,16 +51,10 @@ export const Route = createRootRoute({
 			{ rel: 'manifest', href: '/manifest.json' },
 		],
 	}),
-	component: RootComponent,
+	shellComponent: RootDocument,
+	errorComponent: ({ error }) => <div>uh oh: {error.message}</div>,
+	notFoundComponent: () => <div>not found...</div>,
 });
-
-function RootComponent() {
-	return (
-		<RootDocument>
-			<Outlet />
-		</RootDocument>
-	);
-}
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 	return (
@@ -60,7 +63,24 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 				<HeadContent />
 			</head>
 			<body>
-				{children}
+				<ClerkProvider>
+					<Header />
+
+					{children}
+
+					<TanStackDevtools
+						config={{
+							position: 'bottom-left',
+						}}
+						plugins={[
+							{
+								name: 'Tanstack Router',
+								render: <TanStackRouterDevtoolsPanel />,
+							},
+							TanStackQueryDevtools,
+						]}
+					/>
+				</ClerkProvider>
 				<Scripts />
 			</body>
 		</html>

@@ -1,13 +1,13 @@
-import type * as trpcExpress from "@trpc/server/adapters/express";
-import { validateRequest } from "../../../src/server/utils/validate.js";
+import type { CreateExpressContextOptions } from '@trpc/server/adapters/express';
+import { validateRequest } from '../utils/validate.js';
 
-export const createContext = async ({
-  req,
-  res,
-}: trpcExpress.CreateExpressContextOptions) => {
-  const { user } = await validateRequest(req, res);
+export const createTRPCContext = async ({
+	req,
+	res,
+}: CreateExpressContextOptions) => {
+	const { user } = await validateRequest(req, res);
 
-  return { user };
+	return { user };
 };
 
-export type Context = Awaited<ReturnType<typeof createContext>>;
+export type TRPCContext = Awaited<ReturnType<typeof createTRPCContext>>;

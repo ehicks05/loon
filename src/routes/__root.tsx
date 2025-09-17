@@ -27,7 +27,7 @@ export const Route = createRootRoute({
 		],
 		links: [
 			{ rel: 'stylesheet', href: appCss },
-			{ rel: 'icon', href: '/public/loon.ico', type: 'image/ico' },
+			{ rel: 'icon', href: '/loon.ico', type: 'image/ico' },
 			{ rel: 'apple-touch-icon', href: 'apple-touch-icon.png', type: 'image/ico' },
 			{ rel: 'preconnect', href: 'https://fonts.googleapis.com' },
 			{

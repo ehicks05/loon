@@ -1,1 +1,1 @@
-export const PLACEHOLDER_IMAGE_URL = '/public/album-placeholder.jpg';
+export const PLACEHOLDER_IMAGE_URL = '/album-placeholder.jpg';

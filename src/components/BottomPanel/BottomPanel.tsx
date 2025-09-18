@@ -1,6 +1,5 @@
 import * as Popover from '@radix-ui/react-popover';
-import { FaRandom, FaVolumeMute, FaVolumeUp } from 'react-icons/fa';
-import { FaSliders } from 'react-icons/fa6';
+import { Shuffle, SlidersVertical, Volume2, VolumeOff } from 'lucide-react';
 import { setMuted, setShuffle, useUserStore } from '../../hooks/useUserStore';
 import { Equalizer } from '../Equalizer';
 import PlaybackButtons from './PlaybackButtons';
@@ -19,14 +18,14 @@ function ShuffleButton() {
 			className={`${BUTTON_CLASS} ${shuffle ? ' text-green-500' : ''}`}
 			onClick={() => setShuffle(!shuffle)}
 		>
-			<FaRandom />
+			<Shuffle />
 		</button>
 	);
 }
 
 function MuteButton() {
 	const muted = useUserStore((state) => state.muted);
-	const Icon = muted ? FaVolumeMute : FaVolumeUp;
+	const Icon = muted ? VolumeOff : Volume2;
 
 	return (
 		<button type="button" className={BUTTON_CLASS} onClick={() => setMuted(!muted)}>
@@ -41,7 +40,7 @@ const EqPopover = () => {
 		<div>
 			<Popover.Root modal>
 				<Popover.Trigger className={BUTTON_CLASS}>
-					<FaSliders className="rotate-90" />
+					<SlidersVertical />
 				</Popover.Trigger>
 				<Popover.Anchor />
 				<Popover.Portal>

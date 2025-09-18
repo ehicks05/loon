@@ -1,4 +1,4 @@
-import { FaPause, FaPlay, FaStepBackward, FaStepForward } from 'react-icons/fa';
+import { Pause, Play, SkipBack, SkipForward } from 'lucide-react';
 import { usePlayerStore } from '../../hooks/usePlayerStore';
 import { setSelectedTrackId } from '../../hooks/useUserStore';
 import { getNewTrackId } from '../Player/trackDeterminationUtils';
@@ -12,7 +12,7 @@ export default function PlaybackButtons() {
 		setSelectedTrackId(getNewTrackId(direction));
 	}
 
-	const PlaybackStateIcon = playbackState === 'playing' ? FaPause : FaPlay;
+	const PlaybackStateIcon = playbackState === 'playing' ? Pause : Play;
 
 	return (
 		<div className="flex gap-0.5 items-center">
@@ -21,7 +21,7 @@ export default function PlaybackButtons() {
 				className={BUTTON_CLASS}
 				onClick={() => handleTrackChange('prev')}
 			>
-				<FaStepBackward className="h-5 w-5" />
+				<SkipBack className="h-5 w-5 fill-current" />
 			</button>
 			<button
 				type="button"
@@ -30,14 +30,14 @@ export default function PlaybackButtons() {
 					setPlaybackState(playbackState === 'playing' ? 'paused' : 'playing')
 				}
 			>
-				<PlaybackStateIcon className="h-7 w-7" />
+				<PlaybackStateIcon className="h-7 w-7 fill-current" />
 			</button>
 			<button
 				type="button"
 				className={BUTTON_CLASS}
 				onClick={() => handleTrackChange('next')}
 			>
-				<FaStepForward className="h-5 w-5" />
+				<SkipForward className="h-5 w-5 fill-current" />
 			</button>
 		</div>
 	);

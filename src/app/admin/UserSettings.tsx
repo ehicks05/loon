@@ -1,19 +1,27 @@
+import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/Button';
 import { CheckboxInput } from '@/components/TextInput';
-import { trpc } from '@/utils/trpc';
+import { authClient } from '@/lib/auth-client';
 
 export default function UserSettings() {
-	const { data: currentUser } = trpc.misc.me.useQuery();
-	const { data: users } = trpc.misc.users.useQuery();
-	const { mutate: deleteUser } = trpc.misc.deleteUser.useMutation();
-	const { mutate: updateUser } = trpc.misc.updateUser.useMutation();
+	const { data: session } = authClient.useSession();
+	const currentUser = session?.user;
 
-	function handleDelete(id: string) {
+	const { listUsers, removeUser, setRole } = authClient.admin;
+
+	const { data: userResponse } = useQuery({
+		queryKey: ['listUsers'],
+		queryFn: () => listUsers({ query: {} }),
+	});
+	const users = userResponse?.data?.users;
+
+	function handleDelete(userId: string) {
 		if (confirm('are you sure?')) {
-			deleteUser({ id });
+			removeUser({ userId });
 		}
 	}
 
+	if (userResponse?.error) return <div>{userResponse.error.message}</div>;
 	if (!currentUser || !users) return <div>Loading...</div>;
 
 	return (
@@ -36,13 +44,16 @@ export default function UserSettings() {
 						{users.map((user) => (
 							<tr key={user.id}>
 								<td className="p-2">{user.id}</td>
-								<td className="p-2">{user.username}</td>
+								<td className="p-2">{user.name}</td>
 								<td className="p-2">
 									<CheckboxInput
-										checked={user.isAdmin}
+										checked={user.role === 'admin'}
 										disabled={user.id === currentUser.id}
 										onChange={(e) =>
-											updateUser({ id: user.id, isAdmin: e.target.checked })
+											setRole({
+												userId: user.id,
+												role: e.target.checked ? 'admin' : 'user',
+											})
 										}
 									/>
 								</td>

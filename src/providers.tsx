@@ -3,7 +3,6 @@ import { AuthUIProviderTanstack } from '@daveyplate/better-auth-ui/tanstack';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Link, useRouter } from '@tanstack/react-router';
 import type { ReactNode } from 'react';
-
 import { authClient } from './lib/auth-client';
 
 // Create a client

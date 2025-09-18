@@ -1,5 +1,6 @@
-import { AuthView, UserButton } from '@daveyplate/better-auth-ui';
-import { Link, useLocation, useNavigate } from '@tanstack/react-router';
+import { UserButton, type UserButtonProps } from '@daveyplate/better-auth-ui';
+import { Link, useLocation } from '@tanstack/react-router';
+import { Info, Settings, SlidersVertical, Users, Wrench } from 'lucide-react';
 import { FaBars, FaXmark } from 'react-icons/fa6';
 import { twMerge } from 'tailwind-merge';
 import { authClient } from '@/lib/auth-client';
@@ -12,28 +13,38 @@ const navigation = [
 ];
 
 const userMenuItems = [
-	{ to: '/settings/general', label: 'General' },
-	{ to: '/settings/eq', label: 'Equalizer' },
+	{ href: '/settings/general', label: 'General', icon: <Settings /> },
+	{
+		href: '/settings/eq',
+		label: 'Equalizer',
+		icon: <SlidersVertical />,
+		separator: true,
+	},
 ];
 const adminMenuItems = [
-	{ to: '/admin/systemSettings', label: 'Manage System' },
-	{ to: '/admin/users', label: 'Manage Users' },
-	{ to: '/admin/about', label: 'About Current Track' },
+	{ href: '/admin/systemSettings', label: 'Manage System', icon: <Wrench /> },
+	{ href: '/admin/users', label: 'Manage Users', icon: <Users /> },
+	{
+		href: '/admin/about',
+		label: 'About Current Track',
+		icon: <Info />,
+		separator: true,
+	},
 ];
 
 export default function Navbar() {
 	const { pathname } = useLocation();
-	const navigate = useNavigate();
-	const { useSession, signOut } = authClient;
+	const { useSession } = authClient;
 	const { data: session } = useSession();
 	const isAdmin = session?.user.role === 'admin';
 
-	async function handleLogout() {
-		await signOut().then(() => navigate({ to: '/' }));
-	}
+	const additionalLinks: UserButtonProps['additionalLinks'] = [
+		...userMenuItems,
+		...(isAdmin ? adminMenuItems : []),
+	];
 
 	return (
-		<div as="nav" className="bg-neutral-900">
+		<div className="bg-neutral-900">
 			<div className="mx-auto max-w-screen-2xl px-2 sm:px-6 lg:px-8">
 				<div className="relative flex h-16 items-center justify-between">
 					<div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -85,7 +96,9 @@ export default function Navbar() {
 					<div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
 						<UserButton
 							size="icon"
-							additionalLinks={[{ href: '/settings', label: 'Settings' }]}
+							classNames={{ trigger: { base: 'bg-black' } }}
+							disableDefaultLinks
+							additionalLinks={additionalLinks}
 						/>
 					</div>
 				</div>

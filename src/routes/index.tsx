@@ -10,8 +10,8 @@ function Index() {
 	const { data } = useQuery(orpc.library.queryOptions({ input: {} }));
 
 	return (
-		<div className="flex flex-col min-h-screen">
-			<pre>{JSON.stringify(data, null, 2)}</pre>
+		<div className="flex flex-col">
+			<pre className="text-xs">{JSON.stringify(data, null, 2)}</pre>
 		</div>
 	);
 }

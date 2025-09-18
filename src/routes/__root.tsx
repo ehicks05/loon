@@ -101,7 +101,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 			<head>
 				<HeadContent />
 			</head>
-			<body>
+			<body className='dark'>
 				<Providers>
 					<RootComponent>{children}</RootComponent>
 				</Providers>

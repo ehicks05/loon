@@ -1,3 +1,4 @@
+import { ORPCError } from '@orpc/client';
 import z from 'zod';
 import { db } from '@/drizzle/db';
 import { albums, artists, system_settings, tracks } from '@/drizzle/schema/main';
@@ -16,8 +17,10 @@ const clearLibrary = base.use(isAdmin).handler(async () => {
 	return { success: true };
 });
 
-const get = base.use(isAdmin).handler(() => {
-	return db.query.system_settings.findFirst();
+const get = base.use(isAdmin).handler(async () => {
+	const system = await db.query.system_settings.findFirst();
+	if (!system) throw new ORPCError('NOT_FOUND');
+	return system;
 });
 
 const listFiles = base.use(isAdmin).handler(async () => {
@@ -31,13 +34,8 @@ const listFiles = base.use(isAdmin).handler(async () => {
 	return { mediaFiles };
 });
 
-const syncStatus = base.use(isAdmin).handler(() => {
-	return db.query.system_status.findFirst();
-});
-
 const triggerSync = base.use(isAdmin).handler(() => {
-	// don't await
-	runLibrarySyncTask();
+	runLibrarySyncTask(); // don't await
 	return;
 });
 
@@ -61,7 +59,6 @@ export const system = {
 	clearLibrary,
 	get,
 	listFiles,
-	syncStatus,
 	triggerSync,
 	update,
 };

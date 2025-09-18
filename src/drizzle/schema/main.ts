@@ -14,10 +14,6 @@ export const system_settings = pgTable('system_settings', {
 	musicFolder: text('music_folder').notNull().default(''),
 	syncDb: boolean('sync_db').notNull().default(false),
 	syncImages: boolean('sync_images').notNull().default(false),
-});
-
-export const system_status = pgTable('system_status', {
-	id: text('id').primaryKey().default('status'),
 	isSyncing: boolean('is_syncing').notNull().default(false),
 });
 

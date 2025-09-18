@@ -18,7 +18,7 @@ function ShuffleButton() {
 			className={`${BUTTON_CLASS} ${shuffle ? ' text-green-500' : ''}`}
 			onClick={() => setShuffle(!shuffle)}
 		>
-			<Shuffle />
+			<Shuffle size={20} />
 		</button>
 	);
 }
@@ -29,7 +29,7 @@ function MuteButton() {
 
 	return (
 		<button type="button" className={BUTTON_CLASS} onClick={() => setMuted(!muted)}>
-			<Icon />
+			<Icon size={20} />
 		</button>
 	);
 }
@@ -40,7 +40,7 @@ const EqPopover = () => {
 		<div>
 			<Popover.Root modal>
 				<Popover.Trigger className={BUTTON_CLASS}>
-					<SlidersVertical />
+					<SlidersVertical size={20}/>
 				</Popover.Trigger>
 				<Popover.Anchor />
 				<Popover.Portal>

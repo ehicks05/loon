@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@daveyplate/better-auth-ui": "^3.1.10",
-    "@hello-pangea/dnd": "^16.6.0",
+    "@hello-pangea/dnd": "^18.0.1",
     "@orpc/client": "^1.8.9",
     "@orpc/json-schema": "^1.8.9",
     "@orpc/openapi": "^1.8.9",
@@ -48,9 +48,9 @@
     "p-map": "^7.0.3",
     "pg": "^8.16.3",
     "postgres": "^3.4.7",
-    "react": "^18.3.1",
-    "react-checkbox-tree": "^1.6.0",
-    "react-dom": "^18.3.1",
+    "react": "^19.1.1",
+    "react-checkbox-tree": "^1.8.0",
+    "react-dom": "^19.1.1",
     "react-icons": "^5.2.1",
     "react-router-dom": "^6.26.0",
     "react-window": "^1.8.10",
@@ -65,16 +65,21 @@
   "devDependencies": {
     "@biomejs/biome": "2.2.4",
     "@types/pg": "^8.15.5",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9",
     "@types/react-router-dom": "^5.3.3",
     "@types/react-window": "^1.8.8",
-    "@vitejs/plugin-react": "^4.3.1",
+    "@vitejs/plugin-react": "^5.0.3",
     "drizzle-kit": "^0.31.4",
     "tailwindcss": "^4.1.13",
     "tw-animate-css": "^1.3.8",
     "typescript": "^5.9.2",
     "vite": "^7.1.5"
+  },
+  "overrides": {
+    "react-checkbox-tree": {
+      "react": "^19.1.0"
+    }
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "4.9.5"

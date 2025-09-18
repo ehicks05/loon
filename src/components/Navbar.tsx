@@ -122,9 +122,17 @@ export default function Navbar() {
 
 								<div className="px-4 py-2 text-neutral-500">Auth Status</div>
 								{!session && <AuthView socialLayout="horizontal" />}
-								{session && <UserButton  />}
+
+								{/* <div className="h-96">{session && <UserButton />}</div> */}
 							</MenuItems>
 						</Menu>
+
+						{session && (
+							<UserButton
+								size="icon"
+								additionalLinks={[{ href: '/settings', label: 'Settings' }]}
+							/>
+						)}
 					</div>
 				</div>
 			</div>

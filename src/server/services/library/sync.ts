@@ -7,7 +7,7 @@ import {
 	album_artists,
 	albums,
 	artists,
-	system_status,
+	system_settings,
 	track_artists,
 	tracks,
 } from '../../../drizzle/schema/main.js';
@@ -233,16 +233,12 @@ export const syncLibrary = async () => {
 };
 
 export const runLibrarySyncTask = async () => {
-	const status = await db.query.system_status.findFirst();
-	if (!status) {
-		return { success: false, message: 'Missing systemStatus' };
-	}
-
-	if (status.isSyncing) {
+	const system = await db.query.system_settings.findFirst();
+	if (system?.isSyncing) {
 		return { success: false, message: 'Syncing in progress' };
 	}
 
-	await db.update(system_status).set({ isSyncing: true });
+	await db.update(system_settings).set({ isSyncing: true });
 
 	try {
 		await syncLibrary();
@@ -252,6 +248,6 @@ export const runLibrarySyncTask = async () => {
 		clearLibraryCache();
 	}
 
-	await db.update(system_status).set({ isSyncing: false });
+	await db.update(system_settings).set({ isSyncing: false });
 	return { success: true, message: 'Sync complete' };
 };

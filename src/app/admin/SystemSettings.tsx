@@ -64,11 +64,12 @@ export default function SystemSettings() {
 				<section className="flex flex-wrap gap-4">
 					<div className="flex flex-col gap-4 p-4 bg-black rounded">
 						<div className="flex gap-4">
-							<div className={'flex flex-col gap-2'}>
+							<div className={'flex flex-col gap-2 w-full'}>
 								<div className="font-bold text-lg">General</div>
 								<TextInput
 									name="musicFolder"
 									label="Music Folder"
+									className="w-full"
 									value={settings.musicFolder}
 									onChange={(e) => onChange(e.target.name, e.target.value)}
 								/>

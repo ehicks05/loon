@@ -15,7 +15,7 @@ export const MusicFolderSummary = () => {
 
 	return (
 		<div className="flex gap-2 items-center">
-			<Button disabled={isFetching} className="text-sm" onClick={handleClick}>
+			<Button disabled={isFetching} onClick={handleClick}>
 				Check Music Folder
 			</Button>
 

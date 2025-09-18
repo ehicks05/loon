@@ -23,10 +23,9 @@ const userMenuItems = [
 ];
 const adminMenuItems = [
 	{ href: '/admin/systemSettings', label: 'Manage System', icon: <Wrench /> },
-	{ href: '/admin/users', label: 'Manage Users', icon: <Users /> },
 	{
 		href: '/admin/about',
-		label: 'About Current Track',
+		label: 'Current Track Info',
 		icon: <Info />,
 		separator: true,
 	},

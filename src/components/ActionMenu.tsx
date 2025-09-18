@@ -9,7 +9,7 @@ import {
 	FaRegHeart,
 } from 'react-icons/fa';
 import { usePlaylistStore } from '@/hooks/usePlaylistStore';
-import type { Playlist } from '@/types/trpc';
+import type { Playlist } from '@/orpc/types';
 import { trpc } from '@/utils/trpc';
 
 const isSaturated = (playlist: Playlist, trackIds: string[]) => {

@@ -1,5 +1,5 @@
 import create from 'zustand';
-import type { Playlist } from '../types/trpc';
+import type { Playlist } from '../orpc/types';
 
 export const usePlaylistStore = create<{
 	playlists: Playlist[];

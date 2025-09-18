@@ -7,8 +7,13 @@ import {
 } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 import type { ReactNode } from 'react';
-import Header from '@/components/Header';
-import appCss from '@/styles/app.css?url';
+import appCss from '@/app.css?url';
+import { BottomPanel } from '@/components/BottomPanel/BottomPanel';
+import Navbar from '@/components/Navbar';
+import { Player } from '@/components/Player/Player';
+import { Spectrum } from '@/components/Player/spectrum';
+import SidePanel from '@/components/SidePanel';
+import { useTitle } from '@/hooks/useTitle';
 import ClerkProvider from '../integrations/clerk/provider';
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools';
 
@@ -56,6 +61,40 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 	notFoundComponent: () => <div>not found...</div>,
 });
 
+function RootComponent({ children }: Readonly<{ children: ReactNode }>) {
+	useTitle();
+
+	return (
+		<div className="h-dvh flex flex-col text-neutral-300 bg-neutral-950">
+			<Navbar />
+			<div className="flex flex-grow m-2 gap-2 justify-center overflow-hidden">
+				<div className="hidden flex-shrink-0 md:block h-full w-60 overflow-y-auto overflow-x-hidden">
+					<div className="h-full flex flex-col justify-between">
+						<div className="overflow-y-auto">
+							<SidePanel />
+						</div>
+						<div className="h-28 rounded-lg p-2 bg-neutral-900">
+							<Spectrum />
+						</div>
+					</div>
+				</div>
+				<div className="w-full max-w-screen-lg rounded-lg overflow-y-auto overflow-x-hidden p-2 bg-neutral-900">
+					{/* {!tracks && (
+							<div className="flex flex-col gap-4 p-4 -m-2 bg-red-600 rounded-lg">
+								<div className="text-3xl">Uh oh!</div>
+								<div className="text-lg">Unable to fetch the music library!</div>
+							</div>
+						)} */}
+					{/* {tracks && tracks.length === trackz.length && <Routes />} */}
+					{children}
+				</div>
+			</div>
+			{/* <Player /> */}
+			<BottomPanel />
+		</div>
+	);
+}
+
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 	return (
 		<html lang="en">
@@ -63,24 +102,17 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 				<HeadContent />
 			</head>
 			<body>
-				<ClerkProvider>
-					<Header />
-
-					{children}
+				{/* <ClerkProvider> */}
+					<RootComponent>{children}</RootComponent>
 
 					<TanStackDevtools
-						config={{
-							position: 'bottom-left',
-						}}
+						config={{ position: 'bottom-left' }}
 						plugins={[
-							{
-								name: 'Tanstack Router',
-								render: <TanStackRouterDevtoolsPanel />,
-							},
+							{ name: 'Tanstack Router', render: <TanStackRouterDevtoolsPanel /> },
 							TanStackQueryDevtools,
 						]}
 					/>
-				</ClerkProvider>
+				{/* </ClerkProvider> */}
 				<Scripts />
 			</body>
 		</html>

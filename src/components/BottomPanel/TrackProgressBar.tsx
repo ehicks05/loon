@@ -22,7 +22,7 @@ export default function TrackProgressBar() {
 
 	return (
 		<div className="flex gap-3 items-center">
-			<span id="timeElapsed" className="text-sm">
+			<span className="text-sm">
 				{formattedElapsedTime}
 			</span>
 			<LoonSlider
@@ -35,7 +35,7 @@ export default function TrackProgressBar() {
 				max={duration}
 				step={1}
 			/>
-			<span id="duration" className="text-sm">
+			<span className="text-sm">
 				{formattedDuration}
 			</span>
 		</div>

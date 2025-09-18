@@ -7,10 +7,11 @@ import {
 	MenuItem,
 	MenuItems,
 } from '@headlessui/react';
+import { Link, useLocation, useNavigate } from '@tanstack/react-router';
 import { FaUserCircle } from 'react-icons/fa';
 import { FaBars, FaXmark } from 'react-icons/fa6';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { twMerge } from 'tailwind-merge';
+import ClerkHeader from '../integrations/clerk/header-user';
 
 const navigation = [
 	{ name: 'Search', href: '/search' },
@@ -24,7 +25,7 @@ export default function Navbar() {
 	const navigate = useNavigate();
 
 	async function handleLogout() {
-		navigate('/');
+		navigate({ to: '/' });
 	}
 
 	const isAdmin = false;
@@ -118,6 +119,7 @@ export default function Navbar() {
 								))}
 
 								<div className="px-4 py-2 text-neutral-500">Auth Status</div>
+								<ClerkHeader />
 							</MenuItems>
 						</Menu>
 					</div>

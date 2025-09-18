@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/Button';
 import { CheckboxInput, TextInput } from '@/components/TextInput';
-import type { SystemSettings as ISystemSettings } from '@/types/trpc';
+import type { SystemSettings as ISystemSettings } from '@/orpc/types';
 import { trpc } from '@/utils/trpc';
 import { LibrarySync } from './LibrarySync';
 import { MusicFolderSummary } from './MusicFolderSummary';

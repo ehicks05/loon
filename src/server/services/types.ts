@@ -5,7 +5,7 @@ import type {
 	artists,
 	track_artists,
 	tracks,
-} from '../../drizzle/main.js';
+} from '../../drizzle/schema/main.js';
 
 export type TrackInput = InferInsertModel<typeof tracks>;
 export type TrackSelect = InferSelectModel<typeof tracks>;

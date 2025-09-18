@@ -10,7 +10,7 @@ import {
 	system_status,
 	track_artists,
 	tracks,
-} from '../../../drizzle/main.js';
+} from '../../../drizzle/schema/main.js';
 import { listMediaFiles } from '../../../server/utils/files.js';
 import { musicBrainz } from '../musicbrainz/client.js';
 import {

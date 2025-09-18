@@ -1,3 +1,4 @@
+import { Link, useLocation } from '@tanstack/react-router';
 import {
 	FaCompactDisc,
 	FaFolderOpen,
@@ -9,10 +10,9 @@ import {
 	FaVolumeUp,
 } from 'react-icons/fa';
 import type { IconType } from 'react-icons/lib';
-import { Link, useLocation } from 'react-router-dom';
 import { usePlaylistStore } from '@/hooks/usePlaylistStore';
 import { useUserStore } from '@/hooks/useUserStore';
-import type { Playlist } from '@/types/trpc';
+import type { Playlist } from '@/orpc/types';
 
 interface PlaylistLink {
 	path: string;

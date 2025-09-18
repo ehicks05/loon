@@ -1,5 +1,5 @@
 import { db } from './db';
-import { albums, playlists, system_settings, system_status, tracks } from './main';
+import { playlists, system_settings, system_status } from './schema/main';
 
 export const seed = async () => {
 	console.log('seeding');

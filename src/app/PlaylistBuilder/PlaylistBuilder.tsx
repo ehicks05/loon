@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/Button';
 import { TextInput } from '@/components/TextInput';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
-import type { Playlist } from '@/types/trpc';
+import type { Playlist } from '@/orpc/types';
 import { trpc } from '@/utils/trpc';
 import { tracksToNodes } from './helpers';
 import { icons } from './icons';

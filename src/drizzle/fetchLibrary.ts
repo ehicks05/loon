@@ -4,7 +4,7 @@ import {
 	albums as albumsTable,
 	artists as artistsTable,
 	track_artists,
-} from './main';
+} from './schema/main';
 
 type Library = Awaited<ReturnType<typeof assembleLibrary>>;
 

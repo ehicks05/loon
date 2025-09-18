@@ -1,8 +1,7 @@
-import { listLibrary } from './library';
-import { addTodo, listTodos } from './todos';
+import { library } from './library';
+import { media } from './media';
 
 export default {
-	listTodos,
-	addTodo,
-	listLibrary,
+	library,
+	media,
 };

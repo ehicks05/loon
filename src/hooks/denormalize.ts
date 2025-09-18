@@ -1,5 +1,5 @@
 import { uniq } from 'es-toolkit';
-import type { LibraryResponse } from '../types/trpc';
+import type { LibraryResponse } from '../orpc/types';
 
 export type Library = ReturnType<typeof denormalizeLibrary>;
 

@@ -104,3 +104,7 @@ export default function renderSpectrumFrame() {
 		x += barWidth + 1;
 	}
 }
+
+export const Spectrum = () => {
+	return <canvas id="spectrumCanvas" height={'100%'} />;
+}

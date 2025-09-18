@@ -1,4 +1,4 @@
-import { type Dirent, openAsBlob } from 'node:fs';
+import type { Dirent } from 'node:fs';
 import { readdir } from 'node:fs/promises';
 
 const SUPPORTED_MEDIA_TYPES = ['flac', 'mp3'];
@@ -14,12 +14,4 @@ export const listMediaFiles = async (path: string) => {
 	const filtered = files.filter(isSupportedFile).map(toFullPath);
 
 	return filtered;
-};
-
-export const doesFileExist = async (path: string) => {
-	const blob = await openAsBlob(path);
-	if (!blob) {
-		return false;
-	}
-	return true;
 };

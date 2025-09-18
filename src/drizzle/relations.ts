@@ -7,7 +7,7 @@ import {
   playlists,
   track_artists,
   tracks,
-} from "./main.js";
+} from "./main";
 
 export const playlistTracksRelations = relations(
   playlist_tracks,

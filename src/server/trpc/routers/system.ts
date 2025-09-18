@@ -1,42 +1,42 @@
-import { db } from "../../../../src/server/db.js";
-import { albums, artists, tracks } from "../../../../src/server/drizzle/main.js";
-import { runLibrarySyncTask } from "../../services/library/sync.js";
-import { listMediaFiles } from "../../../../src/server/utils/files.js";
-import { adminProcedure, router } from "../trpc.js";
+import { albums, artists, tracks } from '../../../../src/server/drizzle/main.js';
+import { listMediaFiles } from '../../../../src/server/utils/files.js';
+import { db } from '../../../drizzle/db.js';
+import { runLibrarySyncTask } from '../../services/library/sync.js';
+import { adminProcedure, router } from '../trpc.js';
 
 export const systemRouter = router({
-  listMusicFolder: adminProcedure.query(async () => {
-    const systemSettings = await db.query.system_settings.findFirst();
-    if (!systemSettings) {
-      return { mediaFiles: [] };
-    }
+	listMusicFolder: adminProcedure.query(async () => {
+		const systemSettings = await db.query.system_settings.findFirst();
+		if (!systemSettings) {
+			return { mediaFiles: [] };
+		}
 
-    const mediaFiles = await listMediaFiles(systemSettings.musicFolder);
+		const mediaFiles = await listMediaFiles(systemSettings.musicFolder);
 
-    return { mediaFiles };
-  }),
+		return { mediaFiles };
+	}),
 
-  syncLibrary: adminProcedure.mutation(async () => {
-    // don't await
-    runLibrarySyncTask();
-    return;
-  }),
+	syncLibrary: adminProcedure.mutation(async () => {
+		// don't await
+		runLibrarySyncTask();
+		return;
+	}),
 
-  status: adminProcedure.query(async () => {
-    const status = await db.query.system_status.findFirst();
+	status: adminProcedure.query(async () => {
+		const status = await db.query.system_status.findFirst();
 
-    return { inProgress: status?.isSyncing || false };
-  }),
+		return { inProgress: status?.isSyncing || false };
+	}),
 
-  clearLibrary: adminProcedure.mutation(async () => {
-    await db.delete(tracks);
-    await db.delete(artists);
-    await db.delete(albums);
+	clearLibrary: adminProcedure.mutation(async () => {
+		await db.delete(tracks);
+		await db.delete(artists);
+		await db.delete(albums);
 
-    // todo: cascade rules
+		// todo: cascade rules
 
-    return { success: true };
-  }),
+		return { success: true };
+	}),
 });
 
 // export type definition of API

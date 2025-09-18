@@ -11,8 +11,6 @@ import { FaUserCircle } from 'react-icons/fa';
 import { FaBars, FaXmark } from 'react-icons/fa6';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { twMerge } from 'tailwind-merge';
-import { authedFetch } from '@/utils/authedFetch';
-import { trpc } from '@/utils/trpc';
 
 const navigation = [
 	{ name: 'Search', href: '/search' },
@@ -22,18 +20,14 @@ const navigation = [
 ];
 
 export default function Navbar() {
-	const utils = trpc.useUtils();
-	const { data: user } = trpc.misc.me.useQuery();
 	const { pathname } = useLocation();
 	const navigate = useNavigate();
 
 	async function handleLogout() {
-		await authedFetch('/logout', { method: 'POST' });
-		utils.invalidate();
 		navigate('/');
 	}
 
-	const isAdmin = user?.isAdmin;
+	const isAdmin = false;
 
 	return (
 		<Disclosure as="nav" className="bg-neutral-900">
@@ -124,28 +118,6 @@ export default function Navbar() {
 								))}
 
 								<div className="px-4 py-2 text-neutral-500">Auth Status</div>
-								{user && (
-									<MenuItem>
-										<button
-											type="button"
-											onClick={handleLogout}
-											className="w-full text-left px-4 py-2 block text-sm data-[focus]:bg-neutral-900"
-										>
-											Sign out
-										</button>
-									</MenuItem>
-								)}
-
-								{!user && (
-									<MenuItem>
-										<Link
-											to="/login"
-											className="w-full text-left px-4 py-2 block text-sm data-[focus]:bg-neutral-900"
-										>
-											Sign in
-										</Link>
-									</MenuItem>
-								)}
 							</MenuItems>
 						</Menu>
 					</div>

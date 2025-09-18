@@ -7,7 +7,13 @@ import {
   text,
   uuid,
 } from "drizzle-orm/pg-core";
-import { userTable } from "./lucia.js";
+
+export const userTable = pgTable('user', {
+	id: text('id').primaryKey(),
+	githubId: integer('github_id').unique(),
+	username: text('username').notNull(),
+	isAdmin: boolean('is_admin').notNull().default(false),
+});
 
 export const system_settings = pgTable("system_settings", {
   id: text("id").primaryKey().default("system"),

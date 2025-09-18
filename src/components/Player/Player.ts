@@ -1,4 +1,3 @@
-import { API_URL } from 'env';
 import { useEffect, useRef } from 'react';
 import { getTrackById } from '@/hooks/useLibraryStore';
 import { type PlaybackState, usePlayerStore } from '@/hooks/usePlayerStore';
@@ -12,6 +11,8 @@ import { getMaxSafeGain, scaleVolume } from './playerUtils';
 import renderSpectrumFrame from './spectrum';
 import { getNewTrackId } from './trackDeterminationUtils';
 import { useKeyboardControls } from './useKeyboardControls';
+
+const API_URL = "foo"
 
 export const Player = () => {
 	const userState = useUserStore((state) => state);

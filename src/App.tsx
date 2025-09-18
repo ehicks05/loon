@@ -10,7 +10,6 @@ import { useLibraryStore } from './hooks/useLibraryStore';
 import { usePlaylistStore } from './hooks/usePlaylistStore';
 import { useTitle } from './hooks/useTitle';
 import Routes from './Routes';
-import { trpc } from './utils/trpc';
 
 const useCacheData = () => {
 	const { data: user, isLoading: isLoadingUser } = trpc.misc.me.useQuery();
@@ -65,6 +64,7 @@ export default function App() {
 							<SidePanel />
 						</div>
 						<div className="h-28 rounded-lg p-2 bg-neutral-900">
+							{/** biome-ignore lint/correctness/useUniqueElementIds: <explanation> */}
 							<canvas id="spectrumCanvas" height={'100%'} />
 						</div>
 					</div>

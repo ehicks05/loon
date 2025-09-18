@@ -9,13 +9,14 @@ export const Route = createFileRoute('/')({
 });
 
 function Index() {
-	const { data } = useQuery(orpc.listTodos.queryOptions({input:{}}));
+	const { data } = useQuery(orpc.listLibrary.queryOptions({input:{}}));
 
 	return (
 		<div className="flex flex-col min-h-screen bg-linear-to-r from-stone-900 to-neutral-950">
 			<div className="grow flex flex-col h-full sm:px-4">
-				{data?.map(todo => todo.name)}
-				<AppWrap />
+				{data?.albums.length} albums...
+				{data?.albums.map(o => o.name)}
+				{/* <AppWrap /> */}
 			</div>
 		</div>
 	);

@@ -1,5 +1,5 @@
-import { db } from './db.js';
-import { playlists, system_settings, system_status } from './drizzle/main.js';
+import { db } from './db';
+import { albums, playlists, system_settings, system_status, tracks } from './main';
 
 export const seed = async () => {
 	console.log('seeding');
@@ -38,5 +38,22 @@ export const seed = async () => {
 		console.log('..ensuring all users have playlists for favorites and queue');
 		await db.insert(playlists).values(newPlaylists);
 	}
+
+	// await db.insert(albums).values({
+	// 	id: '1',
+	// 	name: 'bar',
+	// });
+
+	// await db.insert(tracks).values({
+	// 	path: '',
+	// 	duration: 0,
+	// 	id: '1',
+	// 	albumId: '1',
+	// 	formattedDuration: '0:00',
+	// 	title: 'foo',
+	// 	trackGainLinear: '1',
+	// 	trackPeak: '1',
+	// });
+
 	console.log('done');
 };

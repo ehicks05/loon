@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm';
 import express from 'express';
 import { generateIdFromEntropySize } from 'lucia';
 import { serializeCookie } from 'oslo/cookie';
-import { db } from '../db.js';
+import { db } from '../../drizzle/db.js';
 import { userTable } from '../drizzle/lucia.js';
 import { playlists, tracks } from '../drizzle/main.js';
 import { github } from '../lucia/github.js';

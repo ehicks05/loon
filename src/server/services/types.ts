@@ -1,11 +1,11 @@
-import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
+import type { InferInsertModel, InferSelectModel } from 'drizzle-orm';
 import type {
-  tracks,
-  track_artists,
-  artists,
-  albums,
-  album_artists,
-} from "../../../src/server/drizzle/main.js";
+	album_artists,
+	albums,
+	artists,
+	track_artists,
+	tracks,
+} from '../../drizzle/main.js';
 
 export type TrackInput = InferInsertModel<typeof tracks>;
 export type TrackSelect = InferSelectModel<typeof tracks>;
@@ -20,9 +20,9 @@ export type ArtistSelect = InferSelectModel<typeof artists>;
 export type AlbumSelect = InferSelectModel<typeof artists>;
 
 export interface AlbumArtistWithAlbum extends AlbumArtistSelect {
-  album: AlbumSelect;
+	album: AlbumSelect;
 }
 
 export interface ArtistWithAlbumArtists extends ArtistSelect {
-  albumArtists: AlbumArtistWithAlbum[];
+	albumArtists: AlbumArtistWithAlbum[];
 }

@@ -7,7 +7,7 @@ export type Outputs = InferRouterOutputs<typeof router>;
 export type LibraryResponse = Outputs['library'];
 
 export type User = Outputs['misc']['me'];
-export type SystemSettings = Outputs['misc']['systemSettings'];
+export type SystemSettings = Outputs['system']['get'];
 
 export type Playlist = Outputs['playlist']['list'][number];
 export type PlaylistTrack =

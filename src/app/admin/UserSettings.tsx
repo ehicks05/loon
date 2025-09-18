@@ -27,10 +27,6 @@ export default function UserSettings() {
 	return (
 		<div className="flex flex-col gap-4">
 			<section>
-				<h1 className="font-bold text-2xl">Admin</h1>
-				<h2>Users</h2>
-			</section>
-			<section>
 				<table>
 					<thead>
 						<tr>

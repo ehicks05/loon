@@ -1,13 +1,7 @@
 import { useState } from 'react';
-import { trpc } from '@/utils/trpc';
 
 export default function GeneralSettings() {
 	const [transcodeQuality, _] = useState('');
-
-	const { data: user } = trpc.misc.me.useQuery();
-	if (!user) {
-		return <section>Please log in to access your settings.</section>;
-	}
 
 	return (
 		<div className="flex flex-col gap-4">

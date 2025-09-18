@@ -27,7 +27,7 @@ export function TextInput({ label, isHorizontal, leftIcon, ...props }: Props) {
 export function CheckboxInput({ label, type, ...props }: Props) {
 	return (
 		<label className="flex gap-2 w-full p-2 items-center rounded">
-			<input type="checkbox" className="boutline-none" {...props} />
+			<input type="checkbox" className="outline-none" {...props} />
 			{label}
 		</label>
 	);

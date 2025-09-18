@@ -1,14 +1,16 @@
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/Button';
 import { CheckboxInput, TextInput } from '@/components/TextInput';
+import { orpc } from '@/orpc/client';
 import type { SystemSettings as ISystemSettings } from '@/orpc/types';
-import { trpc } from '@/utils/trpc';
 import { LibrarySync } from './LibrarySync';
 import { MusicFolderSummary } from './MusicFolderSummary';
+import UserSettings from './UserSettings';
 
 export default function SystemSettings() {
-	const { data, isFetching } = trpc.misc.systemSettings.useQuery();
-	const { mutate, isPending } = trpc.misc.setSystemSettings.useMutation();
+	const { data, isFetching } = useQuery(orpc.system.get.queryOptions());
+	const { mutate, isPending } = useMutation(orpc.system.update.mutationOptions());
 	const isLoading = isFetching || isPending;
 
 	// local, mutable cache
@@ -31,36 +33,40 @@ export default function SystemSettings() {
 	return (
 		<div className="flex flex-col gap-4">
 			<section>
-				<h1 className="font-bold text-2xl">Admin</h1>
-				<h2>Modify System</h2>
+				<h1 className="font-bold text-2xl">System Settings</h1>
 			</section>
-			<section className="flex gap-4 items-start">
+			<section className="flex flex-col gap-4 items-start">
 				<div className="flex flex-col gap-4 p-4 bg-black rounded">
-					<div className={'flex flex-col gap-2'}>
-						<div className="font-bold text-lg">General</div>
-						<TextInput
-							name="musicFolder"
-							label="Music Folder"
-							value={settings.musicFolder}
-							onChange={(e) => onChange(e.target.name, e.target.value)}
-						/>
-						<MusicFolderSummary />
+					<div className="flex gap-4">
+						<div className={'flex flex-col gap-2'}>
+							<div className="font-bold text-lg">General</div>
+							<TextInput
+								name="musicFolder"
+								label="Music Folder"
+								value={settings.musicFolder}
+								onChange={(e) => onChange(e.target.name, e.target.value)}
+							/>
+							<MusicFolderSummary />
+						</div>
+						<div className={'flex flex-col gap-2'}>
+							<div className="font-bold text-lg">Library Sync Settings</div>
+							<div>
+								<CheckboxInput
+									label="Sync DB"
+									name="syncDb"
+									checked={settings.syncDb}
+									onChange={(e) => onChange(e.target.name, e.target.checked)}
+								/>
+								<CheckboxInput
+									label="Sync Images"
+									name="syncImages"
+									checked={settings.syncImages}
+									onChange={(e) => onChange(e.target.name, e.target.checked)}
+								/>
+							</div>
+						</div>
 					</div>
-					<div className={'flex flex-col gap-2'}>
-						<div className="font-bold text-lg">Library Sync Settings</div>
-						<CheckboxInput
-							label="Sync DB"
-							name="syncDb"
-							checked={settings.syncDb}
-							onChange={(e) => onChange(e.target.name, e.target.checked)}
-						/>
-						<CheckboxInput
-							label="Sync Images"
-							name="syncImages"
-							checked={settings.syncImages}
-							onChange={(e) => onChange(e.target.name, e.target.checked)}
-						/>
-					</div>
+
 					<Button
 						className={'bg-green-600'}
 						onClick={() => mutate(settings)}
@@ -71,6 +77,14 @@ export default function SystemSettings() {
 				</div>
 
 				<LibrarySync />
+			</section>
+
+			<section className="flex">
+				<div className="flex flex-col gap-4 p-4 bg-black rounded">
+					<div className="font-bold text-lg">Users</div>
+
+					<UserSettings />
+				</div>
 			</section>
 		</div>
 	);

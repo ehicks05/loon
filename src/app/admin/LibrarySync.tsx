@@ -1,28 +1,34 @@
-import { useInterval } from 'usehooks-ts';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/Button';
-import { trpc } from '@/utils/trpc';
+import { orpc } from '@/orpc/client';
 
 export const LibrarySync = () => {
-	const { data: syncStatus, isLoading, refetch } = trpc.system.status.useQuery();
-	const { mutate: runLibrarySync, isPending } = trpc.system.syncLibrary.useMutation({
+	const {
+		data: syncStatus,
+		isLoading,
+		refetch,
+	} = useQuery({ ...orpc.system.syncStatus.queryOptions(), refetchInterval: 5000 });
+
+	const { mutate: runLibrarySync, isPending } = useMutation({
+		...orpc.system.triggerSync.mutationOptions(),
 		onSuccess: () => refetch(),
 	});
-	const { mutate: deleteLibrary, isPending: isDeletingLibrary } =
-		trpc.system.clearLibrary.useMutation();
+
+	const { mutate: deleteLibrary, isPending: isDeletingLibrary } = useMutation(
+		orpc.system.clearLibrary.mutationOptions(),
+	);
 
 	const isDisableForm =
-		isLoading || isPending || syncStatus?.inProgress || isDeletingLibrary;
-
-	useInterval(refetch, syncStatus?.inProgress ? 30_000 : null);
+		isLoading || isPending || syncStatus?.isSyncing || isDeletingLibrary;
 
 	return (
-		<div className="flex flex-col gap-8 bg-black p-4 rounded">
+		<div className="flex gap-8 bg-black p-4 rounded">
 			<div className="flex flex-col gap-2">
 				<div className="font-bold text-lg">Sync</div>
 				<Button
 					className="bg-green-600"
 					disabled={isDisableForm}
-					onClick={() => runLibrarySync()}
+					onClick={() => runLibrarySync({})}
 				>
 					Sync Library
 				</Button>
@@ -43,7 +49,7 @@ export const LibrarySync = () => {
 					disabled={isDisableForm}
 					onClick={() => {
 						if (confirm('Delete Library?')) {
-							deleteLibrary();
+							deleteLibrary({});
 						}
 					}}
 				>

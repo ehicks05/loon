@@ -1,14 +1,15 @@
+import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Button } from '@/components/Button';
-import { trpc } from '@/utils/trpc';
+import { orpc } from '@/orpc/client';
 
 export const MusicFolderSummary = () => {
 	const [enabled, setEnabled] = useState(false);
 
-	const { data, isFetching, refetch } = trpc.system.listMusicFolder.useQuery(
-		undefined,
-		{ enabled },
-	);
+	const { data, isFetching, refetch } = useQuery({
+		...orpc.system.listFiles.queryOptions(),
+		enabled,
+	});
 	const fileCount = data?.mediaFiles.length;
 
 	const handleClick = () => {

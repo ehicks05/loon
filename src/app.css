@@ -16,11 +16,11 @@
 	--font-logo: "Proza Libre";
 }
 
-html {
+/* html {
 	height: -webkit-fill-available;
-}
+} */
 
-body {
+/* body {
 	min-height: 100vh;
 	color: #eee;
 	background-color: #111;
@@ -29,11 +29,11 @@ body {
 body {
 	color: #eee;
 	background-color: #111;
-}
+} */
 
-input {
+/* input {
 	background-color: #444;
-}
+} */
 
 #root {
 	min-height: 100vh;

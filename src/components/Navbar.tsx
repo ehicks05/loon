@@ -1,3 +1,4 @@
+import { AuthView, UserButton } from '@daveyplate/better-auth-ui';
 import {
 	Disclosure,
 	DisclosureButton,
@@ -11,7 +12,7 @@ import { Link, useLocation, useNavigate } from '@tanstack/react-router';
 import { FaUserCircle } from 'react-icons/fa';
 import { FaBars, FaXmark } from 'react-icons/fa6';
 import { twMerge } from 'tailwind-merge';
-import ClerkHeader from '../integrations/clerk/header-user';
+import { authClient } from '@/lib/auth-client';
 
 const navigation = [
 	{ name: 'Search', href: '/search' },
@@ -23,12 +24,13 @@ const navigation = [
 export default function Navbar() {
 	const { pathname } = useLocation();
 	const navigate = useNavigate();
+	const { useSession, signOut } = authClient;
+	const { data: session } = useSession();
+	const isAdmin = session?.user.role === 'admin';
 
 	async function handleLogout() {
-		navigate({ to: '/' });
+		await signOut().then(() => navigate({ to: '/' }));
 	}
-
-	const isAdmin = false;
 
 	return (
 		<Disclosure as="nav" className="bg-neutral-900">
@@ -119,7 +121,8 @@ export default function Navbar() {
 								))}
 
 								<div className="px-4 py-2 text-neutral-500">Auth Status</div>
-								<ClerkHeader />
+								{!session && <AuthView socialLayout="horizontal" />}
+								{session && <UserButton  />}
 							</MenuItems>
 						</Menu>
 					</div>

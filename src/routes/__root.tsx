@@ -14,7 +14,7 @@ import { Player } from '@/components/Player/Player';
 import { Spectrum } from '@/components/Player/spectrum';
 import SidePanel from '@/components/SidePanel';
 import { useTitle } from '@/hooks/useTitle';
-import ClerkProvider from '../integrations/clerk/provider';
+import { Providers } from '@/providers';
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools';
 
 interface MyRouterContext {
@@ -102,17 +102,17 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 				<HeadContent />
 			</head>
 			<body>
-				{/* <ClerkProvider> */}
+				<Providers>
 					<RootComponent>{children}</RootComponent>
+				</Providers>
 
-					<TanStackDevtools
-						config={{ position: 'bottom-left' }}
-						plugins={[
-							{ name: 'Tanstack Router', render: <TanStackRouterDevtoolsPanel /> },
-							TanStackQueryDevtools,
-						]}
-					/>
-				{/* </ClerkProvider> */}
+				<TanStackDevtools
+					config={{ position: 'bottom-left' }}
+					plugins={[
+						{ name: 'Tanstack Router', render: <TanStackRouterDevtoolsPanel /> },
+						TanStackQueryDevtools,
+					]}
+				/>
 				<Scripts />
 			</body>
 		</html>

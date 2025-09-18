@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "@daveyplate/better-auth-ui": "^3.1.10",
-    "@headlessui/react": "^2.1.2",
     "@hello-pangea/dnd": "^16.6.0",
     "@orpc/client": "^1.8.9",
     "@orpc/json-schema": "^1.8.9",

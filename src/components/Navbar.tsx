@@ -1,15 +1,5 @@
 import { AuthView, UserButton } from '@daveyplate/better-auth-ui';
-import {
-	Disclosure,
-	DisclosureButton,
-	DisclosurePanel,
-	Menu,
-	MenuButton,
-	MenuItem,
-	MenuItems,
-} from '@headlessui/react';
 import { Link, useLocation, useNavigate } from '@tanstack/react-router';
-import { FaUserCircle } from 'react-icons/fa';
 import { FaBars, FaXmark } from 'react-icons/fa6';
 import { twMerge } from 'tailwind-merge';
 import { authClient } from '@/lib/auth-client';
@@ -19,6 +9,16 @@ const navigation = [
 	{ name: 'Library', href: '/library' },
 	{ name: 'Artists', href: '/artists' },
 	{ name: 'Albums', href: '/albums' },
+];
+
+const userMenuItems = [
+	{ to: '/settings/general', label: 'General' },
+	{ to: '/settings/eq', label: 'Equalizer' },
+];
+const adminMenuItems = [
+	{ to: '/admin/systemSettings', label: 'Manage System' },
+	{ to: '/admin/users', label: 'Manage Users' },
+	{ to: '/admin/about', label: 'About Current Track' },
 ];
 
 export default function Navbar() {
@@ -33,12 +33,15 @@ export default function Navbar() {
 	}
 
 	return (
-		<Disclosure as="nav" className="bg-neutral-900">
+		<div as="nav" className="bg-neutral-900">
 			<div className="mx-auto max-w-screen-2xl px-2 sm:px-6 lg:px-8">
 				<div className="relative flex h-16 items-center justify-between">
 					<div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
 						{/* Mobile menu button*/}
-						<DisclosureButton className="group relative inline-flex items-center justify-center rounded-md p-2 text-gray-300 hover:bg-neutral-800 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-inset">
+						<button
+							type="button"
+							className="group relative inline-flex items-center justify-center rounded-md p-2 text-gray-300 hover:bg-neutral-800 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-inset"
+						>
 							<span className="-inset-0.5 absolute" />
 							<span className="sr-only">Open main menu</span>
 							<FaBars
@@ -49,7 +52,7 @@ export default function Navbar() {
 								aria-hidden="true"
 								className="hidden h-6 w-6 group-data-[open]:block"
 							/>
-						</DisclosureButton>
+						</button>
 					</div>
 					<div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
 						<div className="flex flex-shrink-0 items-center h-10">
@@ -80,64 +83,15 @@ export default function Navbar() {
 						</div>
 					</div>
 					<div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-						{/* Profile dropdown */}
-						<Menu as="div" className="relative ml-3">
-							<div>
-								<MenuButton className="relative flex rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-									<span className="-inset-1.5 absolute" />
-									<span className="sr-only">Open user menu</span>
-									<FaUserCircle className="h-8 w-8 rounded-full text-neutral-100" />
-								</MenuButton>
-							</div>
-							<MenuItems
-								transition
-								className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-neutral-800 py-1 shadow-2xl ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
-							>
-								{isAdmin && (
-									<>
-										<div className="px-4 py-2 text-neutral-500">Admin</div>
-										{adminMenuItems.map(({ to, label }) => (
-											<MenuItem key={to}>
-												<Link
-													to={to}
-													className="block px-4 py-2 text-sm data-[focus]:bg-neutral-900"
-												>
-													{label}
-												</Link>
-											</MenuItem>
-										))}
-									</>
-								)}
-								<div className="px-4 py-2 text-neutral-500">Settings</div>
-								{userMenuItems.map(({ to, label }) => (
-									<MenuItem key={to}>
-										<Link
-											to={to}
-											className="block px-4 py-2 text-sm data-[focus]:bg-neutral-900"
-										>
-											{label}
-										</Link>
-									</MenuItem>
-								))}
-
-								<div className="px-4 py-2 text-neutral-500">Auth Status</div>
-								{!session && <AuthView socialLayout="horizontal" />}
-
-								{/* <div className="h-96">{session && <UserButton />}</div> */}
-							</MenuItems>
-						</Menu>
-
-						{session && (
-							<UserButton
-								size="icon"
-								additionalLinks={[{ href: '/settings', label: 'Settings' }]}
-							/>
-						)}
+						<UserButton
+							size="icon"
+							additionalLinks={[{ href: '/settings', label: 'Settings' }]}
+						/>
 					</div>
 				</div>
 			</div>
 
-			<DisclosurePanel className="sm:hidden">
+			<div className="sm:hidden">
 				<div className="space-y-1 px-2 pt-2 pb-3">
 					{navigation.map((item) => (
 						<Link
@@ -155,32 +109,7 @@ export default function Navbar() {
 						</Link>
 					))}
 				</div>
-			</DisclosurePanel>
-		</Disclosure>
+			</div>
+		</div>
 	);
 }
-
-const userMenuItems = [
-	{
-		to: '/settings/general',
-		label: 'General',
-	},
-	{
-		to: '/settings/eq',
-		label: 'Equalizer',
-	},
-];
-const adminMenuItems = [
-	{
-		to: '/admin/systemSettings',
-		label: 'Manage System',
-	},
-	{
-		to: '/admin/users',
-		label: 'Manage Users',
-	},
-	{
-		to: '/admin/about',
-		label: 'About Current Track',
-	},
-];

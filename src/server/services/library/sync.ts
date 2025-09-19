@@ -190,31 +190,33 @@ export const syncLibrary = async () => {
 	}
 	console.log('listing media files');
 	const mediaFiles = await listMediaFiles(systemSettings.musicFolder);
+	console.log(`found ${mediaFiles.length} media files`);
+
 	console.log('parsing media files to db inputs');
 	const parsedMediaFiles = await parseMediaFiles(mediaFiles);
+	console.log(`parsed media files into ${parsedMediaFiles.tracks.length} db inputs`);
 
-	if (systemSettings.syncDb) {
-		console.log('fetching artist names from musicBrainz');
-		const artists = await pMap(parsedMediaFiles.artists, attachArtistName, {
-			concurrency: 1,
-		});
+	// MUSICBRAINZ 503s
+	// console.log('fetching artist names from musicBrainz');
+	// const artists = await pMap(parsedMediaFiles.artists, attachArtistName, {
+	// 	concurrency: 1,
+	// });
 
-		console.log('saving to the db');
-		// upsert artists
-		await pMap(artists, upsertArtist, { concurrency: 8 });
-		// upsert albums
-		await pMap(parsedMediaFiles.albums, upsertAlbum, { concurrency: 8 });
-		// upsert tracks
-		await pMap(parsedMediaFiles.tracks, upsertTrack, { concurrency: 8 });
-		// upsert trackArtists
-		await pMap(parsedMediaFiles.trackArtists, upsertTrackArtist, {
-			concurrency: 8,
-		});
-		// upsert albumArtists
-		await pMap(parsedMediaFiles.albumArtists, upsertAlbumArtist, {
-			concurrency: 8,
-		});
-	}
+	console.log('saving to the db');
+	// upsert artists
+	await pMap(parsedMediaFiles.artists, upsertArtist, { concurrency: 8 });
+	// upsert albums
+	await pMap(parsedMediaFiles.albums, upsertAlbum, { concurrency: 8 });
+	// upsert tracks
+	await pMap(parsedMediaFiles.tracks, upsertTrack, { concurrency: 8 });
+	// upsert trackArtists
+	await pMap(parsedMediaFiles.trackArtists, upsertTrackArtist, {
+		concurrency: 8,
+	});
+	// upsert albumArtists
+	await pMap(parsedMediaFiles.albumArtists, upsertAlbumArtist, {
+		concurrency: 8,
+	});
 
 	if (systemSettings.syncImages) {
 		const artists = await db.query.artists.findMany({

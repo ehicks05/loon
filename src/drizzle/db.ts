@@ -7,4 +7,4 @@ import { seed } from './seed';
 const queryClient = postgres(env.DATABASE_URL);
 export const db = drizzle(queryClient, { schema });
 
-// seed();
+seed();

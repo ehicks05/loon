@@ -194,17 +194,16 @@ export const syncLibrary = async () => {
 
 	console.log('parsing media files to db inputs');
 	const parsedMediaFiles = await parseMediaFiles(mediaFiles);
-	console.log(`parsed media files into ${parsedMediaFiles.tracks.length} db inputs`);
+	console.log(`parsed media files into ${parsedMediaFiles.tracks.length} tracks`);
 
-	// MUSICBRAINZ 503s
-	// console.log('fetching artist names from musicBrainz');
-	// const artists = await pMap(parsedMediaFiles.artists, attachArtistName, {
-	// 	concurrency: 1,
-	// });
+	console.log('fetching artist names from musicBrainz');
+	const artists = await pMap(parsedMediaFiles.artists, attachArtistName, {
+		concurrency: 1,
+	});
 
 	console.log('saving to the db');
 	// upsert artists
-	await pMap(parsedMediaFiles.artists, upsertArtist, { concurrency: 8 });
+	await pMap(artists, upsertArtist, { concurrency: 8 });
 	// upsert albums
 	await pMap(parsedMediaFiles.albums, upsertAlbum, { concurrency: 8 });
 	// upsert tracks

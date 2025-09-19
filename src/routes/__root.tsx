@@ -69,7 +69,7 @@ function RootComponent({ children }: Readonly<{ children: ReactNode }>) {
 	if (isLoading) {
 		return null;
 	}
-	const tracks = library?.tracks;
+	const tracks = library?.library.tracks;
 
 	return (
 		<div className="h-dvh flex flex-col text-neutral-300 bg-neutral-950">

@@ -1,28 +1,15 @@
-import { env } from '../../../env.js';
+import { BASE_URL, HEADERS, PARAMS, RATE_LIMIT } from './constants.js';
+import { client, getClient } from './rateLimitedClient.js';
 import type { IArtist } from './types.js';
 
-const BASE = 'https://musicbrainz.org/ws/2';
-
-const APP_NAME = 'loon';
-const APP_VERSION = '0.1.0';
-const APP_CONTACT = env.APP_CONTACT_EMAIL;
-const userAgent = `${APP_NAME}/${APP_VERSION} (${APP_CONTACT})`;
-const headers = {
-	headers: { 'User-Agent': userAgent },
-};
-
-const PARAMS = new URLSearchParams({ fmt: 'json' }).toString();
+getClient({ limit: RATE_LIMIT.LIMIT, interval: RATE_LIMIT.INTERVAL_MS });
 
 export const musicBrainz = {
 	lookup: async (entity: 'artist', id: string) => {
-		const url = `${BASE}/${entity}/${id}?${PARAMS}`;
-		const response = await fetch(url, headers);
+		const url = `/${entity}/${id}`;
+		const response = await client(url, PARAMS, HEADERS);
 
-		if (response.status !== 200) {
-			console.log(url, response);
-		}
-
-		const json = (await response.json()) as IArtist;
+		const json = response.data as IArtist;
 		return json;
 	},
 };

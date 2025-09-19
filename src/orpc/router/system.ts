@@ -11,8 +11,6 @@ const clearLibrary = base.use(isAdmin).handler(async () => {
 	await db.delete(artists);
 	await db.delete(albums);
 
-	// todo: cascade rules
-
 	return { success: true };
 });
 

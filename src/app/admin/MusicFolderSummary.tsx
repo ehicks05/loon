@@ -21,7 +21,6 @@ export const MusicFolderSummary = () => {
 
 			{data && (
 				<span className="text-sm">
-					Found{' '}
 					{isFetching ? (
 						'...'
 					) : (

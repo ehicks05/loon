@@ -30,18 +30,18 @@ export default function UserSettings() {
 				<table>
 					<thead>
 						<tr>
-							<th className="p-2 text-left">Id</th>
-							<th className="p-2 text-left">Username</th>
-							<th className="p-2 text-left">Admin</th>
-							<th className="p-2 text-left"> </th>
+							<th className="p-1 text-left">Id</th>
+							<th className="p-1 text-left">Username</th>
+							<th className="p-1 text-left">Admin</th>
+							<th className="p-1 text-left"> </th>
 						</tr>
 					</thead>
 					<tbody>
 						{users.map((user) => (
 							<tr key={user.id}>
-								<td className="p-2">{user.id}</td>
-								<td className="p-2">{user.name}</td>
-								<td className="p-2">
+								<td className="p-1" title={user.id}>{user.id.slice(0, 5)}...</td>
+								<td className="p-1">{user.name}</td>
+								<td className="p-1">
 									<CheckboxInput
 										checked={user.role === 'admin'}
 										disabled={user.id === currentUser.id}
@@ -53,7 +53,7 @@ export default function UserSettings() {
 										}
 									/>
 								</td>
-								<td className="p-2">
+								<td className="p-1">
 									<Button
 										className="bg-red-600"
 										onClick={() => handleDelete(user.id)}

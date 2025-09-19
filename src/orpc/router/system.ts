@@ -4,8 +4,7 @@ import { db } from '@/drizzle/db';
 import { albums, artists, system_settings, tracks } from '@/drizzle/schema/main';
 import { runLibrarySyncTask } from '@/server/services/library/sync';
 import { listMediaFiles } from '@/server/utils/files';
-import { base } from '../context';
-import { isAdmin } from '../middleware';
+import { base, isAdmin } from '../middleware';
 
 const clearLibrary = base.use(isAdmin).handler(async () => {
 	await db.delete(tracks);
@@ -21,6 +20,22 @@ const get = base.use(isAdmin).handler(async () => {
 	const system = await db.query.system_settings.findFirst();
 	if (!system) throw new ORPCError('NOT_FOUND');
 	return system;
+});
+
+const isSyncing = base.use(isAdmin).handler(async function* () {
+	let previous = false;
+	while (true) {
+		const system = await db.query.system_settings.findFirst();
+		if (!system) throw new ORPCError('NOT_FOUND');
+
+		const payload = system.isSyncing;
+		
+		if (payload !== previous) {	
+			yield payload;
+		}
+		previous = payload;
+		await new Promise((resolve) => setTimeout(resolve, 1000));
+	}
 });
 
 const listFiles = base.use(isAdmin).handler(async () => {
@@ -44,7 +59,6 @@ const update = base
 	.input(
 		z.object({
 			musicFolder: z.string(),
-			syncDb: z.boolean(),
 			syncImages: z.boolean(),
 		}),
 	)
@@ -58,6 +72,7 @@ const update = base
 export const system = {
 	clearLibrary,
 	get,
+	isSyncing,
 	listFiles,
 	triggerSync,
 	update,

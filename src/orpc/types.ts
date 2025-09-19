@@ -4,7 +4,7 @@ import type router from './router/index';
 export type Inputs = InferRouterInputs<typeof router>;
 export type Outputs = InferRouterOutputs<typeof router>;
 
-export type LibraryResponse = Outputs['library'];
+export type LibraryResponse = Outputs['library']['list'];
 
 export type SystemSettings = Outputs['system']['get'];
 

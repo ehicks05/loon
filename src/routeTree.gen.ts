@@ -11,6 +11,7 @@
 import { createServerRootRoute } from '@tanstack/react-start/server'
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ArtistsRouteImport } from './routes/artists'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as OrganizationOrganizationViewRouteImport } from './routes/organization.$organizationView'
 import { Route as AuthAuthViewRouteImport } from './routes/auth.$authView'
@@ -22,6 +23,11 @@ import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api.auth.
 
 const rootServerRouteImport = createServerRootRoute()
 
+const ArtistsRoute = ArtistsRouteImport.update({
+  id: '/artists',
+  path: '/artists',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -66,6 +72,7 @@ const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/artists': typeof ArtistsRoute
   '/account/$accountView': typeof AccountAccountViewRoute
   '/admin/systemSettings': typeof AdminSystemSettingsRoute
   '/auth/$authView': typeof AuthAuthViewRoute
@@ -73,6 +80,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/artists': typeof ArtistsRoute
   '/account/$accountView': typeof AccountAccountViewRoute
   '/admin/systemSettings': typeof AdminSystemSettingsRoute
   '/auth/$authView': typeof AuthAuthViewRoute
@@ -81,6 +89,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/artists': typeof ArtistsRoute
   '/account/$accountView': typeof AccountAccountViewRoute
   '/admin/systemSettings': typeof AdminSystemSettingsRoute
   '/auth/$authView': typeof AuthAuthViewRoute
@@ -90,6 +99,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/artists'
     | '/account/$accountView'
     | '/admin/systemSettings'
     | '/auth/$authView'
@@ -97,6 +107,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/artists'
     | '/account/$accountView'
     | '/admin/systemSettings'
     | '/auth/$authView'
@@ -104,6 +115,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/artists'
     | '/account/$accountView'
     | '/admin/systemSettings'
     | '/auth/$authView'
@@ -112,6 +124,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ArtistsRoute: typeof ArtistsRoute
   AccountAccountViewRoute: typeof AccountAccountViewRoute
   AdminSystemSettingsRoute: typeof AdminSystemSettingsRoute
   AuthAuthViewRoute: typeof AuthAuthViewRoute
@@ -149,6 +162,13 @@ export interface RootServerRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/artists': {
+      id: '/artists'
+      path: '/artists'
+      fullPath: '/artists'
+      preLoaderRoute: typeof ArtistsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -214,6 +234,7 @@ declare module '@tanstack/react-start/server' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ArtistsRoute: ArtistsRoute,
   AccountAccountViewRoute: AccountAccountViewRoute,
   AdminSystemSettingsRoute: AdminSystemSettingsRoute,
   AuthAuthViewRoute: AuthAuthViewRoute,

@@ -12,10 +12,12 @@ export default function SystemSettings() {
 		data: system,
 		isFetching: isFetchingSystem,
 		refetch,
-	} = useQuery({
-		...orpc.system.get.queryOptions(),
-		refetchInterval: 5000,
-	});
+	} = useQuery(orpc.system.get.queryOptions());
+
+	const { data: isSyncing } = useQuery(
+		orpc.system.isSyncing.experimental_liveOptions(),
+	);
+
 	const { mutate, isPending: isPendingSave } = useMutation(
 		orpc.system.update.mutationOptions(),
 	);
@@ -52,7 +54,7 @@ export default function SystemSettings() {
 		isFetchingSystem ||
 		isPendingSave ||
 		isPendingTriggerSync ||
-		system?.isSyncing ||
+		isSyncing ||
 		isDeletingLibrary;
 
 	return (

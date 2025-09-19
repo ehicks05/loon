@@ -8,7 +8,7 @@ export const Route = createFileRoute('/')({
 });
 
 function Index() {
-	const { data } = useQuery(orpc.library.queryOptions({ input: {} }));
+	const { data } = useQuery(orpc.library.queryOptions());
 
 	return (
 		<div className="flex flex-col">

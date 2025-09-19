@@ -1,4 +1,3 @@
-import * as fs from 'node:fs';
 import { openAsBlob } from 'node:fs';
 import { ORPCError, os } from '@orpc/server';
 import type { ResponseHeadersPluginContext } from '@orpc/server/plugins';

@@ -4,8 +4,6 @@ import Album from '@/app/Album';
 import Albums from '@/app/Albums';
 import Artist from '@/app/Artist';
 import Artists from '@/app/Artists';
-import SystemSettings from '@/app/admin/SystemSettings';
-import UserSettings from '@/app/admin/UserSettings';
 import Playlist from '@/app/Playlist';
 import { PlaylistBuilder } from '@/app/PlaylistBuilder';
 import Playlists from '@/app/Playlists';
@@ -20,14 +18,6 @@ export default function Router() {
 
 	return (
 		<Routes>
-			<Route
-				path="/admin/systemSettings"
-				element={isAdmin ? <SystemSettings /> : <Navigate to="/" />}
-			/>
-			<Route
-				path="/admin/users"
-				element={isAdmin ? <UserSettings /> : <Navigate to="/" />}
-			/>
 			<Route
 				path="/admin/about"
 				element={isAdmin ? <About /> : <Navigate to="/" />}

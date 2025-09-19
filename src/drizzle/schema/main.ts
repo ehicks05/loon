@@ -12,7 +12,6 @@ import { user } from './auth';
 export const system_settings = pgTable('system_settings', {
 	id: text('id').primaryKey().default('system'),
 	musicFolder: text('music_folder').notNull().default(''),
-	syncDb: boolean('sync_db').notNull().default(false),
 	syncImages: boolean('sync_images').notNull().default(false),
 	isSyncing: boolean('is_syncing').notNull().default(false),
 });

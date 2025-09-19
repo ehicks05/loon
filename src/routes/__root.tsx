@@ -13,6 +13,7 @@ import Navbar from '@/components/Navbar';
 import { Player } from '@/components/Player/Player';
 import { Spectrum } from '@/components/Player/spectrum';
 import SidePanel from '@/components/SidePanel';
+import { useLibrary } from '@/hooks/useLibrary';
 import { useTitle } from '@/hooks/useTitle';
 import { Providers } from '@/providers';
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools';
@@ -63,6 +64,12 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 function RootComponent({ children }: Readonly<{ children: ReactNode }>) {
 	useTitle();
+	const { data: library, isLoading } = useLibrary();
+
+	if (isLoading) {
+		return null;
+	}
+	const tracks = library?.tracks;
 
 	return (
 		<div className="h-dvh flex flex-col text-neutral-300 bg-neutral-950">
@@ -79,13 +86,12 @@ function RootComponent({ children }: Readonly<{ children: ReactNode }>) {
 					</div>
 				</div>
 				<div className="w-full max-w-screen-lg rounded-lg overflow-y-auto overflow-x-hidden p-2 bg-neutral-900">
-					{/* {!tracks && (
-							<div className="flex flex-col gap-4 p-4 -m-2 bg-red-600 rounded-lg">
-								<div className="text-3xl">Uh oh!</div>
-								<div className="text-lg">Unable to fetch the music library!</div>
-							</div>
-						)} */}
-					{/* {tracks && tracks.length === trackz.length && <Routes />} */}
+					{!tracks && (
+						<div className="flex flex-col gap-4 p-4 -m-2 bg-red-600 rounded-lg">
+							<div className="text-3xl">Uh oh!</div>
+							<div className="text-lg">Unable to fetch the music library!</div>
+						</div>
+					)}
 					{children}
 				</div>
 			</div>
@@ -101,7 +107,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 			<head>
 				<HeadContent />
 			</head>
-			<body className='dark'>
+			<body className="dark">
 				<Providers>
 					<RootComponent>{children}</RootComponent>
 				</Providers>

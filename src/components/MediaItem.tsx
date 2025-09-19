@@ -1,6 +1,6 @@
 import type { DraggableProvided, DraggableStateSnapshot } from '@hello-pangea/dnd';
-import { Link } from 'react-router-dom';
-import { setSelectedPlaylistId, useUserStore } from '../hooks/useUserStore';
+import { Link } from '@tanstack/react-router';
+import { setSelectedPlaylistId, useUserStore } from '../hooks/useUser';
 import type { Track } from '../types/library';
 import ActionMenu from './ActionMenu';
 import { ArtistLinks } from './ArtistLinks';
@@ -47,7 +47,11 @@ export default function MediaItem({
 				<span className="line-clamp-1 text-sm text-neutral-400">
 					<ArtistLinks artists={track.artists} linkClass="hover:text-neutral-300" />
 					{' - '}
-					<Link className="hover:text-neutral-300" to={`/albums/${track.album.id}`}>
+					<Link
+						className="hover:text-neutral-300"
+						to={'/albums/$id'}
+						params={{ id: track.album.id }}
+					>
 						<i>{track.album.name}</i>
 					</Link>
 				</span>

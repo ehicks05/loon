@@ -1,5 +1,5 @@
 import { LoonSlider } from '@/components/Slider';
-import { type EqBand, setEqBands, useUserStore } from '@/hooks/useUserStore';
+import { type EqBand, setEqBands, useUserStore } from '@/hooks/useUser';
 
 const FILTER_TYPE_LABELS: Partial<Record<BiquadFilterType, string>> = {
 	lowshelf: 'Low Shelf',

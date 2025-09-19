@@ -1,8 +1,8 @@
-import { Link, useParams } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import { ActionableImage } from '@/components/ActionableImage';
 import { ArtistCard } from '@/components/ArtistCard';
 import MediaItem from '@/components/MediaItem';
-import { getArtistById } from '@/hooks/useLibraryStore';
+import { useLibrary } from '@/hooks/useLibrary';
 import type { Album } from '@/types/library';
 
 const AlbumsWithTracks = ({ albums }: { albums: Album[] }) => {
@@ -18,7 +18,11 @@ const AlbumsWithTracks = ({ albums }: { albums: Album[] }) => {
 								src={album.imageThumb}
 								trackIds={album.tracks.map(({ id }) => id)}
 							/>
-							<Link to={`/albums/${album.id}`} className="text-xl flex-shrink-0">
+							<Link
+								to={'/albums/$id'}
+								params={{ id: album.id }}
+								className="text-xl flex-shrink-0"
+							>
 								{album.name}
 							</Link>
 						</div>
@@ -43,9 +47,9 @@ const AlbumsWithTracks = ({ albums }: { albums: Album[] }) => {
 	);
 };
 
-export default function Artist() {
-	const { id } = useParams();
-	const artist = getArtistById(id);
+export function Artist({ id }: { id: string }) {
+	const { data } = useLibrary();
+	const artist = data?.getArtistById(id);
 
 	if (!artist) return null;
 

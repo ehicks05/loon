@@ -1,6 +1,6 @@
 import * as Popover from '@radix-ui/react-popover';
 import { Shuffle, SlidersVertical, Volume2, VolumeOff } from 'lucide-react';
-import { setMuted, setShuffle, useUserStore } from '../../hooks/useUserStore';
+import { setMuted, setShuffle, useUserStore } from '../../hooks/useUser';
 import { Equalizer } from '../Equalizer';
 import PlaybackButtons from './PlaybackButtons';
 import TrackDescription from './TrackDescription';
@@ -40,7 +40,7 @@ const EqPopover = () => {
 		<div>
 			<Popover.Root modal>
 				<Popover.Trigger className={BUTTON_CLASS}>
-					<SlidersVertical size={20}/>
+					<SlidersVertical size={20} />
 				</Popover.Trigger>
 				<Popover.Anchor />
 				<Popover.Portal>

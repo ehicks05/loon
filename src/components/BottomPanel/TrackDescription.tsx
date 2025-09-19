@@ -1,15 +1,17 @@
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import { useWindowSize } from 'usehooks-ts';
 import { PLACEHOLDER_IMAGE_URL } from '@/constants';
 import { getTrackById } from '../../hooks/useLibraryStore';
-import { useUserStore } from '../../hooks/useUserStore';
+import { useUser } from '../../hooks/useUser';
 import { ArtistLinks } from '../ArtistLinks';
 
 export default function TrackDescription() {
 	const { width } = useWindowSize();
 	const textWidth = width >= 768 ? 'calc(100vw - 408px)' : '100%';
 
-	const selectedTrackId = useUserStore((state) => state.selectedTrackId);
+	const {
+		user: { selectedTrackId },
+	} = useUser();
 	const track = getTrackById(selectedTrackId);
 	const imageUrl = track?.album?.imageThumb || PLACEHOLDER_IMAGE_URL;
 
@@ -24,7 +26,7 @@ export default function TrackDescription() {
 					<b className="text-sm">{track.title}</b>
 					<span className="flex flex-col text-sm">
 						<ArtistLinks artists={track.artists} />
-						<Link to={`/albums/${track.album.id}`}>
+						<Link to={'/albums/$id'} params={{ id: track.album.id }}>
 							<i>{track.album.name}</i>
 						</Link>
 					</span>

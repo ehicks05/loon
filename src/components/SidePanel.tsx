@@ -11,7 +11,7 @@ import {
 } from 'react-icons/fa';
 import type { IconType } from 'react-icons/lib';
 import { usePlaylistStore } from '@/hooks/usePlaylistStore';
-import { useUserStore } from '@/hooks/useUserStore';
+import { useUser } from '@/hooks/useUser';
 import type { Playlist } from '@/orpc/types';
 
 interface PlaylistLink {
@@ -58,7 +58,9 @@ const SidebarLink = ({
 
 export default function SidePanel() {
 	const playlists = usePlaylistStore((state) => state.playlists);
-	const selectedPlaylistId = useUserStore((state) => state.selectedPlaylistId);
+	const {
+		user: { selectedPlaylistId },
+	} = useUser();
 
 	const defaultLinks = [
 		{

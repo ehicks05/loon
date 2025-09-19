@@ -24,9 +24,3 @@ export const useTrackMap = () => {
 
 export const getTrackById = (id: string) =>
 	useLibraryStore.getState().tracks.find((track) => track.id === id);
-
-export const getAlbumById = (id?: string) =>
-	useLibraryStore.getState().albums.find((track) => track.id === id);
-
-export const getArtistById = (id?: string) =>
-	useLibraryStore.getState().artists.find((track) => track.id === id);

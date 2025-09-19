@@ -2,20 +2,16 @@ import { useEffect, useRef } from 'react';
 import { getTrackById } from '@/hooks/useLibraryStore';
 import { type PlaybackState, usePlayerStore } from '@/hooks/usePlayerStore';
 import { getPlaylistById } from '@/hooks/usePlaylistStore';
-import {
-	type PlaybackDirection,
-	setSelectedTrackId,
-	useUserStore,
-} from '@/hooks/useUserStore';
+import { type PlaybackDirection, useUser } from '@/hooks/useUser';
 import { getMaxSafeGain, scaleVolume } from './playerUtils';
 import renderSpectrumFrame from './spectrum';
 import { getNewTrackId } from './trackDeterminationUtils';
 import { useKeyboardControls } from './useKeyboardControls';
 
-const API_URL = "foo"
+const API_URL = 'foo';
 
 export const Player = () => {
-	const userState = useUserStore((state) => state);
+	const { user: userState } = useUser();
 	const {
 		setElapsedTime,
 		setDuration,

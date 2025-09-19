@@ -1,6 +1,6 @@
 import { Pause, Play, SkipBack, SkipForward } from 'lucide-react';
 import { usePlayerStore } from '../../hooks/usePlayerStore';
-import { setSelectedTrackId } from '../../hooks/useUserStore';
+import { setSelectedTrackId } from '../../hooks/useUser';
 import { getNewTrackId } from '../Player/trackDeterminationUtils';
 import { BUTTON_CLASS } from './BottomPanel';
 

@@ -66,11 +66,6 @@ function RootComponent({ children }: Readonly<{ children: ReactNode }>) {
 	useTitle();
 	const { data: library, isLoading } = useLibrary();
 
-	if (isLoading) {
-		return null;
-	}
-	const tracks = library?.library.tracks;
-
 	return (
 		<div className="h-dvh flex flex-col text-neutral-300 bg-neutral-950">
 			<Navbar />
@@ -86,7 +81,7 @@ function RootComponent({ children }: Readonly<{ children: ReactNode }>) {
 					</div>
 				</div>
 				<div className="w-full max-w-screen-lg rounded-lg overflow-y-auto overflow-x-hidden p-2 bg-neutral-900">
-					{!tracks && (
+					{!isLoading && !library?.tracks && (
 						<div className="flex flex-col gap-4 p-4 -m-2 bg-red-600 rounded-lg">
 							<div className="text-3xl">Uh oh!</div>
 							<div className="text-lg">Unable to fetch the music library!</div>
@@ -95,7 +90,7 @@ function RootComponent({ children }: Readonly<{ children: ReactNode }>) {
 					{children}
 				</div>
 			</div>
-			{/* <Player /> */}
+			<Player />
 			<BottomPanel />
 		</div>
 	);

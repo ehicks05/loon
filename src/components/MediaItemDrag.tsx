@@ -1,5 +1,5 @@
 import type { DraggableProvided } from '@hello-pangea/dnd';
-import { useUserStore } from '../hooks/useUserStore';
+import { useUserStore } from '../hooks/useUser';
 import type { Track } from '../types/library';
 
 interface Props {

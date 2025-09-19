@@ -3,7 +3,7 @@ import 'lazysizes/plugins/attrchange/ls.attrchange';
 import AlbumCard from '@/components/AlbumCard';
 import { useLibraryStore } from '@/hooks/useLibraryStore';
 
-export default function Albums() {
+export function Albums() {
 	const albums = useLibraryStore((state) => state.albums);
 
 	return (

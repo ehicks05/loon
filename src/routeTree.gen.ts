@@ -15,6 +15,8 @@ import { Route as ArtistsRouteImport } from './routes/artists'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as OrganizationOrganizationViewRouteImport } from './routes/organization.$organizationView'
 import { Route as AuthAuthViewRouteImport } from './routes/auth.$authView'
+import { Route as ArtistsIdRouteImport } from './routes/artists_.$id'
+import { Route as AlbumsIdRouteImport } from './routes/albums_.$id'
 import { Route as AdminSystemSettingsRouteImport } from './routes/admin.systemSettings'
 import { Route as AccountAccountViewRouteImport } from './routes/account.$accountView'
 import { ServerRoute as ApiSplatServerRouteImport } from './routes/api.$'
@@ -42,6 +44,16 @@ const OrganizationOrganizationViewRoute =
 const AuthAuthViewRoute = AuthAuthViewRouteImport.update({
   id: '/auth/$authView',
   path: '/auth/$authView',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArtistsIdRoute = ArtistsIdRouteImport.update({
+  id: '/artists_/$id',
+  path: '/artists/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlbumsIdRoute = AlbumsIdRouteImport.update({
+  id: '/albums_/$id',
+  path: '/albums/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminSystemSettingsRoute = AdminSystemSettingsRouteImport.update({
@@ -75,6 +87,8 @@ export interface FileRoutesByFullPath {
   '/artists': typeof ArtistsRoute
   '/account/$accountView': typeof AccountAccountViewRoute
   '/admin/systemSettings': typeof AdminSystemSettingsRoute
+  '/albums/$id': typeof AlbumsIdRoute
+  '/artists/$id': typeof ArtistsIdRoute
   '/auth/$authView': typeof AuthAuthViewRoute
   '/organization/$organizationView': typeof OrganizationOrganizationViewRoute
 }
@@ -83,6 +97,8 @@ export interface FileRoutesByTo {
   '/artists': typeof ArtistsRoute
   '/account/$accountView': typeof AccountAccountViewRoute
   '/admin/systemSettings': typeof AdminSystemSettingsRoute
+  '/albums/$id': typeof AlbumsIdRoute
+  '/artists/$id': typeof ArtistsIdRoute
   '/auth/$authView': typeof AuthAuthViewRoute
   '/organization/$organizationView': typeof OrganizationOrganizationViewRoute
 }
@@ -92,6 +108,8 @@ export interface FileRoutesById {
   '/artists': typeof ArtistsRoute
   '/account/$accountView': typeof AccountAccountViewRoute
   '/admin/systemSettings': typeof AdminSystemSettingsRoute
+  '/albums_/$id': typeof AlbumsIdRoute
+  '/artists_/$id': typeof ArtistsIdRoute
   '/auth/$authView': typeof AuthAuthViewRoute
   '/organization/$organizationView': typeof OrganizationOrganizationViewRoute
 }
@@ -102,6 +120,8 @@ export interface FileRouteTypes {
     | '/artists'
     | '/account/$accountView'
     | '/admin/systemSettings'
+    | '/albums/$id'
+    | '/artists/$id'
     | '/auth/$authView'
     | '/organization/$organizationView'
   fileRoutesByTo: FileRoutesByTo
@@ -110,6 +130,8 @@ export interface FileRouteTypes {
     | '/artists'
     | '/account/$accountView'
     | '/admin/systemSettings'
+    | '/albums/$id'
+    | '/artists/$id'
     | '/auth/$authView'
     | '/organization/$organizationView'
   id:
@@ -118,6 +140,8 @@ export interface FileRouteTypes {
     | '/artists'
     | '/account/$accountView'
     | '/admin/systemSettings'
+    | '/albums_/$id'
+    | '/artists_/$id'
     | '/auth/$authView'
     | '/organization/$organizationView'
   fileRoutesById: FileRoutesById
@@ -127,6 +151,8 @@ export interface RootRouteChildren {
   ArtistsRoute: typeof ArtistsRoute
   AccountAccountViewRoute: typeof AccountAccountViewRoute
   AdminSystemSettingsRoute: typeof AdminSystemSettingsRoute
+  AlbumsIdRoute: typeof AlbumsIdRoute
+  ArtistsIdRoute: typeof ArtistsIdRoute
   AuthAuthViewRoute: typeof AuthAuthViewRoute
   OrganizationOrganizationViewRoute: typeof OrganizationOrganizationViewRoute
 }
@@ -190,6 +216,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAuthViewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/artists_/$id': {
+      id: '/artists_/$id'
+      path: '/artists/$id'
+      fullPath: '/artists/$id'
+      preLoaderRoute: typeof ArtistsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/albums_/$id': {
+      id: '/albums_/$id'
+      path: '/albums/$id'
+      fullPath: '/albums/$id'
+      preLoaderRoute: typeof AlbumsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/systemSettings': {
       id: '/admin/systemSettings'
       path: '/admin/systemSettings'
@@ -237,6 +277,8 @@ const rootRouteChildren: RootRouteChildren = {
   ArtistsRoute: ArtistsRoute,
   AccountAccountViewRoute: AccountAccountViewRoute,
   AdminSystemSettingsRoute: AdminSystemSettingsRoute,
+  AlbumsIdRoute: AlbumsIdRoute,
+  ArtistsIdRoute: ArtistsIdRoute,
   AuthAuthViewRoute: AuthAuthViewRoute,
   OrganizationOrganizationViewRoute: OrganizationOrganizationViewRoute,
 }

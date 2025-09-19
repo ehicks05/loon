@@ -3,7 +3,7 @@ import { FaTrash } from 'react-icons/fa6';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/Button';
 import { usePlaylistStore } from '@/hooks/usePlaylistStore';
-import { useUserStore } from '@/hooks/useUserStore';
+import { useUserStore } from '@/hooks/useUser';
 import { trpc } from '@/utils/trpc';
 
 export default function Playlists() {

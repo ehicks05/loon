@@ -6,5 +6,5 @@ export const Route = createFileRoute('/artists')({
 });
 
 function RouteComponent() {
-	// return <Artists />;
+	return <Artists />;
 }

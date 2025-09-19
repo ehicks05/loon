@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { FixedSizeList as List } from 'react-window';
 import { useResizeObserver } from 'usehooks-ts';
-import { useUserStore } from '@/hooks/useUserStore';
+import { useUserStore } from '@/hooks/useUser';
 import type { Track } from '@/types/library';
 import MediaItem from './MediaItem';
 

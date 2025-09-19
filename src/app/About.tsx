@@ -1,5 +1,5 @@
 import { getTrackById } from '@/hooks/useLibraryStore';
-import { useUserStore } from '@/hooks/useUserStore';
+import { useUserStore } from '@/hooks/useUser';
 
 export default function About() {
 	const selectedTrackId = useUserStore((state) => state.selectedTrackId);

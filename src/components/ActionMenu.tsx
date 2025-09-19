@@ -1,4 +1,5 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import { useMutation } from '@tanstack/react-query';
 import { partition } from 'es-toolkit';
 import type { ReactNode } from 'react';
 import {
@@ -9,8 +10,8 @@ import {
 	FaRegHeart,
 } from 'react-icons/fa';
 import { usePlaylistStore } from '@/hooks/usePlaylistStore';
+import { orpc } from '@/orpc/client';
 import type { Playlist } from '@/orpc/types';
-import { trpc } from '@/utils/trpc';
 
 const isSaturated = (playlist: Playlist, trackIds: string[]) => {
 	const playlistTrackIds = playlist.playlistTracks.map(({ trackId }) => trackId);
@@ -18,12 +19,9 @@ const isSaturated = (playlist: Playlist, trackIds: string[]) => {
 };
 
 export default function ActionMenu({ trackIds }: { trackIds: string[] }) {
-	const utils = trpc.useUtils();
-	const { mutate } = trpc.playlist.update.useMutation({
-		onSuccess: () => {
-			utils.playlist.list.invalidate();
-		},
-	});
+	// todo: utils.playlist.list.invalidate();
+	const { mutate } = useMutation(orpc.playlist.update.mutationOptions());
+
 	const playlists = usePlaylistStore((state) => state.playlists);
 
 	const favoritesPlaylist = playlists.find((playlist) => playlist.favorites);

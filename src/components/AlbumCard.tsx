@@ -1,6 +1,5 @@
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import type { Album } from '@/types/library';
-import { getAlbumById } from '../hooks/useLibraryStore';
 import { ActionableImage } from './ActionableImage';
 import { ArtistLinks } from './ArtistLinks';
 
@@ -16,25 +15,22 @@ interface Props {
 	hideAlbumArtist?: boolean;
 }
 
-export default function AlbumCard({ album: _album, hideAlbumArtist }: Props) {
-	const album = getAlbumById(_album.id);
-	if (!album) return null;
-
+export default function AlbumCard({ album, hideAlbumArtist }: Props) {
 	const albumNameSize =
 		CUSTOM_SIZES.find((customSize) => album.name.length <= customSize.length)
 			?.size || 'text-xs';
 
 	return (
 		<div className="flex flex-col items-start">
-			<ActionableImage src={album.image} tracks={album.tracks} />
+			<ActionableImage src={album.image} trackIds={album.tracks.map((o) => o.id)} />
 			<div className="flex flex-col p-3 text-center w-full">
 				{!hideAlbumArtist && (
 					<span className="text-sm">
-						<ArtistLinks artists={album.artists} />
+						<ArtistLinks artists={album.albumArtists} />
 					</span>
 				)}
 
-				<Link to={`/albums/${album.id}`}>
+				<Link to={'/albums/$id'} params={{ id: album.id }}>
 					<span className={albumNameSize}>{album.name}</span>
 				</Link>
 			</div>

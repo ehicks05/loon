@@ -12,7 +12,7 @@ import MediaItem from '@/components/MediaItem';
 import { MediaItemDrag } from '@/components/MediaItemDrag';
 import { getTrackById, useTrackMap } from '@/hooks/useLibraryStore';
 import { usePlaylistStore } from '@/hooks/usePlaylistStore';
-import { useUserStore } from '@/hooks/useUserStore';
+import { useUserStore } from '@/hooks/useUser';
 import type { Track } from '@/types/library';
 import { trpc } from '@/utils/trpc';
 

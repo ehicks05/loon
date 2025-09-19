@@ -3,7 +3,7 @@ import { FaSearch } from 'react-icons/fa';
 import { useDebounceValue } from 'usehooks-ts';
 import { TextInput } from '@/components/TextInput';
 import { useLibraryStore } from '@/hooks/useLibraryStore';
-import { setSelectedContextMenuId } from '@/hooks/useUserStore';
+import { setSelectedContextMenuId } from '@/hooks/useUser';
 import type { Track } from '@/types/library';
 import { TrackListing } from '../components/TrackListing';
 

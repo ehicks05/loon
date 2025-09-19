@@ -5,7 +5,7 @@ import { FaSortAlphaDown, FaSortAmountDown } from 'react-icons/fa';
 import { twMerge } from 'tailwind-merge';
 import { ArtistCard } from '@/components/ArtistCard';
 import { Button } from '@/components/Button';
-import { useLibraryStore } from '@/hooks/useLibraryStore';
+import { useLibrary } from '@/hooks/useLibrary';
 
 type ArtistSort = 'name' | 'tracks';
 
@@ -40,7 +40,10 @@ const SortButtons = ({
 
 export default function Artists() {
 	const [orderBy, setOrderBy] = useState<ArtistSort>('tracks');
-	const artists = useLibraryStore((state) => state.artists).sort((o1, o2) =>
+
+	const { data } = useLibrary();
+
+	const artists = (data?.artists || []).sort((o1, o2) =>
 		orderBy === 'name'
 			? o1.name.localeCompare(o2.name)
 			: o2.tracks.length - o1.tracks.length,

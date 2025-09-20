@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { TrackInfo } from '@/app/TrackInfo';
+import { TrackInfo } from '@/app/admin/TrackInfo';
 
 export const Route = createFileRoute('/admin/trackInfo')({
 	component: RouteComponent,

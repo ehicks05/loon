@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Equalizer } from '@/components/Equalizer';
 
-export default function GeneralSettings() {
+export function Settings() {
 	const [transcodeQuality, _] = useState('');
 
 	return (

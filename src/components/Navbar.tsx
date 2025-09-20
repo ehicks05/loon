@@ -12,7 +12,9 @@ const navigation = [
 	{ name: 'Albums', href: '/albums' },
 ];
 
-const userMenuItems = [{ href: '/settings', label: 'General', icon: <Settings /> }];
+const userMenuItems = [
+	{ href: '/settings', label: 'User Settings', icon: <Settings /> },
+];
 const adminMenuItems = [
 	{ href: '/admin/systemSettings', label: 'Manage System', icon: <Wrench /> },
 	{

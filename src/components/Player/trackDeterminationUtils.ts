@@ -1,4 +1,4 @@
-import { useLibraryStore } from '@/hooks/useLibraryStore';
+import { useLibrary } from '@/hooks/useLibrary';
 import { getPlaylistById } from '@/hooks/usePlaylistStore';
 import { type PlaybackDirection, useUser } from '@/hooks/useUser';
 
@@ -22,7 +22,8 @@ export const getNewTrackId = (input: PlaybackDirection) => {
 };
 
 function getCurrentPlaylistTrackIds(selectedPlaylistId: string) {
-	const tracks = useLibraryStore.getState().tracks;
+	const { data } = useLibrary();
+	const tracks = data?.tracks || [];
 	const currentPlaylist = getPlaylistById(selectedPlaylistId);
 	if (currentPlaylist)
 		return currentPlaylist.playlistTracks.map(

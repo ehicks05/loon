@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { useDebounceValue } from 'usehooks-ts';
 import { TextInput } from '@/components/TextInput';
-import { useLibraryStore } from '@/hooks/useLibraryStore';
-import { setSelectedContextMenuId } from '@/hooks/useUser';
+import { useLibrary } from '@/hooks/useLibrary';
+import { useUser } from '@/hooks/useUser';
 import type { Track } from '@/types/library';
 import { TrackListing } from '../components/TrackListing';
 
@@ -20,7 +20,10 @@ export default function Search() {
 	);
 	const [searchResults, setSearchResults] = useState<Track[]>([]);
 
-	const tracks = useLibraryStore((state) => state.tracks);
+	const { data } = useLibrary();
+	const tracks = data?.tracks || [];
+
+	const { setSelectedContextMenuId } = useUser();
 
 	useEffect(() => {
 		return function cleanup() {

@@ -38,7 +38,7 @@ const SortButtons = ({
 	</div>
 );
 
-export default function Artists() {
+export function Artists() {
 	const [orderBy, setOrderBy] = useState<ArtistSort>('tracks');
 
 	const { data } = useLibrary();

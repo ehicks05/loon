@@ -1,5 +1,5 @@
 import { LoonSlider } from '@/components/Slider';
-import { type EqBand, setEqBands, useUserStore } from '@/hooks/useUser';
+import { type EqBand, useUser } from '@/hooks/useUser';
 
 const FILTER_TYPE_LABELS: Partial<Record<BiquadFilterType, string>> = {
 	lowshelf: 'Low Shelf',
@@ -8,7 +8,7 @@ const FILTER_TYPE_LABELS: Partial<Record<BiquadFilterType, string>> = {
 };
 
 export const Equalizer = () => {
-	const eqBands = useUserStore((state) => state.eqBands);
+	const { eqBands, setEqBands } = useUser();
 
 	const handleUpdate = (newBand: EqBand, id: number) =>
 		setEqBands(eqBands.map((band) => (band.id === id ? newBand : band)));

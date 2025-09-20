@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { FixedSizeList as List } from 'react-window';
 import { useResizeObserver } from 'usehooks-ts';
-import { useUserStore } from '@/hooks/useUser';
+import { useUser } from '@/hooks/useUser';
 import type { Track } from '@/types/library';
 import MediaItem from './MediaItem';
 
@@ -29,7 +29,7 @@ export const TrackListing = ({ tracks }: Props) => {
 
 	const listRef = useRef<List>(null);
 
-	const selectedTrackId = useUserStore((state) => state.selectedTrackId);
+	const { selectedTrackId } = useUser();
 	const selectedTrackIndex = tracks.findIndex((t) => t.id === selectedTrackId);
 
 	useEffect(() => {

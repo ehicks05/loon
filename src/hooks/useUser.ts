@@ -20,7 +20,6 @@ export type Loop = false | 'playlist' | 'track';
 
 export interface UserState {
 	eqBands: EqBand[];
-	expandMediaColumn: boolean;
 	loop: Loop;
 	muted: boolean;
 	selectedContextMenuId: string;
@@ -32,7 +31,6 @@ export interface UserState {
 
 const DEFAULT_USER: UserState = {
 	eqBands: DEFAULT_EQ_BANDS,
-	expandMediaColumn: true,
 	loop: 'playlist',
 	muted: false,
 	selectedContextMenuId: '',
@@ -52,9 +50,6 @@ export const useUser = () => {
 		}));
 
 	const setEqBands = async (eqBands: EqBand[]) => updateUser({ eqBands });
-
-	const setExpandMediaColumn = async (expandMediaColumn: boolean) =>
-		updateUser({ expandMediaColumn });
 
 	const setLoop = async (loop: Loop) => updateUser({ loop });
 
@@ -85,14 +80,29 @@ export const useUser = () => {
 	return {
 		user,
 		updateUser,
+
+		eqBands: user.eqBands,
 		setEqBands,
-		setExpandMediaColumn,
+
+		loop: user.loop,
 		setLoop,
+
+		muted: user.muted,
 		setMuted,
+
+		selectedContextMenuId: user.selectedContextMenuId,
 		setSelectedContextMenuId,
+
+		selectedPlaylistId: user.selectedPlaylistId,
 		setSelectedPlaylistId,
+
+		selectedTrackId: user.selectedTrackId,
 		setSelectedTrackId,
+
+		shuffle: user.shuffle,
 		setShuffle,
+
+		volume: user.volume,
 		setVolume,
 	};
 };

@@ -8,10 +8,9 @@ import renderSpectrumFrame from './spectrum';
 import { getNewTrackId } from './trackDeterminationUtils';
 import { useKeyboardControls } from './useKeyboardControls';
 
-const API_URL = 'foo';
-
 export const Player = () => {
-	const { user: userState } = useUser();
+	const { user: userState, setSelectedTrackId } = useUser();
+
 	const {
 		setElapsedTime,
 		setDuration,
@@ -60,7 +59,7 @@ export const Player = () => {
 			audio.ontimeupdate = () => setElapsedTime(audio.currentTime);
 
 			if (userState.selectedTrackId) {
-				audio.src = `${API_URL}/media?id=${userState.selectedTrackId}`;
+				audio.src = `/api/media/${userState.selectedTrackId}`;
 			}
 
 			document.body.appendChild(audio);
@@ -204,7 +203,7 @@ export const Player = () => {
 		if (!audio) return;
 
 		// set new audio source
-		audio.src = `${API_URL}/media?id=${track.id}`;
+		audio.src = `/api/media/${track.id}`;
 		audio.load();
 
 		if (trackGainNode) {

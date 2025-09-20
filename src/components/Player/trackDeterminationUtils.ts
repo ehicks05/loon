@@ -1,9 +1,9 @@
 import { useLibraryStore } from '@/hooks/useLibraryStore';
 import { getPlaylistById } from '@/hooks/usePlaylistStore';
-import { type PlaybackDirection, useUserStore } from '@/hooks/useUser';
+import { type PlaybackDirection, useUser } from '@/hooks/useUser';
 
 export const getNewTrackId = (input: PlaybackDirection) => {
-	const { selectedTrackId, selectedPlaylistId, shuffle } = useUserStore.getState();
+	const { selectedTrackId, selectedPlaylistId, shuffle } = useUser();
 
 	const currentPlaylistTrackIds = getCurrentPlaylistTrackIds(selectedPlaylistId);
 	const currentTrackIndex = currentPlaylistTrackIds.indexOf(selectedTrackId);

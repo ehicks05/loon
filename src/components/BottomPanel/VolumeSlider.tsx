@@ -1,4 +1,4 @@
-import { setVolume, useUserStore } from '../../hooks/useUser';
+import { useUser } from '../../hooks/useUser';
 import { LoonSlider } from '../Slider';
 
 const VolumeLabel = ({ volume }: { volume: number }) => (
@@ -10,7 +10,7 @@ const VolumeLabel = ({ volume }: { volume: number }) => (
 );
 
 export default function VolumeSlider() {
-	const volume = useUserStore((state) => state.volume);
+	const { volume, setVolume } = useUser();
 
 	return (
 		<div className="w-32 max-w-32 md:w-auto md:flex-grow mr-1 relative group">

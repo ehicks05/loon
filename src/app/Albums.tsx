@@ -1,10 +1,15 @@
 import 'lazysizes';
 import 'lazysizes/plugins/attrchange/ls.attrchange';
 import AlbumCard from '@/components/AlbumCard';
-import { useLibraryStore } from '@/hooks/useLibraryStore';
+import { useLibrary } from '@/hooks/useLibrary';
 
 export function Albums() {
-	const albums = useLibraryStore((state) => state.albums);
+	const { data } = useLibrary();
+	const albums = data?.albums;
+
+	if (!albums) {
+		return null;
+	}
 
 	return (
 		<div className="flex flex-col gap-4">

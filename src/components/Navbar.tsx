@@ -1,6 +1,6 @@
 import { UserButton, type UserButtonProps } from '@daveyplate/better-auth-ui';
 import { Link, useLocation } from '@tanstack/react-router';
-import { Info, Settings, SlidersVertical, Users, Wrench } from 'lucide-react';
+import { Info, Settings, Users, Wrench } from 'lucide-react';
 import { FaBars, FaXmark } from 'react-icons/fa6';
 import { twMerge } from 'tailwind-merge';
 import { authClient } from '@/lib/auth-client';
@@ -12,19 +12,11 @@ const navigation = [
 	{ name: 'Albums', href: '/albums' },
 ];
 
-const userMenuItems = [
-	{ href: '/settings/general', label: 'General', icon: <Settings /> },
-	{
-		href: '/settings/eq',
-		label: 'Equalizer',
-		icon: <SlidersVertical />,
-		separator: true,
-	},
-];
+const userMenuItems = [{ href: '/settings', label: 'General', icon: <Settings /> }];
 const adminMenuItems = [
 	{ href: '/admin/systemSettings', label: 'Manage System', icon: <Wrench /> },
 	{
-		href: '/admin/about',
+		href: '/admin/trackInfo',
 		label: 'Current Track Info',
 		icon: <Info />,
 		separator: true,

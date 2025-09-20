@@ -1,10 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router';
-import {Artists} from '@/app/Artists';
+import Search from '@/app/Search';
 
-export const Route = createFileRoute('/artists')({
+export const Route = createFileRoute('/search')({
 	component: RouteComponent,
 });
 
 function RouteComponent() {
-	return <Artists />;
+	return <Search />;
 }

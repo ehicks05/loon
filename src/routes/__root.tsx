@@ -1,6 +1,7 @@
 import { TanStackDevtools } from '@tanstack/react-devtools';
 import type { QueryClient } from '@tanstack/react-query';
 import {
+	ClientOnly,
 	createRootRouteWithContext,
 	HeadContent,
 	Scripts,
@@ -90,7 +91,10 @@ function RootComponent({ children }: Readonly<{ children: ReactNode }>) {
 					{children}
 				</div>
 			</div>
-			<Player />
+
+			<ClientOnly>
+				<Player />
+			</ClientOnly>
 			<BottomPanel />
 		</div>
 	);

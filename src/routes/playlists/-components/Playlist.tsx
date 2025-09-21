@@ -6,9 +6,8 @@ import {
 } from '@hello-pangea/dnd';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
-import { type CSSProperties, useEffect, useRef } from 'react';
-import { List, useListRef } from 'react-window';
-import { useResizeObserver } from 'usehooks-ts';
+import { useEffect } from 'react';
+import { List, type RowComponentProps, useListRef } from 'react-window';
 import MediaItem from '@/components/MediaItem';
 import { MediaItemDrag } from '@/components/MediaItemDrag';
 import { useUser } from '@/hooks/useUser';
@@ -16,12 +15,10 @@ import { orpc } from '@/orpc/client';
 import type { Playlist as IPlaylist } from '@/orpc/types';
 import type { Track } from '@/types/library';
 
-interface RowProps {
+type RowProps = RowComponentProps<{
 	tracks: Track[];
 	playlistId: string;
-	index: number;
-	style: CSSProperties;
-}
+}>;
 
 const Row = ({ tracks, playlistId, index, style }: RowProps) => {
 	const track = tracks[index];
@@ -68,10 +65,6 @@ export function Playlist({ playlist, trackById }: Props) {
 	});
 
 	const listRef = useListRef(null);
-	const containerRef = useRef<HTMLDivElement | null>(null);
-	const { height: containerHeight = 0 } = useResizeObserver<HTMLDivElement | null>({
-		ref: containerRef,
-	});
 
 	function onDragEnd({ source, destination }: DropResult) {
 		// dropped outside the list
@@ -99,7 +92,7 @@ export function Playlist({ playlist, trackById }: Props) {
 				index: selectedTrackIndex,
 			});
 		}
-	}, [selectedTrackIndex]);
+	}, [selectedTrackIndex, listRef.current?.scrollToRow]);
 
 	if (!playlist) return <div>Loading...</div>;
 
@@ -108,7 +101,7 @@ export function Playlist({ playlist, trackById }: Props) {
 	);
 
 	const mediaList = (
-		<div ref={containerRef} className="h-full overflow-hidden">
+		<div className="h-full overflow-hidden">
 			<DragDropContext onDragEnd={onDragEnd}>
 				<Droppable
 					droppableId="droppable"
@@ -131,14 +124,9 @@ export function Playlist({ playlist, trackById }: Props) {
 						<div ref={provided.innerRef} className="flex h-full flex-grow flex-col">
 							<List
 								listRef={listRef}
-								width="100%"
-								height={containerHeight}
-								overscanCount={3}
-								outerRef={provided.innerRef}
+								rowComponent={Row}
 								rowCount={playlist.playlistTracks.length}
 								rowHeight={60}
-								initialScrollOffset={(selectedTrackIndex || 0) * 60}
-								rowComponent={Row}
 								rowProps={{ tracks, playlistId }}
 							/>
 						</div>

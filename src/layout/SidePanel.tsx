@@ -56,7 +56,7 @@ const SidebarLink = ({
 	);
 };
 
-export default function SidePanel() {
+export function SidePanel() {
 	const { data } = usePlaylists();
 	const playlists = data?.playlists || [];
 	const {

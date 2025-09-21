@@ -15,7 +15,7 @@ const adminMenuItems = [
 	{ href: '/admin', label: 'Manage System', icon: <Wrench /> },
 ];
 
-export default function Navbar() {
+export function Navbar() {
 	const { pathname } = useLocation();
 	const { data: session } = authClient.useSession();
 	const isAdmin = session?.user.role === 'admin';

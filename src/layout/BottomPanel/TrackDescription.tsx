@@ -2,8 +2,8 @@ import { Link } from '@tanstack/react-router';
 import { useWindowSize } from 'usehooks-ts';
 import { PLACEHOLDER_IMAGE_URL } from '@/constants';
 import { useLibrary } from '@/hooks/useLibrary';
+import { ArtistLinks } from '../../components/ArtistLinks';
 import { useUser } from '../../hooks/useUser';
-import { ArtistLinks } from '../ArtistLinks';
 
 export function TrackDescription() {
 	const { width } = useWindowSize();

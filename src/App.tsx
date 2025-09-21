@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
-import { BottomPanel } from '@/components/BottomPanel/BottomPanel';
-import Navbar from '@/components/Navbar';
-import { Player } from '@/components/Player/Player';
-import SidePanel from '@/components/SidePanel';
+import { BottomPanel } from '@/layout/BottomPanel/BottomPanel';
+import Navbar from '@/layout/Navbar';
+import { Player } from '@/layout/Player/Player';
+import SidePanel from '@/layout/SidePanel';
 import { denormalizeLibrary } from './hooks/denormalize';
 import { useLibraryStore } from './hooks/useLibraryStore';
 import { usePlaylistStore } from './hooks/usePlaylistStore';

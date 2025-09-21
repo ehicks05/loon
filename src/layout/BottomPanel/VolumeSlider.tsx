@@ -1,5 +1,5 @@
+import { LoonSlider } from '../../components/Slider';
 import { useUser } from '../../hooks/useUser';
-import { LoonSlider } from '../Slider';
 
 const VolumeLabel = ({ volume }: { volume: number }) => (
 	<div className="absolute right-0 bottom-6 opacity-0 group-hover:opacity-100 transition-all">

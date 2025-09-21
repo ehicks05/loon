@@ -7,8 +7,8 @@ import {
 	Volume2,
 	VolumeOff,
 } from 'lucide-react';
+import { Equalizer } from '../../components/Equalizer';
 import { useUser } from '../../hooks/useUser';
-import { Equalizer } from '../Equalizer';
 import { PlaybackButtons } from './PlaybackButtons';
 import { TrackDescription } from './TrackDescription';
 import { TrackProgressBar } from './TrackProgressBar';

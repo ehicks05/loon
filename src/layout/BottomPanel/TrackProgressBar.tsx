@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
+import { LoonSlider } from '../../components/Slider';
 import { usePlayerStore } from '../../hooks/usePlayerStore';
-import { LoonSlider } from '../Slider';
 
 const formatTime = (_input: number) => {
 	const secs = Math.round(_input);

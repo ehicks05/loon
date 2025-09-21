@@ -1,5 +1,5 @@
 import { TanStackDevtools } from '@tanstack/react-devtools';
-import type { QueryClient } from '@tanstack/react-query';
+import { type QueryClient, useQuery } from '@tanstack/react-query';
 import {
 	ClientOnly,
 	createRootRouteWithContext,
@@ -7,16 +7,20 @@ import {
 	Scripts,
 } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
-import type { ReactNode } from 'react';
+import { type ReactNode, useEffect } from 'react';
 import appCss from '@/app.css?url';
-import { BottomPanel } from '@/components/BottomPanel/BottomPanel';
-import Navbar from '@/components/Navbar';
-import { Player } from '@/components/Player/Player';
-import { Spectrum } from '@/components/Player/spectrum';
-import SidePanel from '@/components/SidePanel';
+import { denormalizeLibrary } from '@/hooks/denormalize';
 import { fetchAndDenormalizeLibrary } from '@/hooks/useLibrary';
+import { useLibraryStore } from '@/hooks/useLibraryStore';
+import { usePlaylistStore } from '@/hooks/usePlaylistStore';
 import { fetchPlaylists } from '@/hooks/usePlaylists';
 import { useTitle } from '@/hooks/useTitle';
+import { BottomPanel } from '@/layout/BottomPanel/BottomPanel';
+import { Navbar } from '@/layout/Navbar';
+import { Player } from '@/layout/Player/Player';
+import { Spectrum } from '@/layout/Player/spectrum';
+import { SidePanel } from '@/layout/SidePanel';
+import { orpc } from '@/orpc/client';
 import { Providers } from '@/providers';
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools';
 
@@ -70,9 +74,37 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 	ssr: false,
 });
 
+const useCacheData = () => {
+	const { data: library, isLoading: isLoadingTracks } = useQuery({
+		...orpc.library.list.queryOptions(),
+	});
+	const { data: playlists, isLoading: isLoadingPlaylists } = useQuery({
+		...orpc.playlist.list.queryOptions(),
+	});
+
+	const isLoading = isLoadingTracks || isLoadingPlaylists;
+
+	useEffect(() => {
+		if (library) {
+			useLibraryStore.setState((state) => ({
+				...state,
+				...denormalizeLibrary(library),
+			}));
+		}
+	}, [library]);
+
+	useEffect(() => {
+		if (playlists) {
+			usePlaylistStore.setState((state) => ({ ...state, playlists }));
+		}
+	}, [playlists]);
+
+	return { isLoading, library, playlists };
+};
+
 function RootComponent({ children }: Readonly<{ children: ReactNode }>) {
 	useTitle();
-	// const { tracks } = useLoaderData({ from: '__root__' });
+	useCacheData();
 
 	return (
 		<div className="h-dvh flex flex-col text-neutral-300 bg-neutral-950">
@@ -114,11 +146,11 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 				<HeadContent />
 			</head>
 			<body className="dark">
-				{/* <ClientOnly> */}
-				<Providers>
-					<RootComponent>{children}</RootComponent>
-				</Providers>
-				{/* </ClientOnly> */}
+				<ClientOnly>
+					<Providers>
+						<RootComponent>{children}</RootComponent>
+					</Providers>
+				</ClientOnly>
 
 				<TanStackDevtools
 					config={{ position: 'bottom-left' }}

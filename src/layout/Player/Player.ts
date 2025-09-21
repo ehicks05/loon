@@ -5,13 +5,15 @@ import { getPlaylistById } from '@/hooks/usePlaylistStore';
 import { type PlaybackDirection, useUser } from '@/hooks/useUser';
 import { getMaxSafeGain, scaleVolume } from './playerUtils';
 import renderSpectrumFrame from './spectrum';
-import { getNewTrackId } from './trackDeterminationUtils';
+import { useGetNewTrack } from './trackDeterminationUtils';
 import { useKeyboardControls } from './useKeyboardControls';
 
 export const Player = () => {
 	const { user: userState, setSelectedTrackId } = useUser();
 	const { data } = useLibrary();
 	const getTrackById = data?.getTrackById;
+
+	const { getNewTrackId } = useGetNewTrack();
 
 	const {
 		setElapsedTime,

@@ -5,7 +5,6 @@ import {
 	createRootRouteWithContext,
 	HeadContent,
 	Scripts,
-	useLoaderData,
 } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 import type { ReactNode } from 'react';
@@ -115,9 +114,11 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 				<HeadContent />
 			</head>
 			<body className="dark">
+				{/* <ClientOnly> */}
 				<Providers>
 					<RootComponent>{children}</RootComponent>
 				</Providers>
+				{/* </ClientOnly> */}
 
 				<TanStackDevtools
 					config={{ position: 'bottom-left' }}

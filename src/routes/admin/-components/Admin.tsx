@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { usePlayerStore } from '@/hooks/usePlayerStore';
 import SystemSettings from './SystemSettings';
 import { TrackInfo } from './TrackInfo';
 import { Users } from './Users';
@@ -11,6 +12,25 @@ const Section = ({ title, children }: { title: string; children: ReactNode }) =>
 				{children}
 			</div>
 		</section>
+	);
+};
+
+const Debug = () => {
+	const { duration, elapsedTime, forcedElapsedTime, playbackState } =
+		usePlayerStore();
+	return (
+		<pre>
+			{JSON.stringify(
+				{
+					duration,
+					elapsedTime,
+					forcedElapsedTime,
+					playbackState,
+				},
+				null,
+				2,
+			)}
+		</pre>
 	);
 };
 
@@ -33,8 +53,8 @@ export function Admin() {
 					<TrackInfo />
 				</Section>
 
-				<Section title="debug">
-					<TrackInfo />
+				<Section title="debug playerStore">
+					<Debug />
 				</Section>
 			</div>
 		</div>

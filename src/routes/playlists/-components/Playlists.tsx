@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { FaVolumeUp } from 'react-icons/fa';
-import { FaTrash } from 'react-icons/fa6';
 import { Button } from '@/components/Button';
 import { usePlaylists } from '@/hooks/usePlaylists';
 import { useUser } from '@/hooks/useUser';
@@ -72,7 +71,7 @@ export function Playlists() {
 									className="bg-red-600"
 									onClick={handleClickDelete}
 								>
-									<FaTrash />
+									Delete
 								</Button>
 							</div>
 						</div>

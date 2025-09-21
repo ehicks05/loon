@@ -1,21 +1,14 @@
-import { useEffect, useRef } from 'react';
-import { FixedSizeList as List } from 'react-window';
-import { useResizeObserver } from 'usehooks-ts';
+import { useEffect } from 'react';
+import { List, type RowComponentProps, useListRef } from 'react-window';
+import MediaItem from '@/components/MediaItem';
 import { useUser } from '@/hooks/useUser';
 import type { Track } from '@/types/library';
-import MediaItem from '../../../components/MediaItem';
 
-const Row = ({
-	data,
-	index,
-	style,
-}: {
-	data: Track[];
-	index: number;
-	style: React.CSSProperties;
-}) => (
+type RowProps = RowComponentProps<{ tracks: Track[] }>;
+
+const Row = ({ tracks, index, style }: RowProps) => (
 	<div style={style}>
-		<MediaItem playlistId={''} track={data[index]} trackNumber={index + 1} />
+		<MediaItem playlistId={''} track={tracks[index]} trackNumber={index + 1} />
 	</div>
 );
 
@@ -24,31 +17,26 @@ interface Props {
 }
 
 export const TrackListing = ({ tracks }: Props) => {
-	const containerRef = useRef<HTMLDivElement>(null);
-	const { height: containerHeight } = useResizeObserver({ ref: containerRef });
-
-	const listRef = useRef<List>(null);
+	const listRef = useListRef(null);
 
 	const { selectedTrackId } = useUser();
 	const selectedTrackIndex = tracks.findIndex((t) => t.id === selectedTrackId);
 
 	useEffect(() => {
-		listRef.current?.scrollToItem(selectedTrackIndex, 'smart');
-	}, [selectedTrackIndex]);
+		if (tracks.length && selectedTrackIndex !== -1) {
+			listRef.current?.scrollToRow({ index: selectedTrackIndex, align: 'auto' });
+		}
+	}, [tracks.length, selectedTrackIndex, listRef.current?.scrollToRow]);
 
 	return (
-		<div ref={containerRef} className="flex h-full flex-grow flex-col">
+		<div className="flex h-full flex-grow flex-col">
 			<List
-				ref={listRef}
-				width="100%"
-				height={containerHeight || 0}
-				itemCount={tracks.length}
-				itemData={tracks}
-				itemKey={(i) => tracks[i].id}
-				itemSize={60}
-			>
-				{Row}
-			</List>
+				listRef={listRef}
+				rowComponent={Row}
+				rowCount={tracks.length}
+				rowHeight={60}
+				rowProps={{ tracks }}
+			/>
 		</div>
 	);
 };

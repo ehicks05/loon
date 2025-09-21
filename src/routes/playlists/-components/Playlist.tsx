@@ -86,11 +86,7 @@ export function Playlist({ playlist, trackById }: Props) {
 
 	useEffect(() => {
 		if (selectedTrackIndex !== -1) {
-			listRef.current?.scrollToRow({
-				align: 'smart',
-				behavior: 'auto',
-				index: selectedTrackIndex,
-			});
+			listRef.current?.scrollToRow({ index: selectedTrackIndex });
 		}
 	}, [selectedTrackIndex, listRef.current?.scrollToRow]);
 

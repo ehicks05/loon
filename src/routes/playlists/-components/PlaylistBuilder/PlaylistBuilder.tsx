@@ -1,42 +1,51 @@
 import { useState } from 'react';
 import CheckboxTree, { type Node } from 'react-checkbox-tree';
-import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/Button';
 import { TextInput } from '@/components/TextInput';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from '@tanstack/react-router';
+import { orpc } from '@/orpc/client';
 import type { Playlist } from '@/orpc/types';
-import { trpc } from '@/utils/trpc';
+import type { Track } from '@/types/library';
 import { tracksToNodes } from './helpers';
 import { icons } from './icons';
+
+interface FormProps {
+	playlist?: Playlist;
+	nodes: Node[];
+	defaultChecked: string[];
+	defaultExpanded: string[];
+}
 
 function PlaylistBuilderForm({
 	playlist,
 	nodes,
 	defaultChecked,
 	defaultExpanded,
-}: {
-	playlist?: Playlist;
-	nodes: Node[];
-	defaultChecked: string[];
-	defaultExpanded: string[];
-}) {
+}: FormProps) {
 	const navigate = useNavigate();
-	const utils = trpc.useUtils();
 	const [name, setName] = useState(playlist?.name || 'New Playlist');
 	const [checked, setChecked] = useState<string[]>(defaultChecked);
 	const [expanded, setExpanded] = useState<string[]>(defaultExpanded);
 
-	const { mutate: insertPlaylist, isPending: isInsertPending } =
-		trpc.playlist.insert.useMutation({
-			onSuccess: ({ id }) => {
-				utils.playlist.list.invalidate();
-				navigate(`/playlists/${id}`);
-			},
-		});
-	const { mutate: updatePlaylist, isPending: isUpdatePending } =
-		trpc.playlist.update.useMutation({
-			onSuccess: () => utils.playlist.list.invalidate(),
-		});
+	const queryClient = useQueryClient();
+
+	const { mutate: insertPlaylist, isPending: isInsertPending } = useMutation({
+		...orpc.playlist.insert.mutationOptions(),
+		onSuccess: ({ id }) => {
+			queryClient.invalidateQueries({ queryKey: [orpc.playlist.list.queryKey] });
+			navigate({ to: '/playlists/$id', params: { id } });
+		},
+	});
+
+	const { mutate: updatePlaylist, isPending: isUpdatePending } = useMutation({
+		...orpc.playlist.update.mutationOptions(),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: [orpc.playlist.list.queryKey] });
+		},
+	});
+
 	const isPending = isInsertPending || isUpdatePending;
 
 	const onClick = () =>
@@ -56,7 +65,7 @@ function PlaylistBuilderForm({
 			/>
 
 			<div className="flex flex-col h-full overflow-auto">
-				<label className="">Tracks ({checked.length} selected)</label>
+				<div className="">Tracks ({checked.length} selected)</div>
 				<CheckboxTree
 					nodes={nodes}
 					checked={checked}
@@ -74,19 +83,12 @@ function PlaylistBuilderForm({
 	);
 }
 
-export function PlaylistBuilder() {
-	const { id } = useParams();
+interface Props {
+	playlist?: Playlist;
+	tracks: Track[];
+}
 
-	const { data: { tracks } = {} } = trpc.library.list.useQuery();
-	const { data: playlist, isLoading: isLoadingPlaylist } =
-		trpc.playlist.getById.useQuery(id || '', {
-			enabled: !!id,
-		});
-
-	if (!tracks || isLoadingPlaylist) {
-		return <div>Loading...</div>;
-	}
-
+export function PlaylistBuilder({ playlist, tracks }: Props) {
 	const { nodes, expandedIds } = tracksToNodes(tracks);
 	const defaultChecked =
 		playlist?.playlistTracks.map(({ trackId }) => trackId) || [];

@@ -5,17 +5,18 @@ import {
 	type DropResult,
 } from '@hello-pangea/dnd';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Link } from '@tanstack/react-router';
 import { type CSSProperties, useEffect, useRef } from 'react';
-import { Link, useParams } from 'react-router-dom';
 import { FixedSizeList as List } from 'react-window';
 import { useResizeObserver } from 'usehooks-ts';
 import MediaItem from '@/components/MediaItem';
 import { MediaItemDrag } from '@/components/MediaItemDrag';
-import { useLibrary } from '@/hooks/useLibrary';
 import { usePlaylistStore } from '@/hooks/usePlaylistStore';
 import { useUser } from '@/hooks/useUser';
 import { orpc } from '@/orpc/client';
+import type { Playlist as IPlaylist } from '@/orpc/types';
 import type { Track } from '@/types/library';
+import { usePlaylists } from '@/hooks/usePlaylists';
 
 interface RowProps {
 	data: {
@@ -46,19 +47,18 @@ const Row = ({ data: { tracks, playlistId }, index, style }: RowProps) => {
 	);
 };
 
-export function Playlist() {
-	const { id: playlistId } = useParams();
+interface Props {
+	playlist: IPlaylist;
+	trackById: Record<string, Track>;
+}
 
-	const { playlist, handleDragAndDrop } = usePlaylistStore((state) => ({
-		playlist: state.playlists.find((p) => p.id === playlistId),
-		handleDragAndDrop: state.handleDragAndDrop,
-	}));
-	const { data } = useLibrary();
-	const trackMap = data?.trackById;
-	const getTrackById = data?.trackById;
+export function Playlist({ playlist, trackById }: Props) {
+	const playlistId = playlist.id;
+
+	// const { handleDragAndDrop } = usePlaylists();
 
 	const { selectedTrackId } = useUser();
-	const selectedTrackIndex = playlist?.playlistTracks.findIndex(
+	const selectedTrackIndex = playlist.playlistTracks.findIndex(
 		(t) => t.trackId === selectedTrackId,
 	);
 
@@ -91,7 +91,7 @@ export function Playlist() {
 			newIndex: destination.index,
 		};
 
-		handleDragAndDrop(args);
+		// handleDragAndDrop(args);
 		persistDragAndDrop(args);
 	}
 
@@ -111,7 +111,7 @@ export function Playlist() {
 					mode="virtual"
 					renderClone={(provided, _snapshot, { source: { index } }) => {
 						const trackId = playlist.playlistTracks[index]?.trackId;
-						const track = trackId && getTrackById(trackId);
+						const track = trackId && trackById[trackId];
 						if (!track) return null;
 						return (
 							<MediaItemDrag
@@ -130,7 +130,7 @@ export function Playlist() {
 								width="100%"
 								height={containerHeight}
 								itemData={{
-									tracks: playlist.playlistTracks.map((pt) => trackMap[pt.trackId]),
+									tracks: playlist.playlistTracks.map((pt) => trackById[pt.trackId]),
 									playlistId,
 								}}
 								overscanCount={3}
@@ -155,7 +155,8 @@ export function Playlist() {
 				<h1 className="font-bold text-2xl">{playlist.name}</h1>
 				<div className="flex gap-4">
 					<Link
-						to={`/playlists/${playlist.id}/edit`}
+						to="/playlists/$id/edit"
+						params={{ id: playlist.id }}
 						className="p-2 bg-black rounded"
 					>
 						Edit

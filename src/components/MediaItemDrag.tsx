@@ -1,5 +1,5 @@
 import type { DraggableProvided } from '@hello-pangea/dnd';
-import { useUserStore } from '../hooks/useUser';
+import { useUser } from '../hooks/useUser';
 import type { Track } from '../types/library';
 
 interface Props {
@@ -9,7 +9,7 @@ interface Props {
 }
 
 export function MediaItemDrag({ trackNumber, track, provided }: Props) {
-	const selectedTrackId = useUserStore((state) => state.selectedTrackId);
+	const { selectedTrackId } = useUser();
 
 	const { missingFile } = track;
 	const highlightClass =

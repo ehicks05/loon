@@ -19,7 +19,9 @@ const expandForest = (nodes: Node[]) => {
 	const expandedIds: string[] = [];
 
 	// each top-level node is a tree, we will expand one
-	nodes.forEach((rootNode) => expandTree(rootNode, expandedIds));
+	nodes.forEach((rootNode) => {
+		expandTree(rootNode, expandedIds);
+	});
 
 	return expandedIds;
 };

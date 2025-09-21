@@ -102,8 +102,8 @@ function RootComponent({ children }: Readonly<{ children: ReactNode }>) {
 
 			<ClientOnly>
 				<Player />
+				<BottomPanel />
 			</ClientOnly>
-			<BottomPanel />
 		</div>
 	);
 }

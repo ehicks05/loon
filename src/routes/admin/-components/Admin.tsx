@@ -1,6 +1,18 @@
+import type { ReactNode } from 'react';
 import SystemSettings from './SystemSettings';
 import { TrackInfo } from './TrackInfo';
 import { Users } from './Users';
+
+const Section = ({ title, children }: { title: string; children: ReactNode }) => {
+	return (
+		<section className="flex flex-wrap gap-4">
+			<div className="flex flex-col gap-4 p-4 bg-black rounded">
+				<div className="font-bold text-lg">{title}</div>
+				{children}
+			</div>
+		</section>
+	);
+};
 
 export function Admin() {
 	return (
@@ -9,29 +21,21 @@ export function Admin() {
 				<h1 className="font-bold text-2xl">System Settings</h1>
 			</section>
 			<div className="flex flex-wrap gap-4">
-				<section className="flex flex-wrap gap-4">
-					<div className="flex flex-col gap-4 p-4 bg-black rounded">
-						<div className="font-bold text-lg">Settings</div>
+				<Section title="Settings">
+					<SystemSettings />
+				</Section>
 
-						<SystemSettings />
-					</div>
-				</section>
+				<Section title="Users">
+					<Users />
+				</Section>
 
-				<section>
-					<div className="flex flex-col gap-4 p-4 bg-black rounded">
-						<div className="font-bold text-lg">Users</div>
+				<Section title="Track Info">
+					<TrackInfo />
+				</Section>
 
-						<Users />
-					</div>
-				</section>
-
-				<section>
-					<div className="flex flex-col gap-4 p-4 bg-black rounded">
-						<div className="font-bold text-lg">Track Info</div>
-
-						<TrackInfo />
-					</div>
-				</section>
+				<Section title="debug">
+					<TrackInfo />
+				</Section>
 			</div>
 		</div>
 	);

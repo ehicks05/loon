@@ -19,11 +19,9 @@ import { Route as AlbumsIndexRouteImport } from './routes/albums/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as PlaylistsNewRouteImport } from './routes/playlists/new'
 import { Route as PlaylistsIdRouteImport } from './routes/playlists/$id'
-import { Route as OrganizationOrganizationViewRouteImport } from './routes/organization.$organizationView'
 import { Route as AuthAuthViewRouteImport } from './routes/auth.$authView'
 import { Route as ArtistsIdRouteImport } from './routes/artists/$id'
 import { Route as AlbumsIdRouteImport } from './routes/albums/$id'
-import { Route as AccountAccountViewRouteImport } from './routes/account.$accountView'
 import { Route as PlaylistsIdEditRouteImport } from './routes/playlists/$id_.edit'
 import { ServerRoute as ApiSplatServerRouteImport } from './routes/api.$'
 import { ServerRoute as ApiMediaIdServerRouteImport } from './routes/api_.media.$id'
@@ -72,12 +70,6 @@ const PlaylistsIdRoute = PlaylistsIdRouteImport.update({
   path: '/playlists/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OrganizationOrganizationViewRoute =
-  OrganizationOrganizationViewRouteImport.update({
-    id: '/organization/$organizationView',
-    path: '/organization/$organizationView',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const AuthAuthViewRoute = AuthAuthViewRouteImport.update({
   id: '/auth/$authView',
   path: '/auth/$authView',
@@ -91,11 +83,6 @@ const ArtistsIdRoute = ArtistsIdRouteImport.update({
 const AlbumsIdRoute = AlbumsIdRouteImport.update({
   id: '/albums/$id',
   path: '/albums/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AccountAccountViewRoute = AccountAccountViewRouteImport.update({
-  id: '/account/$accountView',
-  path: '/account/$accountView',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlaylistsIdEditRoute = PlaylistsIdEditRouteImport.update({
@@ -126,11 +113,9 @@ const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/account/$accountView': typeof AccountAccountViewRoute
   '/albums/$id': typeof AlbumsIdRoute
   '/artists/$id': typeof ArtistsIdRoute
   '/auth/$authView': typeof AuthAuthViewRoute
-  '/organization/$organizationView': typeof OrganizationOrganizationViewRoute
   '/playlists/$id': typeof PlaylistsIdRoute
   '/playlists/new': typeof PlaylistsNewRoute
   '/admin': typeof AdminIndexRoute
@@ -142,11 +127,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/account/$accountView': typeof AccountAccountViewRoute
   '/albums/$id': typeof AlbumsIdRoute
   '/artists/$id': typeof ArtistsIdRoute
   '/auth/$authView': typeof AuthAuthViewRoute
-  '/organization/$organizationView': typeof OrganizationOrganizationViewRoute
   '/playlists/$id': typeof PlaylistsIdRoute
   '/playlists/new': typeof PlaylistsNewRoute
   '/admin': typeof AdminIndexRoute
@@ -159,11 +142,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/account/$accountView': typeof AccountAccountViewRoute
   '/albums/$id': typeof AlbumsIdRoute
   '/artists/$id': typeof ArtistsIdRoute
   '/auth/$authView': typeof AuthAuthViewRoute
-  '/organization/$organizationView': typeof OrganizationOrganizationViewRoute
   '/playlists/$id': typeof PlaylistsIdRoute
   '/playlists/new': typeof PlaylistsNewRoute
   '/admin/': typeof AdminIndexRoute
@@ -177,11 +158,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/account/$accountView'
     | '/albums/$id'
     | '/artists/$id'
     | '/auth/$authView'
-    | '/organization/$organizationView'
     | '/playlists/$id'
     | '/playlists/new'
     | '/admin'
@@ -193,11 +172,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/account/$accountView'
     | '/albums/$id'
     | '/artists/$id'
     | '/auth/$authView'
-    | '/organization/$organizationView'
     | '/playlists/$id'
     | '/playlists/new'
     | '/admin'
@@ -209,11 +186,9 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/account/$accountView'
     | '/albums/$id'
     | '/artists/$id'
     | '/auth/$authView'
-    | '/organization/$organizationView'
     | '/playlists/$id'
     | '/playlists/new'
     | '/admin/'
@@ -226,11 +201,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AccountAccountViewRoute: typeof AccountAccountViewRoute
   AlbumsIdRoute: typeof AlbumsIdRoute
   ArtistsIdRoute: typeof ArtistsIdRoute
   AuthAuthViewRoute: typeof AuthAuthViewRoute
-  OrganizationOrganizationViewRoute: typeof OrganizationOrganizationViewRoute
   PlaylistsIdRoute: typeof PlaylistsIdRoute
   PlaylistsNewRoute: typeof PlaylistsNewRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -332,13 +305,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlaylistsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/organization/$organizationView': {
-      id: '/organization/$organizationView'
-      path: '/organization/$organizationView'
-      fullPath: '/organization/$organizationView'
-      preLoaderRoute: typeof OrganizationOrganizationViewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/auth/$authView': {
       id: '/auth/$authView'
       path: '/auth/$authView'
@@ -358,13 +324,6 @@ declare module '@tanstack/react-router' {
       path: '/albums/$id'
       fullPath: '/albums/$id'
       preLoaderRoute: typeof AlbumsIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/account/$accountView': {
-      id: '/account/$accountView'
-      path: '/account/$accountView'
-      fullPath: '/account/$accountView'
-      preLoaderRoute: typeof AccountAccountViewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/playlists/$id_/edit': {
@@ -411,11 +370,9 @@ declare module '@tanstack/react-start/server' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AccountAccountViewRoute: AccountAccountViewRoute,
   AlbumsIdRoute: AlbumsIdRoute,
   ArtistsIdRoute: ArtistsIdRoute,
   AuthAuthViewRoute: AuthAuthViewRoute,
-  OrganizationOrganizationViewRoute: OrganizationOrganizationViewRoute,
   PlaylistsIdRoute: PlaylistsIdRoute,
   PlaylistsNewRoute: PlaylistsNewRoute,
   AdminIndexRoute: AdminIndexRoute,

@@ -6,8 +6,6 @@ import SidePanel from '@/components/SidePanel';
 import { denormalizeLibrary } from './hooks/denormalize';
 import { useLibraryStore } from './hooks/useLibraryStore';
 import { usePlaylistStore } from './hooks/usePlaylistStore';
-import { useTitle } from './hooks/useTitle';
-import Routes from './Routes';
 
 // const useCacheData = () => {
 // 	const { data: user, isLoading: isLoadingUser } = trpc.misc.me.useQuery();

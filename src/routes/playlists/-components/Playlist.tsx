@@ -7,27 +7,23 @@ import {
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { type CSSProperties, useEffect, useRef } from 'react';
-import { FixedSizeList as List } from 'react-window';
+import { List, useListRef } from 'react-window';
 import { useResizeObserver } from 'usehooks-ts';
 import MediaItem from '@/components/MediaItem';
 import { MediaItemDrag } from '@/components/MediaItemDrag';
-import { usePlaylistStore } from '@/hooks/usePlaylistStore';
 import { useUser } from '@/hooks/useUser';
 import { orpc } from '@/orpc/client';
 import type { Playlist as IPlaylist } from '@/orpc/types';
 import type { Track } from '@/types/library';
-import { usePlaylists } from '@/hooks/usePlaylists';
 
 interface RowProps {
-	data: {
-		tracks: Track[];
-		playlistId: string;
-	};
+	tracks: Track[];
+	playlistId: string;
 	index: number;
 	style: CSSProperties;
 }
 
-const Row = ({ data: { tracks, playlistId }, index, style }: RowProps) => {
+const Row = ({ tracks, playlistId, index, style }: RowProps) => {
 	const track = tracks[index];
 
 	return (
@@ -71,7 +67,7 @@ export function Playlist({ playlist, trackById }: Props) {
 		},
 	});
 
-	const listRef = useRef<List>(null);
+	const listRef = useListRef(null);
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const { height: containerHeight = 0 } = useResizeObserver<HTMLDivElement | null>({
 		ref: containerRef,
@@ -96,12 +92,20 @@ export function Playlist({ playlist, trackById }: Props) {
 	}
 
 	useEffect(() => {
-		if (selectedTrackIndex) {
-			listRef.current?.scrollToItem(selectedTrackIndex, 'smart');
+		if (selectedTrackIndex !== -1) {
+			listRef.current?.scrollToRow({
+				align: 'smart',
+				behavior: 'auto',
+				index: selectedTrackIndex,
+			});
 		}
 	}, [selectedTrackIndex]);
 
 	if (!playlist) return <div>Loading...</div>;
+
+	const tracks = playlist.playlistTracks.map(
+		(playlistTrack) => trackById[playlistTrack.trackId],
+	);
 
 	const mediaList = (
 		<div ref={containerRef} className="h-full overflow-hidden">
@@ -126,22 +130,17 @@ export function Playlist({ playlist, trackById }: Props) {
 					{(provided, _snapshot) => (
 						<div ref={provided.innerRef} className="flex h-full flex-grow flex-col">
 							<List
-								ref={listRef}
+								listRef={listRef}
 								width="100%"
 								height={containerHeight}
-								itemData={{
-									tracks: playlist.playlistTracks.map((pt) => trackById[pt.trackId]),
-									playlistId,
-								}}
 								overscanCount={3}
 								outerRef={provided.innerRef}
-								itemCount={playlist.playlistTracks.length}
-								itemKey={(index, data) => data.tracks[index].id}
-								itemSize={60}
+								rowCount={playlist.playlistTracks.length}
+								rowHeight={60}
 								initialScrollOffset={(selectedTrackIndex || 0) * 60}
-							>
-								{Row}
-							</List>
+								rowComponent={Row}
+								rowProps={{ tracks, playlistId }}
+							/>
 						</div>
 					)}
 				</Droppable>

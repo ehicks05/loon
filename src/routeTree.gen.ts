@@ -13,14 +13,18 @@ import { createServerRootRoute } from '@tanstack/react-start/server'
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SearchIndexRouteImport } from './routes/search/index'
+import { Route as PlaylistsIndexRouteImport } from './routes/playlists/index'
 import { Route as ArtistsIndexRouteImport } from './routes/artists/index'
 import { Route as AlbumsIndexRouteImport } from './routes/albums/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as PlaylistsNewRouteImport } from './routes/playlists/new'
+import { Route as PlaylistsIdRouteImport } from './routes/playlists/$id'
 import { Route as OrganizationOrganizationViewRouteImport } from './routes/organization.$organizationView'
 import { Route as AuthAuthViewRouteImport } from './routes/auth.$authView'
 import { Route as ArtistsIdRouteImport } from './routes/artists/$id'
 import { Route as AlbumsIdRouteImport } from './routes/albums/$id'
 import { Route as AccountAccountViewRouteImport } from './routes/account.$accountView'
+import { Route as PlaylistsIdEditRouteImport } from './routes/playlists/$id.edit'
 import { ServerRoute as ApiSplatServerRouteImport } from './routes/api.$'
 import { ServerRoute as ApiMediaIdServerRouteImport } from './routes/api_.media.$id'
 import { ServerRoute as ApiRpcSplatServerRouteImport } from './routes/api.rpc.$'
@@ -38,6 +42,11 @@ const SearchIndexRoute = SearchIndexRouteImport.update({
   path: '/search/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlaylistsIndexRoute = PlaylistsIndexRouteImport.update({
+  id: '/playlists/',
+  path: '/playlists/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ArtistsIndexRoute = ArtistsIndexRouteImport.update({
   id: '/artists/',
   path: '/artists/',
@@ -51,6 +60,16 @@ const AlbumsIndexRoute = AlbumsIndexRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlaylistsNewRoute = PlaylistsNewRouteImport.update({
+  id: '/playlists/new',
+  path: '/playlists/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlaylistsIdRoute = PlaylistsIdRouteImport.update({
+  id: '/playlists/$id',
+  path: '/playlists/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrganizationOrganizationViewRoute =
@@ -78,6 +97,11 @@ const AccountAccountViewRoute = AccountAccountViewRouteImport.update({
   id: '/account/$accountView',
   path: '/account/$accountView',
   getParentRoute: () => rootRouteImport,
+} as any)
+const PlaylistsIdEditRoute = PlaylistsIdEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => PlaylistsIdRoute,
 } as any)
 const ApiSplatServerRoute = ApiSplatServerRouteImport.update({
   id: '/api/$',
@@ -107,10 +131,14 @@ export interface FileRoutesByFullPath {
   '/artists/$id': typeof ArtistsIdRoute
   '/auth/$authView': typeof AuthAuthViewRoute
   '/organization/$organizationView': typeof OrganizationOrganizationViewRoute
+  '/playlists/$id': typeof PlaylistsIdRouteWithChildren
+  '/playlists/new': typeof PlaylistsNewRoute
   '/admin': typeof AdminIndexRoute
   '/albums': typeof AlbumsIndexRoute
   '/artists': typeof ArtistsIndexRoute
+  '/playlists': typeof PlaylistsIndexRoute
   '/search': typeof SearchIndexRoute
+  '/playlists/$id/edit': typeof PlaylistsIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -119,10 +147,14 @@ export interface FileRoutesByTo {
   '/artists/$id': typeof ArtistsIdRoute
   '/auth/$authView': typeof AuthAuthViewRoute
   '/organization/$organizationView': typeof OrganizationOrganizationViewRoute
+  '/playlists/$id': typeof PlaylistsIdRouteWithChildren
+  '/playlists/new': typeof PlaylistsNewRoute
   '/admin': typeof AdminIndexRoute
   '/albums': typeof AlbumsIndexRoute
   '/artists': typeof ArtistsIndexRoute
+  '/playlists': typeof PlaylistsIndexRoute
   '/search': typeof SearchIndexRoute
+  '/playlists/$id/edit': typeof PlaylistsIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -132,10 +164,14 @@ export interface FileRoutesById {
   '/artists/$id': typeof ArtistsIdRoute
   '/auth/$authView': typeof AuthAuthViewRoute
   '/organization/$organizationView': typeof OrganizationOrganizationViewRoute
+  '/playlists/$id': typeof PlaylistsIdRouteWithChildren
+  '/playlists/new': typeof PlaylistsNewRoute
   '/admin/': typeof AdminIndexRoute
   '/albums/': typeof AlbumsIndexRoute
   '/artists/': typeof ArtistsIndexRoute
+  '/playlists/': typeof PlaylistsIndexRoute
   '/search/': typeof SearchIndexRoute
+  '/playlists/$id/edit': typeof PlaylistsIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -146,10 +182,14 @@ export interface FileRouteTypes {
     | '/artists/$id'
     | '/auth/$authView'
     | '/organization/$organizationView'
+    | '/playlists/$id'
+    | '/playlists/new'
     | '/admin'
     | '/albums'
     | '/artists'
+    | '/playlists'
     | '/search'
+    | '/playlists/$id/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -158,10 +198,14 @@ export interface FileRouteTypes {
     | '/artists/$id'
     | '/auth/$authView'
     | '/organization/$organizationView'
+    | '/playlists/$id'
+    | '/playlists/new'
     | '/admin'
     | '/albums'
     | '/artists'
+    | '/playlists'
     | '/search'
+    | '/playlists/$id/edit'
   id:
     | '__root__'
     | '/'
@@ -170,10 +214,14 @@ export interface FileRouteTypes {
     | '/artists/$id'
     | '/auth/$authView'
     | '/organization/$organizationView'
+    | '/playlists/$id'
+    | '/playlists/new'
     | '/admin/'
     | '/albums/'
     | '/artists/'
+    | '/playlists/'
     | '/search/'
+    | '/playlists/$id/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -183,9 +231,12 @@ export interface RootRouteChildren {
   ArtistsIdRoute: typeof ArtistsIdRoute
   AuthAuthViewRoute: typeof AuthAuthViewRoute
   OrganizationOrganizationViewRoute: typeof OrganizationOrganizationViewRoute
+  PlaylistsIdRoute: typeof PlaylistsIdRouteWithChildren
+  PlaylistsNewRoute: typeof PlaylistsNewRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AlbumsIndexRoute: typeof AlbumsIndexRoute
   ArtistsIndexRoute: typeof ArtistsIndexRoute
+  PlaylistsIndexRoute: typeof PlaylistsIndexRoute
   SearchIndexRoute: typeof SearchIndexRoute
 }
 export interface FileServerRoutesByFullPath {
@@ -238,6 +289,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SearchIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/playlists/': {
+      id: '/playlists/'
+      path: '/playlists'
+      fullPath: '/playlists'
+      preLoaderRoute: typeof PlaylistsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/artists/': {
       id: '/artists/'
       path: '/artists'
@@ -257,6 +315,20 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/playlists/new': {
+      id: '/playlists/new'
+      path: '/playlists/new'
+      fullPath: '/playlists/new'
+      preLoaderRoute: typeof PlaylistsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/playlists/$id': {
+      id: '/playlists/$id'
+      path: '/playlists/$id'
+      fullPath: '/playlists/$id'
+      preLoaderRoute: typeof PlaylistsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/organization/$organizationView': {
@@ -294,6 +366,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountAccountViewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/playlists/$id/edit': {
+      id: '/playlists/$id/edit'
+      path: '/edit'
+      fullPath: '/playlists/$id/edit'
+      preLoaderRoute: typeof PlaylistsIdEditRouteImport
+      parentRoute: typeof PlaylistsIdRoute
+    }
   }
 }
 declare module '@tanstack/react-start/server' {
@@ -329,6 +408,18 @@ declare module '@tanstack/react-start/server' {
   }
 }
 
+interface PlaylistsIdRouteChildren {
+  PlaylistsIdEditRoute: typeof PlaylistsIdEditRoute
+}
+
+const PlaylistsIdRouteChildren: PlaylistsIdRouteChildren = {
+  PlaylistsIdEditRoute: PlaylistsIdEditRoute,
+}
+
+const PlaylistsIdRouteWithChildren = PlaylistsIdRoute._addFileChildren(
+  PlaylistsIdRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountAccountViewRoute: AccountAccountViewRoute,
@@ -336,9 +427,12 @@ const rootRouteChildren: RootRouteChildren = {
   ArtistsIdRoute: ArtistsIdRoute,
   AuthAuthViewRoute: AuthAuthViewRoute,
   OrganizationOrganizationViewRoute: OrganizationOrganizationViewRoute,
+  PlaylistsIdRoute: PlaylistsIdRouteWithChildren,
+  PlaylistsNewRoute: PlaylistsNewRoute,
   AdminIndexRoute: AdminIndexRoute,
   AlbumsIndexRoute: AlbumsIndexRoute,
   ArtistsIndexRoute: ArtistsIndexRoute,
+  PlaylistsIndexRoute: PlaylistsIndexRoute,
   SearchIndexRoute: SearchIndexRoute,
 }
 export const routeTree = rootRouteImport

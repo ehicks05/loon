@@ -16,6 +16,7 @@ import { Player } from '@/components/Player/Player';
 import { Spectrum } from '@/components/Player/spectrum';
 import SidePanel from '@/components/SidePanel';
 import { fetchAndDenormalizeLibrary } from '@/hooks/useLibrary';
+import { fetchPlaylists } from '@/hooks/usePlaylists';
 import { useTitle } from '@/hooks/useTitle';
 import { Providers } from '@/providers';
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools';
@@ -63,7 +64,9 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 	errorComponent: ({ error }) => <div>uh oh: {error.message}</div>,
 	notFoundComponent: () => <div>not found...</div>,
 	loader: async () => {
-		return fetchAndDenormalizeLibrary();
+		const library = await fetchAndDenormalizeLibrary();
+		const playlists = await fetchPlaylists();
+		return { library, playlists };
 	},
 	ssr: false,
 });

@@ -6,7 +6,9 @@ export const Route = createFileRoute('/search/')({
 });
 
 function RouteComponent() {
-	const { tracks } = useLoaderData({ from: '__root__' });
+	const {
+		library: { tracks },
+	} = useLoaderData({ from: '__root__' });
 
 	return <Search tracks={tracks} />;
 }

@@ -8,7 +8,9 @@ export const Route = createFileRoute('/albums/$id')({
 function RouteComponent() {
 	const { id } = Route.useParams();
 
-	const { getAlbumById } = useLoaderData({ from: '__root__' });
+	const {
+		library: { getAlbumById },
+	} = useLoaderData({ from: '__root__' });
 	const album = getAlbumById(id);
 
 	return <Album album={album} />;

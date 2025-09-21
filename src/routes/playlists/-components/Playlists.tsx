@@ -1,20 +1,27 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Link } from '@tanstack/react-router';
 import { FaVolumeUp } from 'react-icons/fa';
 import { FaTrash } from 'react-icons/fa6';
-import { Link } from 'react-router-dom';
 import { Button } from '@/components/Button';
-import { usePlaylistStore } from '@/hooks/usePlaylistStore';
-import { useUserStore } from '@/hooks/useUser';
-import { trpc } from '@/utils/trpc';
+import { usePlaylists } from '@/hooks/usePlaylists';
+import { useUser } from '@/hooks/useUser';
+import { authClient } from '@/lib/auth-client';
+import { orpc } from '@/orpc/client';
 
-export default function Playlists() {
-	const utils = trpc.useUtils();
-	const { data: user } = trpc.misc.me.useQuery();
-	const playlists = usePlaylistStore((state) => state.playlists);
-	const selectedPlaylistId = useUserStore((state) => state.selectedPlaylistId);
+export function Playlists() {
+	const { data: session } = authClient.useSession();
+	const user = session?.user;
 
-	const { mutate: deletePlaylist } = trpc.playlist.delete.useMutation({
+	const { data } = usePlaylists();
+	const playlists = data?.playlists || [];
+
+	const { selectedPlaylistId } = useUser();
+	const queryClient = useQueryClient();
+
+	const { mutate: deletePlaylist } = useMutation({
+		...orpc.playlist.remove.mutationOptions(),
 		onSuccess: () => {
-			utils.playlist.list.invalidate();
+			queryClient.invalidateQueries({ queryKey: orpc.playlist.list.queryKey() });
 		},
 	});
 
@@ -40,7 +47,8 @@ export default function Playlists() {
 						<div className="flex gap-4 w-full items-center" key={playlist.id}>
 							<div> {index + 1}. </div>
 							<Link
-								to={`/playlists/${playlist.id}`}
+								to="/playlists/$id"
+								params={{ id: playlist.id }}
 								className="flex-grow font-bold flex items-center"
 							>
 								{playlist.name}
@@ -54,7 +62,9 @@ export default function Playlists() {
 							<div>{playlist.playlistTracks.length} tracks</div>
 							<div className="flex gap-2">
 								<Button>
-									<Link to={`/playlists/${playlist.id}/edit`}>Edit</Link>
+									<Link to="/playlists/$id/edit" params={{ id: playlist.id }}>
+										Edit
+									</Link>
 								</Button>
 
 								<Button

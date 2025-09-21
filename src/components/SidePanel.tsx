@@ -71,7 +71,7 @@ export default function SidePanel() {
 		},
 		{ path: '/artists', icon: FaUsers, text: 'Artists' },
 		{ path: '/albums', icon: FaCompactDisc, text: 'Albums' },
-		{ path: '/library', icon: FaFolderOpen, text: 'Library' },
+		{ path: '/playlists', icon: FaFolderOpen, text: 'Library' },
 	];
 
 	const playlistLinks = playlists

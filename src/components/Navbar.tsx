@@ -18,8 +18,7 @@ const adminMenuItems = [
 
 export default function Navbar() {
 	const { pathname } = useLocation();
-	const { useSession } = authClient;
-	const { data: session } = useSession();
+	const { data: session } = authClient.useSession();
 	const isAdmin = session?.user.role === 'admin';
 
 	const additionalLinks: UserButtonProps['additionalLinks'] = [

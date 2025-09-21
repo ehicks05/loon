@@ -4,17 +4,18 @@ import {
 	Droppable,
 	type DropResult,
 } from '@hello-pangea/dnd';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { type CSSProperties, useEffect, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { FixedSizeList as List } from 'react-window';
 import { useResizeObserver } from 'usehooks-ts';
 import MediaItem from '@/components/MediaItem';
 import { MediaItemDrag } from '@/components/MediaItemDrag';
-import { getTrackById, useTrackMap } from '@/hooks/useLibraryStore';
+import { useLibrary } from '@/hooks/useLibrary';
 import { usePlaylistStore } from '@/hooks/usePlaylistStore';
-import { useUserStore } from '@/hooks/useUser';
+import { useUser } from '@/hooks/useUser';
+import { orpc } from '@/orpc/client';
 import type { Track } from '@/types/library';
-import { trpc } from '@/utils/trpc';
 
 interface RowProps {
 	data: {
@@ -45,29 +46,34 @@ const Row = ({ data: { tracks, playlistId }, index, style }: RowProps) => {
 	);
 };
 
-export default function Playlist() {
+export function Playlist() {
 	const { id: playlistId } = useParams();
-	if (!playlistId) return null;
 
 	const { playlist, handleDragAndDrop } = usePlaylistStore((state) => ({
 		playlist: state.playlists.find((p) => p.id === playlistId),
 		handleDragAndDrop: state.handleDragAndDrop,
 	}));
-	const trackMap = useTrackMap();
+	const { data } = useLibrary();
+	const trackMap = data?.trackById;
+	const getTrackById = data?.trackById;
 
-	const selectedTrackId = useUserStore((state) => state.selectedTrackId);
+	const { selectedTrackId } = useUser();
 	const selectedTrackIndex = playlist?.playlistTracks.findIndex(
 		(t) => t.trackId === selectedTrackId,
 	);
 
-	const utils = trpc.useUtils();
-	const { mutate: persistDragAndDrop } = trpc.playlist.dragAndDrop.useMutation({
-		onSuccess: () => utils.playlist.list.invalidate(),
+	const queryClient = useQueryClient();
+
+	const { mutate: persistDragAndDrop } = useMutation({
+		...orpc.playlist.dragAndDrop.mutationOptions(),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: orpc.playlist.list.queryKey() });
+		},
 	});
 
 	const listRef = useRef<List>(null);
-	const containerRef = useRef<HTMLDivElement>(null);
-	const { height: containerHeight = 0 } = useResizeObserver<HTMLDivElement>({
+	const containerRef = useRef<HTMLDivElement | null>(null);
+	const { height: containerHeight = 0 } = useResizeObserver<HTMLDivElement | null>({
 		ref: containerRef,
 	});
 

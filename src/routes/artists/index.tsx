@@ -6,7 +6,9 @@ export const Route = createFileRoute('/artists/')({
 });
 
 function RouteComponent() {
-	const { artists } = useLoaderData({ from: '__root__' });
+	const {
+		library: { artists },
+	} = useLoaderData({ from: '__root__' });
 
 	return <Artists artists={artists} />;
 }

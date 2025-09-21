@@ -1,7 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
-import Playlist from '@/app/Playlist';
+import Playlist from '@/routes/playlists/-components/Playlist';
 import { PlaylistBuilder } from '@/app/PlaylistBuilder';
-import Playlists from '@/app/Playlists';
+import Playlists from '@/routes/playlists/-components/Playlists';
 
 export default function Router() {
 	return (

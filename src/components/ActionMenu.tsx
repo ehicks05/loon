@@ -10,6 +10,7 @@ import {
 	FaRegHeart,
 } from 'react-icons/fa';
 import { usePlaylistStore } from '@/hooks/usePlaylistStore';
+import { usePlaylists } from '@/hooks/usePlaylists';
 import { orpc } from '@/orpc/client';
 import type { Playlist } from '@/orpc/types';
 
@@ -22,7 +23,8 @@ export default function ActionMenu({ trackIds }: { trackIds: string[] }) {
 	// todo: utils.playlist.list.invalidate();
 	const { mutate } = useMutation(orpc.playlist.update.mutationOptions());
 
-	const playlists = usePlaylistStore((state) => state.playlists);
+	const { data } = usePlaylists();
+	const playlists = data?.playlists || [];
 
 	const favoritesPlaylist = playlists.find((playlist) => playlist.favorites);
 	const isFavorite = favoritesPlaylist && isSaturated(favoritesPlaylist, trackIds);

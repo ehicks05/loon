@@ -9,22 +9,18 @@ import {
 } from 'lucide-react';
 import { useUser } from '../../hooks/useUser';
 import { Equalizer } from '../Equalizer';
-import PlaybackButtons from './PlaybackButtons';
-import TrackDescription from './TrackDescription';
-import TrackProgressBar from './TrackProgressBar';
-import VolumeSlider from './VolumeSlider';
+import { PlaybackButtons } from './PlaybackButtons';
+import { TrackDescription } from './TrackDescription';
+import { TrackProgressBar } from './TrackProgressBar';
+import { VolumeSlider } from './VolumeSlider';
 
 export const BUTTON_CLASS = 'p-2 rounded hover:bg-neutral-800';
 
 function ShuffleButton() {
 	const { shuffle, setShuffle } = useUser();
-
+	const className = `${BUTTON_CLASS} ${shuffle ? ' text-green-500' : ''}`;
 	return (
-		<button
-			type="button"
-			className={`${BUTTON_CLASS} ${shuffle ? ' text-green-500' : ''}`}
-			onClick={() => setShuffle(!shuffle)}
-		>
+		<button type="button" className={className} onClick={() => setShuffle(!shuffle)}>
 			<Shuffle size={20} />
 		</button>
 	);

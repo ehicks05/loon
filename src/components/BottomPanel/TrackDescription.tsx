@@ -5,7 +5,7 @@ import { useLibrary } from '@/hooks/useLibrary';
 import { useUser } from '../../hooks/useUser';
 import { ArtistLinks } from '../ArtistLinks';
 
-export default function TrackDescription() {
+export function TrackDescription() {
 	const { width } = useWindowSize();
 	const textWidth = width >= 768 ? 'calc(100vw - 408px)' : '100%';
 

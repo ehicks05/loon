@@ -9,7 +9,7 @@ const VolumeLabel = ({ volume }: { volume: number }) => (
 	</div>
 );
 
-export default function VolumeSlider() {
+export function VolumeSlider() {
 	const { volume, setVolume } = useUser();
 
 	return (

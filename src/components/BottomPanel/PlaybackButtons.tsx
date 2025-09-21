@@ -4,7 +4,7 @@ import { useUser } from '../../hooks/useUser';
 import { getNewTrackId } from '../Player/trackDeterminationUtils';
 import { BUTTON_CLASS } from './BottomPanel';
 
-export default function PlaybackButtons() {
+export function PlaybackButtons() {
 	const playbackState = usePlayerStore((state) => state.playbackState);
 	const setPlaybackState = usePlayerStore((state) => state.setPlaybackState);
 	const { setSelectedTrackId } = useUser();

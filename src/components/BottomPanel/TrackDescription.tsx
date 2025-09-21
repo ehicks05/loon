@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router';
 import { useWindowSize } from 'usehooks-ts';
 import { PLACEHOLDER_IMAGE_URL } from '@/constants';
-import { getTrackById } from '../../hooks/useLibraryStore';
+import { useLibrary } from '@/hooks/useLibrary';
 import { useUser } from '../../hooks/useUser';
 import { ArtistLinks } from '../ArtistLinks';
 
@@ -12,7 +12,10 @@ export default function TrackDescription() {
 	const {
 		user: { selectedTrackId },
 	} = useUser();
-	const track = getTrackById(selectedTrackId);
+
+	const { data } = useLibrary();
+	const getTrackById = data?.getTrackById;
+	const track = getTrackById?.(selectedTrackId);
 	const imageUrl = track?.album?.imageThumb || PLACEHOLDER_IMAGE_URL;
 
 	return (

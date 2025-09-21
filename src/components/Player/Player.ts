@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { getTrackById } from '@/hooks/useLibraryStore';
+import { useLibrary } from '@/hooks/useLibrary';
 import { type PlaybackState, usePlayerStore } from '@/hooks/usePlayerStore';
 import { getPlaylistById } from '@/hooks/usePlaylistStore';
 import { type PlaybackDirection, useUser } from '@/hooks/useUser';
@@ -10,6 +10,8 @@ import { useKeyboardControls } from './useKeyboardControls';
 
 export const Player = () => {
 	const { user: userState, setSelectedTrackId } = useUser();
+	const { data } = useLibrary();
+	const getTrackById = data?.getTrackById;
 
 	const {
 		setElapsedTime,
@@ -192,7 +194,7 @@ export const Player = () => {
 		const trackGainNode = trackGainNodeRef.current;
 		setElapsedTime(0);
 
-		const track = getTrackById(userState.selectedTrackId);
+		const track = getTrackById?.(userState.selectedTrackId);
 		if (!track || track.missingFile) {
 			if (!track) console.log('no track found...');
 			else if (track.missingFile) console.log('track is missing file...');

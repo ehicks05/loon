@@ -5,6 +5,7 @@ import {
 	createRootRouteWithContext,
 	HeadContent,
 	Scripts,
+	useLoaderData,
 } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 import type { ReactNode } from 'react';
@@ -14,7 +15,7 @@ import Navbar from '@/components/Navbar';
 import { Player } from '@/components/Player/Player';
 import { Spectrum } from '@/components/Player/spectrum';
 import SidePanel from '@/components/SidePanel';
-import { useLibrary } from '@/hooks/useLibrary';
+import { fetchAndDenormalizeLibrary } from '@/hooks/useLibrary';
 import { useTitle } from '@/hooks/useTitle';
 import { Providers } from '@/providers';
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools';
@@ -61,11 +62,15 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 	shellComponent: RootDocument,
 	errorComponent: ({ error }) => <div>uh oh: {error.message}</div>,
 	notFoundComponent: () => <div>not found...</div>,
+	loader: async () => {
+		return fetchAndDenormalizeLibrary();
+	},
+	ssr: false,
 });
 
 function RootComponent({ children }: Readonly<{ children: ReactNode }>) {
 	useTitle();
-	const { data: library, isLoading } = useLibrary();
+	// const { tracks } = useLoaderData({ from: '__root__' });
 
 	return (
 		<div className="h-dvh flex flex-col text-neutral-300 bg-neutral-950">
@@ -82,12 +87,12 @@ function RootComponent({ children }: Readonly<{ children: ReactNode }>) {
 					</div>
 				</div>
 				<div className="w-full max-w-screen-lg rounded-lg overflow-y-auto overflow-x-hidden p-2 bg-neutral-900">
-					{!isLoading && !library?.tracks && (
+					{/* {!tracks && (
 						<div className="flex flex-col gap-4 p-4 -m-2 bg-red-600 rounded-lg">
 							<div className="text-3xl">Uh oh!</div>
 							<div className="text-lg">Unable to fetch the music library!</div>
 						</div>
-					)}
+					)} */}
 					{children}
 				</div>
 			</div>

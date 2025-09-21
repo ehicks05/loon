@@ -1,5 +1,12 @@
 import * as Popover from '@radix-ui/react-popover';
-import { Shuffle, SlidersVertical, Volume2, VolumeOff } from 'lucide-react';
+import {
+	Shuffle,
+	SlidersVertical,
+	Volume,
+	Volume1,
+	Volume2,
+	VolumeOff,
+} from 'lucide-react';
 import { useUser } from '../../hooks/useUser';
 import { Equalizer } from '../Equalizer';
 import PlaybackButtons from './PlaybackButtons';
@@ -24,8 +31,14 @@ function ShuffleButton() {
 }
 
 function MuteButton() {
-	const { muted, setMuted } = useUser();
-	const Icon = muted ? VolumeOff : Volume2;
+	const { muted, setMuted, volume } = useUser();
+	const Icon = muted
+		? VolumeOff
+		: volume > -10
+			? Volume2
+			: volume > -20
+				? Volume1
+				: Volume;
 
 	return (
 		<button type="button" className={BUTTON_CLASS} onClick={() => setMuted(!muted)}>

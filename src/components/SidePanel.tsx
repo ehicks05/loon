@@ -1,22 +1,22 @@
 import { Link, useLocation } from '@tanstack/react-router';
 import {
-	FaCompactDisc,
-	FaFolderOpen,
-	FaHeart,
-	FaList,
-	FaMusic,
-	FaSearch,
-	FaUsers,
-	FaVolumeUp,
-} from 'react-icons/fa';
-import type { IconType } from 'react-icons/lib';
-import { usePlaylistStore } from '@/hooks/usePlaylistStore';
+	Disc3,
+	FolderOpen,
+	Heart,
+	List,
+	ListMusic,
+	type LucideIcon,
+	MicVocal,
+	Search,
+	Volume2,
+} from 'lucide-react';
+import { usePlaylists } from '@/hooks/usePlaylists';
 import { useUser } from '@/hooks/useUser';
 import type { Playlist } from '@/orpc/types';
 
 interface PlaylistLink {
 	path: string;
-	icon: IconType;
+	icon: LucideIcon;
 	text: string;
 	currentlyPlaying?: boolean;
 }
@@ -24,7 +24,7 @@ interface PlaylistLink {
 function playlistToLink(playlist: Playlist, selectedPlaylistId: string) {
 	return {
 		path: `/playlists/${playlist.id}`,
-		icon: playlist.favorites ? FaHeart : playlist.queue ? FaList : FaMusic,
+		icon: playlist.favorites ? Heart : playlist.queue ? List : ListMusic,
 		text: playlist.name,
 		currentlyPlaying: playlist.id === selectedPlaylistId,
 	};
@@ -46,18 +46,19 @@ const SidebarLink = ({
 	return (
 		<Link key={path} to={path} className={linkClasses}>
 			<div className={`flex gap-2 items-center ${isActive ? 'text-white' : ''}`}>
-				<Icon />
+				<Icon size={16} />
 				{text}
 			</div>
 			{currentlyPlaying && (
-				<FaVolumeUp className="text-green-500" title="Now Playing" />
+				<Volume2 className="text-green-500" aria-label="Now Playing" size={16} />
 			)}
 		</Link>
 	);
 };
 
 export default function SidePanel() {
-	const playlists = usePlaylistStore((state) => state.playlists);
+	const { data } = usePlaylists();
+	const playlists = data?.playlists || [];
 	const {
 		user: { selectedPlaylistId },
 	} = useUser();
@@ -65,13 +66,13 @@ export default function SidePanel() {
 	const defaultLinks = [
 		{
 			path: '/search',
-			icon: FaSearch,
+			icon: Search,
 			text: 'Search',
 			currentlyPlaying: selectedPlaylistId === '',
 		},
-		{ path: '/artists', icon: FaUsers, text: 'Artists' },
-		{ path: '/albums', icon: FaCompactDisc, text: 'Albums' },
-		{ path: '/playlists', icon: FaFolderOpen, text: 'Library' },
+		{ path: '/artists', icon: MicVocal, text: 'Artists' },
+		{ path: '/albums', icon: Disc3, text: 'Albums' },
+		{ path: '/playlists', icon: FolderOpen, text: 'Library' },
 	];
 
 	const playlistLinks = playlists

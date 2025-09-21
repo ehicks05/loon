@@ -1,15 +1,8 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { useMutation } from '@tanstack/react-query';
 import { partition } from 'es-toolkit';
+import { ChevronRight, Ellipsis, Heart, ListIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
-import {
-	FaChevronRight,
-	FaEllipsisH,
-	FaHeart,
-	FaList,
-	FaRegHeart,
-} from 'react-icons/fa';
-import { usePlaylistStore } from '@/hooks/usePlaylistStore';
 import { usePlaylists } from '@/hooks/usePlaylists';
 import { orpc } from '@/orpc/client';
 import type { Playlist } from '@/orpc/types';
@@ -63,9 +56,9 @@ export default function ActionMenu({ trackIds }: { trackIds: string[] }) {
 		});
 	};
 	const favoritesIcon = isFavorite ? (
-		<FaHeart className="w-4 text-green-500" />
+		<Heart className="w-4 text-green-500 fill-current" />
 	) : (
-		<FaRegHeart className="w-4" />
+		<Heart className="w-4" />
 	);
 
 	const handleQueue = () => {
@@ -74,7 +67,9 @@ export default function ActionMenu({ trackIds }: { trackIds: string[] }) {
 			trackIds: getUpdatedTrackList(isQueued ? 'remove' : 'add', queuePlaylist),
 		});
 	};
-	const queueIcon = <FaList className={`w-4 ${isQueued ? 'text-green-500' : ''}`} />;
+	const queueIcon = (
+		<ListIcon className={`w-4 ${isQueued ? 'text-green-500' : ''}`} />
+	);
 
 	const subMenus = [
 		{
@@ -127,7 +122,7 @@ export default function ActionMenu({ trackIds }: { trackIds: string[] }) {
 					>
 						<div className="flex gap-8 w-full items-center justify-between">
 							<span>{label}</span>
-							{!disabled && <FaChevronRight size={12} />}
+							{!disabled && <ChevronRight size={12} />}
 						</div>
 					</DropdownMenu.SubTrigger>
 					<DropdownMenu.Portal>
@@ -159,7 +154,7 @@ const Wrapper = ({ children }: { children: ReactNode }) => {
 	return (
 		<DropdownMenu.Root>
 			<DropdownMenu.Trigger className="p-2 focus-visible:outline-none">
-				<FaEllipsisH />
+				<Ellipsis />
 			</DropdownMenu.Trigger>
 
 			<DropdownMenu.Portal>

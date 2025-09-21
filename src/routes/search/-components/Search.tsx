@@ -1,5 +1,5 @@
+import { SearchIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { FaSearch } from 'react-icons/fa';
 import { useDebounceValue } from 'usehooks-ts';
 import { TextInput } from '@/components/TextInput';
 import { useUser } from '@/hooks/useUser';
@@ -42,7 +42,7 @@ export default function Search({ tracks }: { tracks: Track[] }) {
 	return (
 		<div className="flex h-full flex-col overflow-hidden">
 			<TextInput
-				leftIcon={<FaSearch color="gray" />}
+				leftIcon={<SearchIcon color="gray" size={20} />}
 				value={searchKey}
 				onChange={(e) => {
 					setSearchKey(e.target.value);

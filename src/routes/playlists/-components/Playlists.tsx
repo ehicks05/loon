@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
-import { FaVolumeUp } from 'react-icons/fa';
+import { Volume2 } from 'lucide-react';
 import { Button } from '@/components/Button';
 import { usePlaylists } from '@/hooks/usePlaylists';
 import { useUser } from '@/hooks/useUser';
@@ -54,7 +54,7 @@ export function Playlists() {
 
 								{playlist.id === selectedPlaylistId && (
 									<span className="w-4 h-4 text-green-500 ml-3">
-										<FaVolumeUp aria-hidden="true" />
+										<Volume2 aria-hidden="true" size={20} />
 									</span>
 								)}
 							</Link>

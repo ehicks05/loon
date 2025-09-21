@@ -1,7 +1,6 @@
 import { UserButton, type UserButtonProps } from '@daveyplate/better-auth-ui';
 import { Link, useLocation } from '@tanstack/react-router';
-import { Wrench } from 'lucide-react';
-import { FaBars, FaXmark } from 'react-icons/fa6';
+import { Menu, Wrench, X } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 import { authClient } from '@/lib/auth-client';
 
@@ -37,11 +36,11 @@ export default function Navbar() {
 						>
 							<span className="-inset-0.5 absolute" />
 							<span className="sr-only">Open main menu</span>
-							<FaBars
+							<Menu
 								aria-hidden="true"
 								className="block h-6 w-6 group-data-[open]:hidden"
 							/>
-							<FaXmark
+							<X
 								aria-hidden="true"
 								className="hidden h-6 w-6 group-data-[open]:block"
 							/>

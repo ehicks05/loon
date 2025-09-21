@@ -1,5 +1,5 @@
+import { ArrowDownAZ, ArrowDownWideNarrow } from 'lucide-react';
 import type { Dispatch, SetStateAction } from 'react';
-import { FaSortAlphaDown, FaSortAmountDown } from 'react-icons/fa';
 import { twMerge } from 'tailwind-merge';
 import { Button } from '@/components/Button';
 import type { Artist } from '@/types/library';
@@ -7,8 +7,8 @@ import type { Artist } from '@/types/library';
 export type ArtistSort = 'name' | 'tracks';
 
 const SORT_BUTTONS = [
-	{ value: 'tracks', Icon: FaSortAmountDown },
-	{ value: 'name', Icon: FaSortAlphaDown },
+	{ value: 'tracks', Icon: ArrowDownWideNarrow },
+	{ value: 'name', Icon: ArrowDownAZ },
 ] as const;
 
 interface SortParams {
@@ -39,7 +39,7 @@ export const SortButtons = ({ orderBy, setOrderBy }: SortButtonProps) => (
 				)}
 				onClick={() => setOrderBy(value)}
 			>
-				<Icon />
+				<Icon size={20} />
 			</Button>
 		))}
 	</div>

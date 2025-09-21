@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router';
 import type { Album } from '@/types/library';
-import { ActionableImage } from './ActionableImage';
-import { ArtistLinks } from './ArtistLinks';
+import { ActionableImage } from '../../../components/ActionableImage';
+import { ArtistLinks } from '../../../components/ArtistLinks';
 
 const CUSTOM_SIZES = [
 	{ length: 8, size: 'text-xl' },

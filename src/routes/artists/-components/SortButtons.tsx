@@ -1,7 +1,7 @@
 import { ArrowDownAZ, ArrowDownWideNarrow } from 'lucide-react';
 import type { Dispatch, SetStateAction } from 'react';
 import { twMerge } from 'tailwind-merge';
-import { Button } from '@/components/Button';
+import { Button } from '@/components/ui/button';
 import type { Artist } from '@/types/library';
 
 export type ArtistSort = 'name' | 'tracks';
@@ -33,8 +33,9 @@ export const SortButtons = ({ orderBy, setOrderBy }: SortButtonProps) => (
 		{SORT_BUTTONS.map(({ value, Icon }) => (
 			<Button
 				key={value}
+				variant="secondary"
 				className={twMerge(
-					'text-neutral-400 bg-neutral-800',
+					'text-neutral-400',
 					orderBy === value ? 'text-green-400' : '',
 				)}
 				onClick={() => setOrderBy(value)}

@@ -1,5 +1,5 @@
 import { createFileRoute, useLoaderData } from '@tanstack/react-router';
-import { Artist } from './-Artist';
+import { Artist } from './-components/Artist';
 
 export const Route = createFileRoute('/artists/$id')({
 	component: RouteComponent,

@@ -10,7 +10,7 @@ export const ArtistLinks = ({ artists, linkClass }: Props) => (
 		{artists.map(({ id, name }, i) => (
 			<span key={id}>
 				{i !== 0 && ', '}
-				<Link className={linkClass} to={'/artists/$id'} params={{ id }}>
+				<Link className={linkClass} to="/artists/$id" params={{ id }}>
 					{name}
 				</Link>
 			</span>

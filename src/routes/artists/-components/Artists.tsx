@@ -1,9 +1,9 @@
 import 'lazysizes';
 import 'lazysizes/plugins/attrchange/ls.attrchange';
 import { useState } from 'react';
-import { ArtistCard } from '@/components/ArtistCard';
+import { ArtistCard } from '@/routes/artists/-components/ArtistCard';
 import type { Artist } from '@/types/library';
-import { type ArtistSort, SortButtons, sort } from './-SortButtons';
+import { type ArtistSort, SortButtons, sort } from './SortButtons';
 
 export function Artists({ artists }: { artists: Artist[] }) {
 	const [orderBy, setOrderBy] = useState<ArtistSort>('tracks');

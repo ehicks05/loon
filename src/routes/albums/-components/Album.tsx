@@ -1,13 +1,9 @@
 import MediaItem from '@/components/MediaItem';
 import 'lazysizes';
 import 'lazysizes/plugins/attrchange/ls.attrchange';
-import AlbumCard from '@/components/AlbumCard';
-import type { Album as IAlbum, Track } from '@/types/library';
-
-export const toTrackNumber = (album: IAlbum, track: Track) => {
-	const multiDisc = (album.tracks.at(-1)?.discNumber || 0) > 1;
-	return `${multiDisc ? `${track.discNumber}.` : ''}${track.trackNumber}` || 0;
-};
+import { toTrackNumber } from '@/lib/utils';
+import AlbumCard from '@/routes/albums/-components/AlbumCard';
+import type { Album as IAlbum } from '@/types/library';
 
 export function Album({ album }: { album: IAlbum }) {
 	return (

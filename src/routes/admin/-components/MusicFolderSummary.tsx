@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Button } from '@/components/Button';
+import { Button } from '@/components/ui/button';
 import { orpc } from '@/orpc/client';
 
 export const MusicFolderSummary = () => {
@@ -15,7 +15,7 @@ export const MusicFolderSummary = () => {
 
 	return (
 		<div className="flex gap-2 items-center">
-			<Button disabled={isFetching} onClick={handleClick}>
+			<Button variant="secondary" disabled={isFetching} onClick={handleClick}>
 				Check Music Folder
 			</Button>
 

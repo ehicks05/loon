@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import CheckboxTree, { type Node } from 'react-checkbox-tree';
-import { Button } from '@/components/Button';
 import { TextInput } from '@/components/TextInput';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
+import { Button } from '@/components/ui/button';
 import { orpc } from '@/orpc/client';
 import type { Playlist } from '@/orpc/types';
 import type { Track } from '@/types/library';
@@ -76,7 +76,7 @@ function PlaylistBuilderForm({
 				/>
 			</div>
 
-			<Button disabled={isPending} className={'bg-green-600'} onClick={onClick}>
+			<Button disabled={isPending} onClick={onClick}>
 				{playlist ? 'Update' : 'Create'} Playlist
 			</Button>
 		</section>

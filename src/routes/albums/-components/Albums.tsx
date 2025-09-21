@@ -1,6 +1,6 @@
 import 'lazysizes';
 import 'lazysizes/plugins/attrchange/ls.attrchange';
-import AlbumCard from '@/components/AlbumCard';
+import AlbumCard from '@/routes/albums/-components/AlbumCard';
 import type { Album } from '@/types/library';
 
 export function Albums({ albums }: { albums: Album[] }) {

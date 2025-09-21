@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { Volume2 } from 'lucide-react';
-import { Button } from '@/components/Button';
+import { Button } from '@/components/ui/button';
 import { usePlaylists } from '@/hooks/usePlaylists';
 import { useUser } from '@/hooks/useUser';
 import { authClient } from '@/lib/auth-client';
@@ -60,7 +60,7 @@ export function Playlists() {
 							</Link>
 							<div>{playlist.playlistTracks.length} tracks</div>
 							<div className="flex gap-2">
-								<Button>
+								<Button variant="secondary">
 									<Link to="/playlists/$id/edit" params={{ id: playlist.id }}>
 										Edit
 									</Link>
@@ -68,7 +68,7 @@ export function Playlists() {
 
 								<Button
 									disabled={playlist.queue || playlist.favorites}
-									className="bg-red-600"
+									variant="destructive"
 									onClick={handleClickDelete}
 								>
 									Delete
@@ -77,7 +77,7 @@ export function Playlists() {
 						</div>
 					);
 				})}
-				<Button className="bg-green-600">
+				<Button>
 					<Link to="/playlists/new">New Playlist</Link>
 				</Button>
 			</section>

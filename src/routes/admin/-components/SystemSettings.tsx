@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { Button } from '@/components/Button';
 import { CheckboxInput, TextInput } from '@/components/TextInput';
+import { Button } from '@/components/ui/button';
 import { orpc } from '@/orpc/client';
 import type { SystemSettings as ISystemSettings } from '@/orpc/types';
 import { MusicFolderSummary } from './MusicFolderSummary';
@@ -79,21 +79,21 @@ export default function SystemSettings() {
 
 			<div className="flex gap-2">
 				<Button
-					className={'bg-green-600'}
+					variant="default"
 					onClick={() => mutate(settings)}
 					disabled={isLoading}
 				>
 					Save
 				</Button>
 				<Button
-					className="bg-green-600"
+					variant="default"
 					disabled={isLoading}
 					onClick={() => syncLibrary({})}
 				>
 					Sync Now
 				</Button>
 				<Button
-					className="bg-red-700"
+					variant="destructive"
 					disabled={isLoading}
 					onClick={() => {
 						if (confirm('Delete Library?')) {

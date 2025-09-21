@@ -1,9 +1,9 @@
 import { Link } from '@tanstack/react-router';
 import { ActionableImage } from '@/components/ActionableImage';
-import { ArtistCard } from '@/components/ArtistCard';
 import MediaItem from '@/components/MediaItem';
+import { toTrackNumber } from '@/lib/utils';
+import { ArtistCard } from '@/routes/artists/-components/ArtistCard';
 import type { Album, Artist as IArtist } from '@/types/library';
-import { toTrackNumber } from '../albums/-Album';
 
 const AlbumsWithTracks = ({ albums }: { albums: Album[] }) => {
 	return (

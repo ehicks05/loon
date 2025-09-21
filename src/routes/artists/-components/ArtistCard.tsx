@@ -2,8 +2,8 @@ import 'lazysizes';
 import 'lazysizes/plugins/attrchange/ls.attrchange';
 import { useLibrary } from '@/hooks/useLibrary';
 import type { Artist } from '@/types/library';
-import { ActionableImage } from './ActionableImage';
-import { ArtistLinks } from './ArtistLinks';
+import { ActionableImage } from '../../../components/ActionableImage';
+import { ArtistLinks } from '../../../components/ArtistLinks';
 
 interface Props {
 	artist: Artist;
@@ -17,6 +17,7 @@ export function ArtistCard({ artist: _artist, size }: Props) {
 
 	const image = size === 'full' ? artist.image : artist.imageThumb;
 	const { albums, compilations, tracks } = artist;
+	const totalAlbums = albums.length + compilations.length;
 
 	return (
 		<div className="flex flex-col w-full items-start">
@@ -26,10 +27,8 @@ export function ArtistCard({ artist: _artist, size }: Props) {
 					<span className="text-green-500 font-bold">{tracks.length}</span> track
 					{tracks.length !== 1 ? 's' : ''}
 					{' · '}
-					<span className="text-green-500 font-bold">
-						{albums.length + compilations.length}
-					</span>{' '}
-					album{albums.length !== 1 ? 's' : ''}
+					<span className="text-green-500 font-bold">{totalAlbums}</span> album
+					{totalAlbums !== 1 ? 's' : ''}
 				</div>
 				<div className="text-lg text-center">
 					<ArtistLinks artists={[artist]} />

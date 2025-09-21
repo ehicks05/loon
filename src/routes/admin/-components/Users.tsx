@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { Button } from '@/components/Button';
 import { CheckboxInput } from '@/components/TextInput';
+import { Button } from '@/components/ui/button';
 import { authClient } from '@/lib/auth-client';
 
 export function Users() {
@@ -57,7 +57,7 @@ export function Users() {
 								</td>
 								<td className="p-1">
 									<Button
-										className="bg-red-600"
+										variant="destructive"
 										onClick={() => handleDelete(user.id)}
 										disabled={user.id === currentUser.id}
 									>

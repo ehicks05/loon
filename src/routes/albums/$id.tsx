@@ -1,5 +1,5 @@
 import { createFileRoute, useLoaderData } from '@tanstack/react-router';
-import { Album } from './-Album';
+import { Album } from './-components/Album';
 
 export const Route = createFileRoute('/albums/$id')({
 	component: RouteComponent,

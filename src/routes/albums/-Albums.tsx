@@ -1,16 +1,9 @@
 import 'lazysizes';
 import 'lazysizes/plugins/attrchange/ls.attrchange';
 import AlbumCard from '@/components/AlbumCard';
-import { useLibrary } from '@/hooks/useLibrary';
+import type { Album } from '@/types/library';
 
-export function Albums() {
-	const { data } = useLibrary();
-	const albums = data?.albums;
-
-	if (!albums) {
-		return null;
-	}
-
+export function Albums({ albums }: { albums: Album[] }) {
 	return (
 		<div className="flex flex-col gap-4">
 			<h2 className="text-xl font-bold">{albums.length} Albums</h2>

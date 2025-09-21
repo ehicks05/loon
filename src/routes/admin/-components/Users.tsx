@@ -3,7 +3,7 @@ import { Button } from '@/components/Button';
 import { CheckboxInput } from '@/components/TextInput';
 import { authClient } from '@/lib/auth-client';
 
-export default function UserSettings() {
+export function Users() {
 	const { data: session } = authClient.useSession();
 	const currentUser = session?.user;
 
@@ -39,7 +39,9 @@ export default function UserSettings() {
 					<tbody>
 						{users.map((user) => (
 							<tr key={user.id}>
-								<td className="p-1" title={user.id}>{user.id.slice(0, 5)}...</td>
+								<td className="p-1" title={user.id}>
+									{user.id.slice(0, 5)}...
+								</td>
 								<td className="p-1">{user.name}</td>
 								<td className="p-1">
 									<CheckboxInput

@@ -3,7 +3,7 @@ import { FixedSizeList as List } from 'react-window';
 import { useResizeObserver } from 'usehooks-ts';
 import { useUser } from '@/hooks/useUser';
 import type { Track } from '@/types/library';
-import MediaItem from './MediaItem';
+import MediaItem from '../../../components/MediaItem';
 
 const Row = ({
 	data,

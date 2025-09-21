@@ -1,0 +1,46 @@
+import type { Dispatch, SetStateAction } from 'react';
+import { FaSortAlphaDown, FaSortAmountDown } from 'react-icons/fa';
+import { twMerge } from 'tailwind-merge';
+import { Button } from '@/components/Button';
+import type { Artist } from '@/types/library';
+
+export type ArtistSort = 'name' | 'tracks';
+
+const SORT_BUTTONS = [
+	{ value: 'tracks', Icon: FaSortAmountDown },
+	{ value: 'name', Icon: FaSortAlphaDown },
+] as const;
+
+interface SortParams {
+	artists: Artist[];
+	orderBy: ArtistSort;
+}
+
+export const sort = ({ artists, orderBy }: SortParams) =>
+	artists.sort((o1, o2) =>
+		orderBy === 'name'
+			? o1.name.localeCompare(o2.name)
+			: o2.tracks.length - o1.tracks.length,
+	);
+
+interface SortButtonProps {
+	orderBy: string;
+	setOrderBy: Dispatch<SetStateAction<ArtistSort>>;
+}
+
+export const SortButtons = ({ orderBy, setOrderBy }: SortButtonProps) => (
+	<div>
+		{SORT_BUTTONS.map(({ value, Icon }) => (
+			<Button
+				key={value}
+				className={twMerge(
+					'text-neutral-400 bg-neutral-800',
+					orderBy === value ? 'text-green-400' : '',
+				)}
+				onClick={() => setOrderBy(value)}
+			>
+				<Icon />
+			</Button>
+		))}
+	</div>
+);

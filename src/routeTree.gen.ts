@@ -11,17 +11,15 @@
 import { createServerRootRoute } from '@tanstack/react-start/server'
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SettingsRouteImport } from './routes/settings'
-import { Route as SearchRouteImport } from './routes/search'
-import { Route as ArtistsRouteImport } from './routes/artists'
-import { Route as AlbumsRouteImport } from './routes/albums'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SearchIndexRouteImport } from './routes/search/index'
+import { Route as ArtistsIndexRouteImport } from './routes/artists/index'
+import { Route as AlbumsIndexRouteImport } from './routes/albums/index'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as OrganizationOrganizationViewRouteImport } from './routes/organization.$organizationView'
 import { Route as AuthAuthViewRouteImport } from './routes/auth.$authView'
-import { Route as ArtistsIdRouteImport } from './routes/artists_.$id'
-import { Route as AlbumsIdRouteImport } from './routes/albums_.$id'
-import { Route as AdminTrackInfoRouteImport } from './routes/admin.trackInfo'
-import { Route as AdminSystemSettingsRouteImport } from './routes/admin.systemSettings'
+import { Route as ArtistsIdRouteImport } from './routes/artists/$id'
+import { Route as AlbumsIdRouteImport } from './routes/albums/$id'
 import { Route as AccountAccountViewRouteImport } from './routes/account.$accountView'
 import { ServerRoute as ApiSplatServerRouteImport } from './routes/api.$'
 import { ServerRoute as ApiMediaIdServerRouteImport } from './routes/api_.media.$id'
@@ -30,29 +28,29 @@ import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api.auth.
 
 const rootServerRouteImport = createServerRootRoute()
 
-const SettingsRoute = SettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SearchRoute = SearchRouteImport.update({
-  id: '/search',
-  path: '/search',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ArtistsRoute = ArtistsRouteImport.update({
-  id: '/artists',
-  path: '/artists',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AlbumsRoute = AlbumsRouteImport.update({
-  id: '/albums',
-  path: '/albums',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchIndexRoute = SearchIndexRouteImport.update({
+  id: '/search/',
+  path: '/search/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArtistsIndexRoute = ArtistsIndexRouteImport.update({
+  id: '/artists/',
+  path: '/artists/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlbumsIndexRoute = AlbumsIndexRouteImport.update({
+  id: '/albums/',
+  path: '/albums/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrganizationOrganizationViewRoute =
@@ -67,23 +65,13 @@ const AuthAuthViewRoute = AuthAuthViewRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const ArtistsIdRoute = ArtistsIdRouteImport.update({
-  id: '/artists_/$id',
+  id: '/artists/$id',
   path: '/artists/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AlbumsIdRoute = AlbumsIdRouteImport.update({
-  id: '/albums_/$id',
+  id: '/albums/$id',
   path: '/albums/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminTrackInfoRoute = AdminTrackInfoRouteImport.update({
-  id: '/admin/trackInfo',
-  path: '/admin/trackInfo',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminSystemSettingsRoute = AdminSystemSettingsRouteImport.update({
-  id: '/admin/systemSettings',
-  path: '/admin/systemSettings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccountAccountViewRoute = AccountAccountViewRouteImport.update({
@@ -114,105 +102,91 @@ const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/albums': typeof AlbumsRoute
-  '/artists': typeof ArtistsRoute
-  '/search': typeof SearchRoute
-  '/settings': typeof SettingsRoute
   '/account/$accountView': typeof AccountAccountViewRoute
-  '/admin/systemSettings': typeof AdminSystemSettingsRoute
-  '/admin/trackInfo': typeof AdminTrackInfoRoute
   '/albums/$id': typeof AlbumsIdRoute
   '/artists/$id': typeof ArtistsIdRoute
   '/auth/$authView': typeof AuthAuthViewRoute
   '/organization/$organizationView': typeof OrganizationOrganizationViewRoute
+  '/admin': typeof AdminIndexRoute
+  '/albums': typeof AlbumsIndexRoute
+  '/artists': typeof ArtistsIndexRoute
+  '/search': typeof SearchIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/albums': typeof AlbumsRoute
-  '/artists': typeof ArtistsRoute
-  '/search': typeof SearchRoute
-  '/settings': typeof SettingsRoute
   '/account/$accountView': typeof AccountAccountViewRoute
-  '/admin/systemSettings': typeof AdminSystemSettingsRoute
-  '/admin/trackInfo': typeof AdminTrackInfoRoute
   '/albums/$id': typeof AlbumsIdRoute
   '/artists/$id': typeof ArtistsIdRoute
   '/auth/$authView': typeof AuthAuthViewRoute
   '/organization/$organizationView': typeof OrganizationOrganizationViewRoute
+  '/admin': typeof AdminIndexRoute
+  '/albums': typeof AlbumsIndexRoute
+  '/artists': typeof ArtistsIndexRoute
+  '/search': typeof SearchIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/albums': typeof AlbumsRoute
-  '/artists': typeof ArtistsRoute
-  '/search': typeof SearchRoute
-  '/settings': typeof SettingsRoute
   '/account/$accountView': typeof AccountAccountViewRoute
-  '/admin/systemSettings': typeof AdminSystemSettingsRoute
-  '/admin/trackInfo': typeof AdminTrackInfoRoute
-  '/albums_/$id': typeof AlbumsIdRoute
-  '/artists_/$id': typeof ArtistsIdRoute
+  '/albums/$id': typeof AlbumsIdRoute
+  '/artists/$id': typeof ArtistsIdRoute
   '/auth/$authView': typeof AuthAuthViewRoute
   '/organization/$organizationView': typeof OrganizationOrganizationViewRoute
+  '/admin/': typeof AdminIndexRoute
+  '/albums/': typeof AlbumsIndexRoute
+  '/artists/': typeof ArtistsIndexRoute
+  '/search/': typeof SearchIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/albums'
-    | '/artists'
-    | '/search'
-    | '/settings'
     | '/account/$accountView'
-    | '/admin/systemSettings'
-    | '/admin/trackInfo'
     | '/albums/$id'
     | '/artists/$id'
     | '/auth/$authView'
     | '/organization/$organizationView'
+    | '/admin'
+    | '/albums'
+    | '/artists'
+    | '/search'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/albums'
-    | '/artists'
-    | '/search'
-    | '/settings'
     | '/account/$accountView'
-    | '/admin/systemSettings'
-    | '/admin/trackInfo'
     | '/albums/$id'
     | '/artists/$id'
     | '/auth/$authView'
     | '/organization/$organizationView'
-  id:
-    | '__root__'
-    | '/'
+    | '/admin'
     | '/albums'
     | '/artists'
     | '/search'
-    | '/settings'
+  id:
+    | '__root__'
+    | '/'
     | '/account/$accountView'
-    | '/admin/systemSettings'
-    | '/admin/trackInfo'
-    | '/albums_/$id'
-    | '/artists_/$id'
+    | '/albums/$id'
+    | '/artists/$id'
     | '/auth/$authView'
     | '/organization/$organizationView'
+    | '/admin/'
+    | '/albums/'
+    | '/artists/'
+    | '/search/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AlbumsRoute: typeof AlbumsRoute
-  ArtistsRoute: typeof ArtistsRoute
-  SearchRoute: typeof SearchRoute
-  SettingsRoute: typeof SettingsRoute
   AccountAccountViewRoute: typeof AccountAccountViewRoute
-  AdminSystemSettingsRoute: typeof AdminSystemSettingsRoute
-  AdminTrackInfoRoute: typeof AdminTrackInfoRoute
   AlbumsIdRoute: typeof AlbumsIdRoute
   ArtistsIdRoute: typeof ArtistsIdRoute
   AuthAuthViewRoute: typeof AuthAuthViewRoute
   OrganizationOrganizationViewRoute: typeof OrganizationOrganizationViewRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+  AlbumsIndexRoute: typeof AlbumsIndexRoute
+  ArtistsIndexRoute: typeof ArtistsIndexRoute
+  SearchIndexRoute: typeof SearchIndexRoute
 }
 export interface FileServerRoutesByFullPath {
   '/api/$': typeof ApiSplatServerRoute
@@ -250,39 +224,39 @@ export interface RootServerRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/settings': {
-      id: '/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof SettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/search': {
-      id: '/search'
-      path: '/search'
-      fullPath: '/search'
-      preLoaderRoute: typeof SearchRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/artists': {
-      id: '/artists'
-      path: '/artists'
-      fullPath: '/artists'
-      preLoaderRoute: typeof ArtistsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/albums': {
-      id: '/albums'
-      path: '/albums'
-      fullPath: '/albums'
-      preLoaderRoute: typeof AlbumsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search/': {
+      id: '/search/'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/artists/': {
+      id: '/artists/'
+      path: '/artists'
+      fullPath: '/artists'
+      preLoaderRoute: typeof ArtistsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/albums/': {
+      id: '/albums/'
+      path: '/albums'
+      fullPath: '/albums'
+      preLoaderRoute: typeof AlbumsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/organization/$organizationView': {
@@ -299,32 +273,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAuthViewRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/artists_/$id': {
-      id: '/artists_/$id'
+    '/artists/$id': {
+      id: '/artists/$id'
       path: '/artists/$id'
       fullPath: '/artists/$id'
       preLoaderRoute: typeof ArtistsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/albums_/$id': {
-      id: '/albums_/$id'
+    '/albums/$id': {
+      id: '/albums/$id'
       path: '/albums/$id'
       fullPath: '/albums/$id'
       preLoaderRoute: typeof AlbumsIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/trackInfo': {
-      id: '/admin/trackInfo'
-      path: '/admin/trackInfo'
-      fullPath: '/admin/trackInfo'
-      preLoaderRoute: typeof AdminTrackInfoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/systemSettings': {
-      id: '/admin/systemSettings'
-      path: '/admin/systemSettings'
-      fullPath: '/admin/systemSettings'
-      preLoaderRoute: typeof AdminSystemSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/account/$accountView': {
@@ -371,17 +331,15 @@ declare module '@tanstack/react-start/server' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AlbumsRoute: AlbumsRoute,
-  ArtistsRoute: ArtistsRoute,
-  SearchRoute: SearchRoute,
-  SettingsRoute: SettingsRoute,
   AccountAccountViewRoute: AccountAccountViewRoute,
-  AdminSystemSettingsRoute: AdminSystemSettingsRoute,
-  AdminTrackInfoRoute: AdminTrackInfoRoute,
   AlbumsIdRoute: AlbumsIdRoute,
   ArtistsIdRoute: ArtistsIdRoute,
   AuthAuthViewRoute: AuthAuthViewRoute,
   OrganizationOrganizationViewRoute: OrganizationOrganizationViewRoute,
+  AdminIndexRoute: AdminIndexRoute,
+  AlbumsIndexRoute: AlbumsIndexRoute,
+  ArtistsIndexRoute: ArtistsIndexRoute,
+  SearchIndexRoute: SearchIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,6 +1,6 @@
 import { UserButton, type UserButtonProps } from '@daveyplate/better-auth-ui';
 import { Link, useLocation } from '@tanstack/react-router';
-import { Info, Settings, Users, Wrench } from 'lucide-react';
+import { Wrench } from 'lucide-react';
 import { FaBars, FaXmark } from 'react-icons/fa6';
 import { twMerge } from 'tailwind-merge';
 import { authClient } from '@/lib/auth-client';
@@ -12,17 +12,8 @@ const navigation = [
 	{ name: 'Albums', href: '/albums' },
 ];
 
-const userMenuItems = [
-	{ href: '/settings', label: 'User Settings', icon: <Settings /> },
-];
 const adminMenuItems = [
-	{ href: '/admin/systemSettings', label: 'Manage System', icon: <Wrench /> },
-	{
-		href: '/admin/trackInfo',
-		label: 'Current Track Info',
-		icon: <Info />,
-		separator: true,
-	},
+	{ href: '/admin', label: 'Manage System', icon: <Wrench /> },
 ];
 
 export default function Navbar() {
@@ -32,7 +23,6 @@ export default function Navbar() {
 	const isAdmin = session?.user.role === 'admin';
 
 	const additionalLinks: UserButtonProps['additionalLinks'] = [
-		...userMenuItems,
 		...(isAdmin ? adminMenuItems : []),
 	];
 

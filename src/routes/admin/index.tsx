@@ -1,10 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router';
-import {Artists} from '@/app/Artists';
+import { Admin } from './-components/Admin';
 
-export const Route = createFileRoute('/artists')({
+export const Route = createFileRoute('/admin/')({
 	component: RouteComponent,
 });
 
 function RouteComponent() {
-	return <Artists />;
+	return <Admin />;
 }

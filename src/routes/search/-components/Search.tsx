@@ -2,26 +2,22 @@ import { useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { useDebounceValue } from 'usehooks-ts';
 import { TextInput } from '@/components/TextInput';
-import { useLibrary } from '@/hooks/useLibrary';
 import { useUser } from '@/hooks/useUser';
 import type { Track } from '@/types/library';
-import { TrackListing } from '../components/TrackListing';
+import { TrackListing } from './TrackListing';
 
 const toSearchFields = (track: Track) =>
 	[track.title, track.album.name, ...track.artists.map((artist) => artist.name)].map(
 		(o) => o.toLocaleLowerCase(),
 	);
 
-export default function Search() {
+export default function Search({ tracks }: { tracks: Track[] }) {
 	const [searchKey, setSearchKey] = useState('');
 	const [debouncedSearchKey, setDebouncedSearchKey] = useDebounceValue(
 		searchKey,
 		300,
 	);
 	const [searchResults, setSearchResults] = useState<Track[]>([]);
-
-	const { data } = useLibrary();
-	const tracks = data?.tracks || [];
 
 	const { setSelectedContextMenuId } = useUser();
 

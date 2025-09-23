@@ -1,4 +1,5 @@
-import { createFileRoute, useLoaderData } from '@tanstack/react-router';
+import { createFileRoute, notFound } from '@tanstack/react-router';
+import { getArtistById } from '@/hooks/useLibraryStore';
 import { Artist } from './-components/Artist';
 
 export const Route = createFileRoute('/artists/$id')({
@@ -8,10 +9,11 @@ export const Route = createFileRoute('/artists/$id')({
 function RouteComponent() {
 	const { id } = Route.useParams();
 
-	const {
-		library: { getArtistById },
-	} = useLoaderData({ from: '__root__' });
 	const artist = getArtistById(id);
+
+	if (!artist) {
+		throw notFound();
+	}
 
 	return <Artist artist={artist} />;
 }

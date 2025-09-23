@@ -2,7 +2,7 @@ import { SearchIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useDebounceValue } from 'usehooks-ts';
 import { TextInput } from '@/components/TextInput';
-import { useUser } from '@/hooks/useUser';
+import { setSelectedContextMenuId } from '@/hooks/useUserStore';
 import type { Track } from '@/types/library';
 import { TrackListing } from './TrackListing';
 
@@ -18,8 +18,6 @@ export default function Search({ tracks }: { tracks: Track[] }) {
 		300,
 	);
 	const [searchResults, setSearchResults] = useState<Track[]>([]);
-
-	const { setSelectedContextMenuId } = useUser();
 
 	useEffect(() => {
 		return function cleanup() {

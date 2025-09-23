@@ -1,4 +1,5 @@
-import { createFileRoute, useLoaderData } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
+import { useLibraryStore } from '@/hooks/useLibraryStore';
 import { PlaylistBuilder } from './-components/PlaylistBuilder';
 
 export const Route = createFileRoute('/playlists/new')({
@@ -6,9 +7,7 @@ export const Route = createFileRoute('/playlists/new')({
 });
 
 function RouteComponent() {
-	const {
-		library: { tracks },
-	} = useLoaderData({ from: '__root__' });
+	const { tracks } = useLibraryStore();
 
 	return <PlaylistBuilder tracks={tracks} />;
 }

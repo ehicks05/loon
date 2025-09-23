@@ -1,13 +1,12 @@
 import { Pause, Play, SkipBack, SkipForward } from 'lucide-react';
 import { usePlayerStore } from '../../hooks/usePlayerStore';
-import { useUser } from '../../hooks/useUser';
+import { setSelectedTrackId } from '../../hooks/useUserStore';
 import { getNewTrackId } from '../Player/trackDeterminationUtils';
 import { BUTTON_CLASS } from './BottomPanel';
 
 export function PlaybackButtons() {
 	const playbackState = usePlayerStore((state) => state.playbackState);
 	const setPlaybackState = usePlayerStore((state) => state.setPlaybackState);
-	const { setSelectedTrackId } = useUser();
 
 	function handleTrackChange(direction: 'prev' | 'next') {
 		setSelectedTrackId(getNewTrackId(direction));

@@ -1,10 +1,9 @@
-import { useLibrary } from '@/hooks/useLibrary';
-import { useUser } from '@/hooks/useUser';
+import { getTrackById } from '@/hooks/useLibraryStore';
+import { useUserStore } from '@/hooks/useUserStore';
 
 export function TrackInfo() {
-	const { selectedTrackId } = useUser();
-	const { data } = useLibrary();
-	const track = data?.getTrackById(selectedTrackId);
+	const { selectedTrackId } = useUserStore();
+	const track = getTrackById(selectedTrackId);
 
 	return (
 		<section className="flex flex-col gap-4">

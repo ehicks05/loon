@@ -1,4 +1,5 @@
-import { createFileRoute, useLoaderData } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
+import { useLibraryStore } from '@/hooks/useLibraryStore';
 import { Albums } from './-components/Albums';
 
 export const Route = createFileRoute('/albums/')({
@@ -6,9 +7,7 @@ export const Route = createFileRoute('/albums/')({
 });
 
 function RouteComponent() {
-	const {
-		library: { albums },
-	} = useLoaderData({ from: '__root__' });
+	const { albums } = useLibraryStore();
 
 	return <Albums albums={albums} />;
 }

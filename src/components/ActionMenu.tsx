@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { partition } from 'es-toolkit';
 import { ChevronRight, Ellipsis, Heart, ListIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
-import { usePlaylists } from '@/hooks/usePlaylists';
+import { usePlaylistStore } from '@/hooks/usePlaylistStore';
 import { orpc } from '@/orpc/client';
 import type { Playlist } from '@/orpc/types';
 
@@ -16,8 +16,7 @@ export default function ActionMenu({ trackIds }: { trackIds: string[] }) {
 	// todo: utils.playlist.list.invalidate();
 	const { mutate } = useMutation(orpc.playlist.update.mutationOptions());
 
-	const { data } = usePlaylists();
-	const playlists = data?.playlists || [];
+	const { playlists } = usePlaylistStore();
 
 	const favoritesPlaylist = playlists.find((playlist) => playlist.favorites);
 	const isFavorite = favoritesPlaylist && isSaturated(favoritesPlaylist, trackIds);

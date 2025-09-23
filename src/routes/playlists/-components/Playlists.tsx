@@ -2,8 +2,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { Volume2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { usePlaylists } from '@/hooks/usePlaylists';
-import { useUser } from '@/hooks/useUser';
+import { usePlaylistStore } from '@/hooks/usePlaylistStore';
+import { useUserStore } from '@/hooks/useUserStore';
 import { authClient } from '@/lib/auth-client';
 import { orpc } from '@/orpc/client';
 
@@ -11,10 +11,9 @@ export function Playlists() {
 	const { data: session } = authClient.useSession();
 	const user = session?.user;
 
-	const { data } = usePlaylists();
-	const playlists = data?.playlists || [];
+	const { playlists } = usePlaylistStore();
 
-	const { selectedPlaylistId } = useUser();
+	const { selectedPlaylistId } = useUserStore();
 	const queryClient = useQueryClient();
 
 	const { mutate: deletePlaylist } = useMutation({

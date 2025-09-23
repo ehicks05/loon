@@ -10,7 +10,9 @@ import { useEffect } from 'react';
 import { List, type RowComponentProps, useListRef } from 'react-window';
 import MediaItem from '@/components/MediaItem';
 import { MediaItemDrag } from '@/components/MediaItemDrag';
-import { useUser } from '@/hooks/useUser';
+import { trackById } from '@/hooks/useLibraryStore';
+import { usePlaylistStore } from '@/hooks/usePlaylistStore';
+import { useUserStore } from '@/hooks/useUserStore';
 import { orpc } from '@/orpc/client';
 import type { Playlist as IPlaylist } from '@/orpc/types';
 import type { Track } from '@/types/library';
@@ -42,15 +44,14 @@ const Row = ({ tracks, playlistId, index, style }: RowProps) => {
 
 interface Props {
 	playlist: IPlaylist;
-	trackById: Record<string, Track>;
 }
 
-export function Playlist({ playlist, trackById }: Props) {
+export function Playlist({ playlist }: Props) {
 	const playlistId = playlist.id;
 
-	// const { handleDragAndDrop } = usePlaylists();
+	const { handleDragAndDrop } = usePlaylistStore();
 
-	const { selectedTrackId } = useUser();
+	const { selectedTrackId } = useUserStore();
 	const selectedTrackIndex = playlist.playlistTracks.findIndex(
 		(t) => t.trackId === selectedTrackId,
 	);
@@ -80,7 +81,7 @@ export function Playlist({ playlist, trackById }: Props) {
 			newIndex: destination.index,
 		};
 
-		// handleDragAndDrop(args);
+		handleDragAndDrop(args);
 		persistDragAndDrop(args);
 	}
 

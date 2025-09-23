@@ -1,4 +1,5 @@
-import { createFileRoute, useLoaderData } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
+import { useLibraryStore } from '@/hooks/useLibraryStore';
 import Search from './-components/Search';
 
 export const Route = createFileRoute('/search/')({
@@ -6,9 +7,7 @@ export const Route = createFileRoute('/search/')({
 });
 
 function RouteComponent() {
-	const {
-		library: { tracks },
-	} = useLoaderData({ from: '__root__' });
+	const { tracks } = useLibraryStore();
 
 	return <Search tracks={tracks} />;
 }

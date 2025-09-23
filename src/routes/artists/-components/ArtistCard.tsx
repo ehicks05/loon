@@ -1,9 +1,9 @@
 import 'lazysizes';
 import 'lazysizes/plugins/attrchange/ls.attrchange';
-import { useLibrary } from '@/hooks/useLibrary';
+import { ActionableImage } from '@/components/ActionableImage';
+import { ArtistLinks } from '@/components/ArtistLinks';
+import { getArtistById } from '@/hooks/useLibraryStore';
 import type { Artist } from '@/types/library';
-import { ActionableImage } from '../../../components/ActionableImage';
-import { ArtistLinks } from '../../../components/ArtistLinks';
 
 interface Props {
 	artist: Artist;
@@ -11,8 +11,7 @@ interface Props {
 }
 
 export function ArtistCard({ artist: _artist, size }: Props) {
-	const { data } = useLibrary();
-	const artist = data?.getArtistById(_artist.id);
+	const artist = getArtistById(_artist.id);
 	if (!artist) return null;
 
 	const image = size === 'full' ? artist.image : artist.imageThumb;

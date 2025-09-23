@@ -1,65 +1,15 @@
-import { useLibrary } from '@/hooks/useLibrary';
-import { usePlaylists } from '@/hooks/usePlaylists';
-import { type PlaybackDirection, useUser } from '@/hooks/useUser';
+import { useLibraryStore } from '@/hooks/useLibraryStore';
+import { getPlaylistById } from '@/hooks/usePlaylistStore';
+import { type PlaybackDirection, useUserStore } from '@/hooks/useUserStore';
 
-/**
- * Get a random new index that cannot be the currentIndex
- */
-const getShuffleIndex = (currentIndex: number, playlistLength: number) => {
-	const roll = Math.floor(Math.random() * (playlistLength - 1)) + 1;
-	return (currentIndex + roll) % playlistLength;
-};
+export const getNewTrackId = (input: PlaybackDirection) => {
+	const { selectedTrackId, selectedPlaylistId, shuffle } = useUserStore.getState();
 
-function getNewIndex(
-	playbackDirection: number,
-	currentTrackIndex: number,
-	currentPlaylistTrackIds: string[],
-	shuffle: boolean,
-) {
-	let newIndex = shuffle
-		? getShuffleIndex(currentTrackIndex, currentPlaylistTrackIds.length)
-		: currentTrackIndex + playbackDirection;
-
-	if (newIndex === -1) {
-		console.error('Unable to select a new track index.');
-	}
-
-	if (newIndex < 0) newIndex = currentPlaylistTrackIds.length - 1;
-	if (newIndex >= currentPlaylistTrackIds.length) newIndex = 0;
-
-	return newIndex;
-}
-
-function getCurrentPlaylistTrackIds(selectedPlaylistId: string) {
-	const { data } = useLibrary();
-	const { data: playlistData } = usePlaylists();
-	const getPlaylistById = playlistData?.getPlaylistById;
-
-	const tracks = data?.tracks || [];
-	const currentPlaylist = getPlaylistById?.(selectedPlaylistId);
-	if (currentPlaylist)
-		return currentPlaylist.playlistTracks.map(
-			(playlistTrack) => playlistTrack.trackId,
-		);
-
-	return tracks.map((track) => track.id);
-}
-
-export const getNewTrackId = ({
-	direction,
-	currentPlaylistTrackIds,
-	currentTrackIndex,
-	shuffle,
-}: {
-	direction: PlaybackDirection;
-	currentPlaylistTrackIds: string[];
-	currentTrackIndex: number;
-	shuffle: boolean;
-}) => {
-	console.log({ currentPlaylistTrackIds });
+	const currentPlaylistTrackIds = getCurrentPlaylistTrackIds(selectedPlaylistId);
+	const currentTrackIndex = currentPlaylistTrackIds.indexOf(selectedTrackId);
 
 	const newIndex = getNewIndex(
-		direction === 'prev' ? -1 : 1,
+		input,
 		currentTrackIndex,
 		currentPlaylistTrackIds,
 		shuffle,
@@ -71,19 +21,45 @@ export const getNewTrackId = ({
 	return newTrackId;
 };
 
-export const useGetNewTrack = () => {
-	const { selectedTrackId, selectedPlaylistId, shuffle } = useUser();
+function getCurrentPlaylistTrackIds(selectedPlaylistId: string) {
+	const tracks = useLibraryStore.getState().tracks;
+	const currentPlaylist = getPlaylistById(selectedPlaylistId);
+	if (currentPlaylist)
+		return currentPlaylist.playlistTracks.map(
+			(playlistTrack) => playlistTrack.trackId,
+		);
 
-	const currentPlaylistTrackIds = getCurrentPlaylistTrackIds(selectedPlaylistId);
-	const currentTrackIndex = currentPlaylistTrackIds.indexOf(selectedTrackId);
+	return tracks.map((track) => track.id);
+}
 
-	return {
-		getNewTrackId: (direction: PlaybackDirection) =>
-			getNewTrackId({
-				direction,
-				currentPlaylistTrackIds,
-				currentTrackIndex,
-				shuffle,
-			}),
-	};
+/**
+ * Get a random new index that cannot be the currentIndex
+ */
+const getShuffleIndex = (currentIndex: number, playlistLength: number) => {
+	const roll = Math.floor(Math.random() * (playlistLength - 1)) + 1;
+	return (currentIndex + roll) % playlistLength;
 };
+
+function getNewIndex(
+	input: PlaybackDirection,
+	currentTrackIndex: number,
+	currentPlaylistTrackIds: string[],
+	shuffle: boolean,
+) {
+	let newIndex = shuffle
+		? getShuffleIndex(currentTrackIndex, currentPlaylistTrackIds.length)
+		: input === 'prev'
+			? currentTrackIndex - 1
+			: input === 'next'
+				? currentTrackIndex + 1
+				: -1;
+
+	if (newIndex === -1) {
+		console.error('Unable to select a new track index.');
+	}
+
+	if (newIndex < 0) newIndex = currentPlaylistTrackIds.length - 1;
+	if (newIndex >= currentPlaylistTrackIds.length) newIndex = 0;
+
+	return newIndex;
+}

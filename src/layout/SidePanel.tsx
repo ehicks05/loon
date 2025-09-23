@@ -10,8 +10,8 @@ import {
 	Search,
 	Volume2,
 } from 'lucide-react';
-import { usePlaylists } from '@/hooks/usePlaylists';
-import { useUser } from '@/hooks/useUser';
+import { usePlaylistStore } from '@/hooks/usePlaylistStore';
+import { useUserStore } from '@/hooks/useUserStore';
 import type { Playlist } from '@/orpc/types';
 
 interface PlaylistLink {
@@ -57,11 +57,8 @@ const SidebarLink = ({
 };
 
 export function SidePanel() {
-	const { data } = usePlaylists();
-	const playlists = data?.playlists || [];
-	const {
-		user: { selectedPlaylistId },
-	} = useUser();
+	const { playlists } = usePlaylistStore();
+	const { selectedPlaylistId } = useUserStore();
 
 	const defaultLinks = [
 		{

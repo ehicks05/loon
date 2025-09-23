@@ -1,4 +1,3 @@
-import { useQuery } from '@tanstack/react-query';
 import { keyBy } from 'es-toolkit';
 import { orpc } from '@/orpc/client';
 import { denormalizeLibrary } from './denormalize';
@@ -30,13 +29,4 @@ export const fetchAndDenormalizeLibrary = async () => {
 		getAlbumById,
 		getArtistById,
 	};
-};
-
-export const useLibrary = () => {
-	return useQuery({
-		queryKey: ['library'],
-		queryFn: async () => {
-			return fetchAndDenormalizeLibrary();
-		},
-	});
 };

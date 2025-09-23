@@ -1,15 +1,11 @@
 import { useDocumentTitle } from 'usehooks-ts';
-import { useUser } from '@/hooks/useUser';
-import { useLibrary } from './useLibrary';
+import { useUserStore } from '@/hooks/useUserStore';
+import { getTrackById } from './useLibraryStore';
 
 export function useTitle() {
-	const {
-		user: { selectedTrackId },
-	} = useUser();
+	const { selectedTrackId } = useUserStore();
 
-	const { data } = useLibrary();
-	const getTrackById = data?.getTrackById;
-	const selectedTrack = getTrackById?.(selectedTrackId);
+	const selectedTrack = getTrackById(selectedTrackId);
 
 	const artist = selectedTrack?.artists.map((artist) => artist.name).join(', ');
 	const title = selectedTrack ? `${selectedTrack.title} by ${artist}` : 'Loon';

@@ -1,6 +1,6 @@
 import type { DraggableProvided, DraggableStateSnapshot } from '@hello-pangea/dnd';
 import { Link } from '@tanstack/react-router';
-import { useUser } from '../hooks/useUser';
+import { setSelectedPlaylistId, useUserStore } from '../hooks/useUserStore';
 import type { Track } from '../types/library';
 import ActionMenu from './ActionMenu';
 import { ArtistLinks } from './ArtistLinks';
@@ -19,7 +19,7 @@ export default function MediaItem({
 	playlistId,
 	provided,
 }: Props) {
-	const { selectedTrackId, setSelectedPlaylistId } = useUser();
+	const selectedTrackId = useUserStore((state) => state.selectedTrackId);
 
 	const { missingFile } = track;
 	const highlightClass = track.id === selectedTrackId ? 'text-green-500' : '';

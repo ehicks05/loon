@@ -5,6 +5,9 @@ interface Props {
 	linkClass?: string;
 }
 
+/**
+ * Turn a list of artists into a list of links to those artists
+ */
 export const ArtistLinks = ({ artists, linkClass }: Props) => (
 	<span>
 		{artists.map(({ id, name }, i) => (

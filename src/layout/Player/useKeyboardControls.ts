@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { useEventListener } from 'usehooks-ts';
 import type { PlaybackState } from '@/hooks/usePlayerStore';
-import type { PlaybackDirection } from '@/hooks/useUser';
+import type { PlaybackDirection } from '@/hooks/useUserStore';
 
 export const useKeyboardControls = (
 	playbackState: PlaybackState,

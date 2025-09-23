@@ -7,8 +7,8 @@ import {
 	Volume2,
 	VolumeOff,
 } from 'lucide-react';
-import { Equalizer } from '../../components/Equalizer';
-import { useUser } from '../../hooks/useUser';
+import { setMuted, setShuffle, useUserStore } from '@/hooks/useUserStore';
+import { Equalizer } from './Equalizer';
 import { PlaybackButtons } from './PlaybackButtons';
 import { TrackDescription } from './TrackDescription';
 import { TrackProgressBar } from './TrackProgressBar';
@@ -17,7 +17,7 @@ import { VolumeSlider } from './VolumeSlider';
 export const BUTTON_CLASS = 'p-2 rounded hover:bg-neutral-800';
 
 function ShuffleButton() {
-	const { shuffle, setShuffle } = useUser();
+	const { shuffle } = useUserStore();
 	const className = `${BUTTON_CLASS} ${shuffle ? ' text-green-500' : ''}`;
 	return (
 		<button type="button" className={className} onClick={() => setShuffle(!shuffle)}>
@@ -27,7 +27,7 @@ function ShuffleButton() {
 }
 
 function MuteButton() {
-	const { muted, setMuted, volume } = useUser();
+	const { muted, volume } = useUserStore();
 	const Icon = muted
 		? VolumeOff
 		: volume > -10

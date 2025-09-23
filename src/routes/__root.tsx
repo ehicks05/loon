@@ -10,10 +10,9 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 import { type ReactNode, useEffect } from 'react';
 import appCss from '@/app.css?url';
 import { denormalizeLibrary } from '@/hooks/denormalize';
-import { fetchAndDenormalizeLibrary } from '@/hooks/useLibrary';
+import { fetchAndDenormalizeLibrary } from '@/hooks/fetchAndDenormalizeLibrary';
 import { useLibraryStore } from '@/hooks/useLibraryStore';
 import { usePlaylistStore } from '@/hooks/usePlaylistStore';
-import { fetchPlaylists } from '@/hooks/usePlaylists';
 import { useTitle } from '@/hooks/useTitle';
 import { BottomPanel } from '@/layout/BottomPanel/BottomPanel';
 import { Navbar } from '@/layout/Navbar';
@@ -68,7 +67,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 	notFoundComponent: () => <div>not found...</div>,
 	loader: async () => {
 		const library = await fetchAndDenormalizeLibrary();
-		const playlists = await fetchPlaylists();
+		const playlists = await orpc.playlist.list.call();
 		return { library, playlists };
 	},
 	ssr: false,
@@ -86,10 +85,7 @@ const useCacheData = () => {
 
 	useEffect(() => {
 		if (library) {
-			useLibraryStore.setState((state) => ({
-				...state,
-				...denormalizeLibrary(library),
-			}));
+			useLibraryStore.setState(() => denormalizeLibrary(library));
 		}
 	}, [library]);
 
@@ -105,6 +101,13 @@ const useCacheData = () => {
 function RootComponent({ children }: Readonly<{ children: ReactNode }>) {
 	useTitle();
 	useCacheData();
+
+	const { isLoading: isLoadingLibrary } = useQuery(orpc.library.list.queryOptions());
+	const { isLoading: isLoadingPlaylists } = useQuery(
+		orpc.playlist.list.queryOptions(),
+	);
+	const { tracks } = useLibraryStore();
+	if (isLoadingLibrary || isLoadingPlaylists) return null;
 
 	return (
 		<div className="h-dvh flex flex-col text-neutral-300 bg-neutral-950">
@@ -132,7 +135,7 @@ function RootComponent({ children }: Readonly<{ children: ReactNode }>) {
 			</div>
 
 			<ClientOnly>
-				<Player />
+				{tracks.length && <Player />}
 				<BottomPanel />
 			</ClientOnly>
 		</div>

@@ -1,20 +1,21 @@
 import { useEffect, useRef } from 'react';
-import { useLibrary } from '@/hooks/useLibrary';
+import { getTrackById } from '@/hooks/useLibraryStore';
 import { type PlaybackState, usePlayerStore } from '@/hooks/usePlayerStore';
 import { getPlaylistById } from '@/hooks/usePlaylistStore';
-import { type PlaybackDirection, useUser } from '@/hooks/useUser';
-import { getMaxSafeGain, scaleVolume } from './playerUtils';
+import {
+	type PlaybackDirection,
+	setSelectedTrackId,
+	useUserStore,
+} from '@/hooks/useUserStore';
+import { getMaxSafeGain, scaleVolume } from './utils';
 import renderSpectrumFrame from './spectrum';
-import { useGetNewTrack } from './trackDeterminationUtils';
+import { getNewTrackId } from './trackDeterminationUtils';
 import { useKeyboardControls } from './useKeyboardControls';
 
+const API_URL = '/api';
+
 export const Player = () => {
-	const { user: userState, setSelectedTrackId } = useUser();
-	const { data } = useLibrary();
-	const getTrackById = data?.getTrackById;
-
-	const { getNewTrackId } = useGetNewTrack();
-
+	const userState = useUserStore((state) => state);
 	const {
 		setElapsedTime,
 		setDuration,
@@ -63,7 +64,7 @@ export const Player = () => {
 			audio.ontimeupdate = () => setElapsedTime(audio.currentTime);
 
 			if (userState.selectedTrackId) {
-				audio.src = `/api/media/${userState.selectedTrackId}`;
+				audio.src = `${API_URL}/media/${userState.selectedTrackId}`;
 			}
 
 			document.body.appendChild(audio);
@@ -196,7 +197,7 @@ export const Player = () => {
 		const trackGainNode = trackGainNodeRef.current;
 		setElapsedTime(0);
 
-		const track = getTrackById?.(userState.selectedTrackId);
+		const track = getTrackById(userState.selectedTrackId);
 		if (!track || track.missingFile) {
 			if (!track) console.log('no track found...');
 			else if (track.missingFile) console.log('track is missing file...');
@@ -207,7 +208,7 @@ export const Player = () => {
 		if (!audio) return;
 
 		// set new audio source
-		audio.src = `/api/media/${track.id}`;
+		audio.src = `${API_URL}/media/${track.id}`;
 		audio.load();
 
 		if (trackGainNode) {

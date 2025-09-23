@@ -1,5 +1,9 @@
 import { LoonSlider } from '@/components/Slider';
-import { type EqBand as IEqBand, useUser } from '@/hooks/useUser';
+import {
+	type EqBand as IEqBand,
+	setEqBands,
+	useUserStore,
+} from '@/hooks/useUserStore';
 
 const FILTER_TYPE_LABELS: Partial<Record<BiquadFilterType, string>> = {
 	lowshelf: 'Low Shelf',
@@ -8,7 +12,7 @@ const FILTER_TYPE_LABELS: Partial<Record<BiquadFilterType, string>> = {
 };
 
 const EqBand = ({ eq }: { eq: IEqBand }) => {
-	const { eqBands, setEqBands } = useUser();
+	const { eqBands } = useUserStore();
 
 	const handleUpdate = (newBand: IEqBand, id: number) =>
 		setEqBands(eqBands.map((band) => (band.id === id ? newBand : band)));
@@ -52,7 +56,7 @@ const EqBand = ({ eq }: { eq: IEqBand }) => {
 };
 
 export const Equalizer = () => {
-	const { eqBands } = useUser();
+	const { eqBands } = useUserStore();
 
 	return (
 		<div className="flex gap-2">

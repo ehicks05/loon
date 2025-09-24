@@ -10,7 +10,7 @@ import { useEffect } from 'react';
 import { List, type RowComponentProps, useListRef } from 'react-window';
 import MediaItem from '@/components/MediaItem';
 import { MediaItemDrag } from '@/components/MediaItemDrag';
-import { trackById } from '@/hooks/useLibraryStore';
+import { getTrackById } from '@/hooks/useLibraryStore';
 import { usePlaylistStore } from '@/hooks/usePlaylistStore';
 import { useUserStore } from '@/hooks/useUserStore';
 import { orpc } from '@/orpc/client';
@@ -93,8 +93,8 @@ export function Playlist({ playlist }: Props) {
 
 	if (!playlist) return <div>Loading...</div>;
 
-	const tracks = playlist.playlistTracks.map(
-		(playlistTrack) => trackById[playlistTrack.trackId],
+	const tracks = playlist.playlistTracks.map((playlistTrack) =>
+		getTrackById(playlistTrack.trackId),
 	);
 
 	const mediaList = (
@@ -105,7 +105,7 @@ export function Playlist({ playlist }: Props) {
 					mode="virtual"
 					renderClone={(provided, _snapshot, { source: { index } }) => {
 						const trackId = playlist.playlistTracks[index]?.trackId;
-						const track = trackId && trackById[trackId];
+						const track = trackId && getTrackById(trackId);
 						if (!track) return null;
 						return (
 							<MediaItemDrag

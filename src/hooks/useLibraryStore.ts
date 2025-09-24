@@ -1,4 +1,3 @@
-import { keyBy } from 'es-toolkit';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import type { Album, Artist, Track } from '../types/library';
@@ -19,10 +18,6 @@ export const useLibraryStore = create<LibraryStore>()(
 		{ name: 'library' },
 	),
 );
-
-export const trackById = () => {
-	return useLibraryStore((state) => keyBy(state.tracks, (t) => t.id));
-};
 
 export const getTrackById = (id: string) =>
 	useLibraryStore.getState().tracks.find((track) => track.id === id);

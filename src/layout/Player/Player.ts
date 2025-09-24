@@ -16,23 +16,14 @@ const API_URL = '/api';
 
 export const Player = () => {
 	const userState = useUserStore((state) => state);
-	const {
-		setElapsedTime,
-		setDuration,
-		playbackState,
-		setPlaybackState,
-		forcedElapsedTime,
-		setAudioCtx,
-		setAnalyser,
-	} = usePlayerStore((state) => ({
-		setElapsedTime: state.setElapsedTime,
-		setDuration: state.setDuration,
-		playbackState: state.playbackState,
-		setPlaybackState: state.setPlaybackState,
-		forcedElapsedTime: state.forcedElapsedTime,
-		setAudioCtx: state.setAudioCtx,
-		setAnalyser: state.setAnalyser,
-	}));
+
+	const setElapsedTime = usePlayerStore((state) => state.setElapsedTime);
+	const setDuration = usePlayerStore((state) => state.setDuration);
+	const playbackState = usePlayerStore((state) => state.playbackState);
+	const setPlaybackState = usePlayerStore((state) => state.setPlaybackState);
+	const forcedElapsedTime = usePlayerStore((state) => state.forcedElapsedTime);
+	const setAudioCtx = usePlayerStore((state) => state.setAudioCtx);
+	const setAnalyser = usePlayerStore((state) => state.setAnalyser);
 
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const audioCtxRef = useRef<AudioContext | null>(null);
@@ -77,7 +68,7 @@ export const Player = () => {
 		// create objects
 		const audio = initAudio();
 		const audioCtx = new AudioContext();
-		console.log(audioCtx.state)
+		console.log(audioCtx.state);
 		const audioBufferSourceNode = new MediaElementAudioSourceNode(audioCtx, {
 			mediaElement: audio,
 		});

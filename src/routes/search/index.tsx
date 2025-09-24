@@ -7,7 +7,7 @@ export const Route = createFileRoute('/search/')({
 });
 
 function RouteComponent() {
-	const { tracks } = useLibraryStore();
+	const tracks = useLibraryStore((state) => state.tracks);
 
 	return <Search tracks={tracks} />;
 }

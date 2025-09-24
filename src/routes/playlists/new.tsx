@@ -7,7 +7,7 @@ export const Route = createFileRoute('/playlists/new')({
 });
 
 function RouteComponent() {
-	const { tracks } = useLibraryStore();
+	const tracks = useLibraryStore((state) => state.tracks);
 
 	return <PlaylistBuilder tracks={tracks} />;
 }

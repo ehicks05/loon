@@ -11,9 +11,9 @@ export function Playlists() {
 	const { data: session } = authClient.useSession();
 	const user = session?.user;
 
-	const { playlists } = usePlaylistStore();
+	const playlists = usePlaylistStore((state) => state.playlists);
 
-	const { selectedPlaylistId } = useUserStore();
+	const selectedPlaylistId = useUserStore((state) => state.selectedPlaylistId);
 	const queryClient = useQueryClient();
 
 	const { mutate: deletePlaylist } = useMutation({

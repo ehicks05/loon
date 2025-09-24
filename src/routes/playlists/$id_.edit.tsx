@@ -10,7 +10,7 @@ export const Route = createFileRoute('/playlists/$id_/edit')({
 function RouteComponent() {
 	const { id } = Route.useParams();
 
-	const { tracks } = useLibraryStore();
+	const tracks = useLibraryStore((state) => state.tracks);
 	const playlist = getPlaylistById(id);
 
 	return <PlaylistBuilder playlist={playlist} tracks={tracks} />;

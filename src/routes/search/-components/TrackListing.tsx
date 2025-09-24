@@ -19,7 +19,7 @@ interface Props {
 export const TrackListing = ({ tracks }: Props) => {
 	const listRef = useListRef(null);
 
-	const { selectedTrackId } = useUserStore();
+	const selectedTrackId = useUserStore((state) => state.selectedTrackId);
 	const selectedTrackIndex = tracks.findIndex((t) => t.id === selectedTrackId);
 
 	useEffect(() => {

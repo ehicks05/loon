@@ -17,7 +17,7 @@ import { VolumeSlider } from './VolumeSlider';
 export const BUTTON_CLASS = 'p-2 rounded hover:bg-neutral-800';
 
 function ShuffleButton() {
-	const { shuffle } = useUserStore();
+	const shuffle = useUserStore((state) => state.shuffle);
 	const className = `${BUTTON_CLASS} ${shuffle ? ' text-green-500' : ''}`;
 	return (
 		<button type="button" className={className} onClick={() => setShuffle(!shuffle)}>
@@ -27,7 +27,8 @@ function ShuffleButton() {
 }
 
 function MuteButton() {
-	const { muted, volume } = useUserStore();
+	const muted = useUserStore((state) => state.muted);
+	const volume = useUserStore((state) => state.volume);
 	const Icon = muted
 		? VolumeOff
 		: volume > -10

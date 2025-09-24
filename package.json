@@ -14,14 +14,14 @@
     "start": "node .output/server/index.mjs"
   },
   "dependencies": {
-    "@daveyplate/better-auth-ui": "^3.1.10",
+    "@daveyplate/better-auth-ui": "^3.2.5",
     "@hello-pangea/dnd": "^18.0.1",
-    "@orpc/client": "^1.8.9",
-    "@orpc/json-schema": "^1.8.9",
-    "@orpc/openapi": "^1.8.9",
-    "@orpc/server": "^1.8.9",
-    "@orpc/tanstack-query": "^1.8.9",
-    "@orpc/zod": "^1.8.9",
+    "@orpc/client": "^1.9.0",
+    "@orpc/json-schema": "^1.9.0",
+    "@orpc/openapi": "^1.9.0",
+    "@orpc/server": "^1.9.0",
+    "@orpc/tanstack-query": "^1.9.0",
+    "@orpc/zod": "^1.9.0",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@radix-ui/react-popover": "^1.1.15",
     "@radix-ui/react-slider": "^1.3.6",
@@ -59,7 +59,7 @@
     "usehooks-ts": "^3.1.1",
     "vite-tsconfig-paths": "^5.1.4",
     "zod": "^4.1.11",
-    "zustand": "^3.3.3"
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.4",
@@ -69,9 +69,9 @@
     "@vitejs/plugin-react": "^5.0.3",
     "drizzle-kit": "^0.31.4",
     "tailwindcss": "^4.1.13",
-    "tw-animate-css": "^1.3.8",
+    "tw-animate-css": "^1.4.0",
     "typescript": "^5.9.2",
-    "vite": "^7.1.6"
+    "vite": "^7.1.7"
   },
   "overrides": {
     "react-checkbox-tree": {

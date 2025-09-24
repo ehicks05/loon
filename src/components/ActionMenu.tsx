@@ -16,7 +16,7 @@ export default function ActionMenu({ trackIds }: { trackIds: string[] }) {
 	// todo: utils.playlist.list.invalidate();
 	const { mutate } = useMutation(orpc.playlist.update.mutationOptions());
 
-	const { playlists } = usePlaylistStore();
+	const playlists = usePlaylistStore((state) => state.playlists);
 
 	const favoritesPlaylist = playlists.find((playlist) => playlist.favorites);
 	const isFavorite = favoritesPlaylist && isSaturated(favoritesPlaylist, trackIds);

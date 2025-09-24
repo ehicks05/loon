@@ -3,7 +3,7 @@ import { useUserStore } from '@/hooks/useUserStore';
 import { getTrackById } from './useLibraryStore';
 
 export function useTitle() {
-	const { selectedTrackId } = useUserStore();
+	const selectedTrackId = useUserStore((state) => state.selectedTrackId);
 
 	const selectedTrack = getTrackById(selectedTrackId);
 

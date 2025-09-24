@@ -1,4 +1,4 @@
-import create from 'zustand';
+import { create } from 'zustand';
 
 export type PlaybackState = 'stopped' | 'playing' | 'paused';
 
@@ -18,7 +18,7 @@ interface PlayerStore {
 	setAnalyser: (analyser: React.RefObject<AnalyserNode>) => void;
 }
 
-const usePlayerStore = create<PlayerStore>((set) => ({
+const usePlayerStore = create<PlayerStore>()((set) => ({
 	elapsedTime: 0,
 	forcedElapsedTime: 0,
 	duration: 0,

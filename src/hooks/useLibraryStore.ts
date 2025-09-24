@@ -1,13 +1,15 @@
 import { keyBy } from 'es-toolkit';
-import create from 'zustand';
+import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import type { Album, Artist, Track } from '../types/library';
 
-export const useLibraryStore = create<{
+interface LibraryStore {
 	tracks: Track[];
 	albums: Album[];
 	artists: Artist[];
-}>(
+}
+
+export const useLibraryStore = create<LibraryStore>()(
 	devtools(
 		() => ({
 			tracks: [] as Track[],

@@ -9,7 +9,7 @@ export function TrackDescription() {
 	const { width } = useWindowSize();
 	const textWidth = width >= 768 ? 'calc(100vw - 408px)' : '100%';
 
-	const selectedTrackId = useUserStore(({ selectedTrackId }) => selectedTrackId);
+	const selectedTrackId = useUserStore((state) => state.selectedTrackId);
 
 	const track = getTrackById(selectedTrackId);
 	const imageUrl = track?.album?.imageThumb || PLACEHOLDER_IMAGE_URL;

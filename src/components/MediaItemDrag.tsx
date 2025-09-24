@@ -9,7 +9,7 @@ interface Props {
 }
 
 export function MediaItemDrag({ trackNumber, track, provided }: Props) {
-	const { selectedTrackId } = useUserStore();
+	const selectedTrackId = useUserStore((state) => state.selectedTrackId);
 
 	const { missingFile } = track;
 	const highlightClass =

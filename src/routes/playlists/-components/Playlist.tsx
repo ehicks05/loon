@@ -49,9 +49,9 @@ interface Props {
 export function Playlist({ playlist }: Props) {
 	const playlistId = playlist.id;
 
-	const { handleDragAndDrop } = usePlaylistStore();
+	const handleDragAndDrop = usePlaylistStore((state) => state.handleDragAndDrop);
 
-	const { selectedTrackId } = useUserStore();
+	const selectedTrackId = useUserStore((state) => state.selectedTrackId);
 	const selectedTrackIndex = playlist.playlistTracks.findIndex(
 		(t) => t.trackId === selectedTrackId,
 	);

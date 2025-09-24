@@ -7,7 +7,7 @@ export const Route = createFileRoute('/albums/')({
 });
 
 function RouteComponent() {
-	const { albums } = useLibraryStore();
+	const albums = useLibraryStore((state) => state.albums);
 
 	return <Albums albums={albums} />;
 }

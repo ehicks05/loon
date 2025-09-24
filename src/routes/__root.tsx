@@ -106,7 +106,7 @@ function RootComponent({ children }: Readonly<{ children: ReactNode }>) {
 	const { isLoading: isLoadingPlaylists } = useQuery(
 		orpc.playlist.list.queryOptions(),
 	);
-	const { tracks } = useLibraryStore();
+	const tracks = useLibraryStore((state) => state.tracks);
 	if (isLoadingLibrary || isLoadingPlaylists) return null;
 
 	return (

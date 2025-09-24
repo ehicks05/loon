@@ -1,4 +1,4 @@
-import create from 'zustand';
+import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 
 export type PlaybackDirection = 'prev' | 'next';
@@ -41,7 +41,7 @@ const DEFAULT_USER: UserState = {
 	volume: 0,
 };
 
-export const useUserStore = create<UserState>(
+export const useUserStore = create<UserState>()(
 	persist(
 		devtools(() => DEFAULT_USER, { name: 'userState' }),
 		{ name: 'loon-storage' },

@@ -57,12 +57,8 @@ const SidebarLink = ({
 };
 
 export function SidePanel() {
-	const { playlists } = usePlaylistStore((state) => ({
-		playlists: state.playlists,
-	}));
-	const { selectedPlaylistId } = useUserStore((state) => ({
-		selectedPlaylistId: state.selectedPlaylistId,
-	}));
+	const playlists = usePlaylistStore((state) => state.playlists);
+	const selectedPlaylistId = useUserStore((state) => state.selectedPlaylistId);
 
 	const defaultLinks = [
 		{

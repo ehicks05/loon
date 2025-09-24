@@ -18,7 +18,7 @@ export default defineConfig({
   },
 	plugins: [
 		tsConfigPaths(),
-		tanstackStart({ customViteReactPlugin: true, target: 'node',  }),
+		tanstackStart(),
 		tailwindcss(),
 		viteReact(),
 	],

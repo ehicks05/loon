@@ -8,8 +8,6 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createServerRootRoute } from '@tanstack/react-start/server'
-
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SearchIndexRouteImport } from './routes/search/index'
@@ -21,14 +19,12 @@ import { Route as PlaylistsNewRouteImport } from './routes/playlists/new'
 import { Route as PlaylistsIdRouteImport } from './routes/playlists/$id'
 import { Route as AuthAuthViewRouteImport } from './routes/auth.$authView'
 import { Route as ArtistsIdRouteImport } from './routes/artists/$id'
+import { Route as ApiSplatRouteImport } from './routes/api/$'
 import { Route as AlbumsIdRouteImport } from './routes/albums/$id'
 import { Route as PlaylistsIdEditRouteImport } from './routes/playlists/$id_.edit'
-import { ServerRoute as ApiSplatServerRouteImport } from './routes/api.$'
-import { ServerRoute as ApiMediaIdServerRouteImport } from './routes/api_.media.$id'
-import { ServerRoute as ApiRpcSplatServerRouteImport } from './routes/api.rpc.$'
-import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api.auth.$'
-
-const rootServerRouteImport = createServerRootRoute()
+import { Route as ApiRpcSplatRouteImport } from './routes/api/rpc.$'
+import { Route as ApiMediaIdRouteImport } from './routes/api/media.$id'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth.$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -80,6 +76,11 @@ const ArtistsIdRoute = ArtistsIdRouteImport.update({
   path: '/artists/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSplatRoute = ApiSplatRouteImport.update({
+  id: '/api/$',
+  path: '/api/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AlbumsIdRoute = AlbumsIdRouteImport.update({
   id: '/albums/$id',
   path: '/albums/$id',
@@ -90,30 +91,26 @@ const PlaylistsIdEditRoute = PlaylistsIdEditRouteImport.update({
   path: '/playlists/$id/edit',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiSplatServerRoute = ApiSplatServerRouteImport.update({
-  id: '/api/$',
-  path: '/api/$',
-  getParentRoute: () => rootServerRouteImport,
-} as any)
-const ApiMediaIdServerRoute = ApiMediaIdServerRouteImport.update({
-  id: '/api_/media/$id',
-  path: '/api/media/$id',
-  getParentRoute: () => rootServerRouteImport,
-} as any)
-const ApiRpcSplatServerRoute = ApiRpcSplatServerRouteImport.update({
+const ApiRpcSplatRoute = ApiRpcSplatRouteImport.update({
   id: '/api/rpc/$',
   path: '/api/rpc/$',
-  getParentRoute: () => rootServerRouteImport,
+  getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
+const ApiMediaIdRoute = ApiMediaIdRouteImport.update({
+  id: '/api/media/$id',
+  path: '/api/media/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
-  getParentRoute: () => rootServerRouteImport,
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/albums/$id': typeof AlbumsIdRoute
+  '/api/$': typeof ApiSplatRoute
   '/artists/$id': typeof ArtistsIdRoute
   '/auth/$authView': typeof AuthAuthViewRoute
   '/playlists/$id': typeof PlaylistsIdRoute
@@ -123,11 +120,15 @@ export interface FileRoutesByFullPath {
   '/artists': typeof ArtistsIndexRoute
   '/playlists': typeof PlaylistsIndexRoute
   '/search': typeof SearchIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/media/$id': typeof ApiMediaIdRoute
+  '/api/rpc/$': typeof ApiRpcSplatRoute
   '/playlists/$id/edit': typeof PlaylistsIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/albums/$id': typeof AlbumsIdRoute
+  '/api/$': typeof ApiSplatRoute
   '/artists/$id': typeof ArtistsIdRoute
   '/auth/$authView': typeof AuthAuthViewRoute
   '/playlists/$id': typeof PlaylistsIdRoute
@@ -137,12 +138,16 @@ export interface FileRoutesByTo {
   '/artists': typeof ArtistsIndexRoute
   '/playlists': typeof PlaylistsIndexRoute
   '/search': typeof SearchIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/media/$id': typeof ApiMediaIdRoute
+  '/api/rpc/$': typeof ApiRpcSplatRoute
   '/playlists/$id/edit': typeof PlaylistsIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/albums/$id': typeof AlbumsIdRoute
+  '/api/$': typeof ApiSplatRoute
   '/artists/$id': typeof ArtistsIdRoute
   '/auth/$authView': typeof AuthAuthViewRoute
   '/playlists/$id': typeof PlaylistsIdRoute
@@ -152,6 +157,9 @@ export interface FileRoutesById {
   '/artists/': typeof ArtistsIndexRoute
   '/playlists/': typeof PlaylistsIndexRoute
   '/search/': typeof SearchIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/media/$id': typeof ApiMediaIdRoute
+  '/api/rpc/$': typeof ApiRpcSplatRoute
   '/playlists/$id_/edit': typeof PlaylistsIdEditRoute
 }
 export interface FileRouteTypes {
@@ -159,6 +167,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/albums/$id'
+    | '/api/$'
     | '/artists/$id'
     | '/auth/$authView'
     | '/playlists/$id'
@@ -168,11 +177,15 @@ export interface FileRouteTypes {
     | '/artists'
     | '/playlists'
     | '/search'
+    | '/api/auth/$'
+    | '/api/media/$id'
+    | '/api/rpc/$'
     | '/playlists/$id/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/albums/$id'
+    | '/api/$'
     | '/artists/$id'
     | '/auth/$authView'
     | '/playlists/$id'
@@ -182,11 +195,15 @@ export interface FileRouteTypes {
     | '/artists'
     | '/playlists'
     | '/search'
+    | '/api/auth/$'
+    | '/api/media/$id'
+    | '/api/rpc/$'
     | '/playlists/$id/edit'
   id:
     | '__root__'
     | '/'
     | '/albums/$id'
+    | '/api/$'
     | '/artists/$id'
     | '/auth/$authView'
     | '/playlists/$id'
@@ -196,12 +213,16 @@ export interface FileRouteTypes {
     | '/artists/'
     | '/playlists/'
     | '/search/'
+    | '/api/auth/$'
+    | '/api/media/$id'
+    | '/api/rpc/$'
     | '/playlists/$id_/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AlbumsIdRoute: typeof AlbumsIdRoute
+  ApiSplatRoute: typeof ApiSplatRoute
   ArtistsIdRoute: typeof ArtistsIdRoute
   AuthAuthViewRoute: typeof AuthAuthViewRoute
   PlaylistsIdRoute: typeof PlaylistsIdRoute
@@ -211,40 +232,10 @@ export interface RootRouteChildren {
   ArtistsIndexRoute: typeof ArtistsIndexRoute
   PlaylistsIndexRoute: typeof PlaylistsIndexRoute
   SearchIndexRoute: typeof SearchIndexRoute
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiMediaIdRoute: typeof ApiMediaIdRoute
+  ApiRpcSplatRoute: typeof ApiRpcSplatRoute
   PlaylistsIdEditRoute: typeof PlaylistsIdEditRoute
-}
-export interface FileServerRoutesByFullPath {
-  '/api/$': typeof ApiSplatServerRoute
-  '/api/auth/$': typeof ApiAuthSplatServerRoute
-  '/api/rpc/$': typeof ApiRpcSplatServerRoute
-  '/api/media/$id': typeof ApiMediaIdServerRoute
-}
-export interface FileServerRoutesByTo {
-  '/api/$': typeof ApiSplatServerRoute
-  '/api/auth/$': typeof ApiAuthSplatServerRoute
-  '/api/rpc/$': typeof ApiRpcSplatServerRoute
-  '/api/media/$id': typeof ApiMediaIdServerRoute
-}
-export interface FileServerRoutesById {
-  __root__: typeof rootServerRouteImport
-  '/api/$': typeof ApiSplatServerRoute
-  '/api/auth/$': typeof ApiAuthSplatServerRoute
-  '/api/rpc/$': typeof ApiRpcSplatServerRoute
-  '/api_/media/$id': typeof ApiMediaIdServerRoute
-}
-export interface FileServerRouteTypes {
-  fileServerRoutesByFullPath: FileServerRoutesByFullPath
-  fullPaths: '/api/$' | '/api/auth/$' | '/api/rpc/$' | '/api/media/$id'
-  fileServerRoutesByTo: FileServerRoutesByTo
-  to: '/api/$' | '/api/auth/$' | '/api/rpc/$' | '/api/media/$id'
-  id: '__root__' | '/api/$' | '/api/auth/$' | '/api/rpc/$' | '/api_/media/$id'
-  fileServerRoutesById: FileServerRoutesById
-}
-export interface RootServerRouteChildren {
-  ApiSplatServerRoute: typeof ApiSplatServerRoute
-  ApiAuthSplatServerRoute: typeof ApiAuthSplatServerRoute
-  ApiRpcSplatServerRoute: typeof ApiRpcSplatServerRoute
-  ApiMediaIdServerRoute: typeof ApiMediaIdServerRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -319,6 +310,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArtistsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/$': {
+      id: '/api/$'
+      path: '/api/$'
+      fullPath: '/api/$'
+      preLoaderRoute: typeof ApiSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/albums/$id': {
       id: '/albums/$id'
       path: '/albums/$id'
@@ -333,37 +331,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlaylistsIdEditRouteImport
       parentRoute: typeof rootRouteImport
     }
-  }
-}
-declare module '@tanstack/react-start/server' {
-  interface ServerFileRoutesByPath {
-    '/api/$': {
-      id: '/api/$'
-      path: '/api/$'
-      fullPath: '/api/$'
-      preLoaderRoute: typeof ApiSplatServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
-    '/api_/media/$id': {
-      id: '/api_/media/$id'
-      path: '/api/media/$id'
-      fullPath: '/api/media/$id'
-      preLoaderRoute: typeof ApiMediaIdServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
     '/api/rpc/$': {
       id: '/api/rpc/$'
       path: '/api/rpc/$'
       fullPath: '/api/rpc/$'
-      preLoaderRoute: typeof ApiRpcSplatServerRouteImport
-      parentRoute: typeof rootServerRouteImport
+      preLoaderRoute: typeof ApiRpcSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/media/$id': {
+      id: '/api/media/$id'
+      path: '/api/media/$id'
+      fullPath: '/api/media/$id'
+      preLoaderRoute: typeof ApiMediaIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
       fullPath: '/api/auth/$'
-      preLoaderRoute: typeof ApiAuthSplatServerRouteImport
-      parentRoute: typeof rootServerRouteImport
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -371,6 +358,7 @@ declare module '@tanstack/react-start/server' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AlbumsIdRoute: AlbumsIdRoute,
+  ApiSplatRoute: ApiSplatRoute,
   ArtistsIdRoute: ArtistsIdRoute,
   AuthAuthViewRoute: AuthAuthViewRoute,
   PlaylistsIdRoute: PlaylistsIdRoute,
@@ -380,17 +368,19 @@ const rootRouteChildren: RootRouteChildren = {
   ArtistsIndexRoute: ArtistsIndexRoute,
   PlaylistsIndexRoute: PlaylistsIndexRoute,
   SearchIndexRoute: SearchIndexRoute,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiMediaIdRoute: ApiMediaIdRoute,
+  ApiRpcSplatRoute: ApiRpcSplatRoute,
   PlaylistsIdEditRoute: PlaylistsIdEditRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-const rootServerRouteChildren: RootServerRouteChildren = {
-  ApiSplatServerRoute: ApiSplatServerRoute,
-  ApiAuthSplatServerRoute: ApiAuthSplatServerRoute,
-  ApiRpcSplatServerRoute: ApiRpcSplatServerRoute,
-  ApiMediaIdServerRoute: ApiMediaIdServerRoute,
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
 }
-export const serverRouteTree = rootServerRouteImport
-  ._addFileChildren(rootServerRouteChildren)
-  ._addFileTypes<FileServerRouteTypes>()

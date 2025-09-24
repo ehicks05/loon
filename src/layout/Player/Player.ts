@@ -7,10 +7,10 @@ import {
 	setSelectedTrackId,
 	useUserStore,
 } from '@/hooks/useUserStore';
-import { getMaxSafeGain, scaleVolume } from './utils';
 import renderSpectrumFrame from './spectrum';
 import { getNewTrackId } from './trackDeterminationUtils';
 import { useKeyboardControls } from './useKeyboardControls';
+import { getMaxSafeGain, scaleVolume } from './utils';
 
 const API_URL = '/api';
 
@@ -60,8 +60,11 @@ export const Player = () => {
 			audio.ondurationchange = () => setDuration(audio.duration);
 			audio.onerror = () => console.log(audio.error);
 			audio.onplaying = () => renderSpectrumFrame();
-			audio.onpause = () => {};
+			audio.onpause = () => {
+				console.log('inside onpaused callback');
+			};
 			audio.ontimeupdate = () => setElapsedTime(audio.currentTime);
+			audio.onseeking = () => console.log('seeking');
 
 			if (userState.selectedTrackId) {
 				audio.src = `${API_URL}/media/${userState.selectedTrackId}`;
@@ -74,6 +77,7 @@ export const Player = () => {
 		// create objects
 		const audio = initAudio();
 		const audioCtx = new AudioContext();
+		console.log(audioCtx.state)
 		const audioBufferSourceNode = new MediaElementAudioSourceNode(audioCtx, {
 			mediaElement: audio,
 		});

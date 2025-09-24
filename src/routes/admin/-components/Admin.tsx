@@ -16,7 +16,7 @@ const Section = ({ title, children }: { title: string; children: ReactNode }) =>
 };
 
 const Debug = () => {
-	const { duration, elapsedTime, forcedElapsedTime, playbackState } =
+	const { duration, elapsedTime, forcedElapsedTime, playbackState, audioCtx } =
 		usePlayerStore();
 	return (
 		<pre>
@@ -27,6 +27,12 @@ const Debug = () => {
 					forcedElapsedTime,
 					playbackState,
 				},
+				null,
+				2,
+			)}
+			<br />
+			{JSON.stringify(
+				audioCtx?.current.state,
 				null,
 				2,
 			)}

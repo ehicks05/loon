@@ -1,4 +1,7 @@
+import { config } from 'dotenv';
 import { z } from 'zod';
+
+config();
 
 const envSchema = z.object({
 	APP_CONTACT_EMAIL: z.string(),

@@ -24,7 +24,11 @@ export const TrackListing = ({ tracks }: Props) => {
 
 	useEffect(() => {
 		if (tracks.length && selectedTrackIndex !== -1) {
-			listRef.current?.scrollToRow({ index: selectedTrackIndex, align: 'center' });
+			listRef.current?.scrollToRow({
+				index: selectedTrackIndex,
+				behavior: 'smooth',
+				align: 'smart',
+			});
 		}
 	}, [tracks.length, selectedTrackIndex, listRef.current?.scrollToRow]);
 

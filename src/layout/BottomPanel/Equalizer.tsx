@@ -12,7 +12,7 @@ const FILTER_TYPE_LABELS: Partial<Record<BiquadFilterType, string>> = {
 };
 
 const EqBand = ({ eq }: { eq: IEqBand }) => {
-	const { eqBands } = useUserStore();
+	const { eqBands } = useUserStore(({ eqBands }) => ({ eqBands }));
 
 	const handleUpdate = (newBand: IEqBand, id: number) =>
 		setEqBands(eqBands.map((band) => (band.id === id ? newBand : band)));
@@ -56,7 +56,7 @@ const EqBand = ({ eq }: { eq: IEqBand }) => {
 };
 
 export const Equalizer = () => {
-	const { eqBands } = useUserStore();
+	const { eqBands } = useUserStore(({ eqBands }) => ({ eqBands }));
 
 	return (
 		<div className="flex gap-2">

@@ -7,15 +7,15 @@ interface PlayerStore {
 	forcedElapsedTime: number;
 	duration: number;
 	playbackState: PlaybackState;
-	audioCtx?: React.RefObject<AudioContext>;
-	analyser?: React.RefObject<AnalyserNode>;
+	audioCtx?: React.RefObject<AudioContext | null>;
+	analyser?: React.RefObject<AnalyserNode | null>;
 
 	setElapsedTime: (elapsedTime: number) => void;
 	setForcedElapsedTime: (forcedElapsedTime: number) => void;
 	setDuration: (duration: number) => void;
 	setPlaybackState: (playbackState: PlaybackState) => void;
-	setAudioCtx: (audioCtx: React.RefObject<AudioContext>) => void;
-	setAnalyser: (analyser: React.RefObject<AnalyserNode>) => void;
+	setAudioCtx: (audioCtx: React.RefObject<AudioContext | null>) => void;
+	setAnalyser: (analyser: React.RefObject<AnalyserNode | null>) => void;
 }
 
 const usePlayerStore = create<PlayerStore>()((set) => ({
@@ -30,8 +30,8 @@ const usePlayerStore = create<PlayerStore>()((set) => ({
 	setForcedElapsedTime: (forcedElapsedTime: number) => set({ forcedElapsedTime }),
 	setDuration: (duration: number) => set({ duration }),
 	setPlaybackState: (playbackState: PlaybackState) => set({ playbackState }),
-	setAudioCtx: (audioCtx: React.RefObject<AudioContext>) => set({ audioCtx }),
-	setAnalyser: (analyser: React.RefObject<AnalyserNode>) => set({ analyser }),
+	setAudioCtx: (audioCtx: React.RefObject<AudioContext | null>) => set({ audioCtx }),
+	setAnalyser: (analyser: React.RefObject<AnalyserNode | null>) => set({ analyser }),
 }));
 
 export { usePlayerStore };

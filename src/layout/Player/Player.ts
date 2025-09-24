@@ -40,7 +40,7 @@ export const Player = () => {
 		}
 	}, [forcedElapsedTime]);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	// biome-ignore lint/correctness/useExhaustiveDependencies: ok
 	useEffect(() => {
 		function initAudio() {
 			const audio = new Audio();

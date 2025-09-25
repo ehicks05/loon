@@ -134,10 +134,8 @@ function RootComponent({ children }: Readonly<{ children: ReactNode }>) {
 				</div>
 			</div>
 
-			<ClientOnly>
-				{tracks.length && <Player />}
-				<BottomPanel />
-			</ClientOnly>
+			{tracks.length && <Player />}
+			<BottomPanel />
 		</div>
 	);
 }
@@ -153,15 +151,15 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 					<Providers>
 						<RootComponent>{children}</RootComponent>
 					</Providers>
-				</ClientOnly>
 
-				<TanStackDevtools
-					config={{ position: 'bottom-left' }}
-					plugins={[
-						{ name: 'Tanstack Router', render: <TanStackRouterDevtoolsPanel /> },
-						TanStackQueryDevtools,
-					]}
-				/>
+					{/* <TanStackDevtools
+						config={{ position: 'bottom-left' }}
+						plugins={[
+							{ name: 'Tanstack Router', render: <TanStackRouterDevtoolsPanel /> },
+							TanStackQueryDevtools,
+						]}
+					/> */}
+				</ClientOnly>
 				<Scripts />
 			</body>
 		</html>

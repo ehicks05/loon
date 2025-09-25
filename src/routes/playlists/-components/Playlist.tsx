@@ -93,9 +93,9 @@ export function Playlist({ playlist }: Props) {
 
 	if (!playlist) return <div>Loading...</div>;
 
-	const tracks = playlist.playlistTracks.map((playlistTrack) =>
-		getTrackById(playlistTrack.trackId),
-	);
+	const tracks = playlist.playlistTracks
+		.map((playlistTrack) => getTrackById(playlistTrack.trackId))
+		.filter((t) => !!t);
 
 	const mediaList = (
 		<div className="h-full overflow-hidden">

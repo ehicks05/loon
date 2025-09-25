@@ -64,6 +64,7 @@ export const Player = () => {
 			document.body.appendChild(audio);
 			return audio;
 		}
+		if (audioCtxRef.current) return;
 
 		// create objects
 		const audio = initAudio();

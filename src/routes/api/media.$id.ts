@@ -46,6 +46,7 @@ export const Route = createFileRoute('/api/media/$id')({
 				// headers.set('Content-Type', 'application/octet-stream'); // Or the correct MIME type
 				// headers.set('Content-Disposition', 'inline');
 				headers.set('Content-Length', fileSize.toString());
+				headers.set('Accept-Ranges', 'bytes');
 
 				const fileStream = fs.createReadStream(path);
 

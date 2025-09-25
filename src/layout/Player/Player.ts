@@ -69,7 +69,7 @@ export const Player = () => {
 		// create objects
 		const audio = initAudio();
 		const audioCtx = new AudioContext();
-		console.log(audioCtx.state);
+
 		const audioBufferSourceNode = new MediaElementAudioSourceNode(audioCtx, {
 			mediaElement: audio,
 		});
@@ -166,7 +166,10 @@ export const Player = () => {
 			const fadeGainNode = fadeGainNodeRef.current;
 
 			if (playbackState === 'paused') {
-				fade(audioCtx, fadeGainNode, 'out', () => audioCtx?.suspend());
+				fade(audioCtx, fadeGainNode, 'out', () => {
+					audioCtx?.suspend();
+					audio?.pause();
+				});
 				return;
 			}
 

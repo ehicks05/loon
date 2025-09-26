@@ -4,6 +4,8 @@ import { Menu, Wrench, X } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 import { authClient } from '@/lib/auth-client';
 
+const navbarIcon = '/loon.png';
+
 const navigation = [
 	{ name: 'Search', href: '/search' },
 	{ name: 'Library', href: '/library' },
@@ -48,11 +50,7 @@ export function Navbar() {
 					</div>
 					<div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
 						<div className="flex flex-shrink-0 items-center h-10">
-							<img
-								src="/images/document (14b).png"
-								className="h-10 object-contain"
-								alt="Loon"
-							/>
+							<img src={navbarIcon} className="h-10 object-contain" alt="Loon" />
 						</div>
 						<div className="hidden sm:ml-6 sm:flex items-center">
 							<div className="flex space-x-4">

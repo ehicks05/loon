@@ -19,7 +19,11 @@ export default defineConfig({
 	plugins: [
 		tsConfigPaths(),
 		tanstackStart(),
-		nitro({ config:{ preset: 'node-server', compatibilityDate: '2025-09-25' } }),
+		nitro({ config: { 
+				preset: 'node-server', 
+				compatibilityDate: '2025-09-25'
+			},
+		 }),
 		tailwindcss(),
 		viteReact(),
 	],

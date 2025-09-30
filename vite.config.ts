@@ -5,6 +5,7 @@ import { defineConfig } from 'vite';
 import tsConfigPaths from 'vite-tsconfig-paths';
 import tailwindcss from "@tailwindcss/vite";
 import { nitro } from "nitro/vite";
+import { nitroV2Plugin } from '@tanstack/nitro-v2-vite-plugin';
 
 export default defineConfig({
 	server: {
@@ -12,15 +13,20 @@ export default defineConfig({
 		host: '0.0.0.0',
 	},
 	resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
+		alias: {
+			"@": path.resolve(__dirname, "./src"),
+		},
+	},
 	plugins: [
 		tsConfigPaths(),
-		tanstackStart(),
-		nitro({ config: { 
-				preset: 'node-server', 
+		tanstackStart({ public: { base: '/images', dir: 'public' } }),
+		// nitroV2Plugin({
+		// 	preset: 'node-server',
+		// 	compatibilityDate: '2025-09-25',
+		// }),
+		nitro({
+			config: {
+				preset: 'node-server',
 				compatibilityDate: '2025-09-25'
 			},
 		}),

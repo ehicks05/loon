@@ -11,7 +11,7 @@ const toSearchFields = (track: Track) =>
 		(o) => o.toLocaleLowerCase(),
 	);
 
-export default function Search({ tracks }: { tracks: Track[] }) {
+export function Search({ tracks }: { tracks: Track[] }) {
 	const [searchKey, setSearchKey] = useState('');
 	const [debouncedSearchKey, setDebouncedSearchKey] = useDebounceValue(
 		searchKey,

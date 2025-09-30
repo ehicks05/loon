@@ -23,7 +23,7 @@ export default defineConfig({
 				preset: 'node-server', 
 				compatibilityDate: '2025-09-25'
 			},
-		 }),
+		}),
 		tailwindcss(),
 		viteReact(),
 	],

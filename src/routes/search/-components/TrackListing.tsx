@@ -27,7 +27,7 @@ export const TrackListing = ({ tracks }: Props) => {
 			listRef.current?.scrollToRow({
 				index: selectedTrackIndex,
 				behavior: 'smooth',
-				align: 'center',
+				align: 'smart',
 			});
 		}
 	}, [tracks.length, selectedTrackIndex, listRef.current?.scrollToRow]);
@@ -38,6 +38,7 @@ export const TrackListing = ({ tracks }: Props) => {
 				listRef={listRef}
 				rowComponent={Row}
 				rowCount={tracks.length}
+				defaultHeight={60}
 				rowHeight={60}
 				rowProps={{ tracks }}
 			/>

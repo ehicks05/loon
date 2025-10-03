@@ -19,7 +19,9 @@ export default defineConfig({
 	},
 	plugins: [
 		tsConfigPaths(),
-		tanstackStart({ public: { base: '/images', dir: 'public' } }),
+		tanstackStart({ 
+			public: { base: '/images', dir: 'public' }
+		}),
 		// nitroV2Plugin({
 		// 	preset: 'node-server',
 		// 	compatibilityDate: '2025-09-25',

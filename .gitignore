@@ -1,6 +1,9 @@
 node_modules
-
-.env
-.output
-.nitro
+.DS_Store
 dist
+dist-ssr
+*.local
+.env
+.nitro
+.tanstack
+.output

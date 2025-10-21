@@ -4,4 +4,5 @@ buildImage = 'ghcr.io/railwayapp/nixpacks:latest'
   nixpkgsArchive = '11cb3517b3af6af300dd6c055aeda73c9bf52c48'
 
 [phases.build]
-  NODE_OPTIONS=--max_old_space_size=8192 
+  NODE_OPTIONS = --max_old_space_size=8192 
+  

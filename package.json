@@ -9,7 +9,7 @@
     "start": "node .output/server/index.mjs"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=22.12"
   },
   "dependencies": {
     "@daveyplate/better-auth-ui": "^3.2.6",

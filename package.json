@@ -8,6 +8,9 @@
     "push": "npx drizzle-kit push",
     "start": "node .output/server/index.mjs"
   },
+  "engines": {
+    "node": ">=22"
+  },
   "dependencies": {
     "@daveyplate/better-auth-ui": "^3.2.6",
     "@hello-pangea/dnd": "^18.0.1",

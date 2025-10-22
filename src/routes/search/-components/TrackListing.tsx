@@ -33,7 +33,7 @@ export const TrackListing = ({ tracks }: Props) => {
 	}, [tracks.length, selectedTrackIndex, listRef.current?.scrollToRow]);
 
 	return (
-		<div className="flex h-full flex-grow flex-col">
+		<div className="flex h-full flex-grow flex-col pb-10">
 			<List
 				listRef={listRef}
 				rowComponent={Row}

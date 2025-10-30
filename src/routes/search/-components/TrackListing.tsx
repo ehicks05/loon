@@ -30,7 +30,7 @@ export const TrackListing = ({ tracks }: Props) => {
 				align: 'smart',
 			});
 		}
-	}, [tracks.length, selectedTrackIndex, listRef.current?.scrollToRow]);
+	}, [tracks.length, selectedTrackIndex, listRef.current]);
 
 	return (
 		<div className="flex h-full flex-grow flex-col pb-10">

@@ -30,8 +30,7 @@ export function Navbar() {
 		<div className="bg-neutral-900">
 			<div className="mx-auto max-w-screen-2xl px-2 sm:px-6 lg:px-8">
 				<div className="relative flex h-16 items-center justify-between">
-					<div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-						{/* Mobile menu button*/}
+					{/* <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
 						<button
 							type="button"
 							className="group relative inline-flex items-center justify-center rounded-md p-2 text-gray-300 hover:bg-neutral-800 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-inset"
@@ -47,7 +46,7 @@ export function Navbar() {
 								className="hidden h-6 w-6 group-data-[open]:block"
 							/>
 						</button>
-					</div>
+					</div> */}
 					<div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
 						<div className="flex flex-shrink-0 items-center h-10">
 							<img src={navbarIcon} className="h-10 object-contain" alt="Loon" />
@@ -84,7 +83,7 @@ export function Navbar() {
 			</div>
 
 			<div className="sm:hidden">
-				<div className="space-y-1 px-2 pt-2 pb-3">
+				<div className="flex gap-1 p-2">
 					{navigation.map((item) => (
 						<Link
 							key={item.name}

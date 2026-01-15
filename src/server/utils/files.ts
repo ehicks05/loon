@@ -1,5 +1,6 @@
 import type { Dirent } from 'node:fs';
 import { readdir } from 'node:fs/promises';
+import path from 'node:path';
 
 const SUPPORTED_MEDIA_TYPES = ['flac', 'mp3'];
 
@@ -7,7 +8,7 @@ const isSupportedFile = (file: Dirent) =>
 	!file.isDirectory() &&
 	SUPPORTED_MEDIA_TYPES.some((type) => file.name.endsWith(type));
 
-const toFullPath = (file: Dirent) => `${file.parentPath}\\${file.name}`;
+const toFullPath = (file: Dirent) => path.join(file.parentPath, file.name);
 
 export const listMediaFiles = async (path: string) => {
 	const files = await readdir(path, { recursive: true, withFileTypes: true });

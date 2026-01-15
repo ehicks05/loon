@@ -112,8 +112,8 @@ function RootComponent({ children }: Readonly<{ children: ReactNode }>) {
 	return (
 		<div className="h-dvh flex flex-col text-neutral-300 bg-neutral-950">
 			<Navbar />
-			<div className="flex flex-grow m-2 gap-2 justify-center overflow-hidden">
-				<div className="hidden flex-shrink-0 md:block h-full w-60 overflow-y-auto overflow-x-hidden">
+			<div className="flex grow m-2 gap-2 justify-center overflow-hidden">
+				<div className="hidden shrink-0 md:block h-full w-60 overflow-y-auto overflow-x-hidden">
 					<div className="h-full flex flex-col justify-between">
 						<div className="overflow-y-auto">
 							<SidePanel />
@@ -134,7 +134,7 @@ function RootComponent({ children }: Readonly<{ children: ReactNode }>) {
 				</div>
 			</div>
 
-			{tracks.length && <Player />}
+			{tracks.length > 0 && <Player />}
 			<BottomPanel />
 		</div>
 	);

@@ -13,6 +13,7 @@ import { useKeyboardControls } from './useKeyboardControls';
 import { getMaxSafeGain, scaleVolume } from './utils';
 
 const API_URL = '/api';
+const toMediaUrl = (id: string) => `${API_URL}/test/${id}`;
 
 export const Player = () => {
 	const userState = useUserStore((state) => state);
@@ -58,7 +59,7 @@ export const Player = () => {
 			audio.onseeking = () => console.log('seeking');
 
 			if (userState.selectedTrackId) {
-				audio.src = `${API_URL}/media/${userState.selectedTrackId}`;
+				audio.src = toMediaUrl(userState.selectedTrackId);
 			}
 
 			document.body.appendChild(audio);
@@ -207,7 +208,7 @@ export const Player = () => {
 		if (!audio) return;
 
 		// set new audio source
-		audio.src = `${API_URL}/media/${track.id}`;
+		audio.src = toMediaUrl(track.id);
 		audio.load();
 
 		if (trackGainNode) {
